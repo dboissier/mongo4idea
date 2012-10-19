@@ -1,0 +1,20 @@
+<idea-plugin version="2">
+  <name>Mongo Plugin</name>
+  <description>Mongo integration for Intellij</description>
+  <version>0.1.0</version>
+   <vendor email="david.boissier [at] gmail [dot] com" url="http://codinjutsu.blogspot.com">David Boissier</vendor>
+
+  <idea-version since-build="107.105"/>
+
+    <depends>com.intellij.modules.lang</depends>
+
+    <project-components>
+        <component>
+            <implementation-class>org.codinjutsu.tools.mongo.MongoComponent</implementation-class>
+        </component>
+    </project-components>
+
+    <change-notes><![CDATA[
+<a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.1.0/CHANGELOG.txt">Changelog</a>
+]]> </change-notes>
+</idea-plugin>
