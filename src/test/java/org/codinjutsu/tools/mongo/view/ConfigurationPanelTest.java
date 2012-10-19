@@ -1,6 +1,12 @@
 package org.codinjutsu.tools.mongo.view;
 
 import org.codinjutsu.tools.mongo.MongoConfiguration;
+import org.codinjutsu.tools.mongo.logic.ConfigurationException;
+import org.codinjutsu.tools.mongo.logic.MongoManager;
+import org.mockito.Mockito;
+import org.mockito.verification.VerificationMode;
+import org.uispec4j.ComponentAmbiguityException;
+import org.uispec4j.ItemNotFoundException;
 import org.uispec4j.Panel;
 import org.uispec4j.UISpecTestCase;
 
@@ -8,6 +14,7 @@ public class ConfigurationPanelTest extends UISpecTestCase {
 
     private Panel uiSpecPanel;
     private ConfigurationPanel configurationPanel;
+    private MongoManager mongoManager;
 
     public void testForm() throws Exception {
         uiSpecPanel.getTextBox("serverNameField").setText("localhost");
@@ -41,10 +48,27 @@ public class ConfigurationPanelTest extends UISpecTestCase {
         uiSpecPanel.getPasswordField("passwordField").passwordEquals("johnpassword").check();
     }
 
+    public void testConnectionWithSuccess() {
+        MongoConfiguration configuration = new MongoConfiguration();
+        configuration.setServerName("localhost");
+        configuration.setServerPort(27017);
+
+        configurationPanel.loadConfigurationData(configuration);
+
+        try {
+            uiSpecPanel.getButton().click();
+        } catch (ConfigurationException e) {
+            fail("Connection should succeed");
+        }
+
+        Mockito.verify(mongoManager, Mockito.times(1)).connect("localhost", 27017, "", "");
+    }
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        configurationPanel = new ConfigurationPanel();
+        mongoManager = Mockito.spy(new MongoManager());
+        configurationPanel = new ConfigurationPanel(mongoManager);
         uiSpecPanel = new Panel(configurationPanel.getRootPanel());
     }
 }

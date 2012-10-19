@@ -23,6 +23,7 @@ import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.util.xmlb.XmlSerializerUtil;
+import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.view.ConfigurationPanel;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -86,7 +87,8 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
 
     public JComponent createComponent() {
         if (configurationPanel == null) {
-            configurationPanel = new ConfigurationPanel();
+            MongoManager mongoManager = new MongoManager();
+            configurationPanel = new ConfigurationPanel(mongoManager);
         }
         return configurationPanel.getRootPanel();
     }

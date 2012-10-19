@@ -18,8 +18,11 @@ package org.codinjutsu.tools.mongo.view;
 
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
+import org.codinjutsu.tools.mongo.logic.MongoManager;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class ConfigurationPanel {
 
@@ -32,13 +35,27 @@ public class ConfigurationPanel {
 
     private JButton testConnectionButton;
     private JLabel feeedbackLabel;
+    private final MongoManager mongoManager;
 
 
-    public ConfigurationPanel() {
+    public ConfigurationPanel(MongoManager mongoManager) {
+        this.mongoManager = mongoManager;
+
         serverNameField.setName("serverNameField");
         serverPortField.setName("serverPortField");
         usernameField.setName("usernameField");
         passwordField.setName("passwordField");
+
+        initListeners();
+    }
+
+    private void initListeners() {
+        testConnectionButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                mongoManager.connect(getServerName(), getServerPort(), getUsername(), getPassword());
+            }
+        });
     }
 
     public JPanel getRootPanel() {
@@ -47,18 +64,34 @@ public class ConfigurationPanel {
 
     public boolean isModified(MongoConfiguration configuration) {
 
-        return !(StringUtils.equals(configuration.getServerName(), serverNameField.getText())
-                && (configuration.getServerPort() == Integer.valueOf(serverNameField.getText()))
-                && StringUtils.equals(configuration.getUsername(), usernameField.getText())
-                && StringUtils.equals(configuration.getPassword(), String.valueOf(passwordField.getPassword())))
+        return !(StringUtils.equals(configuration.getServerName(), getServerName())
+                && (configuration.getServerPort() == getServerPort())
+                && StringUtils.equals(configuration.getUsername(), getUsername())
+                && StringUtils.equals(configuration.getPassword(), getPassword()))
                 ;
     }
 
     public void applyConfigurationData(MongoConfiguration configuration) {
-        configuration.setServerName(serverNameField.getText());
-        configuration.setServerPort(Integer.valueOf(serverPortField.getText()));
-        configuration.setUsername(usernameField.getText());
-        configuration.setPassword(String.valueOf(passwordField.getPassword()));
+        configuration.setServerName(getServerName());
+        configuration.setServerPort(getServerPort());
+        configuration.setUsername(getUsername());
+        configuration.setPassword(getPassword());
+    }
+
+    private String getServerName() {
+        return StringUtils.trim(serverNameField.getText());
+    }
+
+    private String getPassword() {
+        return String.valueOf(passwordField.getPassword());
+    }
+
+    private String getUsername() {
+        return StringUtils.trim(usernameField.getText());
+    }
+
+    private int getServerPort() {
+        return Integer.valueOf(serverPortField.getText());
     }
 
     public void loadConfigurationData(MongoConfiguration configuration) {
