@@ -16,11 +16,17 @@
 
 package org.codinjutsu.tools.mongo;
 
+import com.mongodb.DBPort;
+
 public class MongoConfiguration {
 
-    private String serverName;
+    private static final String DEFAULT_SERVER_NAME = "localhost";
+    
+    private static final int DEFAULT_PORT = DBPort.PORT;
 
-    private int serverPort;
+    private String serverName = DEFAULT_SERVER_NAME;
+
+    private int serverPort = DEFAULT_PORT;
 
     private String username;
 

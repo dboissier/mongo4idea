@@ -118,7 +118,11 @@ public class ConfigurationPanel {
     }
 
     private int getServerPort() {
-        return Integer.valueOf(serverPortField.getText());
+        String serverPort = serverPortField.getText();
+        if (StringUtils.isNotBlank(serverPort)) {
+            return Integer.valueOf(serverPort);
+        }
+        return 0;
     }
 
     public void loadConfigurationData(MongoConfiguration configuration) {

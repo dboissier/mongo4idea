@@ -40,7 +40,7 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
 
     private static final String MONGO_PLUGIN_NAME = "Mongo Plugin";
 
-    private MongoConfiguration configuration;
+    private MongoConfiguration configuration = new MongoConfiguration();
 
     private ConfigurationPanel configurationPanel;
 
