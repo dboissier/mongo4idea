@@ -18,13 +18,18 @@ package org.codinjutsu.tools.mongo.view;
 
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
+import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
+import org.codinjutsu.tools.mongo.utils.GuiUtils;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class ConfigurationPanel {
+
+    private static final Icon SUCCESS = GuiUtils.loadIcon("success.png");
+    private static final Icon FAIL = GuiUtils.loadIcon("fail.png");
 
     private JPanel rootPanel;
 
@@ -34,7 +39,7 @@ public class ConfigurationPanel {
     private JPasswordField passwordField;
 
     private JButton testConnectionButton;
-    private JLabel feeedbackLabel;
+    private JLabel feedbackLabel;
     private final MongoManager mongoManager;
 
 
@@ -45,6 +50,7 @@ public class ConfigurationPanel {
         serverPortField.setName("serverPortField");
         usernameField.setName("usernameField");
         passwordField.setName("passwordField");
+        feedbackLabel.setName("feedbackLabel");
 
         initListeners();
     }
@@ -53,7 +59,16 @@ public class ConfigurationPanel {
         testConnectionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                mongoManager.connect(getServerName(), getServerPort(), getUsername(), getPassword());
+                try {
+                    mongoManager.connect(getServerName(), getServerPort(), getUsername(), getPassword());
+
+                    feedbackLabel.setIcon(SUCCESS);
+                    feedbackLabel.setText("");
+                } catch (ConfigurationException ex) {
+                    feedbackLabel.setIcon(FAIL);
+                    feedbackLabel.setText(ex.getMessage());
+                }
+
             }
         });
     }
@@ -79,15 +94,27 @@ public class ConfigurationPanel {
     }
 
     private String getServerName() {
-        return StringUtils.trim(serverNameField.getText());
+        String serverName = serverNameField.getText();
+        if (StringUtils.isNotBlank(serverName)) {
+            return serverName;
+        }
+        return null;
     }
 
     private String getPassword() {
-        return String.valueOf(passwordField.getPassword());
+        char[] password = passwordField.getPassword();
+        if (password != null && password.length != 0) {
+            return String.valueOf(password);
+        }
+        return null;
     }
 
     private String getUsername() {
-        return StringUtils.trim(usernameField.getText());
+        String username = usernameField.getText();
+        if (StringUtils.isNotBlank(username)) {
+            return username;
+        }
+        return null;
     }
 
     private int getServerPort() {

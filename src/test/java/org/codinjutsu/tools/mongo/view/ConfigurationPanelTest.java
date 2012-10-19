@@ -1,13 +1,11 @@
 package org.codinjutsu.tools.mongo.view;
 
 import org.codinjutsu.tools.mongo.MongoConfiguration;
-import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
+import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.mockito.Mockito;
-import org.mockito.verification.VerificationMode;
-import org.uispec4j.ComponentAmbiguityException;
-import org.uispec4j.ItemNotFoundException;
 import org.uispec4j.Panel;
+import org.uispec4j.TextBox;
 import org.uispec4j.UISpecTestCase;
 
 public class ConfigurationPanelTest extends UISpecTestCase {
@@ -55,13 +53,26 @@ public class ConfigurationPanelTest extends UISpecTestCase {
 
         configurationPanel.loadConfigurationData(configuration);
 
-        try {
-            uiSpecPanel.getButton().click();
-        } catch (ConfigurationException e) {
-            fail("Connection should succeed");
-        }
+        uiSpecPanel.getButton().click();
+        uiSpecPanel.getTextBox("feedbackLabel").iconEquals(GuiUtils.loadIcon("success.png")).check();
 
-        Mockito.verify(mongoManager, Mockito.times(1)).connect("localhost", 27017, "", "");
+        Mockito.verify(mongoManager, Mockito.times(1)).connect("localhost", 27017, null, null);
+    }
+
+    public void testConnectionWithFailure() {
+        MongoConfiguration configuration = new MongoConfiguration();
+        configuration.setServerName("myserver");
+        configuration.setServerPort(25);
+
+        configurationPanel.loadConfigurationData(configuration);
+
+        uiSpecPanel.getButton().click();
+        TextBox feedbackLabel = uiSpecPanel.getTextBox("feedbackLabel");
+        feedbackLabel.iconEquals(GuiUtils.loadIcon("fail.png")).check();
+        feedbackLabel.textEquals("java.net.UnknownHostException: myserver").check();
+
+
+        Mockito.verify(mongoManager, Mockito.times(1)).connect("myserver", 25, null, null);
     }
 
     @Override
