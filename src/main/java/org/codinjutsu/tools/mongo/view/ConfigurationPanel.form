@@ -45,7 +45,7 @@
           <text value="Password:"/>
         </properties>
       </component>
-      <component id="264eb" class="javax.swing.JTextField" binding="serverName">
+      <component id="264eb" class="javax.swing.JTextField" binding="serverNameField">
         <constraints>
           <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
@@ -55,27 +55,11 @@
           <text value=""/>
         </properties>
       </component>
-      <component id="d92ca" class="javax.swing.JTextField" binding="serverPort">
+      <component id="d92ca" class="javax.swing.JTextField" binding="serverPortField">
         <constraints>
           <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="30" height="-1"/>
             <maximum-size width="50" height="-1"/>
-          </grid>
-        </constraints>
-        <properties/>
-      </component>
-      <component id="b1e12" class="javax.swing.JTextField" binding="username">
-        <constraints>
-          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
-          </grid>
-        </constraints>
-        <properties/>
-      </component>
-      <component id="ffe1f" class="javax.swing.JTextField" binding="password">
-        <constraints>
-          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
           </grid>
         </constraints>
         <properties/>
@@ -111,6 +95,23 @@
           </component>
         </children>
       </grid>
+      <component id="23a21" class="javax.swing.JPasswordField" binding="passwordField">
+        <constraints>
+          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="4bbd5" class="javax.swing.JTextField" binding="usernameField">
+        <constraints>
+          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <editable value="true"/>
+          <enabled value="true"/>
+        </properties>
+      </component>
     </children>
   </grid>
 </form>

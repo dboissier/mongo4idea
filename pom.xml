@@ -297,10 +297,10 @@
 
     <!--
       | SCM Information
+-->
 
     <scm>
         <connection>scm:git:ssh://git@github.com/dboissier/mongo4idea.git</connection>
         <url>git:ssh://git@github.com/dboissier/mongo4idea.git</url>
     </scm>
--->
 </project>

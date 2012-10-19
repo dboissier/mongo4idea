@@ -10,20 +10,35 @@ public class ConfigurationPanelTest extends UISpecTestCase {
     private ConfigurationPanel configurationPanel;
 
     public void testForm() throws Exception {
-        uiSpecPanel.getTextBox("serverName").setText("localhost");
-        uiSpecPanel.getTextBox("serverPort").setText("25");
-        uiSpecPanel.getTextBox("username").setText("john");
-        uiSpecPanel.getTextBox("password").setText("johnpassword");
+        uiSpecPanel.getTextBox("serverNameField").setText("localhost");
+        uiSpecPanel.getTextBox("serverPortField").setText("25");
+        uiSpecPanel.getTextBox("usernameField").setText("john");
+        uiSpecPanel.getPasswordField("passwordField").setPassword("johnpassword");
 
         MongoConfiguration configuration = new MongoConfiguration();
 
         assertTrue(configurationPanel.isModified(configuration));
         configurationPanel.applyConfigurationData(configuration);
 
-        assertEquals("localhost", configuration.getHost());
-        assertEquals(25, configuration.getPort());
+        assertEquals("localhost", configuration.getServerName());
+        assertEquals(25, configuration.getServerPort());
         assertEquals("john", configuration.getUsername());
         assertEquals("johnpassword", configuration.getPassword());
+    }
+
+    public void testLoadConfiguration() throws Exception {
+        MongoConfiguration configuration = new MongoConfiguration();
+        configuration.setServerName("localhost");
+        configuration.setServerPort(25);
+        configuration.setUsername("john");
+        configuration.setPassword("johnpassword");
+
+        configurationPanel.loadConfigurationData(configuration);
+
+        uiSpecPanel.getTextBox("serverNameField").textEquals("localhost").check();
+        uiSpecPanel.getTextBox("serverPortField").textEquals("25").check();
+        uiSpecPanel.getTextBox("usernameField").textEquals("john").check();
+        uiSpecPanel.getPasswordField("passwordField").passwordEquals("johnpassword").check();
     }
 
     @Override
