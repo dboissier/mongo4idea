@@ -22,9 +22,17 @@ import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowAnchor;
+import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.ui.content.Content;
+import com.intellij.ui.content.ContentFactory;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
+import org.codinjutsu.tools.mongo.utils.GuiUtil;
 import org.codinjutsu.tools.mongo.view.ConfigurationPanel;
+import org.codinjutsu.tools.mongo.view.MongoExplorer;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,11 +46,21 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
 
     public static final String MONGO_COMPONENT_NAME = "Mongo";
 
+    public static final String MONGO_EXPLORER = "Mongo Explorer";
+
     private static final String MONGO_PLUGIN_NAME = "Mongo Plugin";
 
-    private MongoConfiguration configuration = new MongoConfiguration();
+    private MongoConfiguration configuration;
 
     private ConfigurationPanel configurationPanel;
+    private Project project;
+    private MongoManager mongoManager;
+
+
+    public MongoComponent(Project project) {
+        this.project = project;
+        this.configuration = new MongoConfiguration();
+    }
 
 
     public void initComponent() {
@@ -78,16 +96,22 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
     }
 
     public void projectOpened() {
+        mongoManager = new MongoManager();
 
+        Content content = ContentFactory.SERVICE.getInstance()
+                .createContent(new MongoExplorer(mongoManager, configuration), null, false);
+        ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
+        ToolWindow toolWindow = toolWindowManager.registerToolWindow(MONGO_EXPLORER, false, ToolWindowAnchor.RIGHT);
+        toolWindow.getContentManager().addContent(content);
+        toolWindow.setIcon(GuiUtil.loadIcon("mongo_16x16.png"));
     }
 
     public void projectClosed() {
-
+        ToolWindowManager.getInstance(project).unregisterToolWindow(MONGO_EXPLORER);
     }
 
     public JComponent createComponent() {
         if (configurationPanel == null) {
-            MongoManager mongoManager = new MongoManager();
             configurationPanel = new ConfigurationPanel(mongoManager);
         }
         return configurationPanel.getRootPanel();
@@ -98,11 +122,11 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
     }
 
     public void apply() throws ConfigurationException {
-
+        configurationPanel.applyConfigurationData(configuration);
     }
 
     public void reset() {
-
+        configurationPanel.loadConfigurationData(configuration);
     }
 
     public void disposeUIResources() {

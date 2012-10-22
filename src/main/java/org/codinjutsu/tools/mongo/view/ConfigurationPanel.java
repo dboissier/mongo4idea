@@ -20,7 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
-import org.codinjutsu.tools.mongo.utils.GuiUtils;
+import org.codinjutsu.tools.mongo.utils.GuiUtil;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -28,8 +28,8 @@ import java.awt.event.ActionListener;
 
 public class ConfigurationPanel {
 
-    private static final Icon SUCCESS = GuiUtils.loadIcon("success.png");
-    private static final Icon FAIL = GuiUtils.loadIcon("fail.png");
+    private static final Icon SUCCESS = GuiUtil.loadIcon("success.png");
+    private static final Icon FAIL = GuiUtil.loadIcon("fail.png");
 
     private JPanel rootPanel;
 
@@ -40,6 +40,7 @@ public class ConfigurationPanel {
 
     private JButton testConnectionButton;
     private JLabel feedbackLabel;
+    private JTextField defaultDatabaseNameField;
     private final MongoManager mongoManager;
 
 
@@ -48,6 +49,7 @@ public class ConfigurationPanel {
 
         serverNameField.setName("serverNameField");
         serverPortField.setName("serverPortField");
+        defaultDatabaseNameField.setName("defaultDatabaseNameField");
         usernameField.setName("usernameField");
         passwordField.setName("passwordField");
         feedbackLabel.setName("feedbackLabel");
@@ -60,7 +62,7 @@ public class ConfigurationPanel {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    mongoManager.connect(getServerName(), getServerPort(), getUsername(), getPassword());
+                    mongoManager.connect(getServerName(), getServerPort(), getUsername(), getPassword(), getDatabaseName());
 
                     feedbackLabel.setIcon(SUCCESS);
                     feedbackLabel.setText("");
@@ -79,16 +81,19 @@ public class ConfigurationPanel {
 
     public boolean isModified(MongoConfiguration configuration) {
 
-        return !(StringUtils.equals(configuration.getServerName(), getServerName())
-                && (configuration.getServerPort() == getServerPort())
-                && StringUtils.equals(configuration.getUsername(), getUsername())
-                && StringUtils.equals(configuration.getPassword(), getPassword()))
-                ;
+        return !(
+                StringUtils.equals(configuration.getServerName(), getServerName())
+                        && (configuration.getServerPort() == getServerPort())
+                        && StringUtils.equals(configuration.getDefaultDatabase(), getDatabaseName())
+                        && StringUtils.equals(configuration.getUsername(), getUsername())
+                        && StringUtils.equals(configuration.getPassword(), getPassword())
+        );
     }
 
     public void applyConfigurationData(MongoConfiguration configuration) {
         configuration.setServerName(getServerName());
         configuration.setServerPort(getServerPort());
+        configuration.setDefaultDatabase(getDatabaseName());
         configuration.setUsername(getUsername());
         configuration.setPassword(getPassword());
     }
@@ -125,9 +130,18 @@ public class ConfigurationPanel {
         return 0;
     }
 
+    private String getDatabaseName() {
+        String defaultDatabaseName = defaultDatabaseNameField.getText();
+        if (StringUtils.isNotBlank(defaultDatabaseName)) {
+            return defaultDatabaseName;
+        }
+        return null;
+    }
+
     public void loadConfigurationData(MongoConfiguration configuration) {
         serverNameField.setText(configuration.getServerName());
         serverPortField.setText(Integer.toString(configuration.getServerPort()));
+        defaultDatabaseNameField.setText(configuration.getDefaultDatabase());
         usernameField.setText(configuration.getUsername());
         passwordField.setText(configuration.getPassword());
     }

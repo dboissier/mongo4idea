@@ -21,18 +21,15 @@ import com.mongodb.DBPort;
 public class MongoConfiguration {
 
     private static final String DEFAULT_SERVER_NAME = "localhost";
-    
+    private static final String DEFAULT_DB = "test";
     private static final int DEFAULT_PORT = DBPort.PORT;
 
     private String serverName = DEFAULT_SERVER_NAME;
-
     private int serverPort = DEFAULT_PORT;
+    private String defaultDatabase = DEFAULT_DB;
 
     private String username;
-
     private String password;
-
-    private String defaultDatabase;
 
 
     public String getServerName() {

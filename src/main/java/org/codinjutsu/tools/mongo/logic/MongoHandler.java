@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.utils;
+package org.codinjutsu.tools.mongo.logic;
 
-import com.intellij.openapi.util.IconLoader;
+import com.intellij.execution.process.OSProcessHandler;
 
-import javax.swing.*;
+public class MongoHandler extends OSProcessHandler {
 
-public class GuiUtils {
-
-    private static final String ICON_FOLDER = "/images/";
-
-    public static Icon loadIcon(String iconFilename) {
-        return IconLoader.findIcon(ICON_FOLDER + iconFilename);
+    public MongoHandler(@org.jetbrains.annotations.NotNull Process process, @org.jetbrains.annotations.Nullable String commandLine) {
+        super(process, commandLine);
     }
 }

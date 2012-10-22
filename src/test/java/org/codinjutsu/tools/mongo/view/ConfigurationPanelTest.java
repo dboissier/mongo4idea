@@ -2,7 +2,7 @@ package org.codinjutsu.tools.mongo.view;
 
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
-import org.codinjutsu.tools.mongo.utils.GuiUtils;
+import org.codinjutsu.tools.mongo.utils.GuiUtil;
 import org.mockito.Mockito;
 import org.uispec4j.Panel;
 import org.uispec4j.TextBox;
@@ -54,9 +54,9 @@ public class ConfigurationPanelTest extends UISpecTestCase {
         configurationPanel.loadConfigurationData(configuration);
 
         uiSpecPanel.getButton().click();
-        uiSpecPanel.getTextBox("feedbackLabel").iconEquals(GuiUtils.loadIcon("success.png")).check();
+        uiSpecPanel.getTextBox("feedbackLabel").iconEquals(GuiUtil.loadIcon("success.png")).check();
 
-        Mockito.verify(mongoManager, Mockito.times(1)).connect("localhost", 27017, null, null);
+        Mockito.verify(mongoManager, Mockito.times(1)).connect("localhost", 27017, null, null, "test");
     }
 
     public void testConnectionWithFailure() {
@@ -68,11 +68,11 @@ public class ConfigurationPanelTest extends UISpecTestCase {
 
         uiSpecPanel.getButton().click();
         TextBox feedbackLabel = uiSpecPanel.getTextBox("feedbackLabel");
-        feedbackLabel.iconEquals(GuiUtils.loadIcon("fail.png")).check();
+        feedbackLabel.iconEquals(GuiUtil.loadIcon("fail.png")).check();
         feedbackLabel.textEquals("java.net.UnknownHostException: myserver").check();
 
 
-        Mockito.verify(mongoManager, Mockito.times(1)).connect("myserver", 25, null, null);
+        Mockito.verify(mongoManager, Mockito.times(1)).connect("myserver", 25, null, null, "test");
     }
 
     @Override
