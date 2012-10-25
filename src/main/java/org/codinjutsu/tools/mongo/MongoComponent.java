@@ -100,22 +100,26 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
 
     public void projectOpened() {
         mongoManager = new MongoManager();
-
-        MongoExplorerPanel mongoExplorerPanel = new MongoExplorerPanel(mongoManager, configuration);
-        Content mongoExplorer = ContentFactory.SERVICE.getInstance()
-                .createContent(mongoExplorerPanel, null, false);
         ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
+
+        MongoRunnerPanel mongoRunnerPanel = new MongoRunnerPanel();
+        Content mongoRunner = ContentFactory.SERVICE.getInstance().createContent(mongoRunnerPanel, null, false);
+        final ToolWindow toolMongoRunnerWindow = toolWindowManager.registerToolWindow(MONGO_RUNNER, false, ToolWindowAnchor.BOTTOM);
+        toolMongoRunnerWindow.getContentManager().addContent(mongoRunner);
+        toolMongoRunnerWindow.setIcon(GuiUtil.loadIcon("mongo_16x16.png"));
+
+        MongoExplorerPanel mongoExplorerPanel = new MongoExplorerPanel(mongoManager, configuration, mongoRunnerPanel, new RunnerCallback() {
+
+            public void execute(Runnable runnable) {
+                toolMongoRunnerWindow.activate(runnable);
+            }
+        });
+        Content mongoExplorer = ContentFactory.SERVICE.getInstance().createContent(mongoExplorerPanel, null, false);
         ToolWindow toolMongoExplorerWindow = toolWindowManager.registerToolWindow(MONGO_EXPLORER, false, ToolWindowAnchor.RIGHT);
         toolMongoExplorerWindow.getContentManager().addContent(mongoExplorer);
         toolMongoExplorerWindow.setIcon(GuiUtil.loadIcon("mongo_16x16.png"));
 
-        MongoRunnerPanel mongoRunnerPanel = new MongoRunnerPanel();
-        Content mongoRunner = ContentFactory.SERVICE.getInstance()
-                .createContent(mongoRunnerPanel, null, false);
-        ToolWindow toolMongoRunnerWindow = toolWindowManager.registerToolWindow(MONGO_RUNNER, false, ToolWindowAnchor.BOTTOM);
-        toolMongoRunnerWindow.getContentManager().addContent(mongoRunner);
-        toolMongoRunnerWindow.setIcon(GuiUtil.loadIcon("mongo_16x16.png"));
-        
+
         mongoExplorerPanel.installActionsOnToolbar(new ViewCollectionValuesAction(mongoRunnerPanel, mongoManager, mongoExplorerPanel));
     }
 
@@ -144,5 +148,10 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
 
     public void disposeUIResources() {
 
+    }
+
+    public interface RunnerCallback {
+
+        void execute(Runnable runnable);
     }
 }

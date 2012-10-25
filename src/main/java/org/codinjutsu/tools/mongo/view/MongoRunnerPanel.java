@@ -16,7 +16,6 @@
 
 package org.codinjutsu.tools.mongo.view;
 
-import com.intellij.openapi.ui.Splitter;
 import com.mongodb.DBObject;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeModel;
@@ -26,37 +25,17 @@ import java.awt.*;
 import java.util.List;
 
 public class MongoRunnerPanel extends JPanel {
-    public static final String MONGO_EXE_PATH = "/usr/bin/mongo";
-    public static final String WORK_DIRECTORY = "/tmp";
     private JPanel rootPanel;
-    private Splitter splitter;
-    private JEditorPane scriptEditorPane = new JEditorPane();
     private final JsonTreeView jsonResultTree = new JsonTreeView();
-    private final JPanel resultToolBarPanel = new JPanel();
 
     public MongoRunnerPanel() {
-        splitter.setFirstComponent(createMongoEditorPanel());
-        splitter.setSecondComponent(createMongoResultPanel());
+        rootPanel.setLayout(new BorderLayout());
+        rootPanel.add(new JScrollPane(jsonResultTree), BorderLayout.CENTER);
 
         setLayout(new BorderLayout());
         add(rootPanel);
 
         jsonResultTree.setVisible(false);
-    }
-
-    private JPanel createMongoResultPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(new JScrollPane(jsonResultTree), BorderLayout.CENTER);
-        panel.add(resultToolBarPanel, BorderLayout.NORTH);
-        return panel;
-    }
-
-    private JPanel createMongoEditorPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(new JScrollPane(scriptEditorPane), BorderLayout.CENTER);
-        JPanel toolBarPanel = new JPanel();
-        panel.add(toolBarPanel, BorderLayout.NORTH);
-        return panel;
     }
 
     public void showResults(MongoCollectionResult mongoCollectionResult) {

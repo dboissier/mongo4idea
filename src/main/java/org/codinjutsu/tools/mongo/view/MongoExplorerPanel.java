@@ -22,6 +22,7 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.ui.PopupHandler;
+import org.codinjutsu.tools.mongo.MongoComponent;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
@@ -44,10 +45,15 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
     private JPanel toolBarPanel;
     private final MongoManager mongoManager;
     private final MongoConfiguration configuration;
+    private final MongoRunnerPanel mongoRunnerPanel;
+    private final MongoComponent.RunnerCallback runnerCallback;
 
-    public MongoExplorerPanel(MongoManager mongoManager, MongoConfiguration configuration) {
+    public MongoExplorerPanel(MongoManager mongoManager, MongoConfiguration configuration, MongoRunnerPanel mongoRunnerPanel, MongoComponent.RunnerCallback runnerCallback) {
         this.mongoManager = mongoManager;
         this.configuration = configuration;
+        this.mongoRunnerPanel = mongoRunnerPanel;
+        this.runnerCallback = runnerCallback;
+
         mongoTree.setCellRenderer(new MongoTreeRenderer());
         mongoTree.setName("mongoTree");
 
@@ -120,5 +126,16 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         }
 
         return mongoManager.loadCollectionValues(configuration, selectedCollection);
+    }
+
+
+    public void loadSelectedCollectionValues() {
+        runnerCallback.execute(new Runnable() {
+            @Override
+            public void run() {
+                MongoCollectionResult selectedCollectionValues = getSelectedCollectionValues();
+                mongoRunnerPanel.showResults(selectedCollectionValues);
+            }
+        });
     }
 }
