@@ -16,6 +16,7 @@
 
 package org.codinjutsu.tools.mongo.view;
 
+import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
 import org.codinjutsu.tools.mongo.model.MongoServer;
 import org.codinjutsu.tools.mongo.utils.GuiUtil;
@@ -47,10 +48,13 @@ public class MongoTreeRenderer extends DefaultTreeCellRenderer {
             super.getTreeCellRendererComponent(mongoTree, mongoDatabase.getName(), isSelected, isExpanded, isLeaf, row, focus);
             setIcon(MONGO_DATABASE);
             return this;
-        } else {
-            super.getTreeCellRendererComponent(mongoTree, value, isSelected, isExpanded, isLeaf, row, focus);
+        } else if (userObject instanceof MongoCollection) {
+            MongoCollection mongoCollection = (MongoCollection) userObject;
+            super.getTreeCellRendererComponent(mongoTree, mongoCollection.getName(), isSelected, isExpanded, isLeaf, row, focus);
             setIcon(MONGO_COLLECTION);
             return this;
+        } else {
+            return super.getTreeCellRendererComponent(mongoTree, value, isSelected, isExpanded, isLeaf, row, focus);
         }
     }
 }

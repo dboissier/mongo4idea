@@ -17,14 +17,19 @@
 package org.codinjutsu.tools.mongo.logic;
 
 import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import com.mongodb.Mongo;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
+import org.codinjutsu.tools.mongo.model.MongoCollection;
+import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
 import org.codinjutsu.tools.mongo.model.MongoServer;
 
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Set;
 
 public class MongoManager {
 
@@ -48,7 +53,10 @@ public class MongoManager {
             if (StringUtils.isNotBlank(configuration.getDefaultDatabase())) {
                 DB database = mongo.getDB(configuration.getDefaultDatabase());
                 MongoDatabase mongoDatabase = new MongoDatabase(database.getName());
-                mongoDatabase.addCollections(database.getCollectionNames());
+                Set<String> collectionNames = database.getCollectionNames();
+                for (String collectionName : collectionNames) {
+                    mongoDatabase.addCollection(new MongoCollection(collectionName, database.getName()));
+                }
                 mongoServer.addDatabase(mongoDatabase);
                 return mongoServer;
             }
@@ -57,12 +65,36 @@ public class MongoManager {
             for (String databaseName : databaseNames) {
                 DB database = mongo.getDB(databaseName);
                 MongoDatabase mongoDatabase = new MongoDatabase(database.getName());
-                mongoDatabase.addCollections(database.getCollectionNames());
+
+                Set<String> collectionNames = database.getCollectionNames();
+                for (String collectionName : collectionNames) {
+                    mongoDatabase.addCollection(new MongoCollection(collectionName, database.getName()));
+                }
                 mongoServer.addDatabase(mongoDatabase);
             }
             return mongoServer;
         } catch (UnknownHostException ex) {
             throw new ConfigurationException(ex);
         }
+    }
+
+    public MongoCollectionResult loadCollectionValues(MongoConfiguration configuration, MongoCollection collectione) {
+        MongoCollectionResult mongoCollectionResult = new MongoCollectionResult();
+        try {
+            Mongo mongo = new Mongo(configuration.getServerName(), configuration.getServerPort());
+            DB database = mongo.getDB(collectione.getDatabaseName());
+            DBCollection collection = database.getCollection(collectione.getName());
+            DBCursor cursor = collection.find();
+            try {
+                while(cursor.hasNext()) {
+                   mongoCollectionResult.add(cursor.next());
+                }
+            } finally {
+                cursor.close();
+            }
+        } catch (UnknownHostException ex) {
+            throw new ConfigurationException(ex);
+        }
+        return mongoCollectionResult;
     }
 }

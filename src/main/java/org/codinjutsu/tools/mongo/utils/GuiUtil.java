@@ -16,9 +16,12 @@
 
 package org.codinjutsu.tools.mongo.utils;
 
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class GuiUtil {
 
@@ -26,5 +29,15 @@ public class GuiUtil {
 
     public static Icon loadIcon(String iconFilename) {
         return IconLoader.findIcon(ICON_FOLDER + iconFilename);
+    }
+
+    public static void installActionGroupInToolBar(DefaultActionGroup actionGroup, JPanel toolBarPanel, ActionManager actionManager, String toolbarName) {
+        if (actionManager == null) {
+            return;
+        }
+
+        JComponent actionToolbar = ActionManager.getInstance()
+                .createActionToolbar(toolbarName, actionGroup, true).getComponent();
+        toolBarPanel.add(actionToolbar, BorderLayout.CENTER);
     }
 }

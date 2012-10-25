@@ -16,27 +16,20 @@
 
 package org.codinjutsu.tools.mongo.model;
 
-import java.util.HashSet;
-import java.util.Set;
+import com.mongodb.DBObject;
 
-public class MongoDatabase {
-    private final String name;
+import java.util.LinkedList;
+import java.util.List;
 
-    private final Set<MongoCollection> collections = new HashSet<MongoCollection>();
+public class MongoCollectionResult {
 
-    public MongoDatabase(String name) {
-        this.name = name;
+    private final List<DBObject> mongoObjects = new LinkedList<DBObject>();
+
+    public void add(DBObject dbObject) {
+        mongoObjects.add(dbObject);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public Set<MongoCollection> getCollections() {
-        return collections;
-    }
-
-    public void addCollection(MongoCollection mongoCollection) {
-       collections.add(mongoCollection);
+    public List<DBObject> getMongoObjects() {
+        return mongoObjects;
     }
 }

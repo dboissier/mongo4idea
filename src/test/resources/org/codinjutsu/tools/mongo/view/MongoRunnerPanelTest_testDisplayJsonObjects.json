@@ -1,0 +1,13 @@
+[
+    {
+        "clone_url":"https://github.com/dboissier/mongo4idea.git",
+        "_links":{
+            "self":{
+                "href":"https://api.github.com/repos/dboissier/mongo4idea"
+            }
+        }
+    },
+    {
+        "clone_url":"https://github.com/dboissier/github-utils.git"
+    }
+]

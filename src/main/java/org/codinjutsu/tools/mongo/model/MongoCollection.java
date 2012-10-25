@@ -16,27 +16,21 @@
 
 package org.codinjutsu.tools.mongo.model;
 
-import java.util.HashSet;
-import java.util.Set;
+public class MongoCollection {
 
-public class MongoDatabase {
     private final String name;
+    private final String databaseName;
 
-    private final Set<MongoCollection> collections = new HashSet<MongoCollection>();
-
-    public MongoDatabase(String name) {
+    public MongoCollection(String name, String databaseName) {
         this.name = name;
+        this.databaseName = databaseName;
     }
 
     public String getName() {
         return name;
     }
 
-    public Set<MongoCollection> getCollections() {
-        return collections;
-    }
-
-    public void addCollection(MongoCollection mongoCollection) {
-       collections.add(mongoCollection);
+    public String getDatabaseName() {
+        return databaseName;
     }
 }

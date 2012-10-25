@@ -15,12 +15,12 @@
   -->
 
 <idea-plugin version="2">
-  <name>Mongo Plugin</name>
-  <description>Mongo integration for Intellij</description>
-  <version>0.1.0</version>
-   <vendor email="david.boissier [at] gmail [dot] com" url="http://codinjutsu.blogspot.com">David Boissier</vendor>
+    <name>Mongo Plugin</name>
+    <description>Mongo integration for Intellij</description>
+    <version>0.1.0</version>
+    <vendor email="david.boissier [at] gmail [dot] com" url="http://codinjutsu.blogspot.com">David Boissier</vendor>
 
-  <idea-version since-build="107.105"/>
+    <idea-version since-build="107.105"/>
 
     <depends>com.intellij.modules.lang</depends>
 

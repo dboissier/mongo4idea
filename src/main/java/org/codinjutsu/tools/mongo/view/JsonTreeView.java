@@ -14,29 +14,13 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.model;
+package org.codinjutsu.tools.mongo.view;
 
-import java.util.HashSet;
-import java.util.Set;
+import javax.swing.*;
 
-public class MongoDatabase {
-    private final String name;
+public class JsonTreeView extends JTree {
 
-    private final Set<MongoCollection> collections = new HashSet<MongoCollection>();
-
-    public MongoDatabase(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Set<MongoCollection> getCollections() {
-        return collections;
-    }
-
-    public void addCollection(MongoCollection mongoCollection) {
-       collections.add(mongoCollection);
+    public JsonTreeView() {
+        setCellRenderer(new JsonTreeCellRenderer());
     }
 }

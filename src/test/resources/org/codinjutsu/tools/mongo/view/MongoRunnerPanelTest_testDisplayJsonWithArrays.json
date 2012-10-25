@@ -1,0 +1,37 @@
+[
+    {
+        "clone_url":"https://github.com/dboissier/mongo4idea.git",
+        "chaine":[
+            "toto", "pipo", "zozo"
+        ]
+    },
+    {
+        "clone_url":"https://github.com/dboissier/github-utils.git",
+        "booleen": [
+                true, false, true
+        ]
+    },
+    {
+        "clone_url":"https://github.com/dboissier/github-utils.git",
+        "document": [
+            {
+                "titre":"titre1",
+                "motscles":[
+                   "java" , "info", "ejb"
+                ]
+            },
+            {
+                "titre":"titre2",
+                "motscles":[
+                    "cinema" , "horreur", "slasher"
+                ]
+            },
+            {
+                "titre":"titre3",
+                "motscles":[
+                    "musique" , "rock", "annees 70"
+                ]
+            }
+        ]
+    }
+]

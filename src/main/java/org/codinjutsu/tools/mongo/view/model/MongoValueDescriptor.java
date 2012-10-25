@@ -14,29 +14,27 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.model;
+package org.codinjutsu.tools.mongo.view.model;
 
-import java.util.HashSet;
-import java.util.Set;
+public class MongoValueDescriptor {
 
-public class MongoDatabase {
-    private final String name;
+    private final String key;
+    private final Object value;
 
-    private final Set<MongoCollection> collections = new HashSet<MongoCollection>();
-
-    public MongoDatabase(String name) {
-        this.name = name;
+    public MongoValueDescriptor(String key, Object value) {
+        this.key = key;
+        this.value = value;
     }
 
-    public String getName() {
-        return name;
+    public MongoValueDescriptor(String key) {
+        this(key, null);
     }
 
-    public Set<MongoCollection> getCollections() {
-        return collections;
+    public String getKey() {
+        return key;
     }
 
-    public void addCollection(MongoCollection mongoCollection) {
-       collections.add(mongoCollection);
+    public Object getValue() {
+        return value;
     }
 }

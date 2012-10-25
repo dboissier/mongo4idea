@@ -32,7 +32,9 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.utils.GuiUtil;
 import org.codinjutsu.tools.mongo.view.ConfigurationPanel;
-import org.codinjutsu.tools.mongo.view.MongoExplorer;
+import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
+import org.codinjutsu.tools.mongo.view.MongoRunnerPanel;
+import org.codinjutsu.tools.mongo.view.action.ViewCollectionValuesAction;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,6 +49,7 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
     public static final String MONGO_COMPONENT_NAME = "Mongo";
 
     public static final String MONGO_EXPLORER = "Mongo Explorer";
+    public static final String MONGO_RUNNER = "Mongo Runner";
 
     private static final String MONGO_PLUGIN_NAME = "Mongo Plugin";
 
@@ -98,12 +101,22 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
     public void projectOpened() {
         mongoManager = new MongoManager();
 
-        Content content = ContentFactory.SERVICE.getInstance()
-                .createContent(new MongoExplorer(mongoManager, configuration), null, false);
+        MongoExplorerPanel mongoExplorerPanel = new MongoExplorerPanel(mongoManager, configuration);
+        Content mongoExplorer = ContentFactory.SERVICE.getInstance()
+                .createContent(mongoExplorerPanel, null, false);
         ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
-        ToolWindow toolWindow = toolWindowManager.registerToolWindow(MONGO_EXPLORER, false, ToolWindowAnchor.RIGHT);
-        toolWindow.getContentManager().addContent(content);
-        toolWindow.setIcon(GuiUtil.loadIcon("mongo_16x16.png"));
+        ToolWindow toolMongoExplorerWindow = toolWindowManager.registerToolWindow(MONGO_EXPLORER, false, ToolWindowAnchor.RIGHT);
+        toolMongoExplorerWindow.getContentManager().addContent(mongoExplorer);
+        toolMongoExplorerWindow.setIcon(GuiUtil.loadIcon("mongo_16x16.png"));
+
+        MongoRunnerPanel mongoRunnerPanel = new MongoRunnerPanel();
+        Content mongoRunner = ContentFactory.SERVICE.getInstance()
+                .createContent(mongoRunnerPanel, null, false);
+        ToolWindow toolMongoRunnerWindow = toolWindowManager.registerToolWindow(MONGO_RUNNER, false, ToolWindowAnchor.BOTTOM);
+        toolMongoRunnerWindow.getContentManager().addContent(mongoRunner);
+        toolMongoRunnerWindow.setIcon(GuiUtil.loadIcon("mongo_16x16.png"));
+        
+        mongoExplorerPanel.installActionsOnToolbar(new ViewCollectionValuesAction(mongoRunnerPanel, mongoManager, mongoExplorerPanel));
     }
 
     public void projectClosed() {
