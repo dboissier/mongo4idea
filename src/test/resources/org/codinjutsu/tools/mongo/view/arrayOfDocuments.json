@@ -1,0 +1,26 @@
+[
+    {
+        "id":0,
+        "label":"toto",
+        "visible":false,
+        "doc":{
+            "title":"hello",
+            "nbPages":10,
+            "keyWord":[
+                "toto", true, 10
+            ]
+        }
+    },
+    {
+        "id":1,
+        "label":"tata",
+        "visible":true,
+        "doc":{
+            "title":"ola",
+            "nbPages":1,
+            "keyWord":[
+                "tutu", false, 10
+            ]
+        }
+    }
+]

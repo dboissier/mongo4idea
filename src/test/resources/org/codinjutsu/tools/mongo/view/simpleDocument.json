@@ -1,5 +1,6 @@
 {
     "id":0,
     "label":"toto",
-    "visible":false
+    "visible":false,
+    "image": null
 }

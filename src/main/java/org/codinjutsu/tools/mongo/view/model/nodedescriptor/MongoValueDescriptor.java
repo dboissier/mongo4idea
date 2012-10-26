@@ -16,39 +16,36 @@
 
 package org.codinjutsu.tools.mongo.view.model.nodedescriptor;
 
-public class MongoValueDescriptor<T> {
+import com.intellij.ui.SimpleTextAttributes;
+import com.mongodb.DBObject;
+
+import static org.codinjutsu.tools.mongo.view.TextAttributesUtils.*;
+
+public class MongoValueDescriptor implements MongoNodeDescriptor {
 
     protected final int index;
-    protected final T value;
+    protected final Object value;
+    private final SimpleTextAttributes textAttributes;
 
-    public MongoValueDescriptor(int index, T value) {
+    public MongoValueDescriptor(int index, Object value, SimpleTextAttributes textAttributes) {
         this.index = index;
         this.value = value;
+        this.textAttributes = textAttributes;
     }
 
     public String getDescription() {
         return String.format("[%s] %s", index, value);
     }
 
-
-    public static class MongoBooleanValueDescriptor extends MongoValueDescriptor<Boolean> {
-
-        public MongoBooleanValueDescriptor(int index, Boolean booleanValue) {
-            super(index, booleanValue);
-        }
+    @Override
+    public SimpleTextAttributes getTextAttributes() {
+        return textAttributes;
     }
 
-    public static class MongoIntegerValueDescriptor extends MongoValueDescriptor<Integer> {
-
-        public MongoIntegerValueDescriptor(int index, Integer integerValue) {
-            super(index, integerValue);
-        }
-    }
-
-    public static class MongoStringValueDescriptor extends MongoValueDescriptor<String> {
+    private static class MongoStringValueDescriptor extends MongoValueDescriptor {
 
         public MongoStringValueDescriptor(int index, String value) {
-            super(index, value);
+            super(index, value, STRING_TEXT_ATTRIBUTE);
         }
 
         public String getDescription() {
@@ -56,14 +53,32 @@ public class MongoValueDescriptor<T> {
         }
     }
 
+    private static class MongoNullValueDescriptor extends MongoValueDescriptor {
+
+        public MongoNullValueDescriptor(int index) {
+            super(index, null, NULL_TEXT_ATTRIBUTE);
+        }
+
+        public String getDescription() {
+            return String.format("[%s] null", index);
+        }
+    }
+
     public static MongoValueDescriptor createDescriptor(int index, Object value) {
+        if (value == null) {
+            return new MongoNullValueDescriptor(index);
+        }
+
         if (value instanceof String) {
             return new MongoStringValueDescriptor(index, (String) value);
         } else if (value instanceof Boolean) {
-            return new MongoBooleanValueDescriptor(index, (Boolean) value);
+            return new MongoValueDescriptor(index, value, BOOLEAN_TEXT_ATTRIBUTE);
         } else if (value instanceof Integer) {
-            return new MongoIntegerValueDescriptor(index, (Integer) value);
+            return new MongoValueDescriptor(index, value, INTEGER_TEXT_ATTRIBUTE);
+        } else if (value instanceof DBObject) {
+            return new MongoValueDescriptor(index, value, DBOBJECT_TEXT_ATTRIBUTE);
+        }else {
+            return new MongoValueDescriptor(index, value, STRING_TEXT_ATTRIBUTE);
         }
-        throw new IllegalArgumentException("unsupported " + value.getClass());
     }
 }

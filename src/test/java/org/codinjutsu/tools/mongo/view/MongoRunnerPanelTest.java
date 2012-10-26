@@ -48,7 +48,8 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
                 "results of 'mycollec' #(bold)\n" +
                         "  [0] \"toto\" #(bold)\n" +
                         "  [1] true #(bold)\n" +
-                        "  [2] 10 #(bold)\n"
+                        "  [2] 10 #(bold)\n" +
+                        "  [3] null #(bold)\n"
         ).check();
     }
 
@@ -65,12 +66,76 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
         tree.setCellValueConverter(new TreeCellConverter());
         tree.contentEquals(
                 "results of 'mycollec' #(bold)\n" +
-                        "  \"id\": 0 #(bold)\n" +
-                        "  \"label\": \"toto\" #(bold)\n" +
-                        "  \"visible\": false #(bold)\n"
+                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"image\" :  null } #(bold)\n" +
+                        "    \"id\": 0 #(bold)\n" +
+                        "    \"label\": \"toto\" #(bold)\n" +
+                        "    \"visible\": false #(bold)\n" +
+                        "    \"image\": null #(bold)\n"
         ).check();
     }
 
+
+    public void testDisplayStructuredDocument() throws Exception {
+        DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("structuredDocument.json")));
+
+        MongoCollectionResult mongoCollectionResult = new MongoCollectionResult("mycollec");
+        mongoCollectionResult.add(jsonObject);
+        mongoRunnerPanel.showResults(mongoCollectionResult);
+
+        Tree tree = uiSpecPanel.getTree();
+        tree.setCellValueConverter(new TreeCellConverter());
+        tree.contentEquals(
+                "results of 'mycollec' #(bold)\n" +
+                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} #(bold)\n" +
+                        "    \"id\": 0 #(bold)\n" +
+                        "    \"label\": \"toto\" #(bold)\n" +
+                        "    \"visible\": false #(bold)\n" +
+                        "    \"doc\": { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]} #(bold)\n" +
+                        "      \"title\": \"hello\" #(bold)\n"+
+                        "      \"nbPages\": 10 #(bold)\n" +
+                        "      \"keyWord\": [ \"toto\" , true , 10] #(bold)\n" +
+                        "        [0] \"toto\" #(bold)\n" +
+                        "        [1] true #(bold)\n" +
+                        "        [2] 10 #(bold)\n"
+        ).check();
+    }
+
+
+    public void testDisplayArrayOfStructuredDocument() throws Exception {
+        DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("arrayOfDocuments.json")));
+
+        MongoCollectionResult mongoCollectionResult = new MongoCollectionResult("mycollec");
+        mongoCollectionResult.add(jsonObject);
+        mongoRunnerPanel.showResults(mongoCollectionResult);
+
+        Tree tree = uiSpecPanel.getTree();
+        tree.setCellValueConverter(new TreeCellConverter());
+        tree.contentEquals(
+                "results of 'mycollec' #(bold)\n" +
+                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} #(bold)\n" +
+                        "    \"id\": 0 #(bold)\n" +
+                        "    \"label\": \"toto\" #(bold)\n" +
+                        "    \"visible\": false #(bold)\n" +
+                        "    \"doc\": { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]} #(bold)\n" +
+                        "      \"title\": \"hello\" #(bold)\n"+
+                        "      \"nbPages\": 10 #(bold)\n" +
+                        "      \"keyWord\": [ \"toto\" , true , 10] #(bold)\n" +
+                        "        [0] \"toto\" #(bold)\n" +
+                        "        [1] true #(bold)\n" +
+                        "        [2] 10 #(bold)\n" +
+                        "  [1] { \"id\" : 1 , \"label\" : \"tata\" , \"visible\" : true , \"doc\" : { \"title\" : \"ola\" , \"nbPages\" : 1 , \"keyWord\" : [ \"tutu\" , false , 10]}} #(bold)\n" +
+                        "    \"id\": 1 #(bold)\n" +
+                        "    \"label\": \"tata\" #(bold)\n" +
+                        "    \"visible\": true #(bold)\n" +
+                        "    \"doc\": { \"title\" : \"ola\" , \"nbPages\" : 1 , \"keyWord\" : [ \"tutu\" , false , 10]} #(bold)\n" +
+                        "      \"title\": \"ola\" #(bold)\n"+
+                        "      \"nbPages\": 1 #(bold)\n" +
+                        "      \"keyWord\": [ \"tutu\" , false , 10] #(bold)\n" +
+                        "        [0] \"tutu\" #(bold)\n" +
+                        "        [1] false #(bold)\n" +
+                        "        [2] 10 #(bold)\n"
+        ).check();
+    }
 
 
     @Override

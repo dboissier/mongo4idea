@@ -1,0 +1,12 @@
+{
+    "id":0,
+    "label":"toto",
+    "visible":false,
+    "doc":{
+        "title":"hello",
+        "nbPages":10,
+        "keyWord":[
+            "toto", true, 10
+        ]
+    }
+}
