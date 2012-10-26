@@ -37,6 +37,6 @@ public class MongoDatabase {
     }
 
     public void addCollection(MongoCollection mongoCollection) {
-       collections.add(mongoCollection);
+        collections.add(mongoCollection);
     }
 }

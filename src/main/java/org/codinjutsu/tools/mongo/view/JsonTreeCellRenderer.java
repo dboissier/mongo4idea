@@ -18,7 +18,6 @@ package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
-import org.codinjutsu.tools.mongo.view.model.nodedescriptor.MongoStringValueDescriptor;
 import org.codinjutsu.tools.mongo.view.model.ResultNode;
 import org.codinjutsu.tools.mongo.view.model.nodedescriptor.MongoValueDescriptor;
 

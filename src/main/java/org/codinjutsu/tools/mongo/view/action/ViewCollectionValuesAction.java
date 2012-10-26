@@ -24,7 +24,7 @@ import org.codinjutsu.tools.mongo.utils.GuiUtil;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 import org.codinjutsu.tools.mongo.view.MongoRunnerPanel;
 
-public class ViewCollectionValuesAction extends AnAction implements DumbAware{
+public class ViewCollectionValuesAction extends AnAction implements DumbAware {
 
     private MongoRunnerPanel mongoRunnerPanel;
     private final MongoManager mongoManager;

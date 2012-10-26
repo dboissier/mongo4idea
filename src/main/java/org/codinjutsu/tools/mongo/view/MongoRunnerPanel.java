@@ -16,13 +16,11 @@
 
 package org.codinjutsu.tools.mongo.view;
 
-import com.mongodb.DBObject;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeModel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 
 public class MongoRunnerPanel extends JPanel {
     private JPanel rootPanel;

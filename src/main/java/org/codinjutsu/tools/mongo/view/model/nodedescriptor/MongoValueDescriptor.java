@@ -32,19 +32,18 @@ public class MongoValueDescriptor<T> {
 
     //voir comment afficher l'info lors du rendu
     public String getIndex() {
-        return  String.format("[%s]", index);
+        return String.format("[%s]", index);
     }
 
 
-
-    public static class MongoBooleanValueDescriptor extends MongoValueDescriptor<Boolean>{
+    public static class MongoBooleanValueDescriptor extends MongoValueDescriptor<Boolean> {
 
         public MongoBooleanValueDescriptor(int index, Boolean booleanValue) {
             super(index, booleanValue);
         }
     }
 
-    public static class MongoIntegerValueDescriptor extends MongoValueDescriptor<Integer>{
+    public static class MongoIntegerValueDescriptor extends MongoValueDescriptor<Integer> {
 
         public MongoIntegerValueDescriptor(int index, Integer integerValue) {
             super(index, integerValue);
@@ -61,7 +60,7 @@ public class MongoValueDescriptor<T> {
             return String.format("\"%s\"", value);
         }
     }
-    
+
     public static MongoValueDescriptor createDescriptor(int index, Object value) {
         if (value instanceof String) {
             return new MongoStringValueDescriptor(index, (String) value);

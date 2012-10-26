@@ -40,7 +40,7 @@ public class MongoTreeRenderer extends DefaultTreeCellRenderer {
         Object userObject = node.getUserObject();
         if (userObject instanceof MongoServer) {
             MongoServer mongoServer = (MongoServer) userObject;
-            super.getTreeCellRendererComponent(mongoTree, String.format("%s/%s",mongoServer.getServerName(), mongoServer.getServerPort()), isSelected, isExpanded, isLeaf, row, focus);
+            super.getTreeCellRendererComponent(mongoTree, String.format("%s/%s", mongoServer.getServerName(), mongoServer.getServerPort()), isSelected, isExpanded, isLeaf, row, focus);
             setIcon(MONGO_SERVER);
             return this;
         } else if (userObject instanceof MongoDatabase) {

@@ -19,7 +19,7 @@ package org.codinjutsu.tools.mongo.view.model;
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
-import org.codinjutsu.tools.mongo.view.model.nodedescriptor.MongoStringValueDescriptor;
+import org.codinjutsu.tools.mongo.view.model.nodedescriptor.MongoValueDescriptor;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -42,7 +42,7 @@ public class JsonTreeModel extends DefaultTreeModel {
                 BasicDBList mongoObjectList = (BasicDBList) mongoObject;
                 for (int i = 0; i < mongoObjectList.size(); i++) {
                     Object mongoObjectOfList = mongoObjectList.get(i);
-                    rootNode.add(new DefaultMutableTreeNode(MongoStringValueDescriptor.createDescriptor(i, mongoObjectOfList)));
+                    rootNode.add(new DefaultMutableTreeNode(MongoValueDescriptor.createDescriptor(i, mongoObjectOfList)));
                 }
             }
         }

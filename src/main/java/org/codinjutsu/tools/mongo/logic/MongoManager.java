@@ -86,8 +86,8 @@ public class MongoManager {
             DBCollection collection = database.getCollection(mongoCollection.getName());
             DBCursor cursor = collection.find();
             try {
-                while(cursor.hasNext()) {
-                   mongoCollectionResult.add(cursor.next());
+                while (cursor.hasNext()) {
+                    mongoCollectionResult.add(cursor.next());
                 }
             } finally {
                 cursor.close();

@@ -19,7 +19,6 @@ package org.codinjutsu.tools.mongo.view;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.uispec4j.DefaultTreeCellValueConverter;
 import org.uispec4j.Panel;
@@ -52,6 +51,27 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
                         "  [2] 10 #(bold)\n"
         ).check();
     }
+
+
+
+    public void disabled_testDisplaySimpleDocument() throws Exception {
+        DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("simpleDocument.json")));
+
+        MongoCollectionResult mongoCollectionResult = new MongoCollectionResult("mycollec");
+        mongoCollectionResult.add(jsonObject);
+        mongoRunnerPanel.showResults(mongoCollectionResult);
+
+        Tree tree = uiSpecPanel.getTree();
+        tree.setCellValueConverter(new TreeCellConverter());
+        tree.contentEquals(
+                "results of 'mycollec' #(bold)\n" +
+                        "  \"id\": 0 #(bold)\n" +
+                        "  \"label\": \"toto\" #(bold)\n" +
+                        "  \"visible\": true #(bold)\n"
+        ).check();
+    }
+
+
 
     @Override
     protected void setUp() throws Exception {
