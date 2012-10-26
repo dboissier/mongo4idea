@@ -18,7 +18,7 @@ package org.codinjutsu.tools.mongo.view.model.nodedescriptor;
 
 public class MongoValueDescriptor<T> {
 
-    private final int index;
+    protected final int index;
     protected final T value;
 
     public MongoValueDescriptor(int index, T value) {
@@ -27,12 +27,7 @@ public class MongoValueDescriptor<T> {
     }
 
     public String getDescription() {
-        return value.toString();
-    }
-
-    //voir comment afficher l'info lors du rendu
-    public String getIndex() {
-        return String.format("[%s]", index);
+        return String.format("[%s] %s", index, value);
     }
 
 
@@ -57,7 +52,7 @@ public class MongoValueDescriptor<T> {
         }
 
         public String getDescription() {
-            return String.format("\"%s\"", value);
+            return String.format("[%s] \"%s\"", index, value);
         }
     }
 

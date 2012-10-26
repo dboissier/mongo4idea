@@ -16,25 +16,65 @@
 
 package org.codinjutsu.tools.mongo.view.model;
 
-public class MongoKeyValueDescriptor {
+public class MongoKeyValueDescriptor<T> {
 
-    private final String key;
-    private final Object value;
+    protected final String key;
+    protected final T value;
 
-    public MongoKeyValueDescriptor(String key, Object value) {
+    public MongoKeyValueDescriptor(String key, T value) {
         this.key = key;
         this.value = value;
-    }
-
-    public MongoKeyValueDescriptor(String key) {
-        this(key, null);
     }
 
     public String getKey() {
         return key;
     }
 
-    public Object getValue() {
+    public T getValue() {
         return value;
+    }
+
+    public String getDescription() {
+        return String.format("\"%s\": %s", key, value);
+    }
+
+
+    private static class MongoKeyStringValueDescriptor extends MongoKeyValueDescriptor<String> {
+
+        public MongoKeyStringValueDescriptor(String key, String value) {
+            super(key, value);
+        }
+
+        public String getDescription() {
+            return String.format("\"%s\": \"%s\"", key, value);
+        }
+    }
+
+
+    private static class MongoKeyBooleanValueDescriptor extends MongoKeyValueDescriptor<Boolean> {
+
+        public MongoKeyBooleanValueDescriptor(String key, Boolean value) {
+            super(key, value);
+        }
+    }
+
+    private static class MongoKeyIntegerValueDescriptor extends MongoKeyValueDescriptor<Integer> {
+
+        public MongoKeyIntegerValueDescriptor(String key, Integer value) {
+            super(key, value);
+        }
+    }
+
+
+
+    public static MongoKeyValueDescriptor createDescriptor(String key, Object value) {
+        if (value instanceof String) {
+            return new MongoKeyStringValueDescriptor(key, (String) value);
+        } else if (value instanceof Boolean) {
+            return new MongoKeyBooleanValueDescriptor(key, (Boolean) value);
+        } else if (value instanceof Integer) {
+            return new MongoKeyIntegerValueDescriptor(key, (Integer) value);
+        }
+        throw new IllegalArgumentException("unsupported " + value.getClass());
     }
 }

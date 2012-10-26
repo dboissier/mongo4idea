@@ -18,6 +18,7 @@ package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
+import org.codinjutsu.tools.mongo.view.model.MongoKeyValueDescriptor;
 import org.codinjutsu.tools.mongo.view.model.ResultNode;
 import org.codinjutsu.tools.mongo.view.model.nodedescriptor.MongoValueDescriptor;
 
@@ -41,7 +42,10 @@ public class JsonTreeCellRenderer extends ColoredTreeCellRenderer {
                 append(userObject.toString(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
             } else if (userObject instanceof MongoValueDescriptor) {
                 MongoValueDescriptor mongoValueDescriptor = (MongoValueDescriptor) userObject;
-                append(mongoValueDescriptor.getIndex() + " " + mongoValueDescriptor.getDescription(), TextAttributesUtils.STRING_VALUE);
+                append(mongoValueDescriptor.getDescription(), TextAttributesUtils.STRING_VALUE);
+            } else if (userObject instanceof MongoKeyValueDescriptor) {
+                MongoKeyValueDescriptor mongoValueDescriptor = (MongoKeyValueDescriptor) userObject;
+                append(mongoValueDescriptor.getDescription(), TextAttributesUtils.STRING_VALUE);
             }
         }
     }

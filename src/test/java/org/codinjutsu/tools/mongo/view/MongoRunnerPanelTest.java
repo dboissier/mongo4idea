@@ -54,7 +54,7 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
 
 
 
-    public void disabled_testDisplaySimpleDocument() throws Exception {
+    public void testDisplaySimpleDocument() throws Exception {
         DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("simpleDocument.json")));
 
         MongoCollectionResult mongoCollectionResult = new MongoCollectionResult("mycollec");
@@ -67,7 +67,7 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
                 "results of 'mycollec' #(bold)\n" +
                         "  \"id\": 0 #(bold)\n" +
                         "  \"label\": \"toto\" #(bold)\n" +
-                        "  \"visible\": true #(bold)\n"
+                        "  \"visible\": false #(bold)\n"
         ).check();
     }
 

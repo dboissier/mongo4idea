@@ -17,6 +17,7 @@
 package org.codinjutsu.tools.mongo.view.model;
 
 import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.view.model.nodedescriptor.MongoValueDescriptor;
@@ -43,6 +44,11 @@ public class JsonTreeModel extends DefaultTreeModel {
                 for (int i = 0; i < mongoObjectList.size(); i++) {
                     Object mongoObjectOfList = mongoObjectList.get(i);
                     rootNode.add(new DefaultMutableTreeNode(MongoValueDescriptor.createDescriptor(i, mongoObjectOfList)));
+                }
+            } else if (mongoObject instanceof BasicDBObject) {
+                BasicDBObject basicDBObject = (BasicDBObject) mongoObject;
+                for (String key : basicDBObject.keySet()) {
+                    rootNode.add(new DefaultMutableTreeNode(MongoKeyValueDescriptor.createDescriptor(key, basicDBObject.get(key))));
                 }
             }
         }
