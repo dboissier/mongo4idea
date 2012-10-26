@@ -39,10 +39,9 @@ public class MongoRunnerPanel extends JPanel {
     }
 
     public void showResults(MongoCollectionResult mongoCollectionResult) {
-        List<DBObject> mongoObjects = mongoCollectionResult.getMongoObjects();
         jsonResultTree.invalidate();
         jsonResultTree.setVisible(true);
-        jsonResultTree.setModel(new JsonTreeModel(mongoObjects));
+        jsonResultTree.setModel(new JsonTreeModel(mongoCollectionResult));
         jsonResultTree.validate();
     }
 }

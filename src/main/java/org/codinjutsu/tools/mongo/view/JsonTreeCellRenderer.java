@@ -18,10 +18,9 @@ package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
-import com.mongodb.DBObject;
-import org.apache.commons.lang.StringUtils;
-import org.codinjutsu.tools.mongo.view.model.MongoValueDescriptor;
+import org.codinjutsu.tools.mongo.view.model.nodedescriptor.MongoStringValueDescriptor;
 import org.codinjutsu.tools.mongo.view.model.ResultNode;
+import org.codinjutsu.tools.mongo.view.model.nodedescriptor.MongoValueDescriptor;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -42,22 +41,8 @@ public class JsonTreeCellRenderer extends ColoredTreeCellRenderer {
             if (userObject instanceof ResultNode) {
                 append(userObject.toString(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
             } else if (userObject instanceof MongoValueDescriptor) {
-                final MongoValueDescriptor mongoValueDescriptor = (MongoValueDescriptor) userObject;
-
-                append(mongoValueDescriptor.getKey(), TextAttributesUtils.KEY_VALUE);
-                append(":");
-                Object mongoValue = mongoValueDescriptor.getValue();
-                if (mongoValue == null) {
-                    append("null", TextAttributesUtils.NULL_VALUE);
-                } else if (mongoValue instanceof String) {
-                    append("\"" + mongoValue.toString() + "\"", TextAttributesUtils.STRING_VALUE);
-                } else if (mongoValue instanceof Boolean) {
-                    append(mongoValue.toString(), TextAttributesUtils.BOOLEAN_VALUE);
-                } else if (mongoValue instanceof Integer) {
-                    append(mongoValue.toString(), TextAttributesUtils.INTEGER_VALUE);
-                } else if (mongoValue instanceof DBObject) {
-                    append(mongoValue.toString(), TextAttributesUtils.DBOBJECT_VALUE);
-                }
+                MongoValueDescriptor mongoValueDescriptor = (MongoValueDescriptor) userObject;
+                append(mongoValueDescriptor.getIndex() + " " + mongoValueDescriptor.getDescription(), TextAttributesUtils.STRING_VALUE);
             }
         }
     }

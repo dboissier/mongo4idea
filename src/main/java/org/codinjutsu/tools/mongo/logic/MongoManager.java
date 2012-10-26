@@ -78,12 +78,12 @@ public class MongoManager {
         }
     }
 
-    public MongoCollectionResult loadCollectionValues(MongoConfiguration configuration, MongoCollection collectione) {
-        MongoCollectionResult mongoCollectionResult = new MongoCollectionResult();
+    public MongoCollectionResult loadCollectionValues(MongoConfiguration configuration, MongoCollection mongoCollection) {
+        MongoCollectionResult mongoCollectionResult = new MongoCollectionResult(mongoCollection.getName());
         try {
             Mongo mongo = new Mongo(configuration.getServerName(), configuration.getServerPort());
-            DB database = mongo.getDB(collectione.getDatabaseName());
-            DBCollection collection = database.getCollection(collectione.getName());
+            DB database = mongo.getDB(mongoCollection.getDatabaseName());
+            DBCollection collection = database.getCollection(mongoCollection.getName());
             DBCursor cursor = collection.find();
             try {
                 while(cursor.hasNext()) {

@@ -19,6 +19,7 @@ package org.codinjutsu.tools.mongo.view;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.uispec4j.DefaultTreeCellValueConverter;
 import org.uispec4j.Panel;
@@ -35,93 +36,20 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
     private Panel uiSpecPanel;
 
 
-    public void testDisplaySingleJsonObject() throws Exception {
-        DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("MongoRunnerPanelTest_testDisplaySingleJsonObject.json")));
+    public void testDisplaySimpleArray() throws Exception {
+        DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("simpleArray.json")));
 
-        MongoCollectionResult mongoCollectionResult = new MongoCollectionResult();
+        MongoCollectionResult mongoCollectionResult = new MongoCollectionResult("mycollec");
         mongoCollectionResult.add(jsonObject);
         mongoRunnerPanel.showResults(mongoCollectionResult);
 
         Tree tree = uiSpecPanel.getTree();
         tree.setCellValueConverter(new TreeCellConverter());
         tree.contentEquals(
-                "results #(bold)\n" +
-                        "  [0] Object:{ \"clone_url\" : \"https://gi... #(bold)\n" +
-                        "    clone_url:\"https://github.com/dboissier/mongo4idea.git\" #(bold)\n" +
-                        "    forks_count:0 #(bold)\n" +
-                        "    mirror_url:null #(bold)\n" +
-                        "    has_wiki:false #(bold)\n" +
-                        "    _links:{ \"self\" : { \"href\" : \"http... #(bold)\n" +
-                        "      self:{ \"href\" : \"https://api.git... #(bold)\n" +
-                        "        href:\"https://api.github.com/repos/dboissier/mongo4idea\" #(bold)\n"
-        ).check();
-    }
-
-    public void testDisplayJsonObjects() throws Exception {
-        DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("MongoRunnerPanelTest_testDisplayJsonObjects.json")));
-
-        MongoCollectionResult mongoCollectionResult = new MongoCollectionResult();
-        mongoCollectionResult.add(jsonObject);
-        mongoRunnerPanel.showResults(mongoCollectionResult);
-
-        Tree tree = uiSpecPanel.getTree();
-        tree.setCellValueConverter(new TreeCellConverter());
-        tree.contentEquals(
-                "results #(bold)\n" +
-                        "  [0] Object:[ { \"clone_url\" : \"https://... #(bold)\n" +
-                        "    clone_url:\"https://github.com/dboissier/mongo4idea.git\" #(bold)\n" +
-                        "    _links:{ \"self\" : { \"href\" : \"http... #(bold)\n" +
-                        "      self:{ \"href\" : \"https://api.git... #(bold)\n" +
-                        "        href:\"https://api.github.com/repos/dboissier/mongo4idea\" #(bold)\n" +
-                        "  [1] Object:[ { \"clone_url\" : \"https://... #(bold)\n" +
-                        "    clone_url:\"https://github.com/dboissier/github-utils.git\" #(bold)"
-        ).check();
-    }
-
-    public void testDisplayJsonArrays() throws Exception {
-        DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("MongoRunnerPanelTest_testDisplayJsonWithArrays.json")));
-
-        MongoCollectionResult mongoCollectionResult = new MongoCollectionResult();
-        mongoCollectionResult.add(jsonObject);
-        mongoRunnerPanel.showResults(mongoCollectionResult);
-
-        Tree tree = uiSpecPanel.getTree();
-        tree.setCellValueConverter(new TreeCellConverter());
-        tree.contentEquals(
-                "results #(bold)\n" +
-                        "  [0] Object:[ { \"clone_url\" : \"https://... #(bold)\n" +
-                        "    clone_url:\"https://github.com/dboissier/mongo4idea.git\" #(bold)\n" +
-                        "    chaine:[ \"toto\" , \"pipo\" , \"zozo\"] #(bold)\n" +
-                        "      :\"toto\" #(bold)\n" +
-                        "      :\"pipo\" #(bold)\n" +
-                        "      :\"zozo\" #(bold)\n" +
-                        "  [1] Object:[ { \"clone_url\" : \"https://... #(bold)\n" +
-                        "    clone_url:\"https://github.com/dboissier/github-utils.git\" #(bold)\n" +
-                        "    booleen:[ true , false , true] #(bold)\n" +
-                        "      :true #(bold)\n" +
-                        "      :false #(bold)\n" +
-                        "      :true #(bold)" +
-                        "  [2] Object:[ { \"clone_url\" : \"https://... #(bold)\n" +
-                        "    clone_url:\"https://github.com/dboissier/github-utils.git\" #(bold)\n" +
-                        "    document:[ { \"titre\" : \"titre1\" , \"m... #(bold)\n" +
-                        "      [0] Object " +
-                        "        titre:\"titre1\" #(bold)\n" +
-                        "        motscles:[ \"java\" , \"info\" , \"ejb\"] #(bold)\n" +
-                        "          :\"java\" #(bold)\n" +
-                        "          :\"info\" #(bold)\n" +
-                        "          :\"ejb\" #(bold)\n" +
-                        "      [1] Object { \"clone_url\" : \"https://... #(bold)" +
-                        "        titre:\"titre2\" #(bold)\n" +
-                        "        motscles:[ \"cinema\" , \"horreur\" , \"s... #(bold)\n" +
-                        "          :\"cinema\" #(bold)\n" +
-                        "          :\"horreur\" #(bold)\n" +
-                        "          :\"slasher\" #(bold)\n" +
-                        "      [2] Object { \"clone_url\" : \"https://... #(bold)" +
-                        "        titre:\"titre3\" #(bold)\n" +
-                        "        motscles:[ \"musique\" , \"rock\" , \"ann... #(bold)\n" +
-                        "          :\"musique\" #(bold)\n" +
-                        "          :\"rock\" #(bold)\n" +
-                        "          :\"annees 70\" #(bold)"
+                "results of 'mycollec' #(bold)\n" +
+                        "  [0] \"toto\" #(bold)\n" +
+                        "  [1] true #(bold)\n" +
+                        "  [2] 10 #(bold)\n"
         ).check();
     }
 

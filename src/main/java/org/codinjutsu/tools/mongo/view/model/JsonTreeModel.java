@@ -18,6 +18,8 @@ package org.codinjutsu.tools.mongo.view.model;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
+import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
+import org.codinjutsu.tools.mongo.view.model.nodedescriptor.MongoStringValueDescriptor;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -26,76 +28,25 @@ import java.util.List;
 
 public class JsonTreeModel extends DefaultTreeModel {
 
-    public JsonTreeModel(List<DBObject> dbObjects) {
+    public JsonTreeModel(MongoCollectionResult mongoCollectionResult) {
 
-        super(buildJsonTree(dbObjects));
+        super(buildJsonTree(mongoCollectionResult));
     }
 
-    private static TreeNode buildJsonTree(List<DBObject> dbObjects) {
-        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(new ResultNode());
+    private static TreeNode buildJsonTree(MongoCollectionResult mongoCollectionResult) {
+        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(new ResultNode(mongoCollectionResult.getCollectionName()));
 
-        int i = 0;
-        for (DBObject dbObject : dbObjects) {
-            if (dbObject instanceof BasicDBList) {
-                BasicDBList dbList = (BasicDBList) dbObject;
-                int j = 0;
-                for (Object obj : dbList) {
-                    DefaultMutableTreeNode objectNode = new DefaultMutableTreeNode(new MongoValueDescriptor(String.format("[%s] Object", j++), dbObject));
-                    fillJsonNode(objectNode, (DBObject) obj);
-                    rootNode.add(objectNode);
+        List<DBObject> mongoObjects = mongoCollectionResult.getMongoObjects();
+        for (DBObject mongoObject : mongoObjects) {
+            if (mongoObject instanceof BasicDBList) {
+                BasicDBList mongoObjectList = (BasicDBList) mongoObject;
+                for (int i = 0; i < mongoObjectList.size(); i++) {
+                    Object mongoObjectOfList = mongoObjectList.get(i);
+                    rootNode.add(new DefaultMutableTreeNode(MongoStringValueDescriptor.createDescriptor(i, mongoObjectOfList)));
                 }
             }
-            else {
-                DefaultMutableTreeNode objectNode = new DefaultMutableTreeNode(new MongoValueDescriptor(String.format("[%s] Object", i++), dbObject));
-                fillJsonNode(objectNode, dbObject);
-                rootNode.add(objectNode);
-            }
         }
-
         return rootNode;
-    }
-
-    private static void fillJsonNode(DefaultMutableTreeNode nodeToFill, DBObject dbObject) {
-        if (dbObject instanceof BasicDBList) {
-            BasicDBList dbList = (BasicDBList) dbObject;
-            for (Object obj : dbList) {
-                if (obj instanceof DBObject) {
-                    fillJsonNode(nodeToFill, (DBObject) obj);
-                } else {
-                    MongoValueDescriptor mongoValueDescriptor = createMongoValueDescriptor("", obj);
-                    DefaultMutableTreeNode propertyNode = new DefaultMutableTreeNode(mongoValueDescriptor);
-                    nodeToFill.add(propertyNode);
-                }
-            }
-        } else {
-            for (String key : dbObject.keySet()) {
-                Object value = dbObject.get(key);
-                MongoValueDescriptor mongoValueDescriptor = createMongoValueDescriptor(key, value);
-                DefaultMutableTreeNode propertyNode = new DefaultMutableTreeNode(mongoValueDescriptor);
-                if (value instanceof DBObject) {
-                    fillJsonNode(propertyNode, (DBObject) value);
-                }
-                nodeToFill.add(propertyNode);
-            }
-        }
-    }
-
-    private static MongoValueDescriptor createMongoValueDescriptor(String key, Object value) {
-        MongoValueDescriptor mongoValueDescriptor;
-        if (value == null) {
-            mongoValueDescriptor = new MongoValueDescriptor(key);
-        } else {
-            if (value instanceof String) {
-                mongoValueDescriptor = new MongoValueDescriptor(key, value);
-            } else if (value instanceof Boolean) {
-                mongoValueDescriptor = new MongoValueDescriptor(key, value);
-            } else if (value instanceof Integer) {
-                mongoValueDescriptor = new MongoValueDescriptor(key, value);
-            } else {
-                mongoValueDescriptor = new MongoValueDescriptor(key, value);
-            }
-        }
-        return mongoValueDescriptor;
     }
 
 }

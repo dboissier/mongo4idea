@@ -16,17 +16,17 @@
 
 package org.codinjutsu.tools.mongo.view.model;
 
-public class MongoValueDescriptor {
+public class MongoKeyValueDescriptor {
 
     private final String key;
     private final Object value;
 
-    public MongoValueDescriptor(String key, Object value) {
+    public MongoKeyValueDescriptor(String key, Object value) {
         this.key = key;
         this.value = value;
     }
 
-    public MongoValueDescriptor(String key) {
+    public MongoKeyValueDescriptor(String key) {
         this(key, null);
     }
 

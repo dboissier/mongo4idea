@@ -23,7 +23,13 @@ import java.util.List;
 
 public class MongoCollectionResult {
 
+    private final String collectionName;
     private final List<DBObject> mongoObjects = new LinkedList<DBObject>();
+
+    public MongoCollectionResult(String collectionName) {
+
+        this.collectionName = collectionName;
+    }
 
     public void add(DBObject dbObject) {
         mongoObjects.add(dbObject);
@@ -31,5 +37,9 @@ public class MongoCollectionResult {
 
     public List<DBObject> getMongoObjects() {
         return mongoObjects;
+    }
+
+    public String getCollectionName() {
+        return collectionName;
     }
 }

@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.view.model;
+package org.codinjutsu.tools.mongo.view.model.nodedescriptor;
 
-public class ResultNode {
-    private final String formattedText;
+public class MongoIntegerValueDescriptor extends MongoValueDescriptor<Integer>{
 
-    public ResultNode(String collectionName) {
-        formattedText = String.format("results of '%s'", collectionName);
-    }
-
-    @Override
-    public String toString() {
-        return formattedText;
+    public MongoIntegerValueDescriptor(int index, Integer integerValue) {
+        super(index, integerValue);
     }
 }
