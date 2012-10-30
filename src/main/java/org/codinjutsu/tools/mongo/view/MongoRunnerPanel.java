@@ -16,7 +16,13 @@
 
 package org.codinjutsu.tools.mongo.view;
 
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.util.ui.tree.TreeUtil;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
+import org.codinjutsu.tools.mongo.utils.GuiUtil;
+import org.codinjutsu.tools.mongo.view.action.SortResultsByKeysAction;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeModel;
 
 import javax.swing.*;
@@ -24,16 +30,31 @@ import java.awt.*;
 
 public class MongoRunnerPanel extends JPanel {
     private JPanel rootPanel;
+    private JPanel toolBarPanel;
+    private JPanel resultPanel;
     private final JsonTreeView jsonResultTree = new JsonTreeView();
 
     public MongoRunnerPanel() {
-        rootPanel.setLayout(new BorderLayout());
-        rootPanel.add(new JScrollPane(jsonResultTree), BorderLayout.CENTER);
+        resultPanel.setLayout(new BorderLayout());
+        resultPanel.add(new JScrollPane(jsonResultTree), BorderLayout.CENTER);
+
+        toolBarPanel.setLayout(new BorderLayout());
 
         setLayout(new BorderLayout());
         add(rootPanel);
 
         jsonResultTree.setVisible(false);
+    }
+
+    public void installActions() {
+
+        DefaultActionGroup actionGroup = new DefaultActionGroup("MongoResultsGroup", true);
+        if (ApplicationManager.getApplication() != null) {
+            actionGroup.add(new SortResultsByKeysAction(this));
+            actionGroup.addSeparator();
+        }
+        GuiUtil.installActionGroupInToolBar(actionGroup, toolBarPanel, ActionManager.getInstance(), "MongoResultsActions");
+        TreeUtil.installActions(jsonResultTree);
     }
 
     public void showResults(MongoCollectionResult mongoCollectionResult) {

@@ -19,6 +19,7 @@ package org.codinjutsu.tools.mongo.view.model.nodedescriptor;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.mongodb.DBObject;
+import org.codinjutsu.tools.mongo.utils.StringUtils;
 
 import static org.codinjutsu.tools.mongo.view.TextAttributesUtils.*;
 
@@ -39,7 +40,15 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
     }
 
     protected String getDescription() {
-        return String.format("[%s] %s", index, value);
+        return String.format("[%s] %s", index, getStringValue());
+    }
+
+    protected String getStringValue() {
+        String stringifiedValue = value.toString();
+        if (stringifiedValue.length() > MAX_LENGTH) {
+            return StringUtils.abbreviateInCenter(stringifiedValue, MAX_LENGTH);
+        }
+        return stringifiedValue;
     }
 
     private static class MongoStringValueDescriptor extends MongoValueDescriptor {
@@ -49,7 +58,7 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
         }
 
         protected String getDescription() {
-            return String.format("[%s] \"%s\"", index, value);
+            return String.format("[%s] \"%s\"", index, getStringValue());
         }
     }
 
@@ -77,7 +86,7 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
             return new MongoValueDescriptor(index, value, INTEGER_TEXT_ATTRIBUTE);
         } else if (value instanceof DBObject) {
             return new MongoValueDescriptor(index, value, DBOBJECT_TEXT_ATTRIBUTE);
-        }else {
+        } else {
             return new MongoValueDescriptor(index, value, STRING_TEXT_ATTRIBUTE);
         }
     }

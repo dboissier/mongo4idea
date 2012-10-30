@@ -34,7 +34,6 @@ import org.codinjutsu.tools.mongo.utils.GuiUtil;
 import org.codinjutsu.tools.mongo.view.ConfigurationPanel;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 import org.codinjutsu.tools.mongo.view.MongoRunnerPanel;
-import org.codinjutsu.tools.mongo.view.action.ViewCollectionValuesAction;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -119,8 +118,8 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
         toolMongoExplorerWindow.getContentManager().addContent(mongoExplorer);
         toolMongoExplorerWindow.setIcon(GuiUtil.loadIcon("mongo_16x16.png"));
 
-
-        mongoExplorerPanel.installActionsOnToolbar(new ViewCollectionValuesAction(mongoRunnerPanel, mongoManager, mongoExplorerPanel));
+        mongoRunnerPanel.installActions();
+        mongoExplorerPanel.installActions();
     }
 
     public void projectClosed() {

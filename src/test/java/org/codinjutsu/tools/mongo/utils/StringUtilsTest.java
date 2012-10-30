@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.view.model.nodedescriptor;
+package org.codinjutsu.tools.mongo.utils;
 
-import com.intellij.ui.ColoredTreeCellRenderer;
+import junit.framework.TestCase;
 
-public interface MongoNodeDescriptor {
+public class StringUtilsTest extends TestCase {
+    public void testAbbreviateInCenter() throws Exception {
+        String value = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
+        assertEquals("abcdefghijklmnopq...ghijklmnopqrstuvwxyz", StringUtils.abbreviateInCenter(value, 40));
 
-    int MAX_LENGTH = 100;
-
-    void appendText(ColoredTreeCellRenderer cellRenderer);
+    }
 }

@@ -81,11 +81,11 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
     }
 
 
-    public void installActionsOnToolbar(ViewCollectionValuesAction action) {
+    public void installActions() {
 
         DefaultActionGroup actionGroup = new DefaultActionGroup("MongoExplorerGroup", true);
         if (ApplicationManager.getApplication() != null) {
-            actionGroup.add(action);
+            actionGroup.add(new ViewCollectionValuesAction(mongoRunnerPanel, mongoManager, this));
             actionGroup.addSeparator();
         }
         GuiUtil.installActionGroupInToolBar(actionGroup, toolBarPanel, ActionManager.getInstance(), "MongoExplorerActions");

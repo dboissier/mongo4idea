@@ -19,6 +19,7 @@ package org.codinjutsu.tools.mongo.view.model.nodedescriptor;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.mongodb.DBObject;
+import org.codinjutsu.tools.mongo.utils.StringUtils;
 import org.codinjutsu.tools.mongo.view.TextAttributesUtils;
 
 import static org.codinjutsu.tools.mongo.view.TextAttributesUtils.*;
@@ -45,7 +46,11 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
     }
 
     protected String getDescription() {
-        return value.toString();
+        String stringifiedValue = value.toString();
+        if (stringifiedValue.length() > MAX_LENGTH) {
+            return StringUtils.abbreviateInCenter(stringifiedValue, MAX_LENGTH);
+        }
+        return stringifiedValue;
     }
 
     private SimpleTextAttributes getTextAttributes() {
@@ -63,6 +68,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
             return "null";
         }
     }
+
 
     private static class MongoKeyStringValueDescriptor extends MongoKeyValueDescriptor {
 

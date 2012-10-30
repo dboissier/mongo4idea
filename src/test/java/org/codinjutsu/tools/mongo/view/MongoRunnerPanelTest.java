@@ -19,6 +19,7 @@ package org.codinjutsu.tools.mongo.view;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.uispec4j.DefaultTreeCellValueConverter;
 import org.uispec4j.Panel;
@@ -86,7 +87,7 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
         tree.setCellValueConverter(new TreeCellConverter());
         tree.contentEquals(
                 "results of 'mycollec' #(bold)\n" +
-                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} #(bold)\n" +
+                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : fal...bPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} #(bold)\n" +
                         "    \"id\": 0 #(bold)\n" +
                         "    \"label\": \"toto\" #(bold)\n" +
                         "    \"visible\": false #(bold)\n" +
@@ -112,7 +113,7 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
         tree.setCellValueConverter(new TreeCellConverter());
         tree.contentEquals(
                 "results of 'mycollec' #(bold)\n" +
-                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} #(bold)\n" +
+                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : fal...bPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} #(bold)\n" +
                         "    \"id\": 0 #(bold)\n" +
                         "    \"label\": \"toto\" #(bold)\n" +
                         "    \"visible\": false #(bold)\n" +
@@ -123,7 +124,7 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
                         "        [0] \"toto\" #(bold)\n" +
                         "        [1] true #(bold)\n" +
                         "        [2] 10 #(bold)\n" +
-                        "  [1] { \"id\" : 1 , \"label\" : \"tata\" , \"visible\" : true , \"doc\" : { \"title\" : \"ola\" , \"nbPages\" : 1 , \"keyWord\" : [ \"tutu\" , false , 10]}} #(bold)\n" +
+                        "  [1] { \"id\" : 1 , \"label\" : \"tata\" , \"visible\" : tru...bPages\" : 1 , \"keyWord\" : [ \"tutu\" , false , 10]}} #(bold)\n" +
                         "    \"id\": 1 #(bold)\n" +
                         "    \"label\": \"tata\" #(bold)\n" +
                         "    \"visible\": true #(bold)\n" +

@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.view.model.nodedescriptor;
+package org.codinjutsu.tools.mongo.utils;
 
-import com.intellij.ui.ColoredTreeCellRenderer;
+public class StringUtils {
 
-public interface MongoNodeDescriptor {
+    private static final String ELLIPSIS = "...";
 
-    int MAX_LENGTH = 100;
-
-    void appendText(ColoredTreeCellRenderer cellRenderer);
+    public static String abbreviateInCenter(String stringToAbbreviate, int length) {
+        int halfLength = length / 2;
+        int firstPartLastIndex = halfLength - ELLIPSIS.length();
+        int stringLength = stringToAbbreviate.length();
+        return String.format("%s%s%s",
+                stringToAbbreviate.substring(0, firstPartLastIndex),
+                ELLIPSIS,
+                stringToAbbreviate.substring(stringLength - halfLength, stringLength));
+    }
 }
