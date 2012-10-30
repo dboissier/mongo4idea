@@ -45,6 +45,10 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
         cellRenderer.append(getDescription(), getTextAttributes());
     }
 
+    public String getKey() {
+        return key;
+    }
+
     protected String getDescription() {
         String stringifiedValue = value.toString();
         if (stringifiedValue.length() > MAX_LENGTH) {

@@ -19,7 +19,6 @@ package org.codinjutsu.tools.mongo.view;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.uispec4j.DefaultTreeCellValueConverter;
 import org.uispec4j.Panel;
@@ -36,7 +35,7 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
     private Panel uiSpecPanel;
 
 
-    public void testDisplaySimpleArray() throws Exception {
+    public void testDisplayTreeWithASimpleArray() throws Exception {
         DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("simpleArray.json")));
 
         MongoCollectionResult mongoCollectionResult = new MongoCollectionResult("mycollec");
@@ -55,8 +54,7 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
     }
 
 
-
-    public void testDisplaySimpleDocument() throws Exception {
+    public void testDisplayTreeWithASimpleDocument() throws Exception {
         DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("simpleDocument.json")));
 
         MongoCollectionResult mongoCollectionResult = new MongoCollectionResult("mycollec");
@@ -76,7 +74,7 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
     }
 
 
-    public void testDisplayStructuredDocument() throws Exception {
+    public void testDisplayTreeWithAStructuredDocument() throws Exception {
         DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("structuredDocument.json")));
 
         MongoCollectionResult mongoCollectionResult = new MongoCollectionResult("mycollec");
@@ -92,7 +90,7 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
                         "    \"label\": \"toto\" #(bold)\n" +
                         "    \"visible\": false #(bold)\n" +
                         "    \"doc\": { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]} #(bold)\n" +
-                        "      \"title\": \"hello\" #(bold)\n"+
+                        "      \"title\": \"hello\" #(bold)\n" +
                         "      \"nbPages\": 10 #(bold)\n" +
                         "      \"keyWord\": [ \"toto\" , true , 10] #(bold)\n" +
                         "        [0] \"toto\" #(bold)\n" +
@@ -102,7 +100,7 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
     }
 
 
-    public void testDisplayArrayOfStructuredDocument() throws Exception {
+    public void testDisplayTreeWithAnArrayOfStructuredDocument() throws Exception {
         DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("arrayOfDocuments.json")));
 
         MongoCollectionResult mongoCollectionResult = new MongoCollectionResult("mycollec");
@@ -118,7 +116,7 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
                         "    \"label\": \"toto\" #(bold)\n" +
                         "    \"visible\": false #(bold)\n" +
                         "    \"doc\": { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]} #(bold)\n" +
-                        "      \"title\": \"hello\" #(bold)\n"+
+                        "      \"title\": \"hello\" #(bold)\n" +
                         "      \"nbPages\": 10 #(bold)\n" +
                         "      \"keyWord\": [ \"toto\" , true , 10] #(bold)\n" +
                         "        [0] \"toto\" #(bold)\n" +
@@ -129,7 +127,7 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
                         "    \"label\": \"tata\" #(bold)\n" +
                         "    \"visible\": true #(bold)\n" +
                         "    \"doc\": { \"title\" : \"ola\" , \"nbPages\" : 1 , \"keyWord\" : [ \"tutu\" , false , 10]} #(bold)\n" +
-                        "      \"title\": \"ola\" #(bold)\n"+
+                        "      \"title\": \"ola\" #(bold)\n" +
                         "      \"nbPages\": 1 #(bold)\n" +
                         "      \"keyWord\": [ \"tutu\" , false , 10] #(bold)\n" +
                         "        [0] \"tutu\" #(bold)\n" +
@@ -138,6 +136,52 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
         ).check();
     }
 
+
+    public void testDisplayTreeSortedbyKey() throws Exception {
+        DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("structuredDocument.json")));
+
+        MongoCollectionResult mongoCollectionResult = new MongoCollectionResult("mycollec");
+        mongoCollectionResult.add(jsonObject);
+        mongoRunnerPanel.showResults(mongoCollectionResult);
+        mongoRunnerPanel.setSortedByKey(true);
+
+        Tree tree = uiSpecPanel.getTree();
+        tree.setCellValueConverter(new TreeCellConverter());
+        tree.contentEquals(
+                "results of 'mycollec' #(bold)\n" +
+                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : fal...bPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} #(bold)\n" +
+                        "    \"doc\": { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]} #(bold)\n" +
+                        "      \"keyWord\": [ \"toto\" , true , 10] #(bold)\n" +
+                        "        [0] \"toto\" #(bold)\n" +
+                        "        [1] true #(bold)\n" +
+                        "        [2] 10 #(bold)\n" +
+                        "      \"nbPages\": 10 #(bold)\n" +
+                        "      \"title\": \"hello\" #(bold)\n" +
+                        "    \"id\": 0 #(bold)\n" +
+                        "    \"label\": \"toto\" #(bold)\n" +
+                        "    \"visible\": false #(bold)\n"
+        ).check();
+
+
+        mongoRunnerPanel.setSortedByKey(false);
+
+        tree = uiSpecPanel.getTree();
+        tree.setCellValueConverter(new TreeCellConverter());
+        tree.contentEquals(
+                "results of 'mycollec' #(bold)\n" +
+                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : fal...bPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} #(bold)\n" +
+                        "    \"id\": 0 #(bold)\n" +
+                        "    \"label\": \"toto\" #(bold)\n" +
+                        "    \"visible\": false #(bold)\n" +
+                        "    \"doc\": { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]} #(bold)\n" +
+                        "      \"title\": \"hello\" #(bold)\n" +
+                        "      \"nbPages\": 10 #(bold)\n" +
+                        "      \"keyWord\": [ \"toto\" , true , 10] #(bold)\n" +
+                        "        [0] \"toto\" #(bold)\n" +
+                        "        [1] true #(bold)\n" +
+                        "        [2] 10 #(bold)\n"
+        ).check();
+    }
 
     @Override
     protected void setUp() throws Exception {
