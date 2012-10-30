@@ -25,7 +25,7 @@ import org.codinjutsu.tools.mongo.view.model.nodedescriptor.MongoValueDescriptor
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-public class JsonTreeCellRenderer extends ColoredTreeCellRenderer {
+public class MongoResultCellRenderer extends ColoredTreeCellRenderer {
     @Override
     public void customizeCellRenderer(final JTree tree,
                                       final Object value,
