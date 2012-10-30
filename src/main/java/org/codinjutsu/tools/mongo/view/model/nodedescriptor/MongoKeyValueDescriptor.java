@@ -16,61 +16,61 @@
 
 package org.codinjutsu.tools.mongo.view.model.nodedescriptor;
 
+import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.mongodb.DBObject;
+import org.codinjutsu.tools.mongo.view.TextAttributesUtils;
 
 import static org.codinjutsu.tools.mongo.view.TextAttributesUtils.*;
 
 public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
-    public static final String STRING_SURROUNDED = "\"%s\"";
+    private static final String STRING_SURROUNDED = "\"%s\"";
+
     protected final String key;
     protected final Object value;
+
     private final SimpleTextAttributes textAttributes;
 
-    public MongoKeyValueDescriptor(String key, Object value, SimpleTextAttributes textAttributes) {
+    private MongoKeyValueDescriptor(String key, Object value, SimpleTextAttributes textAttributes) {
         this.key = key;
         this.value = value;
         this.textAttributes = textAttributes;
     }
 
-    public String getKey() {
-        return String.format(STRING_SURROUNDED, key);
+    public void appendText(ColoredTreeCellRenderer cellRenderer) {
+        cellRenderer.append(String.format(STRING_SURROUNDED, key), TextAttributesUtils.KEY_VALUE);
+        cellRenderer.append(": ");
+        cellRenderer.append(getDescription(), getTextAttributes());
     }
 
-    public Object getValue() {
-        return value;
-    }
-
-    @Override
-    public String getDescription() {
+    protected String getDescription() {
         return value.toString();
     }
 
-    @Override
-    public SimpleTextAttributes getTextAttributes() {
+    private SimpleTextAttributes getTextAttributes() {
         return this.textAttributes;
     }
 
 
     private static class MongoKeyNullValueDescriptor extends MongoKeyValueDescriptor {
 
-        public MongoKeyNullValueDescriptor(String key) {
-            super(key, null, STRING_TEXT_ATTRIBUTE);
+        private MongoKeyNullValueDescriptor(String key) {
+            super(key, null, NULL_TEXT_ATTRIBUTE);
         }
 
-        public String getDescription() {
+        protected String getDescription() {
             return "null";
         }
     }
 
     private static class MongoKeyStringValueDescriptor extends MongoKeyValueDescriptor {
 
-        public MongoKeyStringValueDescriptor(String key, String value) {
+        private MongoKeyStringValueDescriptor(String key, String value) {
             super(key, value, STRING_TEXT_ATTRIBUTE);
         }
 
-        public String getDescription() {
+        protected String getDescription() {
             return String.format(STRING_SURROUNDED, value);
         }
     }

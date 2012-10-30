@@ -21,6 +21,6 @@ import javax.swing.*;
 public class JsonTreeView extends JTree {
 
     public JsonTreeView() {
-        setCellRenderer(new JsonTreeCellRenderer());
+        setCellRenderer(new MongoResultCellRenderer());
     }
 }

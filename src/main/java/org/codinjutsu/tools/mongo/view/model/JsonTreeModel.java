@@ -39,12 +39,12 @@ public class JsonTreeModel extends DefaultTreeModel {
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(new ResultNode(mongoCollectionResult.getCollectionName()));
 
         List<DBObject> mongoObjects = mongoCollectionResult.getMongoObjects();
-        int i =0;
+        int i = 0;
         for (DBObject mongoObject : mongoObjects) {
             if (mongoObject instanceof BasicDBList) {
                 processDbObject(rootNode, mongoObject);
-            }  else if (mongoObject instanceof BasicDBObject) {
-                DefaultMutableTreeNode currentNode = new DefaultMutableTreeNode(MongoValueDescriptor.createDescriptor(i, mongoObject));
+            } else if (mongoObject instanceof BasicDBObject) {
+                DefaultMutableTreeNode currentNode = new DefaultMutableTreeNode(MongoValueDescriptor.createDescriptor(i++, mongoObject));
                 processDbObject(currentNode, mongoObject);
                 rootNode.add(currentNode);
             }

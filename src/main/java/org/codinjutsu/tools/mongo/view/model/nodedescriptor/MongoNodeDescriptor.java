@@ -16,11 +16,9 @@
 
 package org.codinjutsu.tools.mongo.view.model.nodedescriptor;
 
-import com.intellij.ui.SimpleTextAttributes;
+import com.intellij.ui.ColoredTreeCellRenderer;
 
 public interface MongoNodeDescriptor {
 
-    String getDescription();
-
-    SimpleTextAttributes getTextAttributes();
+    void appendText(ColoredTreeCellRenderer cellRenderer);
 }

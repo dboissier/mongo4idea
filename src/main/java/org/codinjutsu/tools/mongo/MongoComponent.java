@@ -49,7 +49,7 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
     public static final String MONGO_COMPONENT_NAME = "Mongo";
 
     public static final String MONGO_EXPLORER = "Mongo Explorer";
-    public static final String MONGO_RUNNER = "Mongo Runner";
+    public static final String MONGO_RUNNER = "Mongo Results";
 
     private static final String MONGO_PLUGIN_NAME = "Mongo Plugin";
 

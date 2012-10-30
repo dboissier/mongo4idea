@@ -18,14 +18,17 @@ package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
+import org.codinjutsu.tools.mongo.utils.GuiUtil;
 import org.codinjutsu.tools.mongo.view.model.ResultNode;
-import org.codinjutsu.tools.mongo.view.model.nodedescriptor.MongoKeyValueDescriptor;
-import org.codinjutsu.tools.mongo.view.model.nodedescriptor.MongoValueDescriptor;
+import org.codinjutsu.tools.mongo.view.model.nodedescriptor.MongoNodeDescriptor;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public class MongoResultCellRenderer extends ColoredTreeCellRenderer {
+
+    private static final Icon MONGO_ICON = GuiUtil.loadIcon("mongo_16x16.png");
+
     @Override
     public void customizeCellRenderer(final JTree tree,
                                       final Object value,
@@ -34,21 +37,16 @@ public class MongoResultCellRenderer extends ColoredTreeCellRenderer {
                                       final boolean leaf,
                                       final int row,
                                       final boolean hasFocus) {
-        if (value instanceof DefaultMutableTreeNode) {
-            final DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-            final Object userObject = node.getUserObject();
 
-            if (userObject instanceof ResultNode) {
-                append(userObject.toString(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
-            } else if (userObject instanceof MongoValueDescriptor) {
-                MongoValueDescriptor mongoValueDescriptor = (MongoValueDescriptor) userObject;
-                append(mongoValueDescriptor.getDescription(), mongoValueDescriptor.getTextAttributes());
-            } else if (userObject instanceof MongoKeyValueDescriptor) {
-                MongoKeyValueDescriptor mongoValueDescriptor = (MongoKeyValueDescriptor) userObject;
-                append(mongoValueDescriptor.getKey(), TextAttributesUtils.KEY_VALUE);
-                append(": ");
-                append(mongoValueDescriptor.getDescription(), mongoValueDescriptor.getTextAttributes());
-            }
+        final DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+        final Object userObject = node.getUserObject();
+
+        if (userObject instanceof ResultNode) {
+            append(userObject.toString(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
+            setIcon(MONGO_ICON);
+        } else if (userObject instanceof MongoNodeDescriptor) {
+            MongoNodeDescriptor mongoValueDescriptor = (MongoNodeDescriptor) userObject;
+            mongoValueDescriptor.appendText(this);
         }
     }
 }

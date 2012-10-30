@@ -16,6 +16,7 @@
 
 package org.codinjutsu.tools.mongo.view.model.nodedescriptor;
 
+import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.mongodb.DBObject;
 
@@ -27,39 +28,38 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
     protected final Object value;
     private final SimpleTextAttributes textAttributes;
 
-    public MongoValueDescriptor(int index, Object value, SimpleTextAttributes textAttributes) {
+    private MongoValueDescriptor(int index, Object value, SimpleTextAttributes textAttributes) {
         this.index = index;
         this.value = value;
         this.textAttributes = textAttributes;
     }
 
-    public String getDescription() {
-        return String.format("[%s] %s", index, value);
+    public void appendText(ColoredTreeCellRenderer cellRenderer) {
+        cellRenderer.append(getDescription(), textAttributes);
     }
 
-    @Override
-    public SimpleTextAttributes getTextAttributes() {
-        return textAttributes;
+    protected String getDescription() {
+        return String.format("[%s] %s", index, value);
     }
 
     private static class MongoStringValueDescriptor extends MongoValueDescriptor {
 
-        public MongoStringValueDescriptor(int index, String value) {
+        private MongoStringValueDescriptor(int index, String value) {
             super(index, value, STRING_TEXT_ATTRIBUTE);
         }
 
-        public String getDescription() {
+        protected String getDescription() {
             return String.format("[%s] \"%s\"", index, value);
         }
     }
 
     private static class MongoNullValueDescriptor extends MongoValueDescriptor {
 
-        public MongoNullValueDescriptor(int index) {
+        private MongoNullValueDescriptor(int index) {
             super(index, null, NULL_TEXT_ATTRIBUTE);
         }
 
-        public String getDescription() {
+        protected String getDescription() {
             return String.format("[%s] null", index);
         }
     }

@@ -150,8 +150,8 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
 
         @Override
         protected JLabel getLabel(Component renderedComponent) {
-            JsonTreeCellRenderer jsonTreeCellRenderer = (JsonTreeCellRenderer) renderedComponent;
-            return new JLabel(jsonTreeCellRenderer.toString());
+            MongoResultCellRenderer mongoResultCellRenderer = (MongoResultCellRenderer) renderedComponent;
+            return new JLabel(mongoResultCellRenderer.toString());
         }
     }
 }
