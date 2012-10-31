@@ -17,11 +17,9 @@
 package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.ui.PopupHandler;
 import org.codinjutsu.tools.mongo.MongoComponent;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
@@ -30,12 +28,15 @@ import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
 import org.codinjutsu.tools.mongo.model.MongoServer;
 import org.codinjutsu.tools.mongo.utils.GuiUtil;
+import org.codinjutsu.tools.mongo.view.action.OpenPluginSettingsAction;
 import org.codinjutsu.tools.mongo.view.action.ViewCollectionValuesAction;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class MongoExplorerPanel extends JPanel implements Disposable {
 
@@ -85,23 +86,30 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
         DefaultActionGroup actionGroup = new DefaultActionGroup("MongoExplorerGroup", true);
         if (ApplicationManager.getApplication() != null) {
-            actionGroup.add(new ViewCollectionValuesAction(mongoRunnerPanel, mongoManager, this));
+            actionGroup.add(new ViewCollectionValuesAction(this));
             actionGroup.addSeparator();
+            actionGroup.add(new OpenPluginSettingsAction());
         }
         GuiUtil.installActionGroupInToolBar(actionGroup, toolBarPanel, ActionManager.getInstance(), "MongoExplorerActions");
-        installActionGroupInPopupMenu(actionGroup, mongoTree, ActionManager.getInstance());
+
+        mongoTree.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                if (!(mouseEvent.getSource() instanceof JTree)) {
+                    return;
+                }
+                DefaultMutableTreeNode lastSelectedNode = (DefaultMutableTreeNode) mongoTree.getLastSelectedPathComponent();
+
+                if (!(lastSelectedNode.getUserObject() instanceof MongoCollection)) {
+                    return;
+                }
+
+                if (mouseEvent.getClickCount() == 2) {
+                    loadSelectedCollectionValues();
+                }
+            }
+        });
     }
-
-
-    private static void installActionGroupInPopupMenu(ActionGroup group,
-                                                      JComponent component,
-                                                      ActionManager actionManager) {
-        if (actionManager == null) {
-            return;
-        }
-        PopupHandler.installPopupHandler(component, group, "POPUP", actionManager);
-    }
-
 
     @Override
     public void dispose() {

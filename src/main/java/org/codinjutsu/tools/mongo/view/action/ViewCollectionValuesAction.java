@@ -26,14 +26,10 @@ import org.codinjutsu.tools.mongo.view.MongoRunnerPanel;
 
 public class ViewCollectionValuesAction extends AnAction implements DumbAware {
 
-    private MongoRunnerPanel mongoRunnerPanel;
-    private final MongoManager mongoManager;
     private final MongoExplorerPanel mongoExplorerPanel;
 
-    public ViewCollectionValuesAction(MongoRunnerPanel mongoRunnerPanel, MongoManager mongoManager, MongoExplorerPanel mongoExplorerPanel) {
+    public ViewCollectionValuesAction(MongoExplorerPanel mongoExplorerPanel) {
         super("View collection content", "View collection content", GuiUtil.loadIcon("folder_magnify.png"));
-        this.mongoRunnerPanel = mongoRunnerPanel;
-        this.mongoManager = mongoManager;
         this.mongoExplorerPanel = mongoExplorerPanel;
     }
 
