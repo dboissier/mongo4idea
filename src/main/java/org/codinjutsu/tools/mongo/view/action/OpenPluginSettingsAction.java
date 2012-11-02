@@ -30,7 +30,7 @@ public class OpenPluginSettingsAction extends AnAction implements DumbAware {
 
 
     public OpenPluginSettingsAction() {
-        super("Jenkins Settings", "Edit the Jenkins settings for the current project", GuiUtil.loadIcon("pluginSettings.png"));
+        super("Mongo Settings", "Edit the Mongo settings for the current project", GuiUtil.loadIcon("pluginSettings.png"));
     }
 
     @Override
