@@ -20,7 +20,7 @@ import com.intellij.ui.ColoredTreeCellRenderer;
 
 public interface MongoNodeDescriptor {
 
-    int MAX_LENGTH = 100;
+    int MAX_LENGTH = 150;
 
-    void appendText(ColoredTreeCellRenderer cellRenderer, boolean expanded);
+    void appendText(ColoredTreeCellRenderer cellRenderer, boolean isNodeExpanded);
 }

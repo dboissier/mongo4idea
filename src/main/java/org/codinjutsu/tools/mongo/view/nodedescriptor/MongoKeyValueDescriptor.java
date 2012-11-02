@@ -39,9 +39,9 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
         this.textAttributes = textAttributes;
     }
 
-    public void appendText(ColoredTreeCellRenderer cellRenderer, boolean expanded) {
+    public void appendText(ColoredTreeCellRenderer cellRenderer, boolean isNodeExpanded) {
         cellRenderer.append(String.format(STRING_SURROUNDED, key), TextAttributesUtils.KEY_VALUE);
-        if (!expanded) {
+        if (!isNodeExpanded) {
             cellRenderer.append(": ");
             cellRenderer.append(getDescription(), getTextAttributes());
         }
