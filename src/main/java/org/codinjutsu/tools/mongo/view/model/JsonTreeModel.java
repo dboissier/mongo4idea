@@ -20,8 +20,8 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
-import org.codinjutsu.tools.mongo.view.model.nodedescriptor.MongoKeyValueDescriptor;
-import org.codinjutsu.tools.mongo.view.model.nodedescriptor.MongoValueDescriptor;
+import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
+import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoValueDescriptor;
 
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;

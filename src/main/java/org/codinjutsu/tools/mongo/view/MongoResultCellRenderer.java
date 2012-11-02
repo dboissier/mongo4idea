@@ -20,7 +20,7 @@ import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import org.codinjutsu.tools.mongo.utils.GuiUtil;
 import org.codinjutsu.tools.mongo.view.model.ResultNode;
-import org.codinjutsu.tools.mongo.view.model.nodedescriptor.MongoNodeDescriptor;
+import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -46,7 +46,7 @@ public class MongoResultCellRenderer extends ColoredTreeCellRenderer {
             setIcon(MONGO_ICON);
         } else if (userObject instanceof MongoNodeDescriptor) {
             MongoNodeDescriptor mongoValueDescriptor = (MongoNodeDescriptor) userObject;
-            mongoValueDescriptor.appendText(this);
+            mongoValueDescriptor.appendText(this, expanded);
         }
     }
 }

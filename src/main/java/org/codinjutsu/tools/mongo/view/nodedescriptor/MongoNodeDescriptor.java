@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.view.model.nodedescriptor;
+package org.codinjutsu.tools.mongo.view.nodedescriptor;
 
 import com.intellij.ui.ColoredTreeCellRenderer;
 
@@ -22,5 +22,5 @@ public interface MongoNodeDescriptor {
 
     int MAX_LENGTH = 100;
 
-    void appendText(ColoredTreeCellRenderer cellRenderer);
+    void appendText(ColoredTreeCellRenderer cellRenderer, boolean expanded);
 }

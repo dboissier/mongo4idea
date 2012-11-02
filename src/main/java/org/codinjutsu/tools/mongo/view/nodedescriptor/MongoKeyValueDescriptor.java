@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.view.model.nodedescriptor;
+package org.codinjutsu.tools.mongo.view.nodedescriptor;
 
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
@@ -39,10 +39,12 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
         this.textAttributes = textAttributes;
     }
 
-    public void appendText(ColoredTreeCellRenderer cellRenderer) {
+    public void appendText(ColoredTreeCellRenderer cellRenderer, boolean expanded) {
         cellRenderer.append(String.format(STRING_SURROUNDED, key), TextAttributesUtils.KEY_VALUE);
-        cellRenderer.append(": ");
-        cellRenderer.append(getDescription(), getTextAttributes());
+        if (!expanded) {
+            cellRenderer.append(": ");
+            cellRenderer.append(getDescription(), getTextAttributes());
+        }
     }
 
     public String getKey() {

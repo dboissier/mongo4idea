@@ -153,5 +153,6 @@ public class ConfigurationPanel {
         serverPortField.setText(Integer.toString(configuration.getServerPort()));
         usernameField.setText(configuration.getUsername());
         passwordField.setText(configuration.getPassword());
+        collectionsToIgnoreField.setText(StringUtils.join(configuration.getCollectionsToIgnore(), ","));
     }
 }

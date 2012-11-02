@@ -25,7 +25,7 @@ import org.codinjutsu.tools.mongo.utils.GuiUtil;
 import org.codinjutsu.tools.mongo.view.action.SortResultsByKeysAction;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeModel;
 import org.codinjutsu.tools.mongo.view.model.MongoComparator;
-import org.codinjutsu.tools.mongo.view.model.nodedescriptor.MongoKeyValueDescriptor;
+import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
