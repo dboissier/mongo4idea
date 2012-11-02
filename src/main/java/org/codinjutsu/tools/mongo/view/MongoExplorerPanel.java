@@ -143,22 +143,16 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
     }
 
 
-    public MongoCollectionResult getSelectedCollectionValues() {
+    public MongoCollection getSelectedCollectionValues() {
         MongoCollection selectedCollection = getSelectedCollection();
         if (selectedCollection == null) {
             return null;
         }
 
-        return mongoManager.loadCollectionValues(configuration, selectedCollection);
+        return selectedCollection;
     }
 
     public void loadSelectedCollectionValues() {
-        runnerCallback.execute(new Runnable() {
-            @Override
-            public void run() {
-                MongoCollectionResult selectedCollectionValues = getSelectedCollectionValues();
-                mongoRunnerPanel.showResults(selectedCollectionValues);
-            }
-        });
+        runnerCallback.execute(getSelectedCollectionValues());
     }
 }

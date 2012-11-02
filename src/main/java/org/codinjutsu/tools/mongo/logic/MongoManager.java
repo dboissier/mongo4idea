@@ -22,10 +22,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.Mongo;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
-import org.codinjutsu.tools.mongo.model.MongoCollection;
-import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
-import org.codinjutsu.tools.mongo.model.MongoDatabase;
-import org.codinjutsu.tools.mongo.model.MongoServer;
+import org.codinjutsu.tools.mongo.model.*;
 
 import java.net.UnknownHostException;
 import java.util.List;
@@ -74,12 +71,21 @@ public class MongoManager {
     }
 
     public MongoCollectionResult loadCollectionValues(MongoConfiguration configuration, MongoCollection mongoCollection) {
+       return loadCollectionValues(configuration, mongoCollection, new MongoQueryOptions());
+    }
+
+    public MongoCollectionResult loadCollectionValues(MongoConfiguration configuration, MongoCollection mongoCollection, MongoQueryOptions mongoQueryOptions) {
         MongoCollectionResult mongoCollectionResult = new MongoCollectionResult(mongoCollection.getName());
         try {
             Mongo mongo = new Mongo(configuration.getServerName(), configuration.getServerPort());
             DB database = mongo.getDB(mongoCollection.getDatabaseName());
             DBCollection collection = database.getCollection(mongoCollection.getName());
-            DBCursor cursor = collection.find();
+            DBCursor cursor;
+            if (mongoQueryOptions.isNotEmpty()) {
+                cursor = collection.find(mongoQueryOptions.getFilter());
+            } else {
+                cursor = collection.find();
+            }
             try {
                 while (cursor.hasNext()) {
                     mongoCollectionResult.add(cursor.next());

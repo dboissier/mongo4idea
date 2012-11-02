@@ -67,6 +67,11 @@
             <artifactId>idea-openapi</artifactId>
             <version>${intellij.sdk.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>idea-util</artifactId>
+            <version>${intellij.sdk.version}</version>
+        </dependency>
         <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>
@@ -93,36 +98,8 @@
             <version>1.4</version>
             <scope>test</scope>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>org.unitils</groupId>-->
-        <!--<artifactId>unitils-core</artifactId>-->
-        <!--<version>3.3</version>-->
-        <!--<scope>test</scope>-->
-        <!--</dependency>-->
-
+        
         <!-- IntelliJ SDK -->
-
-        <dependency>
-            <groupId>com.intellij</groupId>
-            <artifactId>idea</artifactId>
-            <scope>system</scope>
-            <systemPath>${intellij.lib.path}/idea.jar</systemPath>
-            <version>${intellij.sdk.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.intellij</groupId>
-            <artifactId>idea-extensions</artifactId>
-            <scope>system</scope>
-            <systemPath>${intellij.lib.path}/extensions.jar</systemPath>
-            <version>${intellij.sdk.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.intellij</groupId>
-            <artifactId>idea-jdom</artifactId>
-            <scope>system</scope>
-            <systemPath>${intellij.lib.path}/jdom.jar</systemPath>
-            <version>${intellij.sdk.version}</version>
-        </dependency>
         <dependency>
             <groupId>com.intellij</groupId>
             <artifactId>idea-trove4j</artifactId>
@@ -135,13 +112,6 @@
             <artifactId>idea-annotations</artifactId>
             <scope>system</scope>
             <systemPath>${intellij.lib.path}/annotations.jar</systemPath>
-            <version>${intellij.sdk.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.intellij</groupId>
-            <artifactId>idea-util</artifactId>
-            <scope>system</scope>
-            <systemPath>${intellij.lib.path}/util.jar</systemPath>
             <version>${intellij.sdk.version}</version>
         </dependency>
     </dependencies>

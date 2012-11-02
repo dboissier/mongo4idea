@@ -19,9 +19,14 @@ package org.codinjutsu.tools.mongo.view;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.ui.Splitter;
 import com.intellij.util.ui.tree.TreeUtil;
+import org.codinjutsu.tools.mongo.MongoConfiguration;
+import org.codinjutsu.tools.mongo.logic.MongoManager;
+import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.utils.GuiUtil;
+import org.codinjutsu.tools.mongo.view.action.RerunQuery;
 import org.codinjutsu.tools.mongo.view.action.SortResultsByKeysAction;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeModel;
 import org.codinjutsu.tools.mongo.view.model.MongoComparator;
@@ -33,16 +38,27 @@ import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
 
 public class MongoRunnerPanel extends JPanel {
+
     private JPanel rootPanel;
     private JPanel toolBarPanel;
-    private JPanel resultPanel;
+    private Splitter splitter;
     private final JsonTreeView jsonResultTree = new JsonTreeView();
+    private final QueryPanel queryPanel;
 
     private boolean sortByKey = false;
+    private final MongoConfiguration configuration;
+    private final MongoManager mongoManager;
+    private MongoCollection currentMongoCollection;
 
-    public MongoRunnerPanel() {
-        resultPanel.setLayout(new BorderLayout());
-        resultPanel.add(new JScrollPane(jsonResultTree), BorderLayout.CENTER);
+    public MongoRunnerPanel(MongoConfiguration configuration, MongoManager mongoManager) {
+        this.configuration = configuration;
+        this.mongoManager = mongoManager;
+
+        queryPanel = new QueryPanel();
+        splitter.setFirstComponent(new JScrollPane(jsonResultTree));
+        splitter.setSecondComponent(queryPanel);
+        splitter.setProportion(0.70f);
+
 
         toolBarPanel.setLayout(new BorderLayout());
 
@@ -57,19 +73,11 @@ public class MongoRunnerPanel extends JPanel {
         DefaultActionGroup actionGroup = new DefaultActionGroup("MongoResultsGroup", true);
         if (ApplicationManager.getApplication() != null) {
             actionGroup.add(new SortResultsByKeysAction(this));
+            actionGroup.add(new RerunQuery(this));
             actionGroup.addSeparator();
         }
         GuiUtil.installActionGroupInToolBar(actionGroup, toolBarPanel, ActionManager.getInstance(), "MongoResultsActions");
         TreeUtil.installActions(jsonResultTree);
-    }
-
-    public void showResults(MongoCollectionResult mongoCollectionResult) {
-        jsonResultTree.invalidate();
-        jsonResultTree.setVisible(true);
-        JsonTreeModel jsonTreeModel = new JsonTreeModel(mongoCollectionResult);
-        jsonTreeModel.setMongoComparator(new MongoKeyComparator());
-        jsonResultTree.setModel(jsonTreeModel);
-        jsonResultTree.validate();
     }
 
     public void setSortedByKey(boolean sortedByKey) {
@@ -77,6 +85,29 @@ public class MongoRunnerPanel extends JPanel {
         jsonResultTree.invalidate();
         ((DefaultTreeModel) jsonResultTree.getModel()).reload();
         jsonResultTree.repaint();
+        jsonResultTree.validate();
+    }
+
+    public void showResults(MongoCollection mongoCollection) {
+        currentMongoCollection = mongoCollection;
+        updateResultTree(mongoManager.loadCollectionValues(configuration, currentMongoCollection));
+    }
+
+    public void reRunQuery() {
+        try {
+            MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(configuration, currentMongoCollection, queryPanel.getQueryOptions());
+            updateResultTree(mongoCollectionResult);
+        } catch (Exception ex) {
+            queryPanel.setErrorMsg(ex);
+        }
+    }
+
+    private void updateResultTree(MongoCollectionResult mongoCollectionResult) {
+        jsonResultTree.invalidate();
+        jsonResultTree.setVisible(true);
+        JsonTreeModel jsonTreeModel = new JsonTreeModel(mongoCollectionResult);
+        jsonTreeModel.setMongoComparator(new MongoKeyComparator());
+        jsonResultTree.setModel(jsonTreeModel);
         jsonResultTree.validate();
     }
 

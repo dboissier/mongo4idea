@@ -19,7 +19,11 @@ package org.codinjutsu.tools.mongo.view;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.apache.commons.io.IOUtils;
+import org.codinjutsu.tools.mongo.MongoConfiguration;
+import org.codinjutsu.tools.mongo.logic.MongoManager;
+import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
+import org.mockito.Mockito;
 import org.uispec4j.DefaultTreeCellValueConverter;
 import org.uispec4j.Panel;
 import org.uispec4j.Tree;
@@ -27,20 +31,24 @@ import org.uispec4j.UISpecTestCase;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 public class MongoRunnerPanelTest extends UISpecTestCase {
 
 
     private MongoRunnerPanel mongoRunnerPanel;
     private Panel uiSpecPanel;
+    private MongoManager mongoManager;
 
 
     public void testDisplayTreeWithASimpleArray() throws Exception {
-        DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("simpleArray.json")));
+        String collectionName = "mycollec";
+        mockCollectionResults("simpleArray.json", collectionName);
 
-        MongoCollectionResult mongoCollectionResult = new MongoCollectionResult("mycollec");
-        mongoCollectionResult.add(jsonObject);
-        mongoRunnerPanel.showResults(mongoCollectionResult);
+        mongoRunnerPanel.showResults(new MongoCollection(collectionName, "test"));
 
         Tree tree = uiSpecPanel.getTree();
         tree.setCellValueConverter(new TreeCellConverter());
@@ -55,11 +63,10 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
 
 
     public void testDisplayTreeWithASimpleDocument() throws Exception {
-        DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("simpleDocument.json")));
+        String collectionName = "mycollec";
+        mockCollectionResults("simpleDocument.json", collectionName);
 
-        MongoCollectionResult mongoCollectionResult = new MongoCollectionResult("mycollec");
-        mongoCollectionResult.add(jsonObject);
-        mongoRunnerPanel.showResults(mongoCollectionResult);
+        mongoRunnerPanel.showResults(new MongoCollection(collectionName, "test"));
 
         Tree tree = uiSpecPanel.getTree();
         tree.setCellValueConverter(new TreeCellConverter());
@@ -75,17 +82,16 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
 
 
     public void testDisplayTreeWithAStructuredDocument() throws Exception {
-        DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("structuredDocument.json")));
+        String collectionName = "mycollec";
+        mockCollectionResults("structuredDocument.json", collectionName);
 
-        MongoCollectionResult mongoCollectionResult = new MongoCollectionResult("mycollec");
-        mongoCollectionResult.add(jsonObject);
-        mongoRunnerPanel.showResults(mongoCollectionResult);
+        mongoRunnerPanel.showResults(new MongoCollection(collectionName, "test"));
 
         Tree tree = uiSpecPanel.getTree();
         tree.setCellValueConverter(new TreeCellConverter());
         tree.contentEquals(
                 "results of 'mycollec' #(bold)\n" +
-                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : fal...bPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} #(bold)\n" +
+                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} #(bold)\n" +
                         "    \"id\": 0 #(bold)\n" +
                         "    \"label\": \"toto\" #(bold)\n" +
                         "    \"visible\": false #(bold)\n" +
@@ -101,17 +107,16 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
 
 
     public void testDisplayTreeWithAnArrayOfStructuredDocument() throws Exception {
-        DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("arrayOfDocuments.json")));
+        String collectionName = "mycollec";
+        mockCollectionResults("arrayOfDocuments.json", collectionName);
 
-        MongoCollectionResult mongoCollectionResult = new MongoCollectionResult("mycollec");
-        mongoCollectionResult.add(jsonObject);
-        mongoRunnerPanel.showResults(mongoCollectionResult);
+        mongoRunnerPanel.showResults(new MongoCollection(collectionName, "test"));
 
         Tree tree = uiSpecPanel.getTree();
         tree.setCellValueConverter(new TreeCellConverter());
         tree.contentEquals(
                 "results of 'mycollec' #(bold)\n" +
-                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : fal...bPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} #(bold)\n" +
+                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} #(bold)\n" +
                         "    \"id\": 0 #(bold)\n" +
                         "    \"label\": \"toto\" #(bold)\n" +
                         "    \"visible\": false #(bold)\n" +
@@ -122,7 +127,7 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
                         "        [0] \"toto\" #(bold)\n" +
                         "        [1] true #(bold)\n" +
                         "        [2] 10 #(bold)\n" +
-                        "  [1] { \"id\" : 1 , \"label\" : \"tata\" , \"visible\" : tru...bPages\" : 1 , \"keyWord\" : [ \"tutu\" , false , 10]}} #(bold)\n" +
+                        "  [1] { \"id\" : 1 , \"label\" : \"tata\" , \"visible\" : true , \"doc\" : { \"title\" : \"ola\" , \"nbPages\" : 1 , \"keyWord\" : [ \"tutu\" , false , 10]}} #(bold)\n" +
                         "    \"id\": 1 #(bold)\n" +
                         "    \"label\": \"tata\" #(bold)\n" +
                         "    \"visible\": true #(bold)\n" +
@@ -136,20 +141,20 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
         ).check();
     }
 
-
     public void testDisplayTreeSortedbyKey() throws Exception {
-        DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("structuredDocument.json")));
+        String data = "structuredDocument.json";
+        String collectionName = "mycollec";
+        mockCollectionResults(data, collectionName);
 
-        MongoCollectionResult mongoCollectionResult = new MongoCollectionResult("mycollec");
-        mongoCollectionResult.add(jsonObject);
-        mongoRunnerPanel.showResults(mongoCollectionResult);
+        mongoRunnerPanel.showResults(new MongoCollection(collectionName, "test"));
+
         mongoRunnerPanel.setSortedByKey(true);
 
         Tree tree = uiSpecPanel.getTree();
         tree.setCellValueConverter(new TreeCellConverter());
         tree.contentEquals(
                 "results of 'mycollec' #(bold)\n" +
-                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : fal...bPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} #(bold)\n" +
+                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} #(bold)\n" +
                         "    \"doc\": { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]} #(bold)\n" +
                         "      \"keyWord\": [ \"toto\" , true , 10] #(bold)\n" +
                         "        [0] \"toto\" #(bold)\n" +
@@ -169,7 +174,7 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
         tree.setCellValueConverter(new TreeCellConverter());
         tree.contentEquals(
                 "results of 'mycollec' #(bold)\n" +
-                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : fal...bPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} #(bold)\n" +
+                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} #(bold)\n" +
                         "    \"id\": 0 #(bold)\n" +
                         "    \"label\": \"toto\" #(bold)\n" +
                         "    \"visible\": false #(bold)\n" +
@@ -183,12 +188,24 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
         ).check();
     }
 
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        mongoRunnerPanel = new MongoRunnerPanel();
+        mongoManager = Mockito.mock(MongoManager.class);
+        mongoRunnerPanel = new MongoRunnerPanel(new MongoConfiguration(), mongoManager);
         uiSpecPanel = new Panel(mongoRunnerPanel);
+    }
+
+    private void mockCollectionResults(String data, String collectionName) throws IOException {
+        DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream(data)));
+
+        MongoCollectionResult mongoCollectionResult = new MongoCollectionResult(collectionName);
+        mongoCollectionResult.add(jsonObject);
+
+        when(mongoManager.loadCollectionValues(any(MongoConfiguration.class), any(MongoCollection.class)))
+                .thenReturn(mongoCollectionResult);
     }
 
     private static class TreeCellConverter extends DefaultTreeCellValueConverter {

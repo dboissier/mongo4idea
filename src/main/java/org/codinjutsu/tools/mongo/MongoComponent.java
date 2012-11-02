@@ -30,6 +30,7 @@ import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
+import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.utils.GuiUtil;
 import org.codinjutsu.tools.mongo.view.ConfigurationPanel;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
@@ -102,7 +103,7 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
         mongoManager = new MongoManager();
         ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
 
-        MongoRunnerPanel mongoRunnerPanel = new MongoRunnerPanel();
+        final MongoRunnerPanel mongoRunnerPanel = new MongoRunnerPanel(configuration, mongoManager);
         Content mongoRunner = ContentFactory.SERVICE.getInstance().createContent(mongoRunnerPanel, null, false);
         final ToolWindow toolMongoRunnerWindow = toolWindowManager.registerToolWindow(MONGO_RUNNER, false, ToolWindowAnchor.BOTTOM);
         toolMongoRunnerWindow.getContentManager().addContent(mongoRunner);
@@ -110,8 +111,13 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
 
         mongoExplorerPanel = new MongoExplorerPanel(mongoManager, configuration, mongoRunnerPanel, new RunnerCallback() {
 
-            public void execute(Runnable runnable) {
-                toolMongoRunnerWindow.activate(runnable);
+            public void execute(final MongoCollection mongoCollection) {
+                toolMongoRunnerWindow.activate(new Runnable() {
+                    @Override
+                    public void run() {
+                        mongoRunnerPanel.showResults(mongoCollection);
+                    }
+                });
             }
         });
         Content mongoExplorer = ContentFactory.SERVICE.getInstance().createContent(mongoExplorerPanel, null, false);
@@ -153,6 +159,6 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
 
     public interface RunnerCallback {
 
-        void execute(Runnable runnable);
+        void execute(MongoCollection runnable);
     }
 }
