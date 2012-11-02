@@ -57,6 +57,7 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
     private ConfigurationPanel configurationPanel;
     private Project project;
     private MongoManager mongoManager;
+    private MongoExplorerPanel mongoExplorerPanel;
 
 
     public MongoComponent(Project project) {
@@ -107,7 +108,7 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
         toolMongoRunnerWindow.getContentManager().addContent(mongoRunner);
         toolMongoRunnerWindow.setIcon(GuiUtil.loadIcon("mongo_16x16.png"));
 
-        MongoExplorerPanel mongoExplorerPanel = new MongoExplorerPanel(mongoManager, configuration, mongoRunnerPanel, new RunnerCallback() {
+        mongoExplorerPanel = new MongoExplorerPanel(mongoManager, configuration, mongoRunnerPanel, new RunnerCallback() {
 
             public void execute(Runnable runnable) {
                 toolMongoRunnerWindow.activate(runnable);
@@ -139,6 +140,7 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
 
     public void apply() throws ConfigurationException {
         configurationPanel.applyConfigurationData(configuration);
+        mongoExplorerPanel.reloadConfiguration();
     }
 
     public void reset() {

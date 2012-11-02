@@ -16,6 +16,7 @@
 
 package org.codinjutsu.tools.mongo.view;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
@@ -25,6 +26,9 @@ import org.codinjutsu.tools.mongo.utils.GuiUtil;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ConfigurationPanel {
 
@@ -40,7 +44,8 @@ public class ConfigurationPanel {
 
     private JButton testConnectionButton;
     private JLabel feedbackLabel;
-    private JTextField defaultDatabaseNameField;
+    private JTextField collectionsToIgnoreField;
+
     private final MongoManager mongoManager;
 
 
@@ -49,7 +54,6 @@ public class ConfigurationPanel {
 
         serverNameField.setName("serverNameField");
         serverPortField.setName("serverPortField");
-        defaultDatabaseNameField.setName("defaultDatabaseNameField");
         usernameField.setName("usernameField");
         passwordField.setName("passwordField");
         feedbackLabel.setName("feedbackLabel");
@@ -62,7 +66,7 @@ public class ConfigurationPanel {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    mongoManager.connect(getServerName(), getServerPort(), getUsername(), getPassword(), getDatabaseName());
+                    mongoManager.connect(getServerName(), getServerPort(), getUsername(), getPassword());
 
                     feedbackLabel.setIcon(SUCCESS);
                     feedbackLabel.setText("");
@@ -84,18 +88,32 @@ public class ConfigurationPanel {
         return !(
                 StringUtils.equals(configuration.getServerName(), getServerName())
                         && (configuration.getServerPort() == getServerPort())
-                        && StringUtils.equals(configuration.getDefaultDatabase(), getDatabaseName())
                         && StringUtils.equals(configuration.getUsername(), getUsername())
                         && StringUtils.equals(configuration.getPassword(), getPassword())
+                        && CollectionUtils.isEqualCollection(configuration.getCollectionsToIgnore(), getCollectionsToIgnore())
         );
+    }
+
+    private Set<String> getCollectionsToIgnore() {
+        String collectionsToIgnoreText = collectionsToIgnoreField.getText();
+        if (StringUtils.isNotBlank(collectionsToIgnoreText)) {
+            String[] collectionsToIgnore = collectionsToIgnoreText.split(",");
+
+            Set<String> collections = new HashSet<String>();
+            for (String collectionToIgnore : collectionsToIgnore) {
+                collections.add(StringUtils.trim(collectionToIgnore));
+            }
+            return collections;
+        }
+        return Collections.emptySet();
     }
 
     public void applyConfigurationData(MongoConfiguration configuration) {
         configuration.setServerName(getServerName());
         configuration.setServerPort(getServerPort());
-        configuration.setDefaultDatabase(getDatabaseName());
         configuration.setUsername(getUsername());
         configuration.setPassword(getPassword());
+        configuration.setCollectionsToIgnore(getCollectionsToIgnore());
     }
 
     private String getServerName() {
@@ -130,18 +148,9 @@ public class ConfigurationPanel {
         return 0;
     }
 
-    private String getDatabaseName() {
-        String defaultDatabaseName = defaultDatabaseNameField.getText();
-        if (StringUtils.isNotBlank(defaultDatabaseName)) {
-            return defaultDatabaseName;
-        }
-        return null;
-    }
-
     public void loadConfigurationData(MongoConfiguration configuration) {
         serverNameField.setText(configuration.getServerName());
         serverPortField.setText(Integer.toString(configuration.getServerPort()));
-        defaultDatabaseNameField.setText(configuration.getDefaultDatabase());
         usernameField.setText(configuration.getUsername());
         passwordField.setText(configuration.getPassword());
     }

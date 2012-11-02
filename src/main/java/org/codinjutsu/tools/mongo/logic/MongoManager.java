@@ -33,12 +33,17 @@ import java.util.Set;
 
 public class MongoManager {
 
-    public void connect(String serverName, int serverPort, String username, String password, String dbname) {
+    public void connect(String serverName, int serverPort, String username, String password) {
         try {
             Mongo mongo = new Mongo(serverName, serverPort);
-            DB test = mongo.getDB(dbname);
+            List<String> databaseNames = mongo.getDatabaseNames();
+            if (databaseNames.isEmpty()) {
+                throw new ConfigurationException("No databases were found");
+            }
+
+            DB databaseForTesting = mongo.getDB(databaseNames.get(0));
             if (StringUtils.isNotBlank(username)) {
-                test.authenticate(username, password.toCharArray());
+                databaseForTesting.authenticate(username, password.toCharArray());
             }
         } catch (UnknownHostException ex) {
             throw new ConfigurationException(ex);
@@ -50,16 +55,6 @@ public class MongoManager {
             Mongo mongo = new Mongo(configuration.getServerName(), configuration.getServerPort());
 
             MongoServer mongoServer = new MongoServer(configuration.getServerName(), configuration.getServerPort());
-            if (StringUtils.isNotBlank(configuration.getDefaultDatabase())) {
-                DB database = mongo.getDB(configuration.getDefaultDatabase());
-                MongoDatabase mongoDatabase = new MongoDatabase(database.getName());
-                Set<String> collectionNames = database.getCollectionNames();
-                for (String collectionName : collectionNames) {
-                    mongoDatabase.addCollection(new MongoCollection(collectionName, database.getName()));
-                }
-                mongoServer.addDatabase(mongoDatabase);
-                return mongoServer;
-            }
 
             List<String> databaseNames = mongo.getDatabaseNames();
             for (String databaseName : databaseNames) {

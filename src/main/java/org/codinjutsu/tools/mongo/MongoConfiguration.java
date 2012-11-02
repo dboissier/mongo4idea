@@ -18,18 +18,22 @@ package org.codinjutsu.tools.mongo;
 
 import com.mongodb.DBPort;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 public class MongoConfiguration {
 
     private static final String DEFAULT_SERVER_NAME = "localhost";
-    private static final String DEFAULT_DB = "test";
     private static final int DEFAULT_PORT = DBPort.PORT;
 
     private String serverName = DEFAULT_SERVER_NAME;
     private int serverPort = DEFAULT_PORT;
-    private String defaultDatabase = DEFAULT_DB;
 
     private String username;
     private String password;
+
+    public List<String> collectionsToIgnore = new LinkedList<String>();
 
 
     public String getServerName() {
@@ -64,11 +68,12 @@ public class MongoConfiguration {
         this.password = password;
     }
 
-    public String getDefaultDatabase() {
-        return defaultDatabase;
+    public void setCollectionsToIgnore(Set<String> collectionsToIgnore) {
+        this.collectionsToIgnore.clear();
+        this.collectionsToIgnore.addAll(collectionsToIgnore);
     }
 
-    public void setDefaultDatabase(String defaultDatabase) {
-        this.defaultDatabase = defaultDatabase;
+    public List<String> getCollectionsToIgnore() {
+        return collectionsToIgnore;
     }
 }

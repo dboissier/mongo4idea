@@ -66,6 +66,11 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         init();
     }
 
+    public void reloadConfiguration() {
+        init();
+    }
+
+
     private void init() {
         MongoServer mongoServer = mongoManager.loadDatabaseCollections(configuration);
         final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(mongoServer);
@@ -73,14 +78,21 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
             for (MongoDatabase mongoDatabase : mongoServer.getDatabases()) {
                 DefaultMutableTreeNode databaseNode = new DefaultMutableTreeNode(mongoDatabase);
                 for (MongoCollection collection : mongoDatabase.getCollections()) {
-                    databaseNode.add(new DefaultMutableTreeNode(collection));
+                    if (shouldNotIgnore(collection, configuration)) {
+                        databaseNode.add(new DefaultMutableTreeNode(collection));
+                    }
                 }
                 rootNode.add(databaseNode);
             }
         }
+        mongoTree.invalidate();
         mongoTree.setModel(new DefaultTreeModel(rootNode));
+        mongoTree.revalidate();
     }
 
+    private static boolean shouldNotIgnore(MongoCollection collection, MongoConfiguration configuration) {
+        return !configuration.getCollectionsToIgnore().contains(collection.getName());
+    }
 
     public void installActions() {
 
@@ -99,6 +111,9 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                     return;
                 }
                 DefaultMutableTreeNode lastSelectedNode = (DefaultMutableTreeNode) mongoTree.getLastSelectedPathComponent();
+                if (lastSelectedNode == null) {
+                    return;
+                }
 
                 if (!(lastSelectedNode.getUserObject() instanceof MongoCollection)) {
                     return;
@@ -127,6 +142,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         return null;
     }
 
+
     public MongoCollectionResult getSelectedCollectionValues() {
         MongoCollection selectedCollection = getSelectedCollection();
         if (selectedCollection == null) {
@@ -135,7 +151,6 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
         return mongoManager.loadCollectionValues(configuration, selectedCollection);
     }
-
 
     public void loadSelectedCollectionValues() {
         runnerCallback.execute(new Runnable() {
