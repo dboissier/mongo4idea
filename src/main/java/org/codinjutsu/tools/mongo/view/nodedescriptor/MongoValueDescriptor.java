@@ -36,7 +36,7 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
     }
 
     public void appendText(ColoredTreeCellRenderer cellRenderer, boolean expanded) {
-        cellRenderer.append(String.format("[%s]", index), INDEX);
+        cellRenderer.append(String.format("[%s] ", index), INDEX);
         if (!expanded) {
             cellRenderer.append(getDescription(), textAttributes);
         }
