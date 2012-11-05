@@ -54,6 +54,11 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
         return stringifiedValue;
     }
 
+    @Override
+    public String toString() {
+        return value.toString();
+    }
+
     private static class MongoStringValueDescriptor extends MongoValueDescriptor {
 
         private MongoStringValueDescriptor(int index, String value) {
@@ -72,6 +77,11 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
         }
 
         protected String getDescription() {
+            return "null";
+        }
+
+        @Override
+        public String toString() {
             return "null";
         }
     }

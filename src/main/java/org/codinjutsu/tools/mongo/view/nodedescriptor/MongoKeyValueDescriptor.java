@@ -27,6 +27,8 @@ import static org.codinjutsu.tools.mongo.view.TextAttributesUtils.*;
 public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
     private static final String STRING_SURROUNDED = "\"%s\"";
+    private static final String TO_STRING_TEMPLATE = "{ \"%s\" : %s}";
+    private static final String TO_STRING_FOR_STRING_VALUE_TEMPLATE = "{ \"%s\" : \"%s\"}";
 
     protected final String key;
     protected final Object value;
@@ -49,6 +51,11 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
     public String getKey() {
         return key;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(TO_STRING_TEMPLATE, key, value);
     }
 
     protected String getDescription() {
@@ -84,6 +91,11 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
         protected String getDescription() {
             return String.format(STRING_SURROUNDED, value);
+        }
+
+        @Override
+        public String toString() {
+            return String.format(TO_STRING_FOR_STRING_VALUE_TEMPLATE, key, value);
         }
     }
 

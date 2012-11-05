@@ -18,28 +18,33 @@ package org.codinjutsu.tools.mongo.view.action;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.DumbAware;
-import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.utils.GuiUtil;
-import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 import org.codinjutsu.tools.mongo.view.MongoRunnerPanel;
 
-public class ViewCollectionValuesAction extends AnAction implements DumbAware {
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 
-    private final MongoExplorerPanel mongoExplorerPanel;
+public class CopyResultAction extends AnAction implements DumbAware{
 
-    public ViewCollectionValuesAction(MongoExplorerPanel mongoExplorerPanel) {
-        super("View collection content", "View collection content", GuiUtil.loadIcon("folder_magnify.png"));
-        this.mongoExplorerPanel = mongoExplorerPanel;
+    private final MongoRunnerPanel mongoRunnerPanel;
+
+    public CopyResultAction(MongoRunnerPanel mongoRunnerPanel) {
+        super("Copy (CTRL+C)", "Copy to clipboard", GuiUtil.loadIcon("copy.png"));
+        this.mongoRunnerPanel = mongoRunnerPanel;
+
+        registerCustomShortcutSet(KeyEvent.VK_C, InputEvent.CTRL_MASK, mongoRunnerPanel);
     }
 
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
-        mongoExplorerPanel.loadSelectedCollectionValues();
+        CopyPasteManager.getInstance().setContents(new StringSelection(mongoRunnerPanel.getSelectedNodeStringifiedValue()));
     }
 
     @Override
     public void update(AnActionEvent event) {
-        event.getPresentation().setEnabled(mongoExplorerPanel.getSelectedCollectionValues() != null);
+        event.getPresentation().setEnabled(mongoRunnerPanel.getSelectedNodeStringifiedValue() != null);
     }
 }

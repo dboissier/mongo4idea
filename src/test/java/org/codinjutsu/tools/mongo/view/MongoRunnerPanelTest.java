@@ -188,6 +188,24 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
         ).check();
     }
 
+    public void testCopyNodeValue() throws Exception {
+        String data = "structuredDocument.json";
+        String collectionName = "mycollec";
+        mockCollectionResults(data, collectionName);
+
+        mongoRunnerPanel.showResults(new MongoCollection(collectionName, "test"));
+        Tree tree = uiSpecPanel.getTree();
+        tree.setCellValueConverter(new TreeCellConverter());
+        tree.select("[0]");
+
+        assertEquals("{ \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}", mongoRunnerPanel.getSelectedNodeStringifiedValue());
+
+        tree.select("[0]/label");
+        assertEquals("{ \"label\" : \"toto\"}", mongoRunnerPanel.getSelectedNodeStringifiedValue());
+
+        tree.select("[0]/doc");
+        assertEquals("{ \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}", mongoRunnerPanel.getSelectedNodeStringifiedValue());
+    }
 
     @Override
     protected void setUp() throws Exception {
