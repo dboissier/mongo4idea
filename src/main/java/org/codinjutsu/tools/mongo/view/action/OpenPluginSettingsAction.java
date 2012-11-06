@@ -24,13 +24,13 @@ import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import org.codinjutsu.tools.mongo.MongoComponent;
-import org.codinjutsu.tools.mongo.utils.GuiUtil;
+import org.codinjutsu.tools.mongo.utils.GuiUtils;
 
 public class OpenPluginSettingsAction extends AnAction implements DumbAware {
 
 
     public OpenPluginSettingsAction() {
-        super("Mongo Settings", "Edit the Mongo settings for the current project", GuiUtil.loadIcon("pluginSettings.png"));
+        super("Mongo Settings", "Edit the Mongo settings for the current project", GuiUtils.loadIcon("pluginSettings.png"));
     }
 
     @Override

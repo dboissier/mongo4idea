@@ -18,14 +18,14 @@ package org.codinjutsu.tools.mongo.view.action;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
-import org.codinjutsu.tools.mongo.utils.GuiUtil;
+import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.MongoRunnerPanel;
 
 import javax.swing.*;
 
 public class SortResultsByKeysAction extends ToggleAction {
 
-    private static final Icon SORT = GuiUtil.loadIcon("sortByKey.png");
+    private static final Icon SORT = GuiUtils.loadIcon("sortByKey.png");
 
     private boolean sortedByKey = false;
     private final MongoRunnerPanel mongoRunnerPanel;

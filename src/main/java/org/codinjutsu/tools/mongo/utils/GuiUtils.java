@@ -23,9 +23,9 @@ import com.intellij.openapi.util.IconLoader;
 import javax.swing.*;
 import java.awt.*;
 
-public class GuiUtil {
+public class GuiUtils {
 
-    private static final String ICON_FOLDER = "/images/";
+    private static final String ICON_FOLDER = "/icons/";
 
     public static Icon loadIcon(String iconFilename) {
         return IconLoader.findIcon(ICON_FOLDER + iconFilename);

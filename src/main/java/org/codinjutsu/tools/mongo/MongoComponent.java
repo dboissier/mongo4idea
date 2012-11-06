@@ -31,7 +31,7 @@ import com.intellij.ui.content.ContentFactory;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
-import org.codinjutsu.tools.mongo.utils.GuiUtil;
+import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.ConfigurationPanel;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 import org.codinjutsu.tools.mongo.view.MongoRunnerPanel;
@@ -107,7 +107,7 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
         Content mongoRunner = ContentFactory.SERVICE.getInstance().createContent(mongoRunnerPanel, null, false);
         final ToolWindow toolMongoRunnerWindow = toolWindowManager.registerToolWindow(MONGO_RUNNER, false, ToolWindowAnchor.BOTTOM);
         toolMongoRunnerWindow.getContentManager().addContent(mongoRunner);
-        toolMongoRunnerWindow.setIcon(GuiUtil.loadIcon("mongo_16x16.png"));
+        toolMongoRunnerWindow.setIcon(GuiUtils.loadIcon("mongo_16x16.png"));
 
         mongoExplorerPanel = new MongoExplorerPanel(mongoManager, configuration, mongoRunnerPanel, new RunnerCallback() {
 
@@ -123,7 +123,7 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
         Content mongoExplorer = ContentFactory.SERVICE.getInstance().createContent(mongoExplorerPanel, null, false);
         ToolWindow toolMongoExplorerWindow = toolWindowManager.registerToolWindow(MONGO_EXPLORER, false, ToolWindowAnchor.RIGHT);
         toolMongoExplorerWindow.getContentManager().addContent(mongoExplorer);
-        toolMongoExplorerWindow.setIcon(GuiUtil.loadIcon("mongo_16x16.png"));
+        toolMongoExplorerWindow.setIcon(GuiUtils.loadIcon("mongo_16x16.png"));
 
         mongoRunnerPanel.installActions();
         mongoExplorerPanel.installActions();

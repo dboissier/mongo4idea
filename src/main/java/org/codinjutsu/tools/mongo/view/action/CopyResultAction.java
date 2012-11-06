@@ -20,7 +20,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.DumbAware;
-import org.codinjutsu.tools.mongo.utils.GuiUtil;
+import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.MongoRunnerPanel;
 
 import java.awt.datatransfer.StringSelection;
@@ -32,7 +32,7 @@ public class CopyResultAction extends AnAction implements DumbAware{
     private final MongoRunnerPanel mongoRunnerPanel;
 
     public CopyResultAction(MongoRunnerPanel mongoRunnerPanel) {
-        super("Copy (CTRL+C)", "Copy to clipboard", GuiUtil.loadIcon("copy.png"));
+        super("Copy (CTRL+C)", "Copy to clipboard", GuiUtils.loadIcon("copy.png"));
         this.mongoRunnerPanel = mongoRunnerPanel;
 
         registerCustomShortcutSet(KeyEvent.VK_C, InputEvent.CTRL_MASK, mongoRunnerPanel);

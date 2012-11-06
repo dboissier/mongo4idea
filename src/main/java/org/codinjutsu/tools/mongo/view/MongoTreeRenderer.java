@@ -19,7 +19,7 @@ package org.codinjutsu.tools.mongo.view;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
 import org.codinjutsu.tools.mongo.model.MongoServer;
-import org.codinjutsu.tools.mongo.utils.GuiUtil;
+import org.codinjutsu.tools.mongo.utils.GuiUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -28,9 +28,9 @@ import java.awt.*;
 
 public class MongoTreeRenderer extends DefaultTreeCellRenderer {
 
-    private static final Icon MONGO_SERVER = GuiUtil.loadIcon("mongo_16x16.png");
-    private static final Icon MONGO_DATABASE = GuiUtil.loadIcon("database.png");
-    private static final Icon MONGO_COLLECTION = GuiUtil.loadIcon("folder.png");
+    private static final Icon MONGO_SERVER = GuiUtils.loadIcon("mongo_16x16.png");
+    private static final Icon MONGO_DATABASE = GuiUtils.loadIcon("database.png");
+    private static final Icon MONGO_COLLECTION = GuiUtils.loadIcon("folder.png");
 
     @Override
     public Component getTreeCellRendererComponent(JTree mongoTree, Object value, boolean isSelected, boolean isExpanded, boolean isLeaf, int row, boolean focus) {

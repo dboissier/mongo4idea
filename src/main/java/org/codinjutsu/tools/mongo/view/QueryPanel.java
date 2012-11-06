@@ -20,13 +20,13 @@ import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
-import org.codinjutsu.tools.mongo.utils.GuiUtil;
+import org.codinjutsu.tools.mongo.utils.GuiUtils;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class QueryPanel extends JPanel {
-    private static final Icon FAIL_ICON = GuiUtil.loadIcon("fail.png");
+    private static final Icon FAIL_ICON = GuiUtils.loadIcon("fail.png");
 
     private JTextArea filterTextArea;
     private JPanel mainPanel;

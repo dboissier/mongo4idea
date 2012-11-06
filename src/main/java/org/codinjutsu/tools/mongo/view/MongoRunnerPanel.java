@@ -22,18 +22,16 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.ui.PopupHandler;
-import com.intellij.util.ui.tree.TreeUtil;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
-import org.codinjutsu.tools.mongo.utils.GuiUtil;
+import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.CopyResultAction;
 import org.codinjutsu.tools.mongo.view.action.RerunQuery;
 import org.codinjutsu.tools.mongo.view.action.SortResultsByKeysAction;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeModel;
 import org.codinjutsu.tools.mongo.view.model.MongoComparator;
-import org.codinjutsu.tools.mongo.view.model.ResultNode;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 
@@ -41,8 +39,6 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
 
 public class MongoRunnerPanel extends JPanel {
 
@@ -62,9 +58,9 @@ public class MongoRunnerPanel extends JPanel {
         this.mongoManager = mongoManager;
 
         queryPanel = new QueryPanel();
-        splitter.setFirstComponent(new JScrollPane(jsonResultTree));
-        splitter.setSecondComponent(queryPanel);
-        splitter.setProportion(0.70f);
+        splitter.setFirstComponent(queryPanel);
+        splitter.setSecondComponent(new JScrollPane(jsonResultTree));
+        splitter.setProportion(0.30f);
 
 
         toolBarPanel.setLayout(new BorderLayout());
@@ -84,7 +80,7 @@ public class MongoRunnerPanel extends JPanel {
             actionGroup.add(new CopyResultAction(this));
             actionGroup.addSeparator();
         }
-        GuiUtil.installActionGroupInToolBar(actionGroup, toolBarPanel, ActionManager.getInstance(), "MongoResultsActions");
+        GuiUtils.installActionGroupInToolBar(actionGroup, toolBarPanel, ActionManager.getInstance(), "MongoResultsActions");
 //        TreeUtil.installActions(jsonResultTree);
         installActionGroupInPopupMenu(actionGroup, jsonResultTree, ActionManager.getInstance());
 
@@ -132,6 +128,9 @@ public class MongoRunnerPanel extends JPanel {
 
     public String getSelectedNodeStringifiedValue() {
         DefaultMutableTreeNode lastSelectedResultNode = (DefaultMutableTreeNode) jsonResultTree.getLastSelectedPathComponent();
+        if (lastSelectedResultNode == null) {
+            return null;
+        }
         Object userObject = lastSelectedResultNode.getUserObject();
         if (userObject instanceof MongoNodeDescriptor) {
             return userObject.toString();

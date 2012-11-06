@@ -21,7 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
-import org.codinjutsu.tools.mongo.utils.GuiUtil;
+import org.codinjutsu.tools.mongo.utils.GuiUtils;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -32,8 +32,8 @@ import java.util.Set;
 
 public class ConfigurationPanel {
 
-    private static final Icon SUCCESS = GuiUtil.loadIcon("success.png");
-    private static final Icon FAIL = GuiUtil.loadIcon("fail.png");
+    private static final Icon SUCCESS = GuiUtils.loadIcon("success.png");
+    private static final Icon FAIL = GuiUtils.loadIcon("fail.png");
 
     private JPanel rootPanel;
 

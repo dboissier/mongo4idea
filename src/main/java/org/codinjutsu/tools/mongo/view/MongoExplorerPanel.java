@@ -24,10 +24,9 @@ import org.codinjutsu.tools.mongo.MongoComponent;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
-import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
 import org.codinjutsu.tools.mongo.model.MongoServer;
-import org.codinjutsu.tools.mongo.utils.GuiUtil;
+import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.OpenPluginSettingsAction;
 import org.codinjutsu.tools.mongo.view.action.ViewCollectionValuesAction;
 
@@ -102,7 +101,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
             actionGroup.addSeparator();
             actionGroup.add(new OpenPluginSettingsAction());
         }
-        GuiUtil.installActionGroupInToolBar(actionGroup, toolBarPanel, ActionManager.getInstance(), "MongoExplorerActions");
+        GuiUtils.installActionGroupInToolBar(actionGroup, toolBarPanel, ActionManager.getInstance(), "MongoExplorerActions");
 
         mongoTree.addMouseListener(new MouseAdapter() {
             @Override

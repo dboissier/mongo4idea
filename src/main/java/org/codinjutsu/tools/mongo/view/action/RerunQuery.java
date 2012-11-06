@@ -18,7 +18,7 @@ package org.codinjutsu.tools.mongo.view.action;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import org.codinjutsu.tools.mongo.utils.GuiUtil;
+import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.MongoRunnerPanel;
 
 import java.awt.event.InputEvent;
@@ -28,7 +28,7 @@ public class RerunQuery extends AnAction {
     private final MongoRunnerPanel mongoRunnerPanel;
 
     public RerunQuery(MongoRunnerPanel mongoRunnerPanel) {
-        super("Rerun query", "Rerun query with options", GuiUtil.loadIcon("rerun.png"));
+        super("Rerun query", "Rerun query with options", GuiUtils.loadIcon("rerun.png"));
         this.mongoRunnerPanel = mongoRunnerPanel;
 
         registerCustomShortcutSet(KeyEvent.VK_F5, InputEvent.CTRL_MASK, mongoRunnerPanel);

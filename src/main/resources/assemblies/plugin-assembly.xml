@@ -27,6 +27,7 @@
             <excludes>
                 <exclude>com.intellij:forms_rt</exclude>
                 <exclude>com.intellij:idea-openapi</exclude>
+                <exclude>com.intellij:idea-util</exclude>
                 <exclude>commons-lang:commons-lang</exclude>
                 <exclude>commons-collections:commons-collections</exclude>
             </excludes>

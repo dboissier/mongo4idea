@@ -18,7 +18,7 @@ package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
-import org.codinjutsu.tools.mongo.utils.GuiUtil;
+import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.model.ResultNode;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 
@@ -27,7 +27,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 public class MongoResultCellRenderer extends ColoredTreeCellRenderer {
 
-    private static final Icon MONGO_ICON = GuiUtil.loadIcon("mongo_16x16.png");
+    private static final Icon MONGO_ICON = GuiUtils.loadIcon("mongo_16x16.png");
 
     @Override
     public void customizeCellRenderer(final JTree tree,
