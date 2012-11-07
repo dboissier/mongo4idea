@@ -78,7 +78,7 @@ public class QueryPanel extends JPanel implements Disposable {
         Document editorDocument = editorFactory.createDocument("");
         EditorEx editor = (EditorEx) editorFactory.createEditor(editorDocument);
         fillEditorSettings(editor.getSettings());
-        attachHighlighter((EditorEx) myEditor);
+        attachHighlighter(editor);
         return editor;
     }
 

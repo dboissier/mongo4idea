@@ -188,7 +188,7 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
         ).check();
     }
 
-    public void testCopyNodeValue() throws Exception {
+    public void testCopyMongoObjectNodeValue() throws Exception {
         String data = "structuredDocument.json";
         String collectionName = "mycollec";
         mockCollectionResults(data, collectionName);
@@ -205,6 +205,48 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
 
         tree.select("[0]/doc");
         assertEquals("{ \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}", mongoRunnerPanel.getSelectedNodeStringifiedValue());
+    }
+
+    public void testCopyMongoResults() throws Exception {
+        String collectionName = "mycollec";
+        mockCollectionResults("arrayOfDocuments.json", collectionName);
+
+        mongoRunnerPanel.showResults(new MongoCollection(collectionName, "test"));
+
+        Tree tree = uiSpecPanel.getTree();
+        tree.setCellValueConverter(new TreeCellConverter());
+        tree.contentEquals(
+                "results of 'mycollec' #(bold)\n" +
+                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} #(bold)\n" +
+                        "    \"id\": 0 #(bold)\n" +
+                        "    \"label\": \"toto\" #(bold)\n" +
+                        "    \"visible\": false #(bold)\n" +
+                        "    \"doc\": { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]} #(bold)\n" +
+                        "      \"title\": \"hello\" #(bold)\n" +
+                        "      \"nbPages\": 10 #(bold)\n" +
+                        "      \"keyWord\": [ \"toto\" , true , 10] #(bold)\n" +
+                        "        [0] \"toto\" #(bold)\n" +
+                        "        [1] true #(bold)\n" +
+                        "        [2] 10 #(bold)\n" +
+                        "  [1] { \"id\" : 1 , \"label\" : \"tata\" , \"visible\" : true , \"doc\" : { \"title\" : \"ola\" , \"nbPages\" : 1 , \"keyWord\" : [ \"tutu\" , false , 10]}} #(bold)\n" +
+                        "    \"id\": 1 #(bold)\n" +
+                        "    \"label\": \"tata\" #(bold)\n" +
+                        "    \"visible\": true #(bold)\n" +
+                        "    \"doc\": { \"title\" : \"ola\" , \"nbPages\" : 1 , \"keyWord\" : [ \"tutu\" , false , 10]} #(bold)\n" +
+                        "      \"title\": \"ola\" #(bold)\n" +
+                        "      \"nbPages\": 1 #(bold)\n" +
+                        "      \"keyWord\": [ \"tutu\" , false , 10] #(bold)\n" +
+                        "        [0] \"tutu\" #(bold)\n" +
+                        "        [1] false #(bold)\n" +
+                        "        [2] 10 #(bold)\n"
+        ).check();
+
+        tree.selectRoot();
+
+        assertEquals("[ " +
+                "{ \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} , " +
+                "{ \"id\" : 1 , \"label\" : \"tata\" , \"visible\" : true , \"doc\" : { \"title\" : \"ola\" , \"nbPages\" : 1 , \"keyWord\" : [ \"tutu\" , false , 10]}}" +
+                " ]", mongoRunnerPanel.getSelectedNodeStringifiedValue());
     }
 
     @Override

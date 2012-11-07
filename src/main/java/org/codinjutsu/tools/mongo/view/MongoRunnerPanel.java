@@ -22,6 +22,7 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.ui.PopupHandler;
+import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
@@ -32,6 +33,7 @@ import org.codinjutsu.tools.mongo.view.action.RerunQuery;
 import org.codinjutsu.tools.mongo.view.action.SortResultsByKeysAction;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeModel;
 import org.codinjutsu.tools.mongo.view.model.MongoComparator;
+import org.codinjutsu.tools.mongo.view.model.ResultNode;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 
@@ -39,6 +41,8 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class MongoRunnerPanel extends JPanel {
 
@@ -140,8 +144,20 @@ public class MongoRunnerPanel extends JPanel {
         Object userObject = lastSelectedResultNode.getUserObject();
         if (userObject instanceof MongoNodeDescriptor) {
             return userObject.toString();
+        } else if (userObject instanceof ResultNode) {
+            return stringifyResult(lastSelectedResultNode);
         }
         return null;
+    }
+
+    private String stringifyResult(DefaultMutableTreeNode selectedResultNode) {
+        List<Object> stringifiedObjects = new LinkedList<Object>();
+        for (int i = 0; i < selectedResultNode.getChildCount(); i++) {
+            DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) selectedResultNode.getChildAt(i);
+            stringifiedObjects.add(childNode.getUserObject());
+        }
+
+        return String.format("[ %s ]", StringUtils.join(stringifiedObjects, " , "));
     }
 
     private class MongoKeyComparator implements MongoComparator {
