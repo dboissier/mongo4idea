@@ -46,7 +46,7 @@ public class MongoRunnerPanel extends JPanel {
     private JPanel toolBarPanel;
     private Splitter splitter;
     private final JsonTreeView jsonResultTree = new JsonTreeView();
-    private final QueryPanel queryPanel;
+    private QueryPanel queryPanel;
 
     private boolean sortByKey = false;
     private final MongoConfiguration configuration;
@@ -57,7 +57,7 @@ public class MongoRunnerPanel extends JPanel {
         this.configuration = configuration;
         this.mongoManager = mongoManager;
 
-        queryPanel = new QueryPanel();
+        queryPanel = createQueryPanel();
         splitter.setFirstComponent(queryPanel);
         splitter.setSecondComponent(new JScrollPane(jsonResultTree));
         splitter.setProportion(0.30f);
@@ -71,14 +71,19 @@ public class MongoRunnerPanel extends JPanel {
         jsonResultTree.setVisible(false);
     }
 
+    protected QueryPanel createQueryPanel() {
+        return QueryPanel.queryPanel();
+    }
+
     public void installActions() {
 
         DefaultActionGroup actionGroup = new DefaultActionGroup("MongoResultsGroup", true);
         if (ApplicationManager.getApplication() != null) {
-            actionGroup.add(new SortResultsByKeysAction(this));
             actionGroup.add(new RerunQuery(this));
+            actionGroup.addSeparator();
             actionGroup.add(new CopyResultAction(this));
             actionGroup.addSeparator();
+            actionGroup.add(new SortResultsByKeysAction(this));
         }
         GuiUtils.installActionGroupInToolBar(actionGroup, toolBarPanel, ActionManager.getInstance(), "MongoResultsActions");
 //        TreeUtil.installActions(jsonResultTree);
@@ -97,6 +102,7 @@ public class MongoRunnerPanel extends JPanel {
 
     public void setSortedByKey(boolean sortedByKey) {
         sortByKey = sortedByKey;
+
         jsonResultTree.invalidate();
         ((DefaultTreeModel) jsonResultTree.getModel()).reload();
         jsonResultTree.repaint();

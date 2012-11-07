@@ -212,7 +212,12 @@ public class MongoRunnerPanelTest extends UISpecTestCase {
         super.setUp();
 
         mongoManager = Mockito.mock(MongoManager.class);
-        mongoRunnerPanel = new MongoRunnerPanel(new MongoConfiguration(), mongoManager);
+        mongoRunnerPanel = new MongoRunnerPanel(new MongoConfiguration(), mongoManager) {
+            @Override
+            protected QueryPanel createQueryPanel() {
+                return QueryPanel.withoutEditor();
+            }
+        };
         uiSpecPanel = new Panel(mongoRunnerPanel);
     }
 
