@@ -20,17 +20,39 @@ import com.mongodb.DBObject;
 
 public class MongoQueryOptions {
 
-    private DBObject filter = null;
+    private DBObject match = null;
+    private DBObject project;
+    private DBObject group;
 
     public boolean isNotEmpty() {
-        return filter != null;
+        return match != null || project != null || group != null;
     }
 
-    public void setFilter(DBObject filter) {
-        this.filter = filter;
+    public void setMatch(DBObject match) {
+        this.match = match;
     }
 
-    public DBObject getFilter() {
-        return filter;
+    public DBObject getMatch() {
+        return match;
+    }
+
+    public void setProject(DBObject project) {
+        this.project = project;
+    }
+
+    public DBObject getProject() {
+        return project;
+    }
+
+    public void setGroup(DBObject group) {
+        this.group = group;
+    }
+
+    public DBObject getGroup() {
+        return group;
+    }
+
+    public boolean isSimpleFilter() {
+        return match != null && project == null && group == null;
     }
 }

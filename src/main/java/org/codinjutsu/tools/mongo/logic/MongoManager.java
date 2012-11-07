@@ -16,15 +16,13 @@
 
 package org.codinjutsu.tools.mongo.logic;
 
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.Mongo;
+import com.mongodb.*;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.model.*;
 
 import java.net.UnknownHostException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -71,7 +69,7 @@ public class MongoManager {
     }
 
     public MongoCollectionResult loadCollectionValues(MongoConfiguration configuration, MongoCollection mongoCollection) {
-       return loadCollectionValues(configuration, mongoCollection, new MongoQueryOptions());
+        return loadCollectionValues(configuration, mongoCollection, new MongoQueryOptions());
     }
 
     public MongoCollectionResult loadCollectionValues(MongoConfiguration configuration, MongoCollection mongoCollection, MongoQueryOptions mongoQueryOptions) {
@@ -80,22 +78,52 @@ public class MongoManager {
             Mongo mongo = new Mongo(configuration.getServerName(), configuration.getServerPort());
             DB database = mongo.getDB(mongoCollection.getDatabaseName());
             DBCollection collection = database.getCollection(mongoCollection.getName());
-            DBCursor cursor;
-            if (mongoQueryOptions.isNotEmpty()) {
-                cursor = collection.find(mongoQueryOptions.getFilter());
-            } else {
-                cursor = collection.find();
-            }
-            try {
-                while (cursor.hasNext()) {
-                    mongoCollectionResult.add(cursor.next());
+
+            if (!mongoQueryOptions.isNotEmpty()) {
+                DBCursor cursor = collection.find();
+                try {
+                    while (cursor.hasNext()) {
+                        mongoCollectionResult.add(cursor.next());
+                    }
+                } finally {
+                    cursor.close();
                 }
-            } finally {
-                cursor.close();
+                return mongoCollectionResult;
             }
+
+            if (mongoQueryOptions.isSimpleFilter()) {
+                DBCursor cursor = collection.find(mongoQueryOptions.getMatch());
+                try {
+                    while (cursor.hasNext()) {
+                        mongoCollectionResult.add(cursor.next());
+                    }
+                } finally {
+                    cursor.close();
+                }
+                return mongoCollectionResult;
+            }
+
+            AggregationOutput aggregate = collection.aggregate(mongoQueryOptions.getMatch(), getOtherOperations(mongoQueryOptions));
+            for (DBObject dbObject : aggregate.results()) {
+                mongoCollectionResult.add(dbObject);
+            }
+            return mongoCollectionResult;
+
         } catch (UnknownHostException ex) {
             throw new ConfigurationException(ex);
         }
-        return mongoCollectionResult;
+
+    }
+
+    private DBObject[] getOtherOperations(MongoQueryOptions mongoQueryOptions) {
+        List<DBObject> operations = new LinkedList<DBObject>();
+        if (mongoQueryOptions.getProject() != null) {
+            operations.add(mongoQueryOptions.getProject());
+        }
+        if (mongoQueryOptions.getGroup() != null) {
+            operations.add(mongoQueryOptions.getGroup());
+        }
+
+        return operations.toArray(new DBObject[operations.size()]);
     }
 }

@@ -42,10 +42,11 @@ public class QueryPanel extends JPanel implements Disposable {
     private static final Icon FAIL_ICON = GuiUtils.loadIcon("fail.png");
 
     private JPanel mainPanel;
-    private JLabel feedbackLabel;
     private JPanel editorPanel;
 
-    private Editor myEditor;
+    private Editor matchEditor;
+    private Editor projectEditor;
+    private Editor groupEditor;
     private final Alarm myUpdateAlarm = new Alarm(Alarm.ThreadToUse.SWING_THREAD);
 
 
@@ -58,16 +59,30 @@ public class QueryPanel extends JPanel implements Disposable {
     }
 
     private QueryPanel(boolean withEditor) {
+
         setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
-        editorPanel.setLayout(new BorderLayout());
+        editorPanel.setLayout(new BoxLayout(editorPanel, BoxLayout.Y_AXIS));
 
         if (withEditor) {
-            myEditor = createEditor();
-            if (myEditor != null) {
-                myUpdateAlarm.setActivationComponent(myEditor.getComponent());
-            }
-            editorPanel.add(myEditor.getComponent(), BorderLayout.CENTER);
+            matchEditor = createEditor();
+            JPanel matchEditorComponent = (JPanel) matchEditor.getComponent();
+            matchEditorComponent.setBorder(BorderFactory.createTitledBorder("$match"));
+            editorPanel.add(matchEditorComponent);
+            myUpdateAlarm.setActivationComponent(matchEditorComponent);
+
+            projectEditor = createEditor();
+            JPanel projectEditorComponent = (JPanel) projectEditor.getComponent();
+            projectEditorComponent.setBorder(BorderFactory.createTitledBorder("$project"));
+            editorPanel.add(projectEditorComponent);
+            myUpdateAlarm.setActivationComponent(projectEditorComponent);
+
+            groupEditor = createEditor();
+            JPanel groupEditorComponent = (JPanel) groupEditor.getComponent();
+            groupEditorComponent.setBorder(BorderFactory.createTitledBorder("$group"));
+            editorPanel.add(groupEditorComponent);
+            myUpdateAlarm.setActivationComponent(groupEditorComponent);
+
         }
 
     }
@@ -79,6 +94,7 @@ public class QueryPanel extends JPanel implements Disposable {
         EditorEx editor = (EditorEx) editorFactory.createEditor(editorDocument);
         fillEditorSettings(editor.getSettings());
         attachHighlighter(editor);
+
         return editor;
     }
 
@@ -110,40 +126,53 @@ public class QueryPanel extends JPanel implements Disposable {
         return new LexerEditorHighlighter(PlainTextSyntaxHighlighterFactory.getSyntaxHighlighter(language, null, null), settings);
     }
 
-    public String getFilterText() {
-        return StringUtils.trim(myEditor.getDocument().getText());
+    public String getMatchText() {
+        return StringUtils.trim(matchEditor.getDocument().getText());
+    }
+
+    public String getProjectText() {
+        return StringUtils.trim(projectEditor.getDocument().getText());
+    }
+
+    public String getGroupText() {
+        return StringUtils.trim(groupEditor.getDocument().getText());
     }
 
     public MongoQueryOptions getQueryOptions() {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
 
+        String matchText = getMatchText();
+        if (!StringUtils.isBlank(matchText)) {
+            DBObject filter = (DBObject) JSON.parse(matchText);
+            mongoQueryOptions.setMatch(filter);
+        }
 
-        String filterText = getFilterText();
-        if (!StringUtils.isBlank(filterText)) {
-            try {
-                DBObject filter = (DBObject) JSON.parse(filterText);
-                mongoQueryOptions.setFilter(filter);
-                if (feedbackLabel.getIcon() != null) {
-                    feedbackLabel.setIcon(null);
-                }
-            } catch (Exception ex) {
-                setErrorMsg(ex);
-            }
+        String projectText = getProjectText();
+        if (!StringUtils.isBlank(projectText)) {
+            DBObject filter = (DBObject) JSON.parse(projectText);
+            mongoQueryOptions.setProject(filter);
+        }
+
+        String groupText = getGroupText();
+        if (!StringUtils.isBlank(groupText)) {
+            DBObject filter = (DBObject) JSON.parse(groupText);
+            mongoQueryOptions.setGroup(filter);
         }
 
         return mongoQueryOptions;
     }
 
-    public void setErrorMsg(Exception ex) {
-        feedbackLabel.setIcon(FAIL_ICON);
-        feedbackLabel.setText(String.format("[%s] %s", ex.getClass().getSimpleName(), ex.getMessage()));
-    }
-
     @Override
     public void dispose() {
         myUpdateAlarm.cancelAllRequests();
-        if (myEditor != null) {
-            EditorFactory.getInstance().releaseEditor(myEditor);
+        if (matchEditor != null) {
+            EditorFactory.getInstance().releaseEditor(matchEditor);
+        }
+        if (projectEditor != null) {
+            EditorFactory.getInstance().releaseEditor(projectEditor);
+        }
+        if (groupEditor != null) {
+            EditorFactory.getInstance().releaseEditor(groupEditor);
         }
     }
 }

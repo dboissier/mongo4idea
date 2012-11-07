@@ -123,7 +123,7 @@ public class MongoRunnerPanel extends JPanel {
             MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(configuration, currentMongoCollection, queryPanel.getQueryOptions());
             updateResultTree(mongoCollectionResult);
         } catch (Exception ex) {
-            queryPanel.setErrorMsg(ex);
+            throw new RuntimeException(ex);
         }
     }
 
