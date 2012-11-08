@@ -80,39 +80,51 @@ public class MongoManager {
             DBCollection collection = database.getCollection(mongoCollection.getName());
 
             if (!mongoQueryOptions.isNotEmpty()) {
-                DBCursor cursor = collection.find();
-                try {
-                    while (cursor.hasNext()) {
-                        mongoCollectionResult.add(cursor.next());
-                    }
-                } finally {
-                    cursor.close();
-                }
-                return mongoCollectionResult;
+                return findAll(mongoCollectionResult, collection);
             }
 
             if (mongoQueryOptions.isSimpleFilter()) {
-                DBCursor cursor = collection.find(mongoQueryOptions.getMatch());
-                try {
-                    while (cursor.hasNext()) {
-                        mongoCollectionResult.add(cursor.next());
-                    }
-                } finally {
-                    cursor.close();
-                }
-                return mongoCollectionResult;
+                return findWithSimpleFilter(mongoQueryOptions, mongoCollectionResult, collection);
             }
 
-            AggregationOutput aggregate = collection.aggregate(mongoQueryOptions.getMatch(), getOtherOperations(mongoQueryOptions));
-            for (DBObject dbObject : aggregate.results()) {
-                mongoCollectionResult.add(dbObject);
-            }
-            return mongoCollectionResult;
+            return aggregate(mongoQueryOptions, mongoCollectionResult, collection);
 
         } catch (UnknownHostException ex) {
             throw new ConfigurationException(ex);
         }
 
+    }
+
+    private MongoCollectionResult aggregate(MongoQueryOptions mongoQueryOptions, MongoCollectionResult mongoCollectionResult, DBCollection collection) {
+        AggregationOutput aggregate = collection.aggregate(mongoQueryOptions.getMatch(), getOtherOperations(mongoQueryOptions));
+        for (DBObject dbObject : aggregate.results()) {
+            mongoCollectionResult.add(dbObject);
+        }
+        return mongoCollectionResult;
+    }
+
+    private MongoCollectionResult findWithSimpleFilter(MongoQueryOptions mongoQueryOptions, MongoCollectionResult mongoCollectionResult, DBCollection collection) {
+        DBCursor cursor = collection.find(mongoQueryOptions.getMatch());
+        try {
+            while (cursor.hasNext()) {
+                mongoCollectionResult.add(cursor.next());
+            }
+        } finally {
+            cursor.close();
+        }
+        return mongoCollectionResult;
+    }
+
+    private MongoCollectionResult findAll(MongoCollectionResult mongoCollectionResult, DBCollection collection) {
+        DBCursor cursor = collection.find();
+        try {
+            while (cursor.hasNext()) {
+                mongoCollectionResult.add(cursor.next());
+            }
+        } finally {
+            cursor.close();
+        }
+        return mongoCollectionResult;
     }
 
     private DBObject[] getOtherOperations(MongoQueryOptions mongoQueryOptions) {

@@ -27,7 +27,6 @@ public class MongoCollectionResult {
     private final List<DBObject> mongoObjects = new LinkedList<DBObject>();
 
     public MongoCollectionResult(String collectionName) {
-
         this.collectionName = collectionName;
     }
 

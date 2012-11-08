@@ -103,13 +103,13 @@ public class QueryPanel extends JPanel implements Disposable {
         editorSettings.setLineMarkerAreaShown(false);
         editorSettings.setIndentGuidesShown(false);
         editorSettings.setLineNumbersShown(false);
-        editorSettings.setFoldingOutlineShown(true);
         editorSettings.setAdditionalColumnsCount(0);
         editorSettings.setAdditionalLinesCount(1);
         editorSettings.setUseSoftWraps(true);
         editorSettings.setUseTabCharacter(false);
         editorSettings.setCaretInsideTabs(false);
         editorSettings.setVirtualSpace(false);
+
     }
 
     private static void attachHighlighter(final EditorEx editor) {
