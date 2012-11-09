@@ -104,7 +104,7 @@ public class MongoManager {
     }
 
     private MongoCollectionResult findWithSimpleFilter(MongoQueryOptions mongoQueryOptions, MongoCollectionResult mongoCollectionResult, DBCollection collection) {
-        DBCursor cursor = collection.find(mongoQueryOptions.getMatch());
+        DBCursor cursor = collection.find(mongoQueryOptions.getFilter());
         try {
             while (cursor.hasNext()) {
                 mongoCollectionResult.add(cursor.next());

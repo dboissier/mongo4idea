@@ -16,6 +16,7 @@
 
 package org.codinjutsu.tools.mongo.model;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
 public class MongoQueryOptions {
@@ -33,6 +34,10 @@ public class MongoQueryOptions {
     }
 
     public DBObject getMatch() {
+        return new BasicDBObject("$match", match);
+    }
+
+    public DBObject getFilter() {
         return match;
     }
 
@@ -41,7 +46,7 @@ public class MongoQueryOptions {
     }
 
     public DBObject getProject() {
-        return project;
+        return new BasicDBObject("$project", project);
     }
 
     public void setGroup(DBObject group) {
@@ -49,7 +54,7 @@ public class MongoQueryOptions {
     }
 
     public DBObject getGroup() {
-        return group;
+        return new BasicDBObject("$group", group);
     }
 
     public boolean isSimpleFilter() {
