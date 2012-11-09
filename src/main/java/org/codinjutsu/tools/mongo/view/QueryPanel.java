@@ -39,7 +39,6 @@ import javax.swing.*;
 import java.awt.*;
 
 public class QueryPanel extends JPanel implements Disposable {
-    private static final Icon FAIL_ICON = GuiUtils.loadIcon("fail.png");
 
     private JPanel mainPanel;
     private JPanel editorPanel;

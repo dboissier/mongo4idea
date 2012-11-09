@@ -29,7 +29,7 @@ import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.CopyResultAction;
-import org.codinjutsu.tools.mongo.view.action.RerunQuery;
+import org.codinjutsu.tools.mongo.view.action.ExecuteQuery;
 import org.codinjutsu.tools.mongo.view.action.SortResultsByKeysAction;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeModel;
 import org.codinjutsu.tools.mongo.view.model.MongoComparator;
@@ -46,9 +46,12 @@ import java.util.List;
 
 public class MongoRunnerPanel extends JPanel {
 
+    private static final Icon FAIL_ICON = GuiUtils.loadIcon("fail.png");
+
     private JPanel rootPanel;
     private JPanel toolBarPanel;
     private Splitter splitter;
+    private JLabel errorLabel;
     private final JsonTreeView jsonResultTree = new JsonTreeView();
     private QueryPanel queryPanel;
 
@@ -83,14 +86,13 @@ public class MongoRunnerPanel extends JPanel {
 
         DefaultActionGroup actionGroup = new DefaultActionGroup("MongoResultsGroup", true);
         if (ApplicationManager.getApplication() != null) {
-            actionGroup.add(new RerunQuery(this));
+            actionGroup.add(new ExecuteQuery(this));
             actionGroup.addSeparator();
             actionGroup.add(new CopyResultAction(this));
             actionGroup.addSeparator();
             actionGroup.add(new SortResultsByKeysAction(this));
         }
         GuiUtils.installActionGroupInToolBar(actionGroup, toolBarPanel, ActionManager.getInstance(), "MongoResultsActions");
-//        TreeUtil.installActions(jsonResultTree);
         installActionGroupInPopupMenu(actionGroup, jsonResultTree, ActionManager.getInstance());
 
     }
@@ -118,12 +120,16 @@ public class MongoRunnerPanel extends JPanel {
         updateResultTree(mongoManager.loadCollectionValues(configuration, currentMongoCollection));
     }
 
-    public void reRunQuery() {
+    public void executeQuery() {
         try {
+            errorLabel.setVisible(false);
+
             MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(configuration, currentMongoCollection, queryPanel.getQueryOptions());
             updateResultTree(mongoCollectionResult);
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            errorLabel.setIcon(FAIL_ICON);
+            errorLabel.setText(String.format("[%s]: %s",ex.getClass().getSimpleName(), ex.getMessage()));
+            errorLabel.setVisible(true);
         }
     }
 

@@ -24,11 +24,11 @@ import org.codinjutsu.tools.mongo.view.MongoRunnerPanel;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
-public class RerunQuery extends AnAction {
+public class ExecuteQuery extends AnAction {
     private final MongoRunnerPanel mongoRunnerPanel;
 
-    public RerunQuery(MongoRunnerPanel mongoRunnerPanel) {
-        super("Rerun query", "Rerun query with options", GuiUtils.loadIcon("rerun.png"));
+    public ExecuteQuery(MongoRunnerPanel mongoRunnerPanel) {
+        super("Execute query", "Execute query with options", GuiUtils.loadIcon("rerun.png"));
         this.mongoRunnerPanel = mongoRunnerPanel;
 
         registerCustomShortcutSet(KeyEvent.VK_F5, InputEvent.CTRL_MASK, mongoRunnerPanel);
@@ -36,6 +36,6 @@ public class RerunQuery extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
-        mongoRunnerPanel.reRunQuery();
+        mongoRunnerPanel.executeQuery();
     }
 }
