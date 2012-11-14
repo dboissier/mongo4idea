@@ -26,7 +26,7 @@ public enum MongoAggregateOperator {
         this.operator = operator;
     }
 
-    public String getOperator() {
+    public String getLabel() {
         return operator;
     }
 }

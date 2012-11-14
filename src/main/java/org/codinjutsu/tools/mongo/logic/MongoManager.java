@@ -79,12 +79,8 @@ public class MongoManager {
             DB database = mongo.getDB(mongoCollection.getDatabaseName());
             DBCollection collection = database.getCollection(mongoCollection.getName());
 
-            if (!mongoQueryOptions.isNotEmpty()) {
+            if (mongoQueryOptions.isEmpty()) {
                 return findAll(mongoCollectionResult, collection);
-            }
-
-            if (mongoQueryOptions.isSimpleFilter()) {
-                return findWithSimpleFilter(mongoQueryOptions, mongoCollectionResult, collection);
             }
 
             return aggregate(mongoQueryOptions, mongoCollectionResult, collection);
@@ -96,21 +92,10 @@ public class MongoManager {
     }
 
     private MongoCollectionResult aggregate(MongoQueryOptions mongoQueryOptions, MongoCollectionResult mongoCollectionResult, DBCollection collection) {
-        AggregationOutput aggregate = collection.aggregate(mongoQueryOptions.getMatch(), getOtherOperations(mongoQueryOptions));
+        List<DBObject> otherOperations = mongoQueryOptions.getOperationsExceptTheFirst();
+        AggregationOutput aggregate = collection.aggregate(mongoQueryOptions.getFirstOperation(), otherOperations.toArray(new DBObject[otherOperations.size()]));
         for (DBObject dbObject : aggregate.results()) {
             mongoCollectionResult.add(dbObject);
-        }
-        return mongoCollectionResult;
-    }
-
-    private MongoCollectionResult findWithSimpleFilter(MongoQueryOptions mongoQueryOptions, MongoCollectionResult mongoCollectionResult, DBCollection collection) {
-        DBCursor cursor = collection.find(mongoQueryOptions.getFilter());
-        try {
-            while (cursor.hasNext()) {
-                mongoCollectionResult.add(cursor.next());
-            }
-        } finally {
-            cursor.close();
         }
         return mongoCollectionResult;
     }
@@ -127,15 +112,4 @@ public class MongoManager {
         return mongoCollectionResult;
     }
 
-    private DBObject[] getOtherOperations(MongoQueryOptions mongoQueryOptions) {
-        List<DBObject> operations = new LinkedList<DBObject>();
-        if (mongoQueryOptions.getProject() != null) {
-            operations.add(mongoQueryOptions.getProject());
-        }
-        if (mongoQueryOptions.getGroup() != null) {
-            operations.add(mongoQueryOptions.getGroup());
-        }
-
-        return operations.toArray(new DBObject[operations.size()]);
-    }
 }

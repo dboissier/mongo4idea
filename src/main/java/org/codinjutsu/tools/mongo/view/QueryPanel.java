@@ -169,7 +169,7 @@ public class QueryPanel extends JPanel implements Disposable {
             this.operator = operator;
             setLayout(new BorderLayout());
             NonOpaquePanel headPanel = new NonOpaquePanel();
-            JLabel operatorLabel = new JLabel(operator.getOperator());
+            JLabel operatorLabel = new JLabel(operator.getLabel());
             headPanel.add(operatorLabel, BorderLayout.WEST);
             closeLabel = new JLabel();
             closeLabel.setIcon(CLOSE_ICON);
@@ -248,5 +248,8 @@ public class QueryPanel extends JPanel implements Disposable {
         editorPanel.invalidate();
         editorPanel.remove(operatorPanel);
         editorPanel.validate();
+        editorPanel.updateUI();
+
+        operatorPanel.dispose();
     }
 }

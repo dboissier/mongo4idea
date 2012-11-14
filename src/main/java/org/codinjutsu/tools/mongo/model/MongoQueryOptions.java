@@ -21,66 +21,39 @@ import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
 public class MongoQueryOptions {
 
-    private DBObject match = null;
-    private DBObject project;
-    private DBObject group;
+    private List<DBObject> operations = new LinkedList<DBObject>();
 
-    public boolean isNotEmpty() {
-        return match != null || project != null || group != null;
+    public boolean isEmpty() {
+        return operations.isEmpty();
     }
 
-    public void setMatch(DBObject match) {
-        this.match = match;
-    }
-
-    public DBObject getMatch() {
-        return new BasicDBObject("$match", match);
-    }
-
-    public DBObject getFilter() {
-        return match;
-    }
-
-    public void setProject(DBObject project) {
-        this.project = project;
-    }
-
-    public DBObject getProject() {
-        return new BasicDBObject("$project", project);
-    }
-
-    public void setGroup(DBObject group) {
-        this.group = group;
-    }
-
-    public DBObject getGroup() {
-        return new BasicDBObject("$group", group);
-    }
-
-    public boolean isSimpleFilter() {
-        return match != null && project == null && group == null;
-    }
 
     public void addQuery(MongoAggregateOperator operator, String query) {
         if (!StringUtils.isBlank(query)) {
             DBObject operationObject = (DBObject) JSON.parse(query);
 
-            switch (operator) {
-                case MATCH:
-                    setMatch(operationObject);
-                    break;
-                case PROJECTION:
-                    setProject(operationObject);
-                    break;
-                case GROUP_BY:
-                    setGroup(operationObject);
-                    break;
-                default:
-                    break;
-
-            }
+            operations.add(new BasicDBObject(operator.getLabel(), operationObject));
         }
+    }
+
+    public DBObject getFirstOperation() {
+        if (!isEmpty()) {
+            return operations.get(0);
+        }
+        return null;
+    }
+
+    public List<DBObject> getOperationsExceptTheFirst() {
+        if (operations.size() > 1) {
+            return operations.subList(1, operations.size());
+        }
+
+        return Collections.emptyList();
     }
 }
