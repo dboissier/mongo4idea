@@ -28,24 +28,35 @@ import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.ex.util.LexerEditorHighlighter;
 import com.intellij.openapi.editor.highlighter.EditorHighlighter;
 import com.intellij.openapi.fileTypes.PlainTextSyntaxHighlighterFactory;
+import com.intellij.openapi.ui.popup.PopupChooserBuilder;
+import com.intellij.ui.components.JBList;
+import com.intellij.ui.components.panels.NonOpaquePanel;
 import com.intellij.util.Alarm;
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 import org.apache.commons.lang.StringUtils;
+import org.codinjutsu.tools.mongo.model.MongoAggregateOperator;
 import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.LinkedList;
+import java.util.List;
 
 public class QueryPanel extends JPanel implements Disposable {
 
+    private static final Icon ADD_ICON = GuiUtils.loadIcon("add.png");
+
     private JPanel mainPanel;
     private JPanel editorPanel;
+    private NonOpaquePanel headQueryPanel;
 
-    private Editor matchEditor;
     private Editor projectEditor;
     private Editor groupEditor;
+
+    private List<OperatorPanel> operatorPanels = new LinkedList<OperatorPanel>();
+
     private final Alarm myUpdateAlarm = new Alarm(Alarm.ThreadToUse.SWING_THREAD);
 
 
@@ -60,34 +71,36 @@ public class QueryPanel extends JPanel implements Disposable {
     private QueryPanel(boolean withEditor) {
 
         setLayout(new BorderLayout());
+
+        JLabel addLabel = new JLabel();
+        addLabel.setIcon(ADD_ICON);
+        addLabel.setToolTipText("Add operation");
+        addLabel.addMouseListener(new AddOperatorPanelAction(addLabel, this));
+        headQueryPanel.add(addLabel, BorderLayout.EAST);
+        headQueryPanel.add(new JLabel("Query options (CTRL+F5 to execute)"), BorderLayout.WEST);
+
         add(mainPanel, BorderLayout.CENTER);
         editorPanel.setLayout(new BoxLayout(editorPanel, BoxLayout.Y_AXIS));
 
         if (withEditor) {
-            matchEditor = createEditor();
-            JPanel matchEditorComponent = (JPanel) matchEditor.getComponent();
-            matchEditorComponent.setBorder(BorderFactory.createTitledBorder("$match"));
-            editorPanel.add(matchEditorComponent);
-            myUpdateAlarm.setActivationComponent(matchEditorComponent);
-
-            projectEditor = createEditor();
-            JPanel projectEditorComponent = (JPanel) projectEditor.getComponent();
-            projectEditorComponent.setBorder(BorderFactory.createTitledBorder("$project"));
-            editorPanel.add(projectEditorComponent);
-            myUpdateAlarm.setActivationComponent(projectEditorComponent);
-
-            groupEditor = createEditor();
-            JPanel groupEditorComponent = (JPanel) groupEditor.getComponent();
-            groupEditorComponent.setBorder(BorderFactory.createTitledBorder("$group"));
-            editorPanel.add(groupEditorComponent);
-            myUpdateAlarm.setActivationComponent(groupEditorComponent);
-
+            addOperatorPanel(MongoAggregateOperator.MATCH);
         }
 
     }
 
+    private void addOperatorPanel(MongoAggregateOperator selectedOperator) {
+        OperatorPanel matchOperatorPanel = new OperatorPanel(createEditor(), selectedOperator);
+        matchOperatorPanel.getCloseLabel().addMouseListener(new RemoveOperatorPanelAction(this, matchOperatorPanel));
+        operatorPanels.add(matchOperatorPanel);
+        myUpdateAlarm.setActivationComponent(matchOperatorPanel);
 
-    private Editor createEditor() {
+        editorPanel.invalidate();
+        editorPanel.add(matchOperatorPanel);
+        editorPanel.validate();
+    }
+
+
+    private static Editor createEditor() {
         EditorFactory editorFactory = EditorFactory.getInstance();
         Document editorDocument = editorFactory.createDocument("");
         EditorEx editor = (EditorEx) editorFactory.createEditor(editorDocument);
@@ -125,37 +138,11 @@ public class QueryPanel extends JPanel implements Disposable {
         return new LexerEditorHighlighter(PlainTextSyntaxHighlighterFactory.getSyntaxHighlighter(language, null, null), settings);
     }
 
-    public String getMatchText() {
-        return StringUtils.trim(matchEditor.getDocument().getText());
-    }
-
-    public String getProjectText() {
-        return StringUtils.trim(projectEditor.getDocument().getText());
-    }
-
-    public String getGroupText() {
-        return StringUtils.trim(groupEditor.getDocument().getText());
-    }
-
     public MongoQueryOptions getQueryOptions() {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
 
-        String matchText = getMatchText();
-        if (!StringUtils.isBlank(matchText)) {
-            DBObject filter = (DBObject) JSON.parse(matchText);
-            mongoQueryOptions.setMatch(filter);
-        }
-
-        String projectText = getProjectText();
-        if (!StringUtils.isBlank(projectText)) {
-            DBObject filter = (DBObject) JSON.parse(projectText);
-            mongoQueryOptions.setProject(filter);
-        }
-
-        String groupText = getGroupText();
-        if (!StringUtils.isBlank(groupText)) {
-            DBObject filter = (DBObject) JSON.parse(groupText);
-            mongoQueryOptions.setGroup(filter);
+        for (OperatorPanel operatorPanel : operatorPanels) {
+            mongoQueryOptions.addQuery(operatorPanel.getOperator(), operatorPanel.getQuery());
         }
 
         return mongoQueryOptions;
@@ -164,14 +151,102 @@ public class QueryPanel extends JPanel implements Disposable {
     @Override
     public void dispose() {
         myUpdateAlarm.cancelAllRequests();
-        if (matchEditor != null) {
-            EditorFactory.getInstance().releaseEditor(matchEditor);
+        for (OperatorPanel operatorPanel : operatorPanels) {
+            operatorPanel.dispose();
         }
-        if (projectEditor != null) {
-            EditorFactory.getInstance().releaseEditor(projectEditor);
+    }
+
+    private static class OperatorPanel extends JPanel implements Disposable {
+
+        private static final Icon CLOSE_ICON = GuiUtils.loadIcon("close.png");
+
+        private final Editor editor;
+        private final MongoAggregateOperator operator;
+        private final JLabel closeLabel;
+
+        private OperatorPanel(Editor editor, MongoAggregateOperator operator) {
+            this.editor = editor;
+            this.operator = operator;
+            setLayout(new BorderLayout());
+            NonOpaquePanel headPanel = new NonOpaquePanel();
+            JLabel operatorLabel = new JLabel(operator.getOperator());
+            headPanel.add(operatorLabel, BorderLayout.WEST);
+            closeLabel = new JLabel();
+            closeLabel.setIcon(CLOSE_ICON);
+            closeLabel.setToolTipText("Close operation");
+            headPanel.add(closeLabel, BorderLayout.EAST);
+
+            add(headPanel, BorderLayout.NORTH);
+            add(editor.getComponent(), BorderLayout.CENTER);
         }
-        if (groupEditor != null) {
-            EditorFactory.getInstance().releaseEditor(groupEditor);
+
+        public JLabel getCloseLabel() {
+            return closeLabel;
         }
+
+        public String getQuery() {
+            return StringUtils.trim(editor.getDocument().getText());
+        }
+
+        public MongoAggregateOperator getOperator() {
+            return operator;
+        }
+
+        @Override
+        public void dispose() {
+            EditorFactory.getInstance().releaseEditor(editor);
+        }
+    }
+
+    private static class RemoveOperatorPanelAction extends MouseAdapter {
+
+        private final QueryPanel queryPanel;
+        private final OperatorPanel operatorPanel;
+
+        private RemoveOperatorPanelAction(QueryPanel queryPanel, OperatorPanel operatorPanel) {
+            this.queryPanel = queryPanel;
+            this.operatorPanel = operatorPanel;
+        }
+
+        @Override
+        public void mousePressed(MouseEvent mouseEvent) {
+            queryPanel.removeOperatorPanel(operatorPanel);
+        }
+    }
+
+    private static class AddOperatorPanelAction extends MouseAdapter {
+
+        private final JLabel addLabel;
+        private final QueryPanel queryPanel;
+
+        private AddOperatorPanelAction(JLabel addLabel, QueryPanel queryPanel) {
+            this.addLabel = addLabel;
+            this.queryPanel = queryPanel;
+        }
+
+        @Override
+        public void mousePressed(MouseEvent mouseEvent) {
+            final JList list = new JBList(MongoAggregateOperator.values());
+            new PopupChooserBuilder(list).
+                    setMovable(false).
+                    setItemChoosenCallback(new Runnable() {
+                        public void run() {
+                            MongoAggregateOperator selectedOperator = (MongoAggregateOperator) list.getSelectedValue();
+                            if (selectedOperator == null) return;
+                            queryPanel.addOperatorPanel(selectedOperator);
+                        }
+                    })
+                    .createPopup()
+                    .showInCenterOf(addLabel);
+
+
+        }
+    }
+
+    private void removeOperatorPanel(OperatorPanel operatorPanel) {
+        operatorPanels.remove(operatorPanel);
+        editorPanel.invalidate();
+        editorPanel.remove(operatorPanel);
+        editorPanel.validate();
     }
 }

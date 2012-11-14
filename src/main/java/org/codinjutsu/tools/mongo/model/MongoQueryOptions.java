@@ -18,6 +18,8 @@ package org.codinjutsu.tools.mongo.model;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
+import org.apache.commons.lang.StringUtils;
 
 public class MongoQueryOptions {
 
@@ -59,5 +61,26 @@ public class MongoQueryOptions {
 
     public boolean isSimpleFilter() {
         return match != null && project == null && group == null;
+    }
+
+    public void addQuery(MongoAggregateOperator operator, String query) {
+        if (!StringUtils.isBlank(query)) {
+            DBObject operationObject = (DBObject) JSON.parse(query);
+
+            switch (operator) {
+                case MATCH:
+                    setMatch(operationObject);
+                    break;
+                case PROJECTION:
+                    setProject(operationObject);
+                    break;
+                case GROUP_BY:
+                    setGroup(operationObject);
+                    break;
+                default:
+                    break;
+
+            }
+        }
     }
 }

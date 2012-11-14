@@ -38,4 +38,9 @@ public class ExecuteQuery extends AnAction {
     public void actionPerformed(AnActionEvent anActionEvent) {
         mongoRunnerPanel.executeQuery();
     }
+
+    @Override
+    public void update(AnActionEvent event) {
+        event.getPresentation().setEnabled(mongoRunnerPanel.getCurrentMongoCollection() != null);
+    }
 }

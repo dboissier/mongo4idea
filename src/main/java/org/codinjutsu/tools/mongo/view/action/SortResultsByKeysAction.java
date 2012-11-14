@@ -45,4 +45,9 @@ public class SortResultsByKeysAction extends ToggleAction {
         sortedByKey = sorted;
         mongoRunnerPanel.setSortedByKey(sorted);
     }
+
+    @Override
+    public void update(AnActionEvent event) {
+        event.getPresentation().setEnabled(mongoRunnerPanel.getCurrentMongoCollection() != null);
+    }
 }

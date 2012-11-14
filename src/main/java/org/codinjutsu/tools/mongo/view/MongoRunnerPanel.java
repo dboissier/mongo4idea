@@ -106,6 +106,10 @@ public class MongoRunnerPanel extends JPanel {
         PopupHandler.installPopupHandler(component, group, "POPUP", actionManager);
     }
 
+    public MongoCollection getCurrentMongoCollection() {
+        return currentMongoCollection;
+    }
+
     public void setSortedByKey(boolean sortedByKey) {
         sortByKey = sortedByKey;
 
@@ -133,15 +137,6 @@ public class MongoRunnerPanel extends JPanel {
         }
     }
 
-    private void updateResultTree(MongoCollectionResult mongoCollectionResult) {
-        jsonResultTree.invalidate();
-        jsonResultTree.setVisible(true);
-        JsonTreeModel jsonTreeModel = new JsonTreeModel(mongoCollectionResult);
-        jsonTreeModel.setMongoComparator(new MongoKeyComparator());
-        jsonResultTree.setModel(jsonTreeModel);
-        jsonResultTree.validate();
-    }
-
     public String getSelectedNodeStringifiedValue() {
         DefaultMutableTreeNode lastSelectedResultNode = (DefaultMutableTreeNode) jsonResultTree.getLastSelectedPathComponent();
         if (lastSelectedResultNode == null) {
@@ -154,6 +149,15 @@ public class MongoRunnerPanel extends JPanel {
             return stringifyResult(lastSelectedResultNode);
         }
         return null;
+    }
+
+    private void updateResultTree(MongoCollectionResult mongoCollectionResult) {
+        jsonResultTree.invalidate();
+        jsonResultTree.setVisible(true);
+        JsonTreeModel jsonTreeModel = new JsonTreeModel(mongoCollectionResult);
+        jsonTreeModel.setMongoComparator(new MongoKeyComparator());
+        jsonResultTree.setModel(jsonTreeModel);
+        jsonResultTree.validate();
     }
 
     private String stringifyResult(DefaultMutableTreeNode selectedResultNode) {
