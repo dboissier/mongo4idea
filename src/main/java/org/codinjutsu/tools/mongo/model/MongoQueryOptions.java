@@ -27,10 +27,13 @@ import java.util.List;
 
 public class MongoQueryOptions {
 
-    private List<DBObject> operations = new LinkedList<DBObject>();
+    private static final BasicDBObject EMPTY_FILTER = new BasicDBObject();
 
-    public boolean isEmpty() {
-        return operations.isEmpty();
+    private List<DBObject> operations = new LinkedList<DBObject>();
+    private DBObject filter = EMPTY_FILTER;
+
+    public boolean isAggregate() {
+        return !operations.isEmpty();
     }
 
 
@@ -43,7 +46,7 @@ public class MongoQueryOptions {
     }
 
     public DBObject getFirstOperation() {
-        if (!isEmpty()) {
+        if (isAggregate()) {
             return operations.get(0);
         }
         return null;
@@ -55,5 +58,23 @@ public class MongoQueryOptions {
         }
 
         return Collections.emptyList();
+    }
+
+    public void setFilter(String query) {
+        if (!StringUtils.isBlank(query)) {
+            filter = (DBObject) JSON.parse(query);
+        }
+    }
+
+    public DBObject getFilter() {
+        return filter;
+    }
+
+    public List<DBObject> getAllOperations() {
+        return operations;
+    }
+
+    public boolean isSomethingSet() {
+        return !(operations.isEmpty() && filter.equals(EMPTY_FILTER));
     }
 }

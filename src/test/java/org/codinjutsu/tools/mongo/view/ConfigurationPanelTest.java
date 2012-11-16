@@ -1,9 +1,7 @@
 package org.codinjutsu.tools.mongo.view;
 
-import org.codinjutsu.tools.mongo.MongoComponent;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
-import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.mockito.Mockito;
 import org.uispec4j.Panel;
 import org.uispec4j.TextBox;

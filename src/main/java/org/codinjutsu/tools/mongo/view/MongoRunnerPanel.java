@@ -16,33 +16,23 @@
 
 package org.codinjutsu.tools.mongo.view;
 
-import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.ui.Splitter;
-import com.intellij.ui.PopupHandler;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
+import org.codinjutsu.tools.mongo.model.MongoServer;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
-import org.codinjutsu.tools.mongo.view.action.CopyResultAction;
+import org.codinjutsu.tools.mongo.view.action.AddOperatorPanelAction;
+import org.codinjutsu.tools.mongo.view.action.CopyQueryAction;
 import org.codinjutsu.tools.mongo.view.action.ExecuteQuery;
-import org.codinjutsu.tools.mongo.view.action.SortResultsByKeysAction;
-import org.codinjutsu.tools.mongo.view.model.JsonTreeModel;
-import org.codinjutsu.tools.mongo.view.model.MongoComparator;
-import org.codinjutsu.tools.mongo.view.model.ResultNode;
-import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
-import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
-import java.util.LinkedList;
-import java.util.List;
 
 public class MongoRunnerPanel extends JPanel {
 
@@ -52,21 +42,23 @@ public class MongoRunnerPanel extends JPanel {
     private JPanel toolBarPanel;
     private Splitter splitter;
     private JLabel errorLabel;
-    private final JsonTreeView jsonResultTree = new JsonTreeView();
     private QueryPanel queryPanel;
 
-    private boolean sortByKey = false;
     private final MongoConfiguration configuration;
     private final MongoManager mongoManager;
     private MongoCollection currentMongoCollection;
+    private final MongoResultPanel resultPanel;
 
     public MongoRunnerPanel(MongoConfiguration configuration, MongoManager mongoManager) {
         this.configuration = configuration;
         this.mongoManager = mongoManager;
 
-        queryPanel = createQueryPanel();
+        queryPanel = createQueryPanel(configuration.getServerVersion());
         splitter.setFirstComponent(queryPanel);
-        splitter.setSecondComponent(new JScrollPane(jsonResultTree));
+
+        resultPanel = createResultPanel();
+        splitter.setSecondComponent(resultPanel);
+
         splitter.setProportion(0.30f);
 
 
@@ -75,53 +67,44 @@ public class MongoRunnerPanel extends JPanel {
         setLayout(new BorderLayout());
         add(rootPanel);
 
-        jsonResultTree.setVisible(false);
+        resultPanel.shouldShowTreeResult(false);
     }
 
-    protected QueryPanel createQueryPanel() {
-        return QueryPanel.queryPanel();
+    private MongoResultPanel createResultPanel() {
+        return new MongoResultPanel();
+    }
+
+    protected QueryPanel createQueryPanel(String serverVersion) {
+        if (MongoServer.isCompliantWithPipelineOperations(serverVersion)) {
+            return QueryPanel.withAggregation();
+        }
+        return QueryPanel.withSimpleFilter();
     }
 
     public void installActions() {
 
-        DefaultActionGroup actionGroup = new DefaultActionGroup("MongoResultsGroup", true);
+        DefaultActionGroup actionQueryGroup = new DefaultActionGroup("MongoQueryGroup", true);
         if (ApplicationManager.getApplication() != null) {
-            actionGroup.add(new ExecuteQuery(this));
-            actionGroup.addSeparator();
-            actionGroup.add(new CopyResultAction(this));
-            actionGroup.addSeparator();
-            actionGroup.add(new SortResultsByKeysAction(this));
+            actionQueryGroup.add(new ExecuteQuery(this));
+            actionQueryGroup.addSeparator();
+            actionQueryGroup.add(new AddOperatorPanelAction(queryPanel));
+            actionQueryGroup.add(new CopyQueryAction(this));
         }
-        GuiUtils.installActionGroupInToolBar(actionGroup, toolBarPanel, ActionManager.getInstance(), "MongoResultsActions");
-        installActionGroupInPopupMenu(actionGroup, jsonResultTree, ActionManager.getInstance());
+        GuiUtils.installActionGroupInToolBar(actionQueryGroup, toolBarPanel, ActionManager.getInstance(), "MongoQueryGroupActions", false);
+
+        resultPanel.installActions();
 
     }
 
-    private static void installActionGroupInPopupMenu(ActionGroup group,
-                                                      JComponent component,
-                                                      ActionManager actionManager) {
-        if (actionManager == null) {
-            return;
-        }
-        PopupHandler.installPopupHandler(component, group, "POPUP", actionManager);
-    }
 
     public MongoCollection getCurrentMongoCollection() {
         return currentMongoCollection;
     }
 
-    public void setSortedByKey(boolean sortedByKey) {
-        sortByKey = sortedByKey;
-
-        jsonResultTree.invalidate();
-        ((DefaultTreeModel) jsonResultTree.getModel()).reload();
-        jsonResultTree.repaint();
-        jsonResultTree.validate();
-    }
 
     public void showResults(MongoCollection mongoCollection) {
         currentMongoCollection = mongoCollection;
-        updateResultTree(mongoManager.loadCollectionValues(configuration, currentMongoCollection));
+        resultPanel.updateResultTree(mongoManager.loadCollectionValues(configuration, currentMongoCollection));
     }
 
     public void executeQuery() {
@@ -129,73 +112,22 @@ public class MongoRunnerPanel extends JPanel {
             errorLabel.setVisible(false);
 
             MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(configuration, currentMongoCollection, queryPanel.getQueryOptions());
-            updateResultTree(mongoCollectionResult);
+            resultPanel.updateResultTree(mongoCollectionResult);
         } catch (Exception ex) {
             errorLabel.setIcon(FAIL_ICON);
-            errorLabel.setText(String.format("[%s]: %s",ex.getClass().getSimpleName(), ex.getMessage()));
+            errorLabel.setText(String.format("[%s]: %s", ex.getClass().getSimpleName(), ex.getMessage()));
             errorLabel.setVisible(true);
         }
     }
 
-    public String getSelectedNodeStringifiedValue() {
-        DefaultMutableTreeNode lastSelectedResultNode = (DefaultMutableTreeNode) jsonResultTree.getLastSelectedPathComponent();
-        if (lastSelectedResultNode == null) {
-            return null;
+    public String getQueryStringifiedValue() {
+        if (queryPanel.getQueryOptions().isAggregate()) {
+            return String.format("[ %s ]", StringUtils.join(queryPanel.getQueryOptions().getAllOperations(), ","));
         }
-        Object userObject = lastSelectedResultNode.getUserObject();
-        if (userObject instanceof MongoNodeDescriptor) {
-            return userObject.toString();
-        } else if (userObject instanceof ResultNode) {
-            return stringifyResult(lastSelectedResultNode);
-        }
-        return null;
+        return queryPanel.getQueryOptions().getFilter().toString();
     }
 
-    private void updateResultTree(MongoCollectionResult mongoCollectionResult) {
-        jsonResultTree.invalidate();
-        jsonResultTree.setVisible(true);
-        JsonTreeModel jsonTreeModel = new JsonTreeModel(mongoCollectionResult);
-        jsonTreeModel.setMongoComparator(new MongoKeyComparator());
-        jsonResultTree.setModel(jsonTreeModel);
-        jsonResultTree.validate();
-    }
-
-    private String stringifyResult(DefaultMutableTreeNode selectedResultNode) {
-        List<Object> stringifiedObjects = new LinkedList<Object>();
-        for (int i = 0; i < selectedResultNode.getChildCount(); i++) {
-            DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) selectedResultNode.getChildAt(i);
-            stringifiedObjects.add(childNode.getUserObject());
-        }
-
-        return String.format("[ %s ]", StringUtils.join(stringifiedObjects, " , "));
-    }
-
-    private class MongoKeyComparator implements MongoComparator {
-        @Override
-        public boolean isApplicable() {
-            return sortByKey;
-        }
-
-        @Override
-        public int compare(DefaultMutableTreeNode node1, DefaultMutableTreeNode node2) {
-            Object userObjectNode1 = node1.getUserObject();
-            Object userObjectNode2 = node2.getUserObject();
-            if (userObjectNode1 instanceof MongoKeyValueDescriptor) {
-                MongoKeyValueDescriptor mongoKeyValueDescriptorNode1 = (MongoKeyValueDescriptor) userObjectNode1;
-                if (userObjectNode2 instanceof MongoKeyValueDescriptor) {
-                    MongoKeyValueDescriptor mongoKeyValueDescriptorNode2 = (MongoKeyValueDescriptor) userObjectNode2;
-
-                    return mongoKeyValueDescriptorNode1.getKey().compareTo(mongoKeyValueDescriptorNode2.getKey());
-                }
-
-                return 1;
-            }
-
-            if (userObjectNode2 instanceof MongoKeyValueDescriptor) {
-                return -1;
-            }
-
-            return 0;
-        }
+    public boolean isSomeQuerySet() {
+        return queryPanel.getQueryOptions().isSomethingSet();
     }
 }

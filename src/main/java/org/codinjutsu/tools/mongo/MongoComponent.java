@@ -49,7 +49,7 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
     public static final String MONGO_COMPONENT_NAME = "Mongo";
 
     public static final String MONGO_EXPLORER = "Mongo Explorer";
-    public static final String MONGO_RUNNER = "Mongo Results";
+    public static final String MONGO_RUNNER = "Mongo Runner";
 
     private static final String MONGO_PLUGIN_NAME = "Mongo Plugin";
 
@@ -101,8 +101,9 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
 
     public void projectOpened() {
         mongoManager = new MongoManager();
+        //TODO refactor
+        configuration.setServerVersion(mongoManager.connect(configuration.getServerName(), configuration.getServerPort(), configuration.getUsername(), configuration.getPassword()));
         ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
-
         final MongoRunnerPanel mongoRunnerPanel = new MongoRunnerPanel(configuration, mongoManager);
         Content mongoRunner = ContentFactory.SERVICE.getInstance().createContent(mongoRunnerPanel, null, false);
         final ToolWindow toolMongoRunnerWindow = toolWindowManager.registerToolWindow(MONGO_RUNNER, false, ToolWindowAnchor.BOTTOM);

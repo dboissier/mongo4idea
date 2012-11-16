@@ -101,7 +101,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
             actionGroup.addSeparator();
             actionGroup.add(new OpenPluginSettingsAction());
         }
-        GuiUtils.installActionGroupInToolBar(actionGroup, toolBarPanel, ActionManager.getInstance(), "MongoExplorerActions");
+        GuiUtils.installActionGroupInToolBar(actionGroup, toolBarPanel, ActionManager.getInstance(), "MongoExplorerActions", true);
 
         mongoTree.addMouseListener(new MouseAdapter() {
             @Override

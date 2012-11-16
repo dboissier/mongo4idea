@@ -19,7 +19,7 @@ package org.codinjutsu.tools.mongo.view.action;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
-import org.codinjutsu.tools.mongo.view.MongoRunnerPanel;
+import org.codinjutsu.tools.mongo.view.MongoResultPanel;
 
 import javax.swing.*;
 
@@ -28,11 +28,11 @@ public class SortResultsByKeysAction extends ToggleAction {
     private static final Icon SORT = GuiUtils.loadIcon("sortByKey.png");
 
     private boolean sortedByKey = false;
-    private final MongoRunnerPanel mongoRunnerPanel;
+    private final MongoResultPanel mongoResultPanel;
 
-    public SortResultsByKeysAction(MongoRunnerPanel mongoRunnerPanel) {
-        super("Sort by key", "Sort by key", SORT);
-        this.mongoRunnerPanel = mongoRunnerPanel;
+    public SortResultsByKeysAction(MongoResultPanel mongoResultPanel) {
+        super("Sort results by key", "Sort results by key", SORT);
+        this.mongoResultPanel = mongoResultPanel;
     }
 
     @Override
@@ -43,11 +43,11 @@ public class SortResultsByKeysAction extends ToggleAction {
     @Override
     public void setSelected(AnActionEvent anActionEvent, boolean sorted) {
         sortedByKey = sorted;
-        mongoRunnerPanel.setSortedByKey(sorted);
+        mongoResultPanel.setSortedByKey(sorted);
     }
 
     @Override
     public void update(AnActionEvent event) {
-        event.getPresentation().setEnabled(mongoRunnerPanel.getCurrentMongoCollection() != null);
+        event.getPresentation().setEnabled(!mongoResultPanel.isNotEmpty());
     }
 }

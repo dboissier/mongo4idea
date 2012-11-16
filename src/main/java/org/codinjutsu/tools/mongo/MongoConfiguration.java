@@ -35,6 +35,8 @@ public class MongoConfiguration {
 
     public List<String> collectionsToIgnore = new LinkedList<String>();
 
+    private String serverVersion;
+
 
     public String getServerName() {
         return serverName;
@@ -75,5 +77,13 @@ public class MongoConfiguration {
 
     public List<String> getCollectionsToIgnore() {
         return collectionsToIgnore;
+    }
+
+    public void setServerVersion(String serverVersion) {
+        this.serverVersion = serverVersion;
+    }
+
+    public String getServerVersion() {
+        return serverVersion;
     }
 }

@@ -48,6 +48,8 @@ public class ConfigurationPanel {
 
     private final MongoManager mongoManager;
 
+    private String serverVersion = "";
+
 
     public ConfigurationPanel(MongoManager mongoManager) {
         this.mongoManager = mongoManager;
@@ -66,7 +68,7 @@ public class ConfigurationPanel {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    mongoManager.connect(getServerName(), getServerPort(), getUsername(), getPassword());
+                    serverVersion = mongoManager.connect(getServerName(), getServerPort(), getUsername(), getPassword());
 
                     feedbackLabel.setIcon(SUCCESS);
                     feedbackLabel.setText("");
@@ -114,6 +116,7 @@ public class ConfigurationPanel {
         configuration.setUsername(getUsername());
         configuration.setPassword(getPassword());
         configuration.setCollectionsToIgnore(getCollectionsToIgnore());
+        configuration.setServerVersion(serverVersion);
     }
 
     private String getServerName() {
@@ -154,5 +157,6 @@ public class ConfigurationPanel {
         usernameField.setText(configuration.getUsername());
         passwordField.setText(configuration.getPassword());
         collectionsToIgnoreField.setText(StringUtils.join(configuration.getCollectionsToIgnore(), ","));
+        serverVersion = configuration.getServerVersion();
     }
 }

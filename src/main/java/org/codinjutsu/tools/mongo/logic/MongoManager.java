@@ -22,13 +22,12 @@ import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.model.*;
 
 import java.net.UnknownHostException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 public class MongoManager {
 
-    public void connect(String serverName, int serverPort, String username, String password) {
+    public String connect(String serverName, int serverPort, String username, String password) {
         try {
             Mongo mongo = new Mongo(serverName, serverPort);
             List<String> databaseNames = mongo.getDatabaseNames();
@@ -36,10 +35,13 @@ public class MongoManager {
                 throw new ConfigurationException("No databases were found");
             }
 
+
             DB databaseForTesting = mongo.getDB(databaseNames.get(0));
             if (StringUtils.isNotBlank(username)) {
                 databaseForTesting.authenticate(username, password.toCharArray());
             }
+            return (String) databaseForTesting.eval("db.version();");
+
         } catch (UnknownHostException ex) {
             throw new ConfigurationException(ex);
         }
@@ -79,11 +81,12 @@ public class MongoManager {
             DB database = mongo.getDB(mongoCollection.getDatabaseName());
             DBCollection collection = database.getCollection(mongoCollection.getName());
 
-            if (mongoQueryOptions.isEmpty()) {
-                return findAll(mongoCollectionResult, collection);
+            if (mongoQueryOptions.isAggregate()) {
+                return aggregate(mongoQueryOptions, mongoCollectionResult, collection);
+
             }
 
-            return aggregate(mongoQueryOptions, mongoCollectionResult, collection);
+            return find(mongoQueryOptions, mongoCollectionResult, collection);
 
         } catch (UnknownHostException ex) {
             throw new ConfigurationException(ex);
@@ -100,11 +103,21 @@ public class MongoManager {
         return mongoCollectionResult;
     }
 
-    private MongoCollectionResult findAll(MongoCollectionResult mongoCollectionResult, DBCollection collection) {
-        DBCursor cursor = collection.find();
+    private MongoCollectionResult find(MongoQueryOptions mongoQueryOptions, MongoCollectionResult mongoCollectionResult, DBCollection collection) {
+        DBObject filter = mongoQueryOptions.getFilter();
+        long count = collection.count(filter);
+        long maxResults;
+        if (count > 200) {
+            maxResults = 200;
+        } else {
+            maxResults = count;
+        }
+        DBCursor cursor = collection.find(filter);
         try {
-            while (cursor.hasNext()) {
+            int index = 0;
+            while (cursor.hasNext() && index < maxResults) {
                 mongoCollectionResult.add(cursor.next());
+                index++;
             }
         } finally {
             cursor.close();

@@ -31,13 +31,13 @@ public class GuiUtils {
         return IconLoader.findIcon(ICON_FOLDER + iconFilename);
     }
 
-    public static void installActionGroupInToolBar(DefaultActionGroup actionGroup, JPanel toolBarPanel, ActionManager actionManager, String toolbarName) {
+    public static void installActionGroupInToolBar(DefaultActionGroup actionGroup, JPanel toolBarPanel, ActionManager actionManager, String toolbarName, boolean horizontal) {
         if (actionManager == null) {
             return;
         }
 
         JComponent actionToolbar = ActionManager.getInstance()
-                .createActionToolbar(toolbarName, actionGroup, true).getComponent();
+                .createActionToolbar(toolbarName, actionGroup, horizontal).getComponent();
         toolBarPanel.add(actionToolbar, BorderLayout.CENTER);
     }
 }

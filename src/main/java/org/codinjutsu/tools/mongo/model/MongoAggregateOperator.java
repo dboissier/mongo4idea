@@ -18,7 +18,13 @@ package org.codinjutsu.tools.mongo.model;
 
 public enum MongoAggregateOperator {
 
-    MATCH("$match"), PROJECTION("$project"), GROUP_BY("$groupBy");
+    MATCH("$match"),
+    PROJECT("$project"),
+    GROUP("$group"),
+    SORT("$sort"),
+    LIMIT("$limit"),
+    SKIP("$skip"),
+    UNWIND("$unwind");
 
     private final String operator;
 
@@ -28,5 +34,11 @@ public enum MongoAggregateOperator {
 
     public String getLabel() {
         return operator;
+    }
+
+
+    @Override
+    public String toString() {
+        return name().toLowerCase();
     }
 }

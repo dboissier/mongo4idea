@@ -63,8 +63,8 @@ public class JsonTreeModel extends DefaultTreeModel {
     }
 
     private void rebuildCustomizedModel() {
-        DefaultMutableTreeNode sourceRoot = (DefaultMutableTreeNode)super.getRoot();
-        DefaultMutableTreeNode sortedRoot = (DefaultMutableTreeNode)sourceRoot.clone();
+        DefaultMutableTreeNode sourceRoot = (DefaultMutableTreeNode) super.getRoot();
+        DefaultMutableTreeNode sortedRoot = (DefaultMutableTreeNode) sourceRoot.clone();
 
         sortChildNodes(sourceRoot, sortedRoot);
 
@@ -83,8 +83,8 @@ public class JsonTreeModel extends DefaultTreeModel {
     private void sortChildNodes(DefaultMutableTreeNode source, DefaultMutableTreeNode target) {
         List<DefaultMutableTreeNode> mongoNodeList = new LinkedList<DefaultMutableTreeNode>();
         for (int i = 0; i < source.getChildCount(); i++) {
-            DefaultMutableTreeNode sourceChild = (DefaultMutableTreeNode)source.getChildAt(i);
-            DefaultMutableTreeNode targetChild = (DefaultMutableTreeNode)sourceChild.clone();
+            DefaultMutableTreeNode sourceChild = (DefaultMutableTreeNode) source.getChildAt(i);
+            DefaultMutableTreeNode targetChild = (DefaultMutableTreeNode) sourceChild.clone();
 
             sortChildNodes(sourceChild, targetChild);
             mongoNodeList.add(targetChild);

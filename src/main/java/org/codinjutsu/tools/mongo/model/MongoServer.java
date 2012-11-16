@@ -16,10 +16,13 @@
 
 package org.codinjutsu.tools.mongo.model;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.LinkedList;
 import java.util.List;
 
 public class MongoServer {
+
     private final String serverName;
     private final int serverPort;
 
@@ -48,5 +51,20 @@ public class MongoServer {
 
     public List<MongoDatabase> getDatabases() {
         return databases;
+    }
+
+    public static boolean isCompliantWithPipelineOperations(String serverVersion) {
+
+        if (StringUtils.isBlank(serverVersion)) {
+            return false;
+        }
+
+        String[] versionNumbers = StringUtils.split(serverVersion, ".");
+        if (Integer.parseInt(versionNumbers[0]) >= 2
+                && Integer.parseInt(versionNumbers[1]) >= 2) {
+            return true;
+        }
+
+        return false;
     }
 }

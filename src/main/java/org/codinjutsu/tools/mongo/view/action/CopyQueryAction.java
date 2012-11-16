@@ -21,30 +21,26 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
-import org.codinjutsu.tools.mongo.view.MongoResultPanel;
+import org.codinjutsu.tools.mongo.view.MongoRunnerPanel;
 
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 
-public class CopyResultAction extends AnAction implements DumbAware {
+public class CopyQueryAction extends AnAction implements DumbAware {
+    private final MongoRunnerPanel mongoRunnerPanel;
 
-    private final MongoResultPanel mongoResultPanel;
-
-    public CopyResultAction(MongoResultPanel mongoResultPanel) {
-        super("Copy", "Copy results to clipboard", GuiUtils.loadIcon("copy.png"));
-        this.mongoResultPanel = mongoResultPanel;
-
-        registerCustomShortcutSet(KeyEvent.VK_C, InputEvent.CTRL_MASK, mongoResultPanel);
+    public CopyQueryAction(MongoRunnerPanel mongoRunnerPanel) {
+        super("Copy query", "Copy the query to clipboard", GuiUtils.loadIcon("copy.png"));
+        this.mongoRunnerPanel = mongoRunnerPanel;
     }
 
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
-        CopyPasteManager.getInstance().setContents(new StringSelection(mongoResultPanel.getSelectedNodeStringifiedValue()));
+        CopyPasteManager.getInstance().setContents(new StringSelection(mongoRunnerPanel.getQueryStringifiedValue()));
     }
+
 
     @Override
     public void update(AnActionEvent event) {
-        event.getPresentation().setEnabled(mongoResultPanel.getSelectedNodeStringifiedValue() != null);
+        event.getPresentation().setEnabled(mongoRunnerPanel.isSomeQuerySet());
     }
 }

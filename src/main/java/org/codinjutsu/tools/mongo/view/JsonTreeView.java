@@ -22,6 +22,7 @@ import javax.swing.tree.TreeSelectionModel;
 public class JsonTreeView extends JTree {
 
     public JsonTreeView() {
+        setName("resultTree");
         setCellRenderer(new MongoResultCellRenderer());
         getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     }
