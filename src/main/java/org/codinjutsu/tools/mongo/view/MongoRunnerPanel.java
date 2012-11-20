@@ -20,6 +20,7 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.ui.Splitter;
+import com.mongodb.util.JSONParseException;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
@@ -128,6 +129,10 @@ public class MongoRunnerPanel extends JPanel {
     }
 
     public boolean isSomeQuerySet() {
-        return queryPanel.getQueryOptions().isSomethingSet();
+        try {
+            return queryPanel.getQueryOptions().isSomethingSet();
+        } catch (JSONParseException e) {
+            return false;
+        }
     }
 }

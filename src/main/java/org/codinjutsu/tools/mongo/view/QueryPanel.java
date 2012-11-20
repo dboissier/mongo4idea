@@ -44,7 +44,6 @@ import java.util.List;
 
 public class QueryPanel extends JPanel implements Disposable {
 
-
     private List<OperatorPanel> operatorPanels = new LinkedList<OperatorPanel>();
 
     private boolean withAggregation = false;
@@ -53,35 +52,25 @@ public class QueryPanel extends JPanel implements Disposable {
 
     private FilterPanel filterPanel;
 
-    //TODO create builder
     public static QueryPanel withAggregation() {
-        return new QueryPanel(true, true);
+        return new QueryPanel(true);
     }
 
     public static QueryPanel withSimpleFilter() {
-        return new QueryPanel(false, true);
+        return new QueryPanel(false);
     }
 
-
-    public static QueryPanel withoutEditor() {
-        return new QueryPanel(false, false);
-    }
-
-    private QueryPanel(boolean withAggregation, boolean withEditor) {
+    private QueryPanel(boolean withAggregation) {
         this.withAggregation = withAggregation;
         if (withAggregation) {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-            if (withEditor) {
-                addOperatorPanel(MongoAggregateOperator.MATCH);
-            }
+            addOperatorPanel(MongoAggregateOperator.MATCH);
         } else {
             setLayout(new BorderLayout());
-            if (withEditor) {
-                Editor editor = createEditor();
-                filterPanel = new FilterPanel(editor);
-                add(filterPanel, BorderLayout.CENTER);
-                myUpdateAlarm.setActivationComponent(editor.getComponent());
-            }
+            Editor editor = createEditor();
+            filterPanel = new FilterPanel(editor);
+            add(filterPanel, BorderLayout.CENTER);
+            myUpdateAlarm.setActivationComponent(editor.getComponent());
         }
 
     }
@@ -108,7 +97,7 @@ public class QueryPanel extends JPanel implements Disposable {
     }
 
 
-    private static Editor createEditor() {
+    private Editor createEditor() {
         EditorFactory editorFactory = EditorFactory.getInstance();
         Document editorDocument = editorFactory.createDocument("");
         EditorEx editor = (EditorEx) editorFactory.createEditor(editorDocument);
@@ -249,6 +238,4 @@ public class QueryPanel extends JPanel implements Disposable {
             queryPanel.removeOperatorPanel(operatorPanel);
         }
     }
-
-
 }
