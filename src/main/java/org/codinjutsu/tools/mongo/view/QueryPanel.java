@@ -41,6 +41,7 @@ import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.AddOperatorPanelAction;
 import org.codinjutsu.tools.mongo.view.action.CopyQueryAction;
 import org.codinjutsu.tools.mongo.view.action.ExecuteQuery;
+import org.codinjutsu.tools.mongo.view.action.OperatorCompletionAction;
 
 import javax.swing.*;
 import java.awt.*;
@@ -95,13 +96,12 @@ public class QueryPanel extends JPanel implements Disposable {
     }
 
     private void removeOperatorPanel(OperatorPanel operatorPanel) {
-        operatorPanels.remove(operatorPanel);
-        invalidate();
-        remove(operatorPanel);
-        validate();
-        updateUI();
-
         operatorPanel.dispose();
+        operatorPanels.remove(operatorPanel);
+        queryContainerPanel.invalidate();
+        queryContainerPanel.remove(operatorPanel);
+        queryContainerPanel.validate();
+        queryContainerPanel.updateUI();
     }
 
 
@@ -111,9 +111,10 @@ public class QueryPanel extends JPanel implements Disposable {
         EditorEx editor = (EditorEx) editorFactory.createEditor(editorDocument);
         fillEditorSettings(editor.getSettings());
         attachHighlighter(editor);
-
         return editor;
     }
+
+
 
     private static void fillEditorSettings(final EditorSettings editorSettings) {
         editorSettings.setWhitespacesShown(true);
@@ -224,10 +225,13 @@ public class QueryPanel extends JPanel implements Disposable {
         private final Editor editor;
         private final MongoAggregateOperator operator;
         private final JLabel closeLabel;
+        private final OperatorCompletionAction operatorCompletionAction;
 
         private OperatorPanel(Editor editor, MongoAggregateOperator operator) {
             this.editor = editor;
             this.operator = operator;
+            operatorCompletionAction = new OperatorCompletionAction(editor);
+
             setLayout(new BorderLayout());
             NonOpaquePanel headPanel = new NonOpaquePanel();
             JLabel operatorLabel = new JLabel(operator.getLabel());
@@ -255,6 +259,7 @@ public class QueryPanel extends JPanel implements Disposable {
 
         @Override
         public void dispose() {
+            operatorCompletionAction.dispose();
             EditorFactory.getInstance().releaseEditor(editor);
         }
     }

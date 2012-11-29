@@ -30,6 +30,11 @@
         </component>
     </project-components>
 
+    <!--<extensions defaultExtensionNs="com.intellij">-->
+        <!--<completion.contributor language="TEXT" implementationClass="com.intellij.ui.TextFieldWithAutoCompletionContributor"-->
+                                <!--order="first, before commitCompletion"/>-->
+    <!--</extensions>-->
+
     <change-notes><![CDATA[
 <a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.1.0/CHANGELOG.txt">Changelog</a>
 ]]> </change-notes>
