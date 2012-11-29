@@ -40,7 +40,6 @@ public class MongoRunnerPanel extends JPanel {
     private static final Icon FAIL_ICON = GuiUtils.loadIcon("fail.png");
 
     private JPanel rootPanel;
-    private JPanel toolBarPanel;
     private Splitter splitter;
     private JLabel errorLabel;
     private QueryPanel queryPanel;
@@ -62,9 +61,6 @@ public class MongoRunnerPanel extends JPanel {
 
         splitter.setProportion(0.30f);
 
-
-        toolBarPanel.setLayout(new BorderLayout());
-
         setLayout(new BorderLayout());
         add(rootPanel);
 
@@ -76,23 +72,17 @@ public class MongoRunnerPanel extends JPanel {
     }
 
     protected QueryPanel createQueryPanel(String serverVersion) {
+        QueryPanel aQueryPanel = new QueryPanel();
         if (MongoServer.isCompliantWithPipelineOperations(serverVersion)) {
-            return QueryPanel.withAggregation();
+            aQueryPanel.withAggregation();
+        } else {
+            aQueryPanel.withSimpleFilter();
         }
-        return QueryPanel.withSimpleFilter();
+        return aQueryPanel;
     }
 
     public void installActions() {
-
-        DefaultActionGroup actionQueryGroup = new DefaultActionGroup("MongoQueryGroup", true);
-        if (ApplicationManager.getApplication() != null) {
-            actionQueryGroup.add(new ExecuteQuery(this));
-            actionQueryGroup.addSeparator();
-            actionQueryGroup.add(new AddOperatorPanelAction(queryPanel));
-            actionQueryGroup.add(new CopyQueryAction(this));
-        }
-        GuiUtils.installActionGroupInToolBar(actionQueryGroup, toolBarPanel, ActionManager.getInstance(), "MongoQueryGroupActions", false);
-
+        queryPanel.installActions(this);
         resultPanel.installActions();
 
     }
@@ -118,21 +108,6 @@ public class MongoRunnerPanel extends JPanel {
             errorLabel.setIcon(FAIL_ICON);
             errorLabel.setText(String.format("[%s]: %s", ex.getClass().getSimpleName(), ex.getMessage()));
             errorLabel.setVisible(true);
-        }
-    }
-
-    public String getQueryStringifiedValue() {
-        if (queryPanel.getQueryOptions().isAggregate()) {
-            return String.format("[ %s ]", StringUtils.join(queryPanel.getQueryOptions().getAllOperations(), ","));
-        }
-        return queryPanel.getQueryOptions().getFilter().toString();
-    }
-
-    public boolean isSomeQuerySet() {
-        try {
-            return queryPanel.getQueryOptions().isSomethingSet();
-        } catch (JSONParseException e) {
-            return false;
         }
     }
 }

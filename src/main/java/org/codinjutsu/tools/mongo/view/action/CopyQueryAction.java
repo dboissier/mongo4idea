@@ -21,26 +21,26 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
-import org.codinjutsu.tools.mongo.view.MongoRunnerPanel;
+import org.codinjutsu.tools.mongo.view.QueryPanel;
 
 import java.awt.datatransfer.StringSelection;
 
 public class CopyQueryAction extends AnAction implements DumbAware {
-    private final MongoRunnerPanel mongoRunnerPanel;
+    private final QueryPanel queryPanel;
 
-    public CopyQueryAction(MongoRunnerPanel mongoRunnerPanel) {
+    public CopyQueryAction(QueryPanel queryPanel) {
         super("Copy query", "Copy the query to clipboard", GuiUtils.loadIcon("copy.png"));
-        this.mongoRunnerPanel = mongoRunnerPanel;
+        this.queryPanel = queryPanel;
     }
 
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
-        CopyPasteManager.getInstance().setContents(new StringSelection(mongoRunnerPanel.getQueryStringifiedValue()));
+        CopyPasteManager.getInstance().setContents(new StringSelection(queryPanel.getQueryStringifiedValue()));
     }
 
 
     @Override
     public void update(AnActionEvent event) {
-        event.getPresentation().setEnabled(mongoRunnerPanel.isSomeQuerySet());
+        event.getPresentation().setEnabled(queryPanel.isSomeQuerySet());
     }
 }

@@ -18,6 +18,9 @@ package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.lang.Language;
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
@@ -30,10 +33,14 @@ import com.intellij.openapi.editor.highlighter.EditorHighlighter;
 import com.intellij.openapi.fileTypes.PlainTextSyntaxHighlighterFactory;
 import com.intellij.ui.components.panels.NonOpaquePanel;
 import com.intellij.util.Alarm;
+import com.mongodb.util.JSONParseException;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoAggregateOperator;
 import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
+import org.codinjutsu.tools.mongo.view.action.AddOperatorPanelAction;
+import org.codinjutsu.tools.mongo.view.action.CopyQueryAction;
+import org.codinjutsu.tools.mongo.view.action.ExecuteQuery;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,28 +58,29 @@ public class QueryPanel extends JPanel implements Disposable {
     private final Alarm myUpdateAlarm = new Alarm(Alarm.ThreadToUse.SWING_THREAD);
 
     private FilterPanel filterPanel;
+    private JPanel toolBarPanel;
+    private JPanel mainPanel;
+    private JPanel queryContainerPanel;
 
-    public static QueryPanel withAggregation() {
-        return new QueryPanel(true);
+    public QueryPanel() {
+        toolBarPanel.setLayout(new BorderLayout());
+        setLayout(new BorderLayout());
+        add(mainPanel);
     }
 
-    public static QueryPanel withSimpleFilter() {
-        return new QueryPanel(false);
+    public void withAggregation() {
+        withAggregation = true;
+        queryContainerPanel.setLayout(new BoxLayout(queryContainerPanel, BoxLayout.Y_AXIS));
+        addOperatorPanel(MongoAggregateOperator.MATCH);
     }
 
-    private QueryPanel(boolean withAggregation) {
-        this.withAggregation = withAggregation;
-        if (withAggregation) {
-            setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-            addOperatorPanel(MongoAggregateOperator.MATCH);
-        } else {
-            setLayout(new BorderLayout());
-            Editor editor = createEditor();
-            filterPanel = new FilterPanel(editor);
-            add(filterPanel, BorderLayout.CENTER);
-            myUpdateAlarm.setActivationComponent(editor.getComponent());
-        }
-
+    public void withSimpleFilter() {
+        withAggregation = false;
+        Editor editor = createEditor();
+        filterPanel = new FilterPanel(editor);
+        queryContainerPanel.setLayout(new BorderLayout());
+        queryContainerPanel.add(filterPanel, BorderLayout.CENTER);
+        myUpdateAlarm.setActivationComponent(editor.getComponent());
     }
 
     public void addOperatorPanel(MongoAggregateOperator selectedOperator) {
@@ -82,7 +90,7 @@ public class QueryPanel extends JPanel implements Disposable {
         myUpdateAlarm.setActivationComponent(matchOperatorPanel);
 
         invalidate();
-        add(matchOperatorPanel);
+        queryContainerPanel.add(matchOperatorPanel);
         validate();
     }
 
@@ -159,6 +167,34 @@ public class QueryPanel extends JPanel implements Disposable {
 
     public boolean isAggregate() {
         return withAggregation;
+    }
+
+    public void installActions(MongoRunnerPanel mongoRunnerPanel) {
+        DefaultActionGroup actionQueryGroup = new DefaultActionGroup("MongoQueryGroup", true);
+        if (ApplicationManager.getApplication() != null) {
+            actionQueryGroup.add(new ExecuteQuery(mongoRunnerPanel));
+            actionQueryGroup.addSeparator();
+            actionQueryGroup.add(new AddOperatorPanelAction(this));
+            actionQueryGroup.add(new CopyQueryAction(this));
+        }
+        GuiUtils.installActionGroupInToolBar(actionQueryGroup, toolBarPanel, ActionManager.getInstance(), "MongoQueryGroupActions", false);
+    }
+
+
+
+    public String getQueryStringifiedValue() {
+        if (getQueryOptions().isAggregate()) {
+            return String.format("[ %s ]", StringUtils.join(getQueryOptions().getAllOperations(), ","));
+        }
+        return getQueryOptions().getFilter().toString();
+    }
+
+    public boolean isSomeQuerySet() {
+        try {
+            return getQueryOptions().isSomethingSet();
+        } catch (JSONParseException e) {
+            return false;
+        }
     }
 
     private static class FilterPanel extends JPanel implements Disposable {

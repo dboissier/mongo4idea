@@ -29,10 +29,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.List;
 
 public class MongoManagerTest {
 
-    private DBCollection dummyCollection;
     private MongoManager mongoManager;
     private MongoConfiguration mongoConfiguration;
 
@@ -52,16 +52,20 @@ public class MongoManagerTest {
         mongoQueryOptions.addQuery(MongoAggregateOperator.GROUP, "{ '_id': '$label', 'total': {'$sum': '$price'}}");
         MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(mongoConfiguration, new MongoCollection("dummyCollection", "test"), mongoQueryOptions);
         Assert.assertNotNull(mongoCollectionResult);
-        Assert.assertEquals(2, mongoCollectionResult.getMongoObjects().size());
-        System.out.println("mongoCollectionResult.getMongoObjects() = " + mongoCollectionResult.getMongoObjects());
+
+        List<DBObject> mongoObjects = mongoCollectionResult.getMongoObjects();
+
+        Assert.assertEquals(2, mongoObjects.size());
+        Assert.assertEquals("{ \"_id\" : \"tutu\" , \"total\" : 15}", mongoObjects.get(0).toString());
+        Assert.assertEquals("{ \"_id\" : \"tata\" , \"total\" : 30}", mongoObjects.get(1).toString());
     }
 
     @Before
     public void setUp() throws Exception {
         Mongo mongo = new Mongo();
         DB db = mongo.getDB("test");
-        dummyCollection = db.getCollection("dummyCollection");
 
+        DBCollection dummyCollection = db.getCollection("dummyCollection");
         clearCollection(dummyCollection);
         fillCollectionWithJsonData(dummyCollection, IOUtils.toString(getClass().getResourceAsStream("dummyCollection.json")));
 
