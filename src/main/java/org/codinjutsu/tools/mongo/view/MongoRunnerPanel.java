@@ -16,21 +16,13 @@
 
 package org.codinjutsu.tools.mongo.view;
 
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.ui.Splitter;
-import com.mongodb.util.JSONParseException;
-import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.model.MongoServer;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
-import org.codinjutsu.tools.mongo.view.action.AddOperatorPanelAction;
-import org.codinjutsu.tools.mongo.view.action.CopyQueryAction;
-import org.codinjutsu.tools.mongo.view.action.ExecuteQuery;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,12 +34,14 @@ public class MongoRunnerPanel extends JPanel {
     private JPanel rootPanel;
     private Splitter splitter;
     private JLabel errorLabel;
+    private final MongoResultPanel resultPanel;
     private QueryPanel queryPanel;
 
     private final MongoConfiguration configuration;
     private final MongoManager mongoManager;
     private MongoCollection currentMongoCollection;
-    private final MongoResultPanel resultPanel;
+
+    private int resultLimit = 200;
 
     public MongoRunnerPanel(MongoConfiguration configuration, MongoManager mongoManager) {
         this.configuration = configuration;
@@ -95,7 +89,7 @@ public class MongoRunnerPanel extends JPanel {
 
     public void showResults(MongoCollection mongoCollection) {
         currentMongoCollection = mongoCollection;
-        resultPanel.updateResultTree(mongoManager.loadCollectionValues(configuration, currentMongoCollection));
+        resultPanel.updateResultTree(mongoManager.loadCollectionValues(configuration, currentMongoCollection, queryPanel.getQueryOptions()));
     }
 
     public void executeQuery() {

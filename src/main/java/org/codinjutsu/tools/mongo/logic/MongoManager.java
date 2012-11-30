@@ -22,6 +22,7 @@ import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.model.*;
 
 import java.net.UnknownHostException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -70,10 +71,6 @@ public class MongoManager {
         }
     }
 
-    public MongoCollectionResult loadCollectionValues(MongoConfiguration configuration, MongoCollection mongoCollection) {
-        return loadCollectionValues(configuration, mongoCollection, new MongoQueryOptions());
-    }
-
     public MongoCollectionResult loadCollectionValues(MongoConfiguration configuration, MongoCollection mongoCollection, MongoQueryOptions mongoQueryOptions) {
         MongoCollectionResult mongoCollectionResult = new MongoCollectionResult(mongoCollection.getName());
         try {
@@ -83,7 +80,6 @@ public class MongoManager {
 
             if (mongoQueryOptions.isAggregate()) {
                 return aggregate(mongoQueryOptions, mongoCollectionResult, collection);
-
             }
 
             return find(mongoQueryOptions, mongoCollectionResult, collection);
@@ -97,25 +93,20 @@ public class MongoManager {
     private MongoCollectionResult aggregate(MongoQueryOptions mongoQueryOptions, MongoCollectionResult mongoCollectionResult, DBCollection collection) {
         List<DBObject> otherOperations = mongoQueryOptions.getOperationsExceptTheFirst();
         AggregationOutput aggregate = collection.aggregate(mongoQueryOptions.getFirstOperation(), otherOperations.toArray(new DBObject[otherOperations.size()]));
-        for (DBObject dbObject : aggregate.results()) {
-            mongoCollectionResult.add(dbObject);
+        int index = 0;
+        Iterator<DBObject> iterator = aggregate.results().iterator();
+        while (iterator.hasNext() && index < mongoQueryOptions.getResultLimit()) {
+            mongoCollectionResult.add(iterator.next());
         }
         return mongoCollectionResult;
     }
 
     private MongoCollectionResult find(MongoQueryOptions mongoQueryOptions, MongoCollectionResult mongoCollectionResult, DBCollection collection) {
         DBObject filter = mongoQueryOptions.getFilter();
-        long count = collection.count(filter);
-        long maxResults;
-        if (count > 200) {
-            maxResults = 200;
-        } else {
-            maxResults = count;
-        }
         DBCursor cursor = collection.find(filter);
         try {
             int index = 0;
-            while (cursor.hasNext() && index < maxResults) {
+            while (cursor.hasNext() && index < mongoQueryOptions.getResultLimit()) {
                 mongoCollectionResult.add(cursor.next());
                 index++;
             }

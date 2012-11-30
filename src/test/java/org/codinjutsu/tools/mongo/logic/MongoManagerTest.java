@@ -39,7 +39,7 @@ public class MongoManagerTest {
 
     @Test
     public void loadCollectionsWithEmptyFilter() throws Exception {
-        MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(mongoConfiguration, new MongoCollection("dummyCollection", "test"));
+        MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(mongoConfiguration, new MongoCollection("dummyCollection", "test"), new MongoQueryOptions());
         Assert.assertNotNull(mongoCollectionResult);
         Assert.assertEquals(5, mongoCollectionResult.getMongoObjects().size());
     }

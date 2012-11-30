@@ -38,10 +38,7 @@ import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoAggregateOperator;
 import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
-import org.codinjutsu.tools.mongo.view.action.AddOperatorPanelAction;
-import org.codinjutsu.tools.mongo.view.action.CopyQueryAction;
-import org.codinjutsu.tools.mongo.view.action.ExecuteQuery;
-import org.codinjutsu.tools.mongo.view.action.OperatorCompletionAction;
+import org.codinjutsu.tools.mongo.view.action.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -62,6 +59,7 @@ public class QueryPanel extends JPanel implements Disposable {
     private JPanel toolBarPanel;
     private JPanel mainPanel;
     private JPanel queryContainerPanel;
+    private int limitValue;
 
     public QueryPanel() {
         toolBarPanel.setLayout(new BorderLayout());
@@ -115,7 +113,6 @@ public class QueryPanel extends JPanel implements Disposable {
     }
 
 
-
     private static void fillEditorSettings(final EditorSettings editorSettings) {
         editorSettings.setWhitespacesShown(true);
         editorSettings.setLineMarkerAreaShown(false);
@@ -155,6 +152,9 @@ public class QueryPanel extends JPanel implements Disposable {
         } else {
             mongoQueryOptions.setFilter(filterPanel.getQuery());
         }
+
+        mongoQueryOptions.setResultLimit(limitValue);
+
         return mongoQueryOptions;
     }
 
@@ -174,13 +174,13 @@ public class QueryPanel extends JPanel implements Disposable {
         DefaultActionGroup actionQueryGroup = new DefaultActionGroup("MongoQueryGroup", true);
         if (ApplicationManager.getApplication() != null) {
             actionQueryGroup.add(new ExecuteQuery(mongoRunnerPanel));
+            actionQueryGroup.add(new LimitQueryResultAction(this));
             actionQueryGroup.addSeparator();
             actionQueryGroup.add(new AddOperatorPanelAction(this));
             actionQueryGroup.add(new CopyQueryAction(this));
         }
         GuiUtils.installActionGroupInToolBar(actionQueryGroup, toolBarPanel, ActionManager.getInstance(), "MongoQueryGroupActions", false);
     }
-
 
 
     public String getQueryStringifiedValue() {
@@ -196,6 +196,13 @@ public class QueryPanel extends JPanel implements Disposable {
         } catch (JSONParseException e) {
             return false;
         }
+    }
+
+    public void setResultLimit(int limitValue) {
+        if (limitValue < 1 || this.limitValue == limitValue) {
+            return;
+        }
+        this.limitValue = limitValue;
     }
 
     private static class FilterPanel extends JPanel implements Disposable {

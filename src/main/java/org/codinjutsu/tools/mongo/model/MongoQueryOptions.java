@@ -27,10 +27,14 @@ import java.util.List;
 
 public class MongoQueryOptions {
 
-    private static final BasicDBObject EMPTY_FILTER = new BasicDBObject();
+    public static final int DEFAULT_RESULT_LIMIT = 200;
 
+    private static final BasicDBObject EMPTY_FILTER = new BasicDBObject();
     private List<DBObject> operations = new LinkedList<DBObject>();
+
     private DBObject filter = EMPTY_FILTER;
+
+    private int resultLimit = DEFAULT_RESULT_LIMIT;
 
     public boolean isAggregate() {
         return !operations.isEmpty();
@@ -76,5 +80,13 @@ public class MongoQueryOptions {
 
     public boolean isSomethingSet() {
         return !(operations.isEmpty() && filter.equals(EMPTY_FILTER));
+    }
+
+    public int getResultLimit() {
+        return resultLimit;
+    }
+
+    public void setResultLimit(int resultLimit) {
+        this.resultLimit = resultLimit;
     }
 }
