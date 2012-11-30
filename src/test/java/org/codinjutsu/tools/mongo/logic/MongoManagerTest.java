@@ -39,9 +39,11 @@ public class MongoManagerTest {
 
     @Test
     public void loadCollectionsWithEmptyFilter() throws Exception {
-        MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(mongoConfiguration, new MongoCollection("dummyCollection", "test"), new MongoQueryOptions());
+        MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
+        mongoQueryOptions.setResultLimit(3);
+        MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(mongoConfiguration, new MongoCollection("dummyCollection", "test"), mongoQueryOptions);
         Assert.assertNotNull(mongoCollectionResult);
-        Assert.assertEquals(5, mongoCollectionResult.getMongoObjects().size());
+        Assert.assertEquals(3, mongoCollectionResult.getMongoObjects().size());
     }
 
     @Test
