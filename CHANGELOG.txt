@@ -1,7 +1,7 @@
 Version 0.1.0: Initial version
     * Server configuration
-    * Display collections
+    * Display collections for each database
     * Display collections content with tree mongo object navigation
     * Simple querying
     * Advanced querying with pipeline operation (Mongo Server should be 2.2.0 minimum)
-    * Copy feature for both query and results
+    * Copy / Paste for query and results

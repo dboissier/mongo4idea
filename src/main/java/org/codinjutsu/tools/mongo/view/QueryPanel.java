@@ -33,7 +33,6 @@ import com.intellij.openapi.editor.highlighter.EditorHighlighter;
 import com.intellij.openapi.fileTypes.PlainTextSyntaxHighlighterFactory;
 import com.intellij.ui.components.panels.NonOpaquePanel;
 import com.intellij.util.Alarm;
-import com.mongodb.util.JSONParseException;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoAggregateOperator;
 import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
@@ -59,7 +58,6 @@ public class QueryPanel extends JPanel implements Disposable {
     private JPanel toolBarPanel;
     private JPanel mainPanel;
     private JPanel queryContainerPanel;
-    private int limitValue;
 
     public QueryPanel() {
         toolBarPanel.setLayout(new BorderLayout());
@@ -153,7 +151,6 @@ public class QueryPanel extends JPanel implements Disposable {
             mongoQueryOptions.setFilter(filterPanel.getQuery());
         }
 
-        mongoQueryOptions.setResultLimit(limitValue);
 
         return mongoQueryOptions;
     }
@@ -174,7 +171,7 @@ public class QueryPanel extends JPanel implements Disposable {
         DefaultActionGroup actionQueryGroup = new DefaultActionGroup("MongoQueryGroup", true);
         if (ApplicationManager.getApplication() != null) {
             actionQueryGroup.add(new ExecuteQuery(mongoRunnerPanel));
-            actionQueryGroup.add(new LimitQueryResultAction(this));
+//            actionQueryGroup.add(new LimitQueryResultAction(this));
             actionQueryGroup.addSeparator();
             actionQueryGroup.add(new AddOperatorPanelAction(this));
             actionQueryGroup.add(new CopyQueryAction(this));
@@ -188,21 +185,6 @@ public class QueryPanel extends JPanel implements Disposable {
             return String.format("[ %s ]", StringUtils.join(getQueryOptions().getAllOperations(), ","));
         }
         return getQueryOptions().getFilter().toString();
-    }
-
-    public boolean isSomeQuerySet() {
-        try {
-            return getQueryOptions().isSomethingSet();
-        } catch (JSONParseException e) {
-            return false;
-        }
-    }
-
-    public void setResultLimit(int limitValue) {
-        if (limitValue < 1 || this.limitValue == limitValue) {
-            return;
-        }
-        this.limitValue = limitValue;
     }
 
     private static class FilterPanel extends JPanel implements Disposable {

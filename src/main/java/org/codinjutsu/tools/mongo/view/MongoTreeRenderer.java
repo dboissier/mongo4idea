@@ -28,7 +28,7 @@ import java.awt.*;
 
 public class MongoTreeRenderer extends DefaultTreeCellRenderer {
 
-    private static final Icon MONGO_SERVER = GuiUtils.loadIcon("mongo_16x16.png");
+    private static final Icon MONGO_SERVER = GuiUtils.loadIcon("mongo_logo.png");
     private static final Icon MONGO_DATABASE = GuiUtils.loadIcon("database.png");
     private static final Icon MONGO_COLLECTION = GuiUtils.loadIcon("folder.png");
 

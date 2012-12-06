@@ -46,7 +46,7 @@ public class LimitQueryResultAction extends AnAction implements CustomComponentA
         limitTextField.addCaretListener(new CaretListener() {
             @Override
             public void caretUpdate(CaretEvent caretEvent) {
-                queryPanel.setResultLimit(getLimitValue());
+//                queryPanel.setResultLimit(getLimitValue());
             }
         });
     }

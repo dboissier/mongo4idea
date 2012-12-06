@@ -27,7 +27,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 public class MongoResultCellRenderer extends ColoredTreeCellRenderer {
 
-    private static final Icon MONGO_ICON = GuiUtils.loadIcon("mongo_16x16.png");
+    private static final Icon MONGO_ICON = GuiUtils.loadIcon("mongo_logo.png");
 
     @Override
     public void customizeCellRenderer(final JTree tree,

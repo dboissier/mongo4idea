@@ -37,10 +37,4 @@ public class CopyQueryAction extends AnAction implements DumbAware {
     public void actionPerformed(AnActionEvent anActionEvent) {
         CopyPasteManager.getInstance().setContents(new StringSelection(queryPanel.getQueryStringifiedValue()));
     }
-
-
-    @Override
-    public void update(AnActionEvent event) {
-        event.getPresentation().setEnabled(queryPanel.isSomeQuerySet());
-    }
 }

@@ -22,19 +22,19 @@ Download this plugin from your IDE (Mongo Plugin)
 ## Usage
 
 ### Mongo Explorer
-
 The tree displays for each database all collections. Just double-click on a collection and the results will be displayed in the Mongo Runner Panel.
 
 ### Mongo Runner
-
 The panel is divided into 2 parts.
-Right part displays the results of the query in a tree. You can copy the result and paste in a text editor.
 
-Left part allows to specify a query.
+* Right part displays the results of the query in a tree (max. 300 records).
+You can copy the result and paste in a text editor.
+
+Left part allows to specify a query (in json format).
+When you type CTRL+SPACE key shortcut a popup is displayed in which you can select query operator.
 Either you click on the run query button or else type CTRL+F5 shortcut to run the query
 If your server version is at least 2.2, you can use the aggregation framework. You can add a pipeline operation by clicking on the [+] button.
 You can also copy/paste the query you wrote.
-
 
 ## Thanks
 I would like to thank:
