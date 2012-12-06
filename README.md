@@ -16,15 +16,24 @@ Download this plugin from your IDE (Mongo Plugin)
 * The plugin intends to connect to the local Mongo server with default parameters (127.0.0.1/27017)
 * If you need to specify another server, click on the Mongo Settings button located on the upper toolbar of the Mongo explorer Right Panel
 * If the server requires authentication, you can put your credentials
-* If you wnat to hide some collections, you can put them in the **Collections to ignore** field.
+* If you want to hide some collections, you can put them in the **Collections to ignore** field.
 * You can click on the **Test Connection* button to check your server configuration
 
 ## Usage
 
 ### Mongo Explorer
 
+The tree displays for each database all collections. Just double-click on a collection and the results will be displayed in the Mongo Runner Panel.
+
 ### Mongo Runner
 
+The panel is divided into 2 parts.
+Right part displays the results of the query in a tree. You can copy the result and paste in a text editor.
+
+Left part allows to specify a query.
+Either you click on the run query button or else type CTRL+F5 shortcut to run the query
+If your server version is at least 2.2, you can use the aggregation framework. You can add a pipeline operation by clicking on the [+] button.
+You can also copy/paste the query you wrote.
 
 
 ## Thanks
