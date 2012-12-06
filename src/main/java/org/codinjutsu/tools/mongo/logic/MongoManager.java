@@ -38,7 +38,7 @@ public class MongoManager {
 
 
             DB databaseForTesting = mongo.getDB(databaseNames.get(0));
-            if (StringUtils.isNotBlank(username)) {
+            if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
                 databaseForTesting.authenticate(username, password.toCharArray());
             }
             return (String) databaseForTesting.eval("db.version();");
@@ -76,6 +76,13 @@ public class MongoManager {
         try {
             Mongo mongo = new Mongo(configuration.getServerName(), configuration.getServerPort());
             DB database = mongo.getDB(mongoCollection.getDatabaseName());
+
+            String username = configuration.getUsername();
+            String password = configuration.getPassword();
+            if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
+                database.authenticate(username, password.toCharArray());
+            }
+
             DBCollection collection = database.getCollection(mongoCollection.getName());
 
             if (mongoQueryOptions.isAggregate()) {
