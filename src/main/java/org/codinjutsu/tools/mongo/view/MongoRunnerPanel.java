@@ -16,6 +16,8 @@
 
 package org.codinjutsu.tools.mongo.view;
 
+import com.intellij.openapi.Disposable;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
@@ -43,11 +45,11 @@ public class MongoRunnerPanel extends JPanel {
 
     private int resultLimit = 200;
 
-    public MongoRunnerPanel(MongoConfiguration configuration, MongoManager mongoManager) {
+    public MongoRunnerPanel(Project project, MongoConfiguration configuration, MongoManager mongoManager) {
         this.configuration = configuration;
         this.mongoManager = mongoManager;
 
-        queryPanel = createQueryPanel(configuration.getServerVersion());
+        queryPanel = createQueryPanel(project, configuration.getServerVersion());
         splitter.setFirstComponent(queryPanel);
 
         resultPanel = createResultPanel();
@@ -65,8 +67,8 @@ public class MongoRunnerPanel extends JPanel {
         return new MongoResultPanel();
     }
 
-    protected QueryPanel createQueryPanel(String serverVersion) {
-        QueryPanel aQueryPanel = new QueryPanel();
+    protected QueryPanel createQueryPanel(Project project, String serverVersion) {
+        QueryPanel aQueryPanel = new QueryPanel(project);
         if (MongoServer.isCompliantWithPipelineOperations(serverVersion)) {
             aQueryPanel.withAggregation();
         } else {

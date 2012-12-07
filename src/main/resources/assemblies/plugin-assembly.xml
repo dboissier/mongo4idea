@@ -29,8 +29,8 @@
                 <exclude>com.intellij:idea-openapi</exclude>
                 <exclude>com.intellij:idea-util</exclude>
                 <exclude>com.intellij:idea-idea</exclude>
+                <exclude>com.intellij:idea-extensions</exclude>
                 <exclude>commons-lang:commons-lang</exclude>
-                <exclude>commons-collections:commons-collections</exclude>
             </excludes>
         </dependencySet>
     </dependencySets>

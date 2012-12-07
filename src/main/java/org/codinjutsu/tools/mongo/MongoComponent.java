@@ -59,6 +59,7 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
     private Project project;
     private MongoManager mongoManager;
     private MongoExplorerPanel mongoExplorerPanel;
+    private MongoRunnerPanel mongoRunnerPanel;
 
 
     public MongoComponent(Project project) {
@@ -104,7 +105,7 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
         //TODO refactor
         configuration.setServerVersion(mongoManager.connect(configuration.getServerName(), configuration.getServerPort(), configuration.getUsername(), configuration.getPassword()));
         ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
-        final MongoRunnerPanel mongoRunnerPanel = new MongoRunnerPanel(configuration, mongoManager);
+        mongoRunnerPanel = new MongoRunnerPanel(project, configuration, mongoManager);
         Content mongoRunner = ContentFactory.SERVICE.getInstance().createContent(mongoRunnerPanel, null, false);
         final ToolWindow toolMongoRunnerWindow = toolWindowManager.registerToolWindow(MONGO_RUNNER, false, ToolWindowAnchor.BOTTOM);
         toolMongoRunnerWindow.getContentManager().addContent(mongoRunner);

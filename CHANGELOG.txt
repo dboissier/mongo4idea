@@ -1,3 +1,7 @@
+Version 0.1.1:
+    * [fix] #13 CollectionUtils not found
+    * [fix] #14 UI resources not properly disposed when closing the project
+
 Version 0.1.0: Initial version
     * Server configuration
     * Display collections for each database

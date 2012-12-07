@@ -31,13 +31,18 @@ import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.ex.util.LexerEditorHighlighter;
 import com.intellij.openapi.editor.highlighter.EditorHighlighter;
 import com.intellij.openapi.fileTypes.PlainTextSyntaxHighlighterFactory;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.components.panels.NonOpaquePanel;
 import com.intellij.util.Alarm;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoAggregateOperator;
 import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
-import org.codinjutsu.tools.mongo.view.action.*;
+import org.codinjutsu.tools.mongo.view.action.AddOperatorPanelAction;
+import org.codinjutsu.tools.mongo.view.action.CopyQueryAction;
+import org.codinjutsu.tools.mongo.view.action.ExecuteQuery;
+import org.codinjutsu.tools.mongo.view.action.OperatorCompletionAction;
 
 import javax.swing.*;
 import java.awt.*;
@@ -58,8 +63,12 @@ public class QueryPanel extends JPanel implements Disposable {
     private JPanel toolBarPanel;
     private JPanel mainPanel;
     private JPanel queryContainerPanel;
+    private final Project project;
 
-    public QueryPanel() {
+    public QueryPanel(Project project) {
+        this.project = project;
+
+
         toolBarPanel.setLayout(new BorderLayout());
         setLayout(new BorderLayout());
         add(mainPanel);
@@ -67,6 +76,13 @@ public class QueryPanel extends JPanel implements Disposable {
 
     public void withAggregation() {
         withAggregation = true;
+        Disposer.register(project, new Disposable() {
+            public void dispose() {
+                for (OperatorPanel operatorPanel : operatorPanels) {
+                    operatorPanel.dispose();
+                }
+            }
+        });
         queryContainerPanel.setLayout(new BoxLayout(queryContainerPanel, BoxLayout.Y_AXIS));
         addOperatorPanel(MongoAggregateOperator.MATCH);
     }
@@ -75,6 +91,11 @@ public class QueryPanel extends JPanel implements Disposable {
         withAggregation = false;
         Editor editor = createEditor();
         filterPanel = new FilterPanel(editor);
+        Disposer.register(project, new Disposable() {
+            public void dispose() {
+                filterPanel.dispose();
+            }
+        });
         queryContainerPanel.setLayout(new BorderLayout());
         queryContainerPanel.add(filterPanel, BorderLayout.CENTER);
         myUpdateAlarm.setActivationComponent(editor.getComponent());
@@ -104,9 +125,10 @@ public class QueryPanel extends JPanel implements Disposable {
     private Editor createEditor() {
         EditorFactory editorFactory = EditorFactory.getInstance();
         Document editorDocument = editorFactory.createDocument("");
-        EditorEx editor = (EditorEx) editorFactory.createEditor(editorDocument);
+        Editor editor = editorFactory.createEditor(editorDocument, project);
         fillEditorSettings(editor.getSettings());
-        attachHighlighter(editor);
+        EditorEx editorEx = (EditorEx) editor;
+        attachHighlighter(editorEx);
         return editor;
     }
 
@@ -158,9 +180,6 @@ public class QueryPanel extends JPanel implements Disposable {
     @Override
     public void dispose() {
         myUpdateAlarm.cancelAllRequests();
-        for (OperatorPanel operatorPanel : operatorPanels) {
-            operatorPanel.dispose();
-        }
     }
 
     public boolean isAggregate() {
@@ -265,7 +284,12 @@ public class QueryPanel extends JPanel implements Disposable {
 
         @Override
         public void mousePressed(MouseEvent mouseEvent) {
-            queryPanel.removeOperatorPanel(operatorPanel);
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    queryPanel.removeOperatorPanel(operatorPanel);
+                }
+            });
         }
     }
 }
