@@ -1,4 +1,4 @@
-# Jenkins Plugin for IntelliJ IDEA
+# Mongo Plugin for IntelliJ IDEA
 
 ## ChangeLog
 See CHANGELOG.txt
