@@ -1,3 +1,6 @@
+Version 0.1.2:
+    * [fix] #15 Exception when server is not found
+
 Version 0.1.1:
     * [fix] #13 CollectionUtils not found
     * [fix] #14 UI resources not properly disposed when closing the project
