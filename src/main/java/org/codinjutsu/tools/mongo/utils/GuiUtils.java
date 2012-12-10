@@ -22,6 +22,7 @@ import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.URL;
 
 public class GuiUtils {
 
@@ -29,6 +30,10 @@ public class GuiUtils {
 
     public static Icon loadIcon(String iconFilename) {
         return IconLoader.findIcon(ICON_FOLDER + iconFilename);
+    }
+
+    public static URL getIconResource(String iconFilename) {
+        return GuiUtils.class.getResource(ICON_FOLDER + iconFilename);
     }
 
     public static void installActionGroupInToolBar(DefaultActionGroup actionGroup, JPanel toolBarPanel, ActionManager actionManager, String toolbarName, boolean horizontal) {

@@ -103,7 +103,11 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
     public void projectOpened() {
         mongoManager = new MongoManager();
         //TODO refactor
-        configuration.setServerVersion(mongoManager.connect(configuration.getServerName(), configuration.getServerPort(), configuration.getUsername(), configuration.getPassword()));
+        try {
+            configuration.setServerVersion(mongoManager.connect(configuration.getServerName(), configuration.getServerPort(), configuration.getUsername(), configuration.getPassword()));
+        } catch (org.codinjutsu.tools.mongo.logic.ConfigurationException e) {
+            //TODO do something
+        }
         ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
         mongoRunnerPanel = new MongoRunnerPanel(project, configuration, mongoManager);
         Content mongoRunner = ContentFactory.SERVICE.getInstance().createContent(mongoRunnerPanel, null, false);
@@ -111,7 +115,7 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
         toolMongoRunnerWindow.getContentManager().addContent(mongoRunner);
         toolMongoRunnerWindow.setIcon(GuiUtils.loadIcon("mongo_logo.png"));
 
-        mongoExplorerPanel = new MongoExplorerPanel(mongoManager, configuration, mongoRunnerPanel, new RunnerCallback() {
+        mongoExplorerPanel = new MongoExplorerPanel(mongoManager, configuration, new RunnerCallback() {
 
             public void execute(final MongoCollection mongoCollection) {
                 toolMongoRunnerWindow.activate(new Runnable() {

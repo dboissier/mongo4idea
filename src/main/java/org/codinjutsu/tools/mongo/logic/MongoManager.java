@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.model.*;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.List;
@@ -43,7 +44,9 @@ public class MongoManager {
             }
             return (String) databaseForTesting.eval("db.version();");
 
-        } catch (UnknownHostException ex) {
+        } catch (IOException ex) {
+            throw new ConfigurationException(ex);
+        } catch (MongoException ex) {
             throw new ConfigurationException(ex);
         }
     }
@@ -66,7 +69,7 @@ public class MongoManager {
                 mongoServer.addDatabase(mongoDatabase);
             }
             return mongoServer;
-        } catch (UnknownHostException ex) {
+        } catch (Exception ex) {
             throw new ConfigurationException(ex);
         }
     }

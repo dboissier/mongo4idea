@@ -16,7 +16,6 @@
 
 package org.codinjutsu.tools.mongo.view;
 
-import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
@@ -35,7 +34,7 @@ public class MongoRunnerPanel extends JPanel {
 
     private JPanel rootPanel;
     private Splitter splitter;
-    private JLabel errorLabel;
+    private JPanel errorPanel;
     private final MongoResultPanel resultPanel;
     private QueryPanel queryPanel;
 
@@ -48,6 +47,8 @@ public class MongoRunnerPanel extends JPanel {
     public MongoRunnerPanel(Project project, MongoConfiguration configuration, MongoManager mongoManager) {
         this.configuration = configuration;
         this.mongoManager = mongoManager;
+
+        errorPanel.setLayout(new BorderLayout());
 
         queryPanel = createQueryPanel(project, configuration.getServerVersion());
         splitter.setFirstComponent(queryPanel);
@@ -91,19 +92,22 @@ public class MongoRunnerPanel extends JPanel {
 
     public void showResults(MongoCollection mongoCollection) {
         currentMongoCollection = mongoCollection;
-        resultPanel.updateResultTree(mongoManager.loadCollectionValues(configuration, currentMongoCollection, queryPanel.getQueryOptions()));
+        executeQuery();
     }
 
     public void executeQuery() {
         try {
-            errorLabel.setVisible(false);
+            errorPanel.setVisible(false);
 
             MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(configuration, currentMongoCollection, queryPanel.getQueryOptions());
             resultPanel.updateResultTree(mongoCollectionResult);
         } catch (Exception ex) {
-            errorLabel.setIcon(FAIL_ICON);
-            errorLabel.setText(String.format("[%s]: %s", ex.getClass().getSimpleName(), ex.getMessage()));
-            errorLabel.setVisible(true);
+            errorPanel.invalidate();
+            errorPanel.removeAll();
+            errorPanel.add(new ErrorPanel(ex), BorderLayout.CENTER);
+            errorPanel.validate();
+            errorPanel.setVisible(true);
         }
     }
+
 }
