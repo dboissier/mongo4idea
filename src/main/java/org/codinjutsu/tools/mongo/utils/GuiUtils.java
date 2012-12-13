@@ -27,6 +27,7 @@ import java.net.URL;
 public class GuiUtils {
 
     private static final String ICON_FOLDER = "/icons/";
+    public static final Color ERROR_COLOR = new Color(255, 220, 220);
 
     public static Icon loadIcon(String iconFilename) {
         return IconLoader.findIcon(ICON_FOLDER + iconFilename);

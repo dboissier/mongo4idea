@@ -18,12 +18,14 @@ package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.ui.popup.Balloon;
-import com.intellij.openapi.ui.popup.BalloonBuilder;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.ui.awt.RelativePoint;
+import com.intellij.ui.components.panels.NonOpaquePanel;
 import com.mongodb.util.JSONParseException;
+import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
@@ -117,8 +119,16 @@ public class MongoRunnerPanel extends JPanel {
 
         @Override
         public void notifyOnErrorForOperator(JComponent editorComponent, JSONParseException ex) {
-            BalloonBuilder balloonBuilder = JBPopupFactory.getInstance().createHtmlTextBalloonBuilder("<b>Bad JSON syntax:</b>" + ex.getMessage(), MessageType.ERROR, null);
-            Balloon balloon = balloonBuilder.createBalloon();
+            String message = StringUtils.removeStart(ex.getMessage(), "\n");
+            NonOpaquePanel nonOpaquePanel = new NonOpaquePanel();
+            JTextPane textPane = Messages.configureMessagePaneUi(new JTextPane(), message);
+            textPane.setBackground(MessageType.ERROR.getPopupBackground());
+            nonOpaquePanel.add(textPane, BorderLayout.CENTER);
+            nonOpaquePanel.add(new JLabel(MessageType.ERROR.getDefaultIcon()), BorderLayout.WEST);
+
+            Balloon balloon = JBPopupFactory.getInstance().createBalloonBuilder(nonOpaquePanel)
+                    .setFillColor(MessageType.ERROR.getPopupBackground())
+                    .createBalloon();
             balloon.show(new RelativePoint(editorComponent, new Point(0, 0)), Balloon.Position.above);
         }
     }
