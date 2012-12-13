@@ -17,20 +17,23 @@
 package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.Splitter;
+import com.intellij.openapi.ui.popup.Balloon;
+import com.intellij.openapi.ui.popup.BalloonBuilder;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.ui.awt.RelativePoint;
+import com.mongodb.util.JSONParseException;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.model.MongoServer;
-import org.codinjutsu.tools.mongo.utils.GuiUtils;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class MongoRunnerPanel extends JPanel {
-
-    private static final Icon FAIL_ICON = GuiUtils.loadIcon("fail.png");
 
     private JPanel rootPanel;
     private Splitter splitter;
@@ -42,8 +45,6 @@ public class MongoRunnerPanel extends JPanel {
     private final MongoManager mongoManager;
     private MongoCollection currentMongoCollection;
 
-    private int resultLimit = 200;
-
     public MongoRunnerPanel(Project project, MongoConfiguration configuration, MongoManager mongoManager) {
         this.configuration = configuration;
         this.mongoManager = mongoManager;
@@ -51,6 +52,8 @@ public class MongoRunnerPanel extends JPanel {
         errorPanel.setLayout(new BorderLayout());
 
         queryPanel = createQueryPanel(project, configuration.getServerVersion());
+        queryPanel.setCallback(new ErrorQueryCallback());
+
         splitter.setFirstComponent(queryPanel);
 
         resultPanel = createResultPanel();
@@ -110,4 +113,13 @@ public class MongoRunnerPanel extends JPanel {
         }
     }
 
+    private static class ErrorQueryCallback implements QueryPanel.QueryCallback {
+
+        @Override
+        public void notifyOnErrorForOperator(JComponent editorComponent, JSONParseException ex) {
+            BalloonBuilder balloonBuilder = JBPopupFactory.getInstance().createHtmlTextBalloonBuilder("<b>Bad JSON syntax:</b>" + ex.getMessage(), MessageType.ERROR, null);
+            Balloon balloon = balloonBuilder.createBalloon();
+            balloon.show(new RelativePoint(editorComponent, new Point(0, 0)), Balloon.Position.above);
+        }
+    }
 }

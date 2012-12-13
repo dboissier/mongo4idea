@@ -35,6 +35,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.components.panels.NonOpaquePanel;
 import com.intellij.util.Alarm;
+import com.mongodb.util.JSONParseException;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoAggregateOperator;
 import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
@@ -64,6 +65,7 @@ public class QueryPanel extends JPanel implements Disposable {
     private JPanel mainPanel;
     private JPanel queryContainerPanel;
     private final Project project;
+    private QueryCallback callback;
 
     public QueryPanel(Project project) {
         this.project = project;
@@ -76,13 +78,7 @@ public class QueryPanel extends JPanel implements Disposable {
 
     public void withAggregation() {
         withAggregation = true;
-        Disposer.register(project, new Disposable() {
-            public void dispose() {
-                for (OperatorPanel operatorPanel : operatorPanels) {
-                    operatorPanel.dispose();
-                }
-            }
-        });
+        Disposer.register(project, this);
         queryContainerPanel.setLayout(new BoxLayout(queryContainerPanel, BoxLayout.Y_AXIS));
         addOperatorPanel(MongoAggregateOperator.MATCH);
     }
@@ -91,11 +87,7 @@ public class QueryPanel extends JPanel implements Disposable {
         withAggregation = false;
         Editor editor = createEditor();
         filterPanel = new FilterPanel(editor);
-        Disposer.register(project, new Disposable() {
-            public void dispose() {
-                filterPanel.dispose();
-            }
-        });
+        Disposer.register(project, this);
         queryContainerPanel.setLayout(new BorderLayout());
         queryContainerPanel.add(filterPanel, BorderLayout.CENTER);
         myUpdateAlarm.setActivationComponent(editor.getComponent());
@@ -167,10 +159,18 @@ public class QueryPanel extends JPanel implements Disposable {
 
         if (withAggregation) {
             for (OperatorPanel operatorPanel : operatorPanels) {
-                mongoQueryOptions.addQuery(operatorPanel.getOperator(), operatorPanel.getQuery());
+                try {
+                    mongoQueryOptions.addQuery(operatorPanel.getOperator(), operatorPanel.getQuery());
+                } catch (JSONParseException ex) {
+                    callback.notifyOnErrorForOperator(operatorPanel.getEditorComponent(), ex);
+                }
             }
         } else {
-            mongoQueryOptions.setFilter(filterPanel.getQuery());
+            try {
+                mongoQueryOptions.setFilter(filterPanel.getQuery());
+            } catch (JSONParseException ex) {
+                callback.notifyOnErrorForOperator(filterPanel, ex);
+            }
         }
 
 
@@ -180,6 +180,14 @@ public class QueryPanel extends JPanel implements Disposable {
     @Override
     public void dispose() {
         myUpdateAlarm.cancelAllRequests();
+
+        for (OperatorPanel operatorPanel : operatorPanels) {
+            operatorPanel.dispose();
+        }
+
+        if (filterPanel != null) {
+            filterPanel.dispose();
+        }
     }
 
     public boolean isAggregate() {
@@ -206,6 +214,10 @@ public class QueryPanel extends JPanel implements Disposable {
         return getQueryOptions().getFilter().toString();
     }
 
+    public void setCallback(QueryCallback callback) {
+        this.callback = callback;
+    }
+
     private static class FilterPanel extends JPanel implements Disposable {
         private final Editor editor;
 
@@ -226,7 +238,7 @@ public class QueryPanel extends JPanel implements Disposable {
     }
 
 
-    private static class OperatorPanel extends JPanel implements Disposable {
+    public static class OperatorPanel extends JPanel implements Disposable {
 
         private static final Icon CLOSE_ICON = GuiUtils.loadIcon("close.png");
 
@@ -270,6 +282,10 @@ public class QueryPanel extends JPanel implements Disposable {
             operatorCompletionAction.dispose();
             EditorFactory.getInstance().releaseEditor(editor);
         }
+
+        public JComponent getEditorComponent() {
+            return editor.getComponent();
+        }
     }
 
     private static class RemoveOperatorPanelAction extends MouseAdapter {
@@ -291,5 +307,11 @@ public class QueryPanel extends JPanel implements Disposable {
                 }
             });
         }
+    }
+
+
+    public interface QueryCallback {
+
+        void notifyOnErrorForOperator(JComponent editorComponent, JSONParseException ex);
     }
 }

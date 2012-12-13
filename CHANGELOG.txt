@@ -1,5 +1,6 @@
 Version 0.1.2:
-    * [fix] #15 Exception when server is not found
+    * [upd] Improve feedback when the query execution fails
+    * [upd] #15 Improve feedback when server is not found
 
 Version 0.1.1:
     * [fix] #13 CollectionUtils not found

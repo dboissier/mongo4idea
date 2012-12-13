@@ -33,24 +33,13 @@ public class ErrorPanel extends JPanel {
     ErrorPanel(final Exception ex) {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         setBackground(ERROR_COLOR);
-        JLabel label = new JLabel();
-        final String title;
-        final String message;
-        if (ex instanceof JSONParseException) {
-            title = "Bad query fragment";
-            message = ex.getMessage();
-        } else {
-            title = "Error during query execution";
-            message = ex.toString();
-        }
-        label.setText(title);
-        add(label);
+        add(new JLabel("Error during query execution"));
         final HoverHyperlinkLabel hoverHyperlinkLabel = new HoverHyperlinkLabel("more detail...");
         hoverHyperlinkLabel.addHyperlinkListener(new HyperlinkListener() {
             @Override
             public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
                 if (hyperlinkEvent.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                    Messages.showErrorDialog(message, title);
+                    Messages.showErrorDialog(ex.toString(), "Error During Query Execution");
                 }
             }
         });
