@@ -47,7 +47,7 @@ You can copy the result and paste in a text editor.
 
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-findWithFilter.png?raw=true)
 
-When you type CTRL+SPACE key shortcut a popup is displayed in which you can select query operator.
+When you type **CTRL+SPACE** key shortcut a popup is displayed in which you can select query operator.
 
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-operatorPopup.png?raw=true)
 
@@ -59,7 +59,14 @@ You can also copy/paste the query you wrote.
 
 If you have an error during query execution, a feedback panel is displayed below:
 
+* In case of bad JSON syntax
+
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-errorInExecution.png?raw=true)
+
+* In case of general error
+
+![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-errorInExecutionCommand.png?raw=true)
+
 
 **Note**: If you use Ultimate Edition, JSON syntax highlighting is enabled.
 
