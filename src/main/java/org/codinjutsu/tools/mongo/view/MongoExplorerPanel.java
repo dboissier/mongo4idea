@@ -32,6 +32,7 @@ import org.codinjutsu.tools.mongo.model.MongoDatabase;
 import org.codinjutsu.tools.mongo.model.MongoServer;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.OpenPluginSettingsAction;
+import org.codinjutsu.tools.mongo.view.action.RefreshServerAction;
 import org.codinjutsu.tools.mongo.view.action.ViewCollectionValuesAction;
 
 import javax.swing.*;
@@ -121,6 +122,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
         DefaultActionGroup actionGroup = new DefaultActionGroup("MongoExplorerGroup", true);
         if (ApplicationManager.getApplication() != null) {
+            actionGroup.add(new RefreshServerAction(this));
             actionGroup.add(new ViewCollectionValuesAction(this));
             actionGroup.addSeparator();
             actionGroup.add(new OpenPluginSettingsAction());
