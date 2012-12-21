@@ -30,6 +30,19 @@
         </component>
     </project-components>
 
+
+    <actions>
+        <action id="Mongo.Console"
+                class="org.codinjutsu.tools.mongo.view.action.MongoConsoleAction">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
+        <action id="Mongo.Shell.Execute" class="com.intellij.openapi.actionSystem.EmptyAction" text="Execute Mongo Command"
+                description="Execute Mongo command in console">
+            <keyboard-shortcut first-keystroke="control ENTER" keymap="$default"/>
+        </action>
+    </actions>
+
+
     <change-notes><![CDATA[
 <a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.1.2/CHANGELOG.txt">Changelog</a>
 ]]> </change-notes>
