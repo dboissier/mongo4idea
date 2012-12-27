@@ -1,3 +1,7 @@
+Version 0.2.0:
+    * [add] Mongo shell with Run Configuration
+    * [upd] Configuration: Mongo client path field (default: /usr/bin)
+
 Version 0.1.2:
     * [upd] Improve feedback when the query execution fails
     * [upd] #15 Improve feedback when server is not found

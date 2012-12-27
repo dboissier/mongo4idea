@@ -25,7 +25,7 @@ import java.util.Set;
 public class MongoConfiguration {
 
     private static final String DEFAULT_SERVER_NAME = "localhost";
-    private static final int DEFAULT_PORT = DBPort.PORT;
+    public static final int DEFAULT_PORT = DBPort.PORT;
 
     private String serverName = DEFAULT_SERVER_NAME;
     private int serverPort = DEFAULT_PORT;
