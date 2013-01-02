@@ -28,25 +28,25 @@ public class MongoConfiguration {
     public static final int DEFAULT_PORT = DBPort.PORT;
 
 
-    private String shellPath;
-
     private String serverName = DEFAULT_SERVER_NAME;
+
     private int serverPort = DEFAULT_PORT;
-
     private String username;
-    private String password;
 
+    private String password;
     public List<String> collectionsToIgnore = new LinkedList<String>();
 
     private String serverVersion;
+
+    private String mongoHome;
     private String shellArgumentsLine;
 
-    public String getShellPath() {
-        return shellPath;
+    public String getMongoHome() {
+        return mongoHome;
     }
 
-    public void setShellPath(String shellPath) {
-        this.shellPath = shellPath;
+    public void setMongoHome(String mongoHome) {
+        this.mongoHome = mongoHome;
     }
 
     public String getServerName() {

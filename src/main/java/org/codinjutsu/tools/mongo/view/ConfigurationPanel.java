@@ -47,7 +47,7 @@ public class ConfigurationPanel {
     private JLabel feedbackLabel;
     private JTextField collectionsToIgnoreField;
 
-    private JTextField shellPathField;
+    private JTextField mongoHomeField;
     private RawCommandLineEditor shellArgumentsLineField;
 
     private final MongoManager mongoManager;
@@ -63,7 +63,7 @@ public class ConfigurationPanel {
         usernameField.setName("usernameField");
         passwordField.setName("passwordField");
         feedbackLabel.setName("feedbackLabel");
-        shellPathField.setName("shellPathField");
+        mongoHomeField.setName("mongoHomeField");
 
         initListeners();
     }
@@ -98,7 +98,7 @@ public class ConfigurationPanel {
                         && StringUtils.equals(configuration.getUsername(), getUsername())
                         && StringUtils.equals(configuration.getPassword(), getPassword())
                         && CollectionUtils.isEqualCollection(configuration.getCollectionsToIgnore(), getCollectionsToIgnore())
-                        && StringUtils.equals(configuration.getShellPath(), getShellPath())
+                        && StringUtils.equals(configuration.getMongoHome(), getMongoHome())
                         && StringUtils.equals(configuration.getShellArgumentsLine(), getShellArgumentsLine())
         );
     }
@@ -123,7 +123,7 @@ public class ConfigurationPanel {
         configuration.setUsername(getUsername());
         configuration.setPassword(getPassword());
         configuration.setCollectionsToIgnore(getCollectionsToIgnore());
-        configuration.setShellPath(getShellPath());
+        configuration.setMongoHome(getMongoHome());
         configuration.setShellArgumentsLine(getShellArgumentsLine());
         configuration.setServerVersion(serverVersion);
     }
@@ -160,8 +160,8 @@ public class ConfigurationPanel {
         return 0;
     }
 
-    private String getShellPath() {
-        String shellPath = shellPathField.getText();
+    private String getMongoHome() {
+        String shellPath = mongoHomeField.getText();
         if (StringUtils.isNotBlank(shellPath)) {
             return shellPath;
         }
@@ -184,7 +184,7 @@ public class ConfigurationPanel {
         usernameField.setText(configuration.getUsername());
         passwordField.setText(configuration.getPassword());
         collectionsToIgnoreField.setText(StringUtils.join(configuration.getCollectionsToIgnore(), ","));
-        shellPathField.setText(configuration.getShellPath());
+        mongoHomeField.setText(configuration.getMongoHome());
 
         serverVersion = configuration.getServerVersion();
     }
