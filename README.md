@@ -74,7 +74,7 @@ If you have an error during query execution, a feedback panel is displayed below
 I would like to thank:
 * MongoDB team
 * Mongo Java Driver team
-* Jetbrains Team for providing us such an incredible IDE (certainly the best that Java developers could have).
+* Jetbrains Team for the great sources of the Groovy Plugin that help me to improve this stuff
 * Mark James author of the famfamfam web site who provides beautiful icons.
 * [Jean Baptiste Potonnier](https://github.com/JJeeb) for the suggestion to create this plugin
 * Neko team, my first beta testers ;)

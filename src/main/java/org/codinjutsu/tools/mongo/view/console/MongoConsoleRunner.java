@@ -20,19 +20,21 @@ package org.codinjutsu.tools.mongo.view.console;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.console.ConsoleHistoryController;
-import com.intellij.execution.console.LanguageConsoleViewImpl;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.runners.AbstractConsoleRunnerWithHistory;
 import com.intellij.execution.runners.ConsoleExecuteActionHandler;
-import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.psi.PsiFile;
+import org.codinjutsu.tools.mongo.MongoComponent;
+import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.Reader;
 
-public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoConsoleRunner.MongoConsoleView> {
+
+public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoConsoleView> {
 
     public static final Key<Boolean> MONGO_SHELL_FILE = Key.create("MONGO_SHELL_FILE");
 
@@ -56,7 +58,10 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
     @Nullable
     @Override
     protected Process createProcess() throws ExecutionException {
-        String exePath = "/usr/bin/mongo"; //TODO need to make it configurable
+        MongoComponent mongoComponent = getProject().getComponent(MongoComponent.class);
+        MongoConfiguration mongoConfiguration = mongoComponent.getState();
+
+        String exePath = mongoConfiguration.getShellPath();
 
         final GeneralCommandLine commandLine = new GeneralCommandLine();
         commandLine.setExePath(exePath);
@@ -66,7 +71,12 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
 
     @Override
     protected OSProcessHandler createProcessHandler(Process process) {
-        return new OSProcessHandler(process, null);
+        return new OSProcessHandler(process, null) {
+            @Override
+            protected Reader createProcessOutReader() {
+                return super.createProcessOutReader();
+            }
+        };
     }
 
     @NotNull
@@ -88,9 +98,4 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
     }
 
 
-    public static class MongoConsoleView extends LanguageConsoleViewImpl {
-        MongoConsoleView(Project project) {
-            super(project, "Mongo Console", StdFileTypes.PLAIN_TEXT.getLanguage());
-        }
-    }
 }

@@ -52,7 +52,7 @@ public class ConfigurationPanelTest extends UISpecTestCase {
 
         configurationPanel.loadConfigurationData(configuration);
 
-        uiSpecPanel.getButton().click();
+        uiSpecPanel.getButton("Test Connection").click();
 //        uiSpecPanel.getTextBox("feedbackLabel").iconEquals(GuiUtils.loadIcon("success.png")).check();
 
         Mockito.verify(mongoManager, Mockito.times(1)).connect("localhost", 27017, null, null);
@@ -65,7 +65,7 @@ public class ConfigurationPanelTest extends UISpecTestCase {
 
         configurationPanel.loadConfigurationData(configuration);
 
-        uiSpecPanel.getButton().click();
+        uiSpecPanel.getButton("Test Connection").click();
         TextBox feedbackLabel = uiSpecPanel.getTextBox("feedbackLabel");
 //        feedbackLabel.iconEquals(GuiUtils.loadIcon("fail.png")).check();
         feedbackLabel.textEquals("java.net.UnknownHostException: myserver").check();

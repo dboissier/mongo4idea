@@ -23,6 +23,7 @@ import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.configurations.RuntimeConfiguration;
+import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.components.PathMacroManager;
 import com.intellij.openapi.options.SettingsEditor;
@@ -33,6 +34,7 @@ import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
@@ -97,15 +99,9 @@ public class MongoRunConfiguration extends RuntimeConfiguration {
             throw new CantRunException("Cannot find script " + scriptPath);
         }
 
-//        final MongoScriptRunner scriptRunner = findConfiguration();
-//        if (scriptRunner == null) {
-//            throw new CantRunException("Unknown script type " + scriptPath);
-//        }
-//
-//
-//        new CommandLineState();
-//        final boolean tests = ProjectRootManager.getInstance(getProject()).getFileIndex().isInTestSourceContent(script);
-        return null;
+        final MongoCommandLineState state = new MongoCommandLineState(this, env);
+        state.setConsoleBuilder(TextConsoleBuilderFactory.getInstance().createBuilder(getProject()));
+        return state;
     }
 
     public VirtualFile getScriptPath() {

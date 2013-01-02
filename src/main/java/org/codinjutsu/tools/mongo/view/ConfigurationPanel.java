@@ -16,6 +16,7 @@
 
 package org.codinjutsu.tools.mongo.view;
 
+import com.intellij.ui.RawCommandLineEditor;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
@@ -28,7 +29,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class ConfigurationPanel {
@@ -47,6 +47,9 @@ public class ConfigurationPanel {
     private JLabel feedbackLabel;
     private JTextField collectionsToIgnoreField;
 
+    private JTextField shellPathField;
+    private RawCommandLineEditor shellArgumentsLineField;
+
     private final MongoManager mongoManager;
 
     private String serverVersion = "";
@@ -60,6 +63,7 @@ public class ConfigurationPanel {
         usernameField.setName("usernameField");
         passwordField.setName("passwordField");
         feedbackLabel.setName("feedbackLabel");
+        shellPathField.setName("shellPathField");
 
         initListeners();
     }
@@ -94,6 +98,8 @@ public class ConfigurationPanel {
                         && StringUtils.equals(configuration.getUsername(), getUsername())
                         && StringUtils.equals(configuration.getPassword(), getPassword())
                         && CollectionUtils.isEqualCollection(configuration.getCollectionsToIgnore(), getCollectionsToIgnore())
+                        && StringUtils.equals(configuration.getShellPath(), getShellPath())
+                        && StringUtils.equals(configuration.getShellArgumentsLine(), getShellArgumentsLine())
         );
     }
 
@@ -117,6 +123,8 @@ public class ConfigurationPanel {
         configuration.setUsername(getUsername());
         configuration.setPassword(getPassword());
         configuration.setCollectionsToIgnore(getCollectionsToIgnore());
+        configuration.setShellPath(getShellPath());
+        configuration.setShellArgumentsLine(getShellArgumentsLine());
         configuration.setServerVersion(serverVersion);
     }
 
@@ -152,12 +160,32 @@ public class ConfigurationPanel {
         return 0;
     }
 
+    private String getShellPath() {
+        String shellPath = shellPathField.getText();
+        if (StringUtils.isNotBlank(shellPath)) {
+            return shellPath;
+        }
+
+        return null;
+    }
+
+    private String getShellArgumentsLine() {
+        String shellArgumentsLine = shellArgumentsLineField.getText();
+        if (StringUtils.isNotBlank(shellArgumentsLine)) {
+            return shellArgumentsLine;
+        }
+
+        return null;
+    }
+
     public void loadConfigurationData(MongoConfiguration configuration) {
         serverNameField.setText(configuration.getServerName());
         serverPortField.setText(Integer.toString(configuration.getServerPort()));
         usernameField.setText(configuration.getUsername());
         passwordField.setText(configuration.getPassword());
         collectionsToIgnoreField.setText(StringUtils.join(configuration.getCollectionsToIgnore(), ","));
+        shellPathField.setText(configuration.getShellPath());
+
         serverVersion = configuration.getServerVersion();
     }
 }

@@ -30,12 +30,12 @@
         </component>
     </project-components>
 
-    <extensions defaultExtensionNs="com.intellij">
-        <configurationType implementation="org.codinjutsu.tools.mongo.runner.MongoRunConfigurationType"/>
-    </extensions>
+    <!--<extensions defaultExtensionNs="com.intellij">-->
+        <!--<configurationType implementation="org.codinjutsu.tools.mongo.runner.MongoRunConfigurationType"/>-->
+    <!--</extensions>-->
 
     <actions>
-        <action id="Mongo.Console" class="org.codinjutsu.tools.mongo.view.action.MongoConsoleAction"> <!-- TODO to be removed after finishing Run Mongo configuration -->
+        <action id="Mongo.Console" class="org.codinjutsu.tools.mongo.view.action.MongoConsoleAction">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
         </action>
         <action id="Mongo.Shell.Execute" class="com.intellij.openapi.actionSystem.EmptyAction"

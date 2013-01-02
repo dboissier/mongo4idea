@@ -27,6 +27,9 @@ public class MongoConfiguration {
     private static final String DEFAULT_SERVER_NAME = "localhost";
     public static final int DEFAULT_PORT = DBPort.PORT;
 
+
+    private String shellPath;
+
     private String serverName = DEFAULT_SERVER_NAME;
     private int serverPort = DEFAULT_PORT;
 
@@ -36,7 +39,15 @@ public class MongoConfiguration {
     public List<String> collectionsToIgnore = new LinkedList<String>();
 
     private String serverVersion;
+    private String shellArgumentsLine;
 
+    public String getShellPath() {
+        return shellPath;
+    }
+
+    public void setShellPath(String shellPath) {
+        this.shellPath = shellPath;
+    }
 
     public String getServerName() {
         return serverName;
@@ -85,5 +96,13 @@ public class MongoConfiguration {
 
     public String getServerVersion() {
         return serverVersion;
+    }
+
+    public String getShellArgumentsLine() {
+        return shellArgumentsLine;
+    }
+
+    public void setShellArgumentsLine(String shellArgumentsLine) {
+        this.shellArgumentsLine = shellArgumentsLine;
     }
 }

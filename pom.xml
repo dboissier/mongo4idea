@@ -77,6 +77,13 @@
             <artifactId>idea-extensions</artifactId>
             <version>${intellij.sdk.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>idea-resources</artifactId>
+            <version>${intellij.sdk.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>

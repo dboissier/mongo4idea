@@ -24,7 +24,7 @@ import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 
 import javax.swing.*;
 
-public class RefreshServerAction extends AnAction implements DumbAware{
+public class RefreshServerAction extends AnAction implements DumbAware {
 
     private static final Icon REFRESH = GuiUtils.loadIcon("refresh.png");
 

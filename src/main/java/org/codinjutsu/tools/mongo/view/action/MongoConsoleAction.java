@@ -37,7 +37,7 @@ public class MongoConsoleAction extends AnAction implements DumbAware {
     public void update(AnActionEvent e) {
         final Project project = e.getData(PlatformDataKeys.PROJECT);
 
-        boolean enabled = project != null; //TODO and gonf has been set
+        boolean enabled = project != null;
 
         e.getPresentation().setEnabled(enabled);
         e.getPresentation().setVisible(enabled);
