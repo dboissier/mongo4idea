@@ -23,6 +23,7 @@ import org.codinjutsu.tools.mongo.model.*;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -31,17 +32,18 @@ public class MongoManager {
 
     public String connect(String serverName, int serverPort, String username, String password) {
         try {
-            Mongo mongo = new Mongo(serverName, serverPort);
-            List<String> databaseNames = mongo.getDatabaseNames();
+            MongoClient mongo = new MongoClient(serverName, serverPort);
+            List<String> databaseNames = getDatabaseNames(mongo, username, password);
             if (databaseNames.isEmpty()) {
                 throw new ConfigurationException("No databases were found");
             }
 
 
-            DB databaseForTesting = mongo.getDB(databaseNames.get(0));
+            DB databaseForTesting = mongo.getDB("admin");
             if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
                 databaseForTesting.authenticate(username, password.toCharArray());
             }
+
             return (String) databaseForTesting.eval("db.version();");
 
         } catch (IOException ex) {
@@ -53,11 +55,11 @@ public class MongoManager {
 
     public MongoServer loadDatabaseCollections(MongoConfiguration configuration) {
         try {
-            Mongo mongo = new Mongo(configuration.getServerName(), configuration.getServerPort());
+            MongoClient mongo = new MongoClient(configuration.getServerName(), configuration.getServerPort());
 
             MongoServer mongoServer = new MongoServer(configuration.getServerName(), configuration.getServerPort());
 
-            List<String> databaseNames = mongo.getDatabaseNames();
+            List<String> databaseNames = getDatabaseNames(mongo, configuration.getUsername(), configuration.getPassword());
             for (String databaseName : databaseNames) {
                 DB database = mongo.getDB(databaseName);
                 MongoDatabase mongoDatabase = new MongoDatabase(database.getName());
@@ -126,4 +128,31 @@ public class MongoManager {
         return mongoCollectionResult;
     }
 
+    public List<String> getDatabaseNames(MongoClient mongo, String username, String password){
+
+        BasicDBObject cmd = new BasicDBObject();
+        cmd.put("listDatabases", 1);
+
+
+        DB adminDb = mongo.getDB("admin");
+        
+        if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
+            boolean authenticate = adminDb.authenticate(username, password.toCharArray());
+            if (!authenticate) {
+                throw new ConfigurationException("Invalid creadentials");
+            }
+        }
+        
+        CommandResult res = adminDb.command(cmd, mongo.getOptions());
+        res.throwOnError();
+
+        List l = (List)res.get("databases");
+
+        List<String> list = new ArrayList<String>();
+
+        for (Object o : l) {
+            list.add(((BasicDBObject)o).getString("name"));
+        }
+        return list;
+    }
 }

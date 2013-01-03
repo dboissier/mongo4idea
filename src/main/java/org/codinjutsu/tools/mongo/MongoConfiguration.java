@@ -38,15 +38,15 @@ public class MongoConfiguration {
 
     private String serverVersion;
 
-    private String mongoHome;
+    private String shellPath;
     private String shellArgumentsLine;
 
-    public String getMongoHome() {
-        return mongoHome;
+    public String getShellPath() {
+        return shellPath;
     }
 
-    public void setMongoHome(String mongoHome) {
-        this.mongoHome = mongoHome;
+    public void setShellPath(String shellPath) {
+        this.shellPath = shellPath;
     }
 
     public String getServerName() {

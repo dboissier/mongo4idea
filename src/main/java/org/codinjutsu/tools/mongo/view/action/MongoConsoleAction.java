@@ -22,6 +22,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
+import org.apache.commons.lang.StringUtils;
+import org.codinjutsu.tools.mongo.MongoComponent;
+import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.console.MongoConsoleRunner;
 
@@ -38,6 +41,12 @@ public class MongoConsoleAction extends AnAction implements DumbAware {
         final Project project = e.getData(PlatformDataKeys.PROJECT);
 
         boolean enabled = project != null;
+
+        MongoComponent mongoComponent = project.getComponent(MongoComponent.class);
+        MongoConfiguration configuration = mongoComponent.getState();
+        if (configuration != null) {
+            enabled = enabled && StringUtils.isNotBlank(configuration.getShellPath());
+        }
 
         e.getPresentation().setEnabled(enabled);
         e.getPresentation().setVisible(enabled);

@@ -17,7 +17,6 @@
 
 package org.codinjutsu.tools.mongo.view.console;
 
-import com.intellij.execution.CantRunException;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.console.ConsoleHistoryController;
@@ -65,15 +64,15 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
         MongoComponent mongoComponent = getProject().getComponent(MongoComponent.class);
         MongoConfiguration mongoConfiguration = mongoComponent.getState();
 
-        String mongoHome = mongoConfiguration.getMongoHome();
-        VirtualFile mongoHomeDir = LocalFileSystem.getInstance().findFileByPath(FileUtil.toSystemIndependentName(mongoHome));
+        String shellPath = mongoConfiguration.getShellPath();
+        VirtualFile mongoHomeDir = LocalFileSystem.getInstance().findFileByPath(FileUtil.toSystemIndependentName(shellPath));
         if (mongoHomeDir == null) {
-            throw new CantRunException("Cannot find mongo home " + mongoHome);
+            throw new ExecutionException(String.format("Cannot find Mongo shell path '%s'", shellPath));
         }
 
 
         final GeneralCommandLine commandLine = new GeneralCommandLine();
-        commandLine.setExePath(String.format("%s/bin/mongo", mongoHome));
+        commandLine.setExePath(shellPath);
 
         return commandLine.createProcess();
     }
