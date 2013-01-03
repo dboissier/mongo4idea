@@ -1,6 +1,8 @@
 Version 0.2.0:
-    * [add] Mongo shell with Run Configuration
-    * [upd] Configuration: Mongo client path field (default: /usr/bin)
+    * [add] #19 Refresh databases button available in the explorer panel
+    * [add] Mongo shell integration
+    * [add] Configuration: Mongo shell options (path and program arguments)
+    * [upd] migrate to the mongo-java-driver 2.10.1
 
 Version 0.1.2:
     * [upd] Improve feedback when the query execution fails

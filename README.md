@@ -67,8 +67,14 @@ If you have an error during query execution, a feedback panel is displayed below
 
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-errorInExecutionCommand.png?raw=true)
 
-
 **Note**: If you use Ultimate Edition, JSON syntax highlighting is enabled.
+
+### Mongo shell integration
+
+If you set the mongo client path (e.g. /usr/bin/mongo), you can run the console by clicking the menu item **Tools -> Mongo Shell**.
+
+![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-shell.png?raw=true)
+
 
 ## Thanks
 I would like to thank:

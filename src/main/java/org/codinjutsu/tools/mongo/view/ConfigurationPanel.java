@@ -16,6 +16,9 @@
 
 package org.codinjutsu.tools.mongo.view;
 
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
+import com.intellij.openapi.ui.LabeledComponent;
+import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.ui.RawCommandLineEditor;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
@@ -47,7 +50,7 @@ public class ConfigurationPanel {
     private JLabel feedbackLabel;
     private JTextField collectionsToIgnoreField;
 
-    private JTextField shellPathField;
+    private LabeledComponent<TextFieldWithBrowseButton> shellPathField;
     private RawCommandLineEditor shellArgumentsLineField;
 
     private final MongoManager mongoManager;
@@ -58,12 +61,13 @@ public class ConfigurationPanel {
     public ConfigurationPanel(MongoManager mongoManager) {
         this.mongoManager = mongoManager;
 
+        shellArgumentsLineField.setDialogCaption("Mongo arguments");
         serverNameField.setName("serverNameField");
         serverPortField.setName("serverPortField");
         usernameField.setName("usernameField");
         passwordField.setName("passwordField");
         feedbackLabel.setName("feedbackLabel");
-        shellPathField.setName("shellPathField");
+        shellPathField.getComponent().setName("shellPathField");
 
         initListeners();
     }
@@ -84,6 +88,13 @@ public class ConfigurationPanel {
 
             }
         });
+
+        installBrowserListener();
+    }
+
+    protected void installBrowserListener() {
+        shellPathField.getComponent().addBrowseFolderListener("Mongo shell path", "", null,
+                new FileChooserDescriptor(true, false, false, false, false, false));
     }
 
     public JPanel getRootPanel() {
@@ -161,7 +172,7 @@ public class ConfigurationPanel {
     }
 
     private String getShellPath() {
-        String shellPath = shellPathField.getText();
+        String shellPath = shellPathField.getComponent().getText();
         if (StringUtils.isNotBlank(shellPath)) {
             return shellPath;
         }
@@ -184,7 +195,7 @@ public class ConfigurationPanel {
         usernameField.setText(configuration.getUsername());
         passwordField.setText(configuration.getPassword());
         collectionsToIgnoreField.setText(StringUtils.join(configuration.getCollectionsToIgnore(), ","));
-        shellPathField.setText(configuration.getShellPath());
+        shellPathField.getComponent().setText(configuration.getShellPath());
 
         serverVersion = configuration.getServerVersion();
     }

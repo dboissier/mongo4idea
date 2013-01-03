@@ -77,7 +77,11 @@ public class ConfigurationPanelTest extends UISpecTestCase {
     public void setUp() throws Exception {
         super.setUp();
         mongoManager = Mockito.spy(new MongoManager());
-        configurationPanel = new ConfigurationPanel(mongoManager);
+        configurationPanel = new ConfigurationPanel(mongoManager) {
+            @Override
+            protected void installBrowserListener() {
+            }
+        };
         uiSpecPanel = new Panel(configurationPanel.getRootPanel());
     }
 }
