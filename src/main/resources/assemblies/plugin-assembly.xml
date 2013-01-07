@@ -32,6 +32,7 @@
                 <exclude>com.intellij:idea-extensions</exclude>
                 <exclude>com.intellij:idea-resources</exclude>
                 <exclude>commons-lang:commons-lang</exclude>
+                <exclude>log4j:log4j</exclude>
             </excludes>
         </dependencySet>
     </dependencySets>
