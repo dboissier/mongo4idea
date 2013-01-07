@@ -128,22 +128,28 @@ public class MongoManager {
         return mongoCollectionResult;
     }
 
+
+    //Note : Hack of MongoClient#getDatabaseNames to retry with provided credentials
     public List<String> getDatabaseNames(MongoClient mongo, String username, String password){
 
         BasicDBObject cmd = new BasicDBObject();
         cmd.put("listDatabases", 1);
 
-
         DB adminDb = mongo.getDB("admin");
-        
-        if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
-            boolean authenticate = adminDb.authenticate(username, password.toCharArray());
-            if (!authenticate) {
-                throw new ConfigurationException("Invalid creadentials");
+
+        CommandResult res = adminDb.command(cmd, mongo.getOptions());
+        try {
+            res.throwOnError();
+        } catch (MongoException e) {
+            if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
+                boolean authenticate = adminDb.authenticate(username, password.toCharArray());
+                if (!authenticate) {
+                    throw new ConfigurationException("Invalid creadentials");
+                }
+                res = adminDb.command(cmd, mongo.getOptions());
             }
         }
-        
-        CommandResult res = adminDb.command(cmd, mongo.getOptions());
+
         res.throwOnError();
 
         List l = (List)res.get("databases");
