@@ -18,6 +18,7 @@ package org.codinjutsu.tools.mongo.logic;
 
 import com.mongodb.*;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.model.*;
 
@@ -29,6 +30,8 @@ import java.util.List;
 import java.util.Set;
 
 public class MongoManager {
+
+    private static final Logger LOG = Logger.getLogger(MongoManager.class);
 
     public String connect(String serverName, int serverPort, String username, String password) {
         try {
@@ -49,6 +52,7 @@ public class MongoManager {
         } catch (IOException ex) {
             throw new ConfigurationException(ex);
         } catch (MongoException ex) {
+            LOG.error("Error when accessing Mongo server", ex);
             throw new ConfigurationException(ex);
         }
     }
@@ -72,6 +76,7 @@ public class MongoManager {
             }
             return mongoServer;
         } catch (Exception ex) {
+            LOG.error("Error when collecting Mongo databases", ex);
             throw new ConfigurationException(ex);
         }
     }

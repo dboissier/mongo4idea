@@ -30,6 +30,7 @@
                 <exclude>com.intellij:idea-util</exclude>
                 <exclude>com.intellij:idea-idea</exclude>
                 <exclude>com.intellij:idea-extensions</exclude>
+                <exclude>com.intellij:idea-resources</exclude>
                 <exclude>commons-lang:commons-lang</exclude>
             </excludes>
         </dependencySet>

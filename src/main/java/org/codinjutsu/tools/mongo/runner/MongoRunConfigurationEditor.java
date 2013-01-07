@@ -63,7 +63,7 @@ public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfigur
 
     @Override
     protected void resetEditorFrom(MongoRunConfiguration configuration) {
-//        scriptPathField.setText(configuration.getScriptPath());
+        scriptPathField.setText(configuration.getScriptPath() != null ? configuration.getScriptPath().getPath() : null);
         shellParametersField.setText(configuration.getShellParameters());
         overwriteDefaultParameterCheckBox.setSelected(configuration.isOverwriteDefaultParameters());
         if (configuration.isOverwriteDefaultParameters()) {
