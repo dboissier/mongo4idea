@@ -1,4 +1,5 @@
 Version 0.2.0:
+    * [fix] #18 If server auth is enabled, use credentials when list Databases
     * [add] #19 Refresh databases button available in the explorer panel
     * [add] Mongo shell integration
     * [add] Configuration: Mongo shell options (path and program arguments)
