@@ -20,8 +20,7 @@ import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.mongodb.DBObject;
 import org.codinjutsu.tools.mongo.utils.StringUtils;
-
-import static org.codinjutsu.tools.mongo.view.TextAttributesUtils.*;
+import org.codinjutsu.tools.mongo.view.style.DefaultTextAttributesProvider;
 
 public class MongoValueDescriptor implements MongoNodeDescriptor {
 
@@ -36,7 +35,7 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
     }
 
     public void appendText(ColoredTreeCellRenderer cellRenderer, boolean isNodeExpanded) {
-        cellRenderer.append(String.format("[%s] ", index), INDEX);
+        cellRenderer.append(String.format("[%s] ", index), TEXT_ATTRIBUTES_PROVIDER.getIndexAttribute());
         if (!isNodeExpanded) {
             cellRenderer.append(getDescription(), textAttributes);
         }
@@ -62,7 +61,7 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
     private static class MongoStringValueDescriptor extends MongoValueDescriptor {
 
         private MongoStringValueDescriptor(int index, String value) {
-            super(index, value, STRING_TEXT_ATTRIBUTE);
+            super(index, value, TEXT_ATTRIBUTES_PROVIDER.getStringAttribute());
         }
 
         protected String getDescription() {
@@ -73,7 +72,7 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
     private static class MongoNullValueDescriptor extends MongoValueDescriptor {
 
         private MongoNullValueDescriptor(int index) {
-            super(index, null, NULL_TEXT_ATTRIBUTE);
+            super(index, null, TEXT_ATTRIBUTES_PROVIDER.getNullAttribute());
         }
 
         protected String getDescription() {
@@ -94,13 +93,13 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
         if (value instanceof String) {
             return new MongoStringValueDescriptor(index, (String) value);
         } else if (value instanceof Boolean) {
-            return new MongoValueDescriptor(index, value, BOOLEAN_TEXT_ATTRIBUTE);
+            return new MongoValueDescriptor(index, value, TEXT_ATTRIBUTES_PROVIDER.getBooleanAttribute());
         } else if (value instanceof Integer) {
-            return new MongoValueDescriptor(index, value, INTEGER_TEXT_ATTRIBUTE);
+            return new MongoValueDescriptor(index, value, TEXT_ATTRIBUTES_PROVIDER.getIndexAttribute());
         } else if (value instanceof DBObject) {
-            return new MongoValueDescriptor(index, value, DBOBJECT_TEXT_ATTRIBUTE);
+            return new MongoValueDescriptor(index, value, TEXT_ATTRIBUTES_PROVIDER.getDBObjectAttribute());
         } else {
-            return new MongoValueDescriptor(index, value, STRING_TEXT_ATTRIBUTE);
+            return new MongoValueDescriptor(index, value, TEXT_ATTRIBUTES_PROVIDER.getStringAttribute());
         }
     }
 }

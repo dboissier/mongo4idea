@@ -46,4 +46,8 @@ public class GuiUtils {
                 .createActionToolbar(toolbarName, actionGroup, horizontal).getComponent();
         toolBarPanel.add(actionToolbar, BorderLayout.CENTER);
     }
+
+    public static boolean isUnderDarcula() {
+        return UIManager.getLookAndFeel().getName().contains("Darcula");
+    }
 }

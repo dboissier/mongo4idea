@@ -20,9 +20,7 @@ import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.mongodb.DBObject;
 import org.codinjutsu.tools.mongo.utils.StringUtils;
-import org.codinjutsu.tools.mongo.view.TextAttributesUtils;
-
-import static org.codinjutsu.tools.mongo.view.TextAttributesUtils.*;
+import org.codinjutsu.tools.mongo.view.style.DefaultTextAttributesProvider;
 
 public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
@@ -42,7 +40,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
     }
 
     public void appendText(ColoredTreeCellRenderer cellRenderer, boolean isNodeExpanded) {
-        cellRenderer.append(String.format(STRING_SURROUNDED, key), TextAttributesUtils.KEY_VALUE);
+        cellRenderer.append(String.format(STRING_SURROUNDED, key), TEXT_ATTRIBUTES_PROVIDER.getKeyValueAttribute());
         if (!isNodeExpanded) {
             cellRenderer.append(": ");
             cellRenderer.append(getDescription(), getTextAttributes());
@@ -74,7 +72,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
     private static class MongoKeyNullValueDescriptor extends MongoKeyValueDescriptor {
 
         private MongoKeyNullValueDescriptor(String key) {
-            super(key, null, NULL_TEXT_ATTRIBUTE);
+            super(key, null, TEXT_ATTRIBUTES_PROVIDER.getNullAttribute());
         }
 
         protected String getDescription() {
@@ -86,7 +84,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
     private static class MongoKeyStringValueDescriptor extends MongoKeyValueDescriptor {
 
         private MongoKeyStringValueDescriptor(String key, String value) {
-            super(key, value, STRING_TEXT_ATTRIBUTE);
+            super(key, value, TEXT_ATTRIBUTES_PROVIDER.getStringAttribute());
         }
 
         protected String getDescription() {
@@ -107,13 +105,13 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
         if (value instanceof String) {
             return new MongoKeyStringValueDescriptor(key, (String) value);
         } else if (value instanceof Boolean) {
-            return new MongoKeyValueDescriptor(key, value, BOOLEAN_TEXT_ATTRIBUTE);
+            return new MongoKeyValueDescriptor(key, value, TEXT_ATTRIBUTES_PROVIDER.getBooleanAttribute());
         } else if (value instanceof Integer) {
-            return new MongoKeyValueDescriptor(key, value, INTEGER_TEXT_ATTRIBUTE);
+            return new MongoKeyValueDescriptor(key, value, TEXT_ATTRIBUTES_PROVIDER.getIntegerAttribute());
         } else if (value instanceof DBObject) {
-            return new MongoKeyValueDescriptor(key, value, DBOBJECT_TEXT_ATTRIBUTE);
+            return new MongoKeyValueDescriptor(key, value, TEXT_ATTRIBUTES_PROVIDER.getDBObjectAttribute());
         } else {
-            return new MongoKeyValueDescriptor(key, value, STRING_TEXT_ATTRIBUTE);
+            return new MongoKeyValueDescriptor(key, value, TEXT_ATTRIBUTES_PROVIDER.getStringAttribute());
         }
     }
 }

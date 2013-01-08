@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.view.nodedescriptor;
+package org.codinjutsu.tools.mongo.view.style;
 
-import com.intellij.ui.ColoredTreeCellRenderer;
-import org.codinjutsu.tools.mongo.view.style.TextAttributesUtils;
+import org.codinjutsu.tools.mongo.utils.GuiUtils;
+import org.codinjutsu.tools.mongo.view.style.DarculaTextAttributesProvider;
+import org.codinjutsu.tools.mongo.view.style.DefaultTextAttributesProvider;
 import org.codinjutsu.tools.mongo.view.style.TextAttributesProvider;
 
-public interface MongoNodeDescriptor {
+public class TextAttributesUtils {
 
-    int MAX_LENGTH = 150;
+    public static TextAttributesProvider get() {
+        if (GuiUtils.isUnderDarcula()) {
+            return new DarculaTextAttributesProvider();
+        } else {
+            return new DefaultTextAttributesProvider();
+        }
+    }
 
-    TextAttributesProvider TEXT_ATTRIBUTES_PROVIDER = TextAttributesUtils.get();
-
-    void appendText(ColoredTreeCellRenderer cellRenderer, boolean isNodeExpanded);
 }
