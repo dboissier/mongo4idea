@@ -4,7 +4,7 @@
 See CHANGELOG.txt
 
 ## Description
-This plugin integrates MongoDB Server with database/collections tree and Query Runner
+This plugin integrates MongoDB Server with database/collections tree,  Query Runner and Shell console.
 
 ## Plugin Compatibility
 This plugin was built with JDK 1.6 and ideaIU-11.1.4 version.
