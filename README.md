@@ -43,6 +43,10 @@ The panel is divided into 2 parts.
 
 You can copy the result and paste in a text editor.
 
+If you use the Darcula Theme, then the results are dispayed as follow:
+
+![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea_darcula.png?raw=true)
+
 * Left part allows to specify a query (in json format).
 
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-findWithFilter.png?raw=true)
