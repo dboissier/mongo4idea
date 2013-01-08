@@ -43,7 +43,7 @@ The panel is divided into 2 parts.
 
 You can copy the result and paste in a text editor.
 
-If you use the Darcula Theme, then the results are dispayed as follow:
+If you use the Darcula Theme then the results are displayed as follow:
 
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea_darcula.png?raw=true)
 
