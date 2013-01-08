@@ -19,6 +19,7 @@ package org.codinjutsu.tools.mongo.view;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.RawCommandLineEditor;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
@@ -52,6 +53,7 @@ public class ConfigurationPanel {
 
     private LabeledComponent<TextFieldWithBrowseButton> shellPathField;
     private RawCommandLineEditor shellArgumentsLineField;
+    private JPanel mongoShellOptionsPanel;
 
     private final MongoManager mongoManager;
 
@@ -60,6 +62,7 @@ public class ConfigurationPanel {
 
     public ConfigurationPanel(MongoManager mongoManager) {
         this.mongoManager = mongoManager;
+        mongoShellOptionsPanel.setBorder(IdeBorderFactory.createTitledBorder("Mongo shell options", true));
 
         shellArgumentsLineField.setDialogCaption("Mongo arguments");
         serverNameField.setName("serverNameField");
