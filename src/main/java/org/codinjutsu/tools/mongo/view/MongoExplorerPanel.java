@@ -46,7 +46,7 @@ import java.net.URL;
 
 public class MongoExplorerPanel extends JPanel implements Disposable {
 
-    private static final URL pluginSettingsUrl = GuiUtils.getIconResource("pluginSettings.png");
+    private static final URL pluginSettingsUrl = GuiUtils.isUnderDarcula() ? GuiUtils.getIconResource("pluginSettings_dark.png") : GuiUtils.getIconResource("pluginSettings.png");
 
     private JPanel rootPanel;
 
