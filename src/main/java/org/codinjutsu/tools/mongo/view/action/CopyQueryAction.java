@@ -22,14 +22,17 @@ import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.QueryPanel;
+import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 
+import javax.swing.*;
 import java.awt.datatransfer.StringSelection;
 
 public class CopyQueryAction extends AnAction implements DumbAware {
+    private static final Icon COPY_ICON = StyleAttributesUtils.getInstance().getCopyIcon();
     private final QueryPanel queryPanel;
 
     public CopyQueryAction(QueryPanel queryPanel) {
-        super("Copy query", "Copy the query to clipboard", GuiUtils.loadIcon("copy.png"));
+        super("Copy query", "Copy the query to clipboard", COPY_ICON);
         this.queryPanel = queryPanel;
     }
 

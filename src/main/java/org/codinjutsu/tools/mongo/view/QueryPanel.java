@@ -44,6 +44,7 @@ import org.codinjutsu.tools.mongo.view.action.AddOperatorPanelAction;
 import org.codinjutsu.tools.mongo.view.action.CopyQueryAction;
 import org.codinjutsu.tools.mongo.view.action.ExecuteQuery;
 import org.codinjutsu.tools.mongo.view.action.OperatorCompletionAction;
+import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -240,7 +241,7 @@ public class QueryPanel extends JPanel implements Disposable {
 
     public static class OperatorPanel extends JPanel implements Disposable {
 
-        private static final Icon CLOSE_ICON = GuiUtils.loadIcon("close.png");
+        private static final Icon CLOSE_ICON = StyleAttributesUtils.getInstance().getCloseIcon();
 
         private final Editor editor;
         private final MongoAggregateOperator operator;

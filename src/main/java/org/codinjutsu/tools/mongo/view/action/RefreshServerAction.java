@@ -21,12 +21,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
+import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 
 import javax.swing.*;
 
 public class RefreshServerAction extends AnAction implements DumbAware {
 
-    private static final Icon REFRESH = GuiUtils.loadIcon("refresh.png");
+    private static final Icon REFRESH = StyleAttributesUtils.getInstance().getRefreshIcon();
 
     private MongoExplorerPanel mongoExplorerPanel;
 

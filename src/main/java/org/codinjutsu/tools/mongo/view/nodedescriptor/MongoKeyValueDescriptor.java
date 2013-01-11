@@ -20,7 +20,6 @@ import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.mongodb.DBObject;
 import org.codinjutsu.tools.mongo.utils.StringUtils;
-import org.codinjutsu.tools.mongo.view.style.DefaultTextAttributesProvider;
 
 public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 

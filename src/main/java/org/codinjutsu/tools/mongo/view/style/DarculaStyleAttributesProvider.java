@@ -1,10 +1,12 @@
 package org.codinjutsu.tools.mongo.view.style;
 
 import com.intellij.ui.SimpleTextAttributes;
+import org.codinjutsu.tools.mongo.utils.GuiUtils;
 
+import javax.swing.*;
 import java.awt.*;
 
-public class DarculaTextAttributesProvider implements TextAttributesProvider {
+public class DarculaStyleAttributesProvider implements StyleAttributesProvider {
 
     private static final Color GREEN = new Color(165, 194, 97);
     private static final Color ORANGE = new Color(204, 120, 50);
@@ -52,5 +54,35 @@ public class DarculaTextAttributesProvider implements TextAttributesProvider {
     @Override
     public SimpleTextAttributes getDBObjectAttribute() {
         return DBOBJECT_TEXT_ATTRIBUTE;
+    }
+
+    @Override
+    public Icon getAddIcon() {
+        return GuiUtils.loadIcon("add_dark.png");
+    }
+
+    @Override
+    public Icon getCloseIcon() {
+        return GuiUtils.loadIcon("close_dark.png");
+    }
+
+    @Override
+    public Icon getCopyIcon() {
+        return GuiUtils.loadIcon("copy_dark.png");
+    }
+
+    @Override
+    public Icon getExecuteIcon() {
+        return GuiUtils.loadIcon("execute_dark.png");
+    }
+
+    @Override
+    public Icon getSettingsIcon() {
+        return GuiUtils.loadIcon("pluginSettings_dark.png");
+    }
+
+    @Override
+    public Icon getRefreshIcon() {
+        return GuiUtils.loadIcon("refresh_dark.png");
     }
 }

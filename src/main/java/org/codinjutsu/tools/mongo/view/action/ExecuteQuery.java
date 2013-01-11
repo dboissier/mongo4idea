@@ -20,6 +20,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.MongoRunnerPanel;
+import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -28,7 +29,7 @@ public class ExecuteQuery extends AnAction {
     private final MongoRunnerPanel mongoRunnerPanel;
 
     public ExecuteQuery(MongoRunnerPanel mongoRunnerPanel) {
-        super("Execute query", "Execute query with options", GuiUtils.loadIcon("rerun.png"));
+        super("Execute query", "Execute query with options", StyleAttributesUtils.getInstance().getExecuteIcon());
         this.mongoRunnerPanel = mongoRunnerPanel;
 
         registerCustomShortcutSet(KeyEvent.VK_F5, InputEvent.CTRL_MASK, mongoRunnerPanel);

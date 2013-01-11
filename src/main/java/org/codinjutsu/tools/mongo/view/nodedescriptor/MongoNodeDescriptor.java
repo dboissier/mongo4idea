@@ -17,14 +17,14 @@
 package org.codinjutsu.tools.mongo.view.nodedescriptor;
 
 import com.intellij.ui.ColoredTreeCellRenderer;
-import org.codinjutsu.tools.mongo.view.style.TextAttributesUtils;
-import org.codinjutsu.tools.mongo.view.style.TextAttributesProvider;
+import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
+import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 
 public interface MongoNodeDescriptor {
 
     int MAX_LENGTH = 150;
 
-    TextAttributesProvider TEXT_ATTRIBUTES_PROVIDER = TextAttributesUtils.get();
+    StyleAttributesProvider TEXT_ATTRIBUTES_PROVIDER = StyleAttributesUtils.getInstance();
 
     void appendText(ColoredTreeCellRenderer cellRenderer, boolean isNodeExpanded);
 }

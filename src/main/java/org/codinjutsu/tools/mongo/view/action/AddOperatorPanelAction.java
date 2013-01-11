@@ -25,13 +25,14 @@ import com.intellij.ui.components.JBList;
 import org.codinjutsu.tools.mongo.model.MongoAggregateOperator;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.QueryPanel;
+import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class AddOperatorPanelAction extends AnAction implements DumbAware {
 
-    private static final Icon ADD_ICON = GuiUtils.loadIcon("add.png");
+    private static final Icon ADD_ICON = StyleAttributesUtils.getInstance().getAddIcon();
 
     private final JList OPERATOR_LIST = new JBList(MongoAggregateOperator.values());
     private final QueryPanel queryPanel;

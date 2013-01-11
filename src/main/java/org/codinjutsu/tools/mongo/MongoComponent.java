@@ -53,6 +53,8 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
 
     private static final String MONGO_PLUGIN_NAME = "Mongo Plugin";
 
+    public static final Icon MONGO_ICON = GuiUtils.loadIcon("mongo_logo.png");
+
     private MongoConfiguration configuration;
 
     private ConfigurationPanel configurationPanel;
@@ -113,7 +115,7 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
         Content mongoRunner = ContentFactory.SERVICE.getInstance().createContent(mongoRunnerPanel, null, false);
         final ToolWindow toolMongoRunnerWindow = toolWindowManager.registerToolWindow(MONGO_RUNNER, false, ToolWindowAnchor.BOTTOM);
         toolMongoRunnerWindow.getContentManager().addContent(mongoRunner);
-        toolMongoRunnerWindow.setIcon(GuiUtils.loadIcon("mongo_logo.png"));
+        toolMongoRunnerWindow.setIcon(MONGO_ICON);
 
         mongoExplorerPanel = new MongoExplorerPanel(mongoManager, configuration, new RunnerCallback() {
 
@@ -129,7 +131,7 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
         Content mongoExplorer = ContentFactory.SERVICE.getInstance().createContent(mongoExplorerPanel, null, false);
         ToolWindow toolMongoExplorerWindow = toolWindowManager.registerToolWindow(MONGO_EXPLORER, false, ToolWindowAnchor.RIGHT);
         toolMongoExplorerWindow.getContentManager().addContent(mongoExplorer);
-        toolMongoExplorerWindow.setIcon(GuiUtils.loadIcon("mongo_logo.png"));
+        toolMongoExplorerWindow.setIcon(MONGO_ICON);
 
         mongoRunnerPanel.installActions();
         mongoExplorerPanel.installActions();

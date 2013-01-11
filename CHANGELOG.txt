@@ -1,3 +1,7 @@
+Version 0.2.1:
+    * [add] Darcula theme support
+    * [fix] Shell arguments are not saved in the configuration
+
 Version 0.2.0:
     * [fix] #18 If server auth is enabled, use credentials when list Databases
     * [add] #19 Refresh databases button available in the explorer panel

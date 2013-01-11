@@ -2,7 +2,9 @@ package org.codinjutsu.tools.mongo.view.style;
 
 import com.intellij.ui.SimpleTextAttributes;
 
-public interface TextAttributesProvider {
+import javax.swing.*;
+
+public interface StyleAttributesProvider {
 
     SimpleTextAttributes getIndexAttribute();
 
@@ -17,4 +19,16 @@ public interface TextAttributesProvider {
     SimpleTextAttributes getNullAttribute();
 
     SimpleTextAttributes getDBObjectAttribute();
+
+    Icon getAddIcon();
+
+    Icon getCloseIcon();
+
+    Icon getCopyIcon();
+
+    Icon getExecuteIcon();
+
+    Icon getSettingsIcon();
+
+    Icon getRefreshIcon();
 }

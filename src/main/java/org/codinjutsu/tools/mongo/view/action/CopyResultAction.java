@@ -22,17 +22,20 @@ import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.MongoResultPanel;
+import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 
+import javax.swing.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 public class CopyResultAction extends AnAction implements DumbAware {
 
+    private static final Icon COPY_ICON = StyleAttributesUtils.getInstance().getCopyIcon();
     private final MongoResultPanel mongoResultPanel;
 
     public CopyResultAction(MongoResultPanel mongoResultPanel) {
-        super("Copy", "Copy results to clipboard", GuiUtils.loadIcon("copy.png"));
+        super("Copy", "Copy results to clipboard", COPY_ICON);
         this.mongoResultPanel = mongoResultPanel;
 
         registerCustomShortcutSet(KeyEvent.VK_C, InputEvent.CTRL_MASK, mongoResultPanel);

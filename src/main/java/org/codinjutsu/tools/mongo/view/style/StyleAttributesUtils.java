@@ -17,18 +17,22 @@
 package org.codinjutsu.tools.mongo.view.style;
 
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
-import org.codinjutsu.tools.mongo.view.style.DarculaTextAttributesProvider;
-import org.codinjutsu.tools.mongo.view.style.DefaultTextAttributesProvider;
-import org.codinjutsu.tools.mongo.view.style.TextAttributesProvider;
 
-public class TextAttributesUtils {
+public class StyleAttributesUtils {
 
-    public static TextAttributesProvider get() {
-        if (GuiUtils.isUnderDarcula()) {
-            return new DarculaTextAttributesProvider();
-        } else {
-            return new DefaultTextAttributesProvider();
+
+    private static StyleAttributesProvider styleAttributesProvider = null;
+
+
+    public static StyleAttributesProvider getInstance() {//TODO see how to put it into the pico container
+        if (styleAttributesProvider == null) {
+            if (GuiUtils.isUnderDarcula()) {
+                styleAttributesProvider = new DarculaStyleAttributesProvider();
+            } else {
+                styleAttributesProvider = new DefaultStyleAttributesProvider();
+            }
         }
+        return styleAttributesProvider;
     }
 
 }

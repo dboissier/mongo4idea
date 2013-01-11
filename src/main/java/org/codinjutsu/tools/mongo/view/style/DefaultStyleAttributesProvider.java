@@ -1,10 +1,12 @@
 package org.codinjutsu.tools.mongo.view.style;
 
 import com.intellij.ui.SimpleTextAttributes;
+import org.codinjutsu.tools.mongo.utils.GuiUtils;
 
+import javax.swing.*;
 import java.awt.*;
 
-public class DefaultTextAttributesProvider implements TextAttributesProvider {
+public class DefaultStyleAttributesProvider implements StyleAttributesProvider {
 
     private static final Color LIGNT_GREEN = new Color(0, 128, 0);
     private static final Color PURPLE = new Color(102, 14, 122);
@@ -51,5 +53,35 @@ public class DefaultTextAttributesProvider implements TextAttributesProvider {
     @Override
     public SimpleTextAttributes getDBObjectAttribute() {
         return DBOBJECT_TEXT_ATTRIBUTE;
+    }
+
+    @Override
+    public Icon getAddIcon() {
+        return GuiUtils.loadIcon("add.png");
+    }
+
+    @Override
+    public Icon getCloseIcon() {
+        return GuiUtils.loadIcon("close.png");
+    }
+
+    @Override
+    public Icon getCopyIcon() {
+        return GuiUtils.loadIcon("copy.png");
+    }
+
+    @Override
+    public Icon getExecuteIcon() {
+        return GuiUtils.loadIcon("execute.png");
+    }
+
+    @Override
+    public Icon getSettingsIcon() {
+        return GuiUtils.loadIcon("pluginSettings.png");
+    }
+
+    @Override
+    public Icon getRefreshIcon() {
+        return GuiUtils.loadIcon("refresh.png");
     }
 }

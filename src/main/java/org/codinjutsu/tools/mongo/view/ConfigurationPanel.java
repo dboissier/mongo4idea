@@ -199,7 +199,7 @@ public class ConfigurationPanel {
         passwordField.setText(configuration.getPassword());
         collectionsToIgnoreField.setText(StringUtils.join(configuration.getCollectionsToIgnore(), ","));
         shellPathField.getComponent().setText(configuration.getShellPath());
-
+        shellArgumentsLineField.setText(configuration.getShellArgumentsLine());
         serverVersion = configuration.getServerVersion();
     }
 }
