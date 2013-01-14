@@ -16,7 +16,7 @@
 
 package org.codinjutsu.tools.mongo.model;
 
-public class MongoCollection {
+public class MongoCollection implements Comparable<MongoCollection> {
 
     private final String name;
     private final String databaseName;
@@ -32,5 +32,10 @@ public class MongoCollection {
 
     public String getDatabaseName() {
         return databaseName;
+    }
+
+    @Override
+    public int compareTo(MongoCollection otherCollection) {
+        return this.name.compareTo(otherCollection.getName());
     }
 }

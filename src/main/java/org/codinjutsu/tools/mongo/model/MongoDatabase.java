@@ -16,13 +16,14 @@
 
 package org.codinjutsu.tools.mongo.model;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class MongoDatabase {
     private final String name;
 
-    private final Set<MongoCollection> collections = new HashSet<MongoCollection>();
+    private final SortedSet<MongoCollection> collections = new TreeSet<MongoCollection>();
 
     public MongoDatabase(String name) {
         this.name = name;
