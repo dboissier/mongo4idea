@@ -9,7 +9,7 @@ This plugin integrates MongoDB Server with database/collections tree,  Query Run
 ## Plugin Compatibility
 This plugin was built with JDK 1.6 and ideaIU-11.1.4 version.
 
-## Installation steps
+## How to install it?
 Download this plugin from your IDE (Mongo Plugin)
 
 ## Configuration steps
@@ -30,7 +30,7 @@ Download this plugin from your IDE (Mongo Plugin)
 
 The tree displays for each database all collections. Just double-click on a collection and the results will be displayed in the Mongo Runner Panel.
 
-If the server does not respond, you have have the following message:
+If the server does not respond, you have the following message:
 
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-explorerWithoutDB.png?raw=true)
 
