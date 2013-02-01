@@ -23,16 +23,19 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import org.apache.commons.lang.StringUtils;
-import org.codinjutsu.tools.mongo.MongoComponent;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
+import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 import org.codinjutsu.tools.mongo.view.console.MongoConsoleRunner;
 
 public class MongoConsoleAction extends AnAction implements DumbAware {
 
 
-    public MongoConsoleAction() {
-        super("Mongo Shell...", "Mongo Shell", GuiUtils.loadIcon("mongo_logo.png"));
+    private final MongoExplorerPanel mongoExplorerPanel;
+
+    public MongoConsoleAction(MongoExplorerPanel mongoExplorerPanel) {
+        super("Mongo Shell...", "Mongo Shell", GuiUtils.loadIcon("toolConsole.png"));
+        this.mongoExplorerPanel = mongoExplorerPanel;
     }
 
 
@@ -41,15 +44,19 @@ public class MongoConsoleAction extends AnAction implements DumbAware {
         final Project project = e.getData(PlatformDataKeys.PROJECT);
 
         boolean enabled = project != null;
+        if (!enabled) {
+            return;
+        }
+        
 
-        MongoComponent mongoComponent = project.getComponent(MongoComponent.class);
-        MongoConfiguration configuration = mongoComponent.getState();
+        MongoConfiguration configuration = MongoConfiguration.getInstance(project);
         if (configuration != null) {
             enabled = enabled && StringUtils.isNotBlank(configuration.getShellPath());
         }
 
-        e.getPresentation().setEnabled(enabled);
         e.getPresentation().setVisible(enabled);
+
+        e.getPresentation().setEnabled(mongoExplorerPanel.getConfiguration() != null );
     }
 
     @Override
@@ -57,13 +64,15 @@ public class MongoConsoleAction extends AnAction implements DumbAware {
         final Project project = e.getData(PlatformDataKeys.PROJECT);
         assert project != null;
 
+
+
         runShell(project);
 
         return;
     }
 
-    private static void runShell(Project project) {
-        MongoConsoleRunner consoleRunner = new MongoConsoleRunner(project);
+    private void runShell(Project project) {
+        MongoConsoleRunner consoleRunner = new MongoConsoleRunner(project, mongoExplorerPanel.getConfiguration());
         try {
             consoleRunner.initAndRun();
         } catch (ExecutionException e1) {

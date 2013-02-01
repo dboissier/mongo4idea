@@ -19,7 +19,7 @@ package org.codinjutsu.tools.mongo.logic;
 import com.mongodb.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.codinjutsu.tools.mongo.MongoConfiguration;
+import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.*;
 
 import java.io.IOException;
@@ -29,6 +29,10 @@ import java.util.*;
 public class MongoManager {
 
     private static final Logger LOG = Logger.getLogger(MongoManager.class);
+
+    public String connect(ServerConfiguration configuration) {
+        return connect(configuration.getServerName(), configuration.getServerPort(), configuration.getUsername(), configuration.getPassword());
+    }
 
     public String connect(String serverName, int serverPort, String username, String password) {
         try {
@@ -54,13 +58,11 @@ public class MongoManager {
         }
     }
 
-    public MongoServer loadDatabaseCollections(MongoConfiguration configuration) {
+    public MongoServer loadDatabaseCollections(MongoServer mongoServer) {
         try {
-            MongoClient mongo = new MongoClient(configuration.getServerName(), configuration.getServerPort());
+            MongoClient mongo = new MongoClient(mongoServer.getServerName(), mongoServer.getServerPort());
 
-            MongoServer mongoServer = new MongoServer(configuration.getServerName(), configuration.getServerPort());
-
-            List<String> databaseNames = getDatabaseNames(mongo, configuration.getUsername(), configuration.getPassword());
+            List<String> databaseNames = getDatabaseNames(mongo, mongoServer.getUsername(), mongoServer.getPassword());
             for (String databaseName : databaseNames) {
                 DB database = mongo.getDB(databaseName);
                 MongoDatabase mongoDatabase = new MongoDatabase(database.getName());
@@ -78,7 +80,7 @@ public class MongoManager {
         }
     }
 
-    public MongoCollectionResult loadCollectionValues(MongoConfiguration configuration, MongoCollection mongoCollection, MongoQueryOptions mongoQueryOptions) {
+    public MongoCollectionResult loadCollectionValues(ServerConfiguration configuration, MongoCollection mongoCollection, MongoQueryOptions mongoQueryOptions) {
         MongoCollectionResult mongoCollectionResult = new MongoCollectionResult(mongoCollection.getName());
         try {
             Mongo mongo = new Mongo(configuration.getServerName(), configuration.getServerPort());
@@ -115,6 +117,7 @@ public class MongoManager {
         return mongoCollectionResult;
     }
 
+
     private MongoCollectionResult find(MongoQueryOptions mongoQueryOptions, MongoCollectionResult mongoCollectionResult, DBCollection collection) {
         DBObject filter = mongoQueryOptions.getFilter();
         DBCursor cursor = collection.find(filter);
@@ -129,7 +132,6 @@ public class MongoManager {
         }
         return mongoCollectionResult;
     }
-
 
     //Note : Hack of MongoClient#getDatabaseNames to retry with provided credentials
     public List<String> getDatabaseNames(MongoClient mongo, String username, String password){

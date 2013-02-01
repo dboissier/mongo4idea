@@ -30,14 +30,15 @@
         </component>
     </project-components>
 
-    <!--<extensions defaultExtensionNs="com.intellij">-->
+    <extensions defaultExtensionNs="com.intellij">
+        <projectService serviceInterface="org.codinjutsu.tools.mongo.MongoConfiguration" serviceImplementation="org.codinjutsu.tools.mongo.MongoConfiguration"/>
         <!--<configurationType implementation="org.codinjutsu.tools.mongo.runner.MongoRunConfigurationType"/>-->
-    <!--</extensions>-->
+    </extensions>
 
     <actions>
-        <action id="Mongo.Console" class="org.codinjutsu.tools.mongo.view.action.MongoConsoleAction">
-            <add-to-group group-id="ToolsMenu" anchor="last"/>
-        </action>
+        <!--<action id="Mongo.Console" class="org.codinjutsu.tools.mongo.view.action.MongoConsoleAction">-->
+            <!--<add-to-group group-id="ToolsMenu" anchor="last"/>-->
+        <!--</action>-->
         <action id="Mongo.Shell.Execute" class="com.intellij.openapi.actionSystem.EmptyAction"
                 text="Execute Mongo Command"
                 description="Execute Mongo command in console">

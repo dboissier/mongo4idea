@@ -16,16 +16,12 @@
 
 package org.codinjutsu.tools.mongo.view;
 
-import com.intellij.openapi.fileChooser.FileChooserDescriptor;
-import com.intellij.openapi.ui.LabeledComponent;
-import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.RawCommandLineEditor;
 import org.apache.commons.lang.StringUtils;
-import org.codinjutsu.tools.mongo.MongoConfiguration;
+import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
-import org.codinjutsu.tools.mongo.utils.CollectionUtils;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 
 import javax.swing.*;
@@ -35,7 +31,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ConfigurationPanel {
+public class ServerConfigurationPanel {
 
     private static final Icon SUCCESS = GuiUtils.loadIcon("success.png");
     private static final Icon FAIL = GuiUtils.loadIcon("fail.png");
@@ -51,16 +47,17 @@ public class ConfigurationPanel {
     private JLabel feedbackLabel;
     private JTextField collectionsToIgnoreField;
 
-    private LabeledComponent<TextFieldWithBrowseButton> shellPathField;
     private RawCommandLineEditor shellArgumentsLineField;
     private JPanel mongoShellOptionsPanel;
+    private JTextField labelField;
+    private JCheckBox autoConnectCheckBox;
 
     private final MongoManager mongoManager;
 
     private String serverVersion = "";
 
 
-    public ConfigurationPanel(MongoManager mongoManager) {
+    public ServerConfigurationPanel(MongoManager mongoManager) {
         this.mongoManager = mongoManager;
         mongoShellOptionsPanel.setBorder(IdeBorderFactory.createTitledBorder("Mongo shell options", true));
 
@@ -70,7 +67,8 @@ public class ConfigurationPanel {
         usernameField.setName("usernameField");
         passwordField.setName("passwordField");
         feedbackLabel.setName("feedbackLabel");
-        shellPathField.getComponent().setName("shellPathField");
+        labelField.setName("labelField");
+        autoConnectCheckBox.setName("autoConnectField");
 
         initListeners();
     }
@@ -92,29 +90,10 @@ public class ConfigurationPanel {
             }
         });
 
-        installBrowserListener();
-    }
-
-    protected void installBrowserListener() {
-        shellPathField.getComponent().addBrowseFolderListener("Mongo shell path", "", null,
-                new FileChooserDescriptor(true, false, false, false, false, false));
     }
 
     public JPanel getRootPanel() {
         return rootPanel;
-    }
-
-    public boolean isModified(MongoConfiguration configuration) {
-
-        return !(
-                StringUtils.equals(configuration.getServerName(), getServerName())
-                        && (configuration.getServerPort() == getServerPort())
-                        && StringUtils.equals(configuration.getUsername(), getUsername())
-                        && StringUtils.equals(configuration.getPassword(), getPassword())
-                        && CollectionUtils.isEqualCollection(configuration.getCollectionsToIgnore(), getCollectionsToIgnore())
-                        && StringUtils.equals(configuration.getShellPath(), getShellPath())
-                        && StringUtils.equals(configuration.getShellArgumentsLine(), getShellArgumentsLine())
-        );
     }
 
     private Set<String> getCollectionsToIgnore() {
@@ -131,15 +110,24 @@ public class ConfigurationPanel {
         return Collections.emptySet();
     }
 
-    public void applyConfigurationData(MongoConfiguration configuration) {
+    public void applyConfigurationData(ServerConfiguration configuration) {
+        configuration.setLabel(getLabel());
         configuration.setServerName(getServerName());
         configuration.setServerPort(getServerPort());
         configuration.setUsername(getUsername());
         configuration.setPassword(getPassword());
         configuration.setCollectionsToIgnore(getCollectionsToIgnore());
-        configuration.setShellPath(getShellPath());
         configuration.setShellArgumentsLine(getShellArgumentsLine());
+        configuration.setConnectOnIdeStartup(isAutoConnect());
         configuration.setServerVersion(serverVersion);
+    }
+
+    private String getLabel() {
+        String label = labelField.getText();
+        if (StringUtils.isNotBlank(label)) {
+            return label;
+        }
+        return null;
     }
 
     private String getServerName() {
@@ -174,15 +162,6 @@ public class ConfigurationPanel {
         return 0;
     }
 
-    private String getShellPath() {
-        String shellPath = shellPathField.getComponent().getText();
-        if (StringUtils.isNotBlank(shellPath)) {
-            return shellPath;
-        }
-
-        return null;
-    }
-
     private String getShellArgumentsLine() {
         String shellArgumentsLine = shellArgumentsLineField.getText();
         if (StringUtils.isNotBlank(shellArgumentsLine)) {
@@ -192,14 +171,19 @@ public class ConfigurationPanel {
         return null;
     }
 
-    public void loadConfigurationData(MongoConfiguration configuration) {
+    private boolean isAutoConnect() {
+        return autoConnectCheckBox.isSelected();
+    }
+
+    public void loadConfigurationData(ServerConfiguration configuration) {
+        labelField.setText(configuration.getLabel());
         serverNameField.setText(configuration.getServerName());
         serverPortField.setText(Integer.toString(configuration.getServerPort()));
         usernameField.setText(configuration.getUsername());
         passwordField.setText(configuration.getPassword());
         collectionsToIgnoreField.setText(StringUtils.join(configuration.getCollectionsToIgnore(), ","));
-        shellPathField.getComponent().setText(configuration.getShellPath());
         shellArgumentsLineField.setText(configuration.getShellArgumentsLine());
+        autoConnectCheckBox.setSelected(configuration.isConnectOnIdeStartup());
         serverVersion = configuration.getServerVersion();
     }
 }

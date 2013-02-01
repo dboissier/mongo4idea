@@ -17,28 +17,38 @@
 package org.codinjutsu.tools.mongo.model;
 
 import org.apache.commons.lang.StringUtils;
+import org.codinjutsu.tools.mongo.ServerConfiguration;
 
 import java.util.LinkedList;
 import java.util.List;
 
 public class MongoServer {
 
-    private final String serverName;
-    private final int serverPort;
-
     private final List<MongoDatabase> databases = new LinkedList<MongoDatabase>();
+    private final ServerConfiguration configuration;
 
-    public MongoServer(String serverName, int serverPort) {
-        this.serverName = serverName;
-        this.serverPort = serverPort;
+    public MongoServer(ServerConfiguration configuration) {
+        this.configuration = configuration;
     }
 
     public String getServerName() {
-        return serverName;
+        return configuration.getServerName();
     }
 
     public int getServerPort() {
-        return serverPort;
+        return configuration.getServerPort();
+    }
+
+    public String getUsername() {
+        return configuration.getUsername();
+    }
+
+    public String getPassword() {
+        return configuration.getPassword();
+    }
+
+    public Object getLabel() {
+        return configuration.getLabel();
     }
 
     public void addDatabase(MongoDatabase mongoDatabase) {
@@ -66,5 +76,9 @@ public class MongoServer {
         }
 
         return false;
+    }
+
+    public ServerConfiguration getConfiguration() {
+        return configuration;
     }
 }

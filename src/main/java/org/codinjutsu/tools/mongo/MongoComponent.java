@@ -32,11 +32,12 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
-import org.codinjutsu.tools.mongo.view.ConfigurationPanel;
+import org.codinjutsu.tools.mongo.view.MongoConfigurable;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 import org.codinjutsu.tools.mongo.view.MongoRunnerPanel;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
@@ -57,7 +58,7 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
 
     private MongoConfiguration configuration;
 
-    private ConfigurationPanel configurationPanel;
+    private MongoConfigurable mongoConfigurable;
     private Project project;
     private MongoManager mongoManager;
     private MongoExplorerPanel mongoExplorerPanel;
@@ -66,7 +67,7 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
 
     public MongoComponent(Project project) {
         this.project = project;
-        this.configuration = new MongoConfiguration();
+        this.configuration = MongoConfiguration.getInstance(project);
     }
 
 
@@ -81,6 +82,8 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
         return MONGO_PLUGIN_NAME;
     }
 
+    @Nullable
+    @Override
     public Icon getIcon() {
         return null;
     }
@@ -99,31 +102,33 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
     }
 
     public void loadState(MongoConfiguration mongoConfiguration) {
-        XmlSerializerUtil.copyBean(mongoConfiguration, configuration);
+        configuration.setServerConfigurations(mongoConfiguration.getServerConfigurations());
+        configuration.setShellPath(mongoConfiguration.getShellPath());
     }
 
     public void projectOpened() {
         mongoManager = new MongoManager();
         //TODO refactor
         try {
-            configuration.setServerVersion(mongoManager.connect(configuration.getServerName(), configuration.getServerPort(), configuration.getUsername(), configuration.getPassword()));
+//            TODO need to rewrite this
+//            configuration.setServerVersion(mongoManager.connect(configuration.getServerName(), configuration.getServerPort(), configuration.getUsername(), configuration.getPassword()));
         } catch (org.codinjutsu.tools.mongo.logic.ConfigurationException e) {
             //TODO do something
         }
         ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
-        mongoRunnerPanel = new MongoRunnerPanel(project, configuration, mongoManager);
+        mongoRunnerPanel = new MongoRunnerPanel(project, mongoManager);
         Content mongoRunner = ContentFactory.SERVICE.getInstance().createContent(mongoRunnerPanel, null, false);
         final ToolWindow toolMongoRunnerWindow = toolWindowManager.registerToolWindow(MONGO_RUNNER, false, ToolWindowAnchor.BOTTOM);
         toolMongoRunnerWindow.getContentManager().addContent(mongoRunner);
         toolMongoRunnerWindow.setIcon(MONGO_ICON);
 
-        mongoExplorerPanel = new MongoExplorerPanel(mongoManager, configuration, new RunnerCallback() {
+        mongoExplorerPanel = new MongoExplorerPanel(project, mongoManager, new RunnerCallback() {
 
-            public void execute(final MongoCollection mongoCollection) {
+            public void execute(final ServerConfiguration configuration, final MongoCollection mongoCollection) {
                 toolMongoRunnerWindow.activate(new Runnable() {
                     @Override
                     public void run() {
-                        mongoRunnerPanel.showResults(mongoCollection);
+                        mongoRunnerPanel.showResults(configuration, mongoCollection);
                     }
                 });
             }
@@ -142,23 +147,23 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
     }
 
     public JComponent createComponent() {
-        if (configurationPanel == null) {
-            configurationPanel = new ConfigurationPanel(mongoManager);
+        if (mongoConfigurable == null) {
+            mongoConfigurable = new MongoConfigurable(project, configuration, mongoManager);
         }
-        return configurationPanel.getRootPanel();
+        return mongoConfigurable.createComponent();
     }
 
     public boolean isModified() {
-        return configurationPanel.isModified(configuration);
+        return mongoConfigurable.isModified();
     }
 
     public void apply() throws ConfigurationException {
-        configurationPanel.applyConfigurationData(configuration);
+        mongoConfigurable.apply();
         mongoExplorerPanel.reloadConfiguration();
     }
 
     public void reset() {
-        configurationPanel.loadConfigurationData(configuration);
+        mongoConfigurable.reset();
     }
 
     public void disposeUIResources() {
@@ -167,6 +172,6 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
 
     public interface RunnerCallback {
 
-        void execute(MongoCollection runnable);
+        void execute(ServerConfiguration configuration, MongoCollection runnable);
     }
 }

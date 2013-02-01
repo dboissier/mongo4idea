@@ -35,7 +35,7 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 
-import org.codinjutsu.tools.mongo.MongoConfiguration;
+import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -70,7 +70,7 @@ public class MongoRunConfiguration extends RuntimeConfiguration {
         overwriteDefaultParameters = JDOMExternalizer.readBoolean(element, "overwriteDefault");
         if (overwriteDefaultParameters) {
             host = JDOMExternalizer.readString(element, "host");
-            port = JDOMExternalizer.readInteger(element, "port", MongoConfiguration.DEFAULT_PORT);
+            port = JDOMExternalizer.readInteger(element, "port", ServerConfiguration.DEFAULT_PORT);
             username = JDOMExternalizer.readString(element, "username");
             password = JDOMExternalizer.readString(element, "password");
         }

@@ -29,9 +29,8 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
-import org.apache.commons.lang.StringUtils;
-import org.codinjutsu.tools.mongo.MongoComponent;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
+import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,11 +40,13 @@ import java.io.Reader;
 public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoConsoleView> {
 
     public static final Key<Boolean> MONGO_SHELL_FILE = Key.create("MONGO_SHELL_FILE");
+    private final ServerConfiguration serverConfiguration;
 
 
-    public MongoConsoleRunner(@NotNull Project project) {
+    public MongoConsoleRunner(@NotNull Project project, ServerConfiguration serverConfiguration) {
         super(project, "Mongo Shell", "/tmp");
 
+        this.serverConfiguration = serverConfiguration;
     }
 
     @Override
@@ -62,9 +63,8 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
     @Nullable
     @Override
     protected Process createProcess() throws ExecutionException {
-        MongoComponent mongoComponent = getProject().getComponent(MongoComponent.class);
-        MongoConfiguration mongoConfiguration = mongoComponent.getState();
 
+        MongoConfiguration mongoConfiguration = MongoConfiguration.getInstance(getProject());
         String shellPath = mongoConfiguration.getShellPath();
         VirtualFile mongoHomeDir = LocalFileSystem.getInstance().findFileByPath(FileUtil.toSystemIndependentName(shellPath));
         if (mongoHomeDir == null) {
@@ -75,10 +75,7 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
         final GeneralCommandLine commandLine = new GeneralCommandLine();
         commandLine.setExePath(shellPath);
 
-        String shellArgumentsLine = mongoConfiguration.getShellArgumentsLine();
-        if (StringUtils.isNotBlank(shellArgumentsLine)) {
-            commandLine.addParameter(shellArgumentsLine);
-        }
+        commandLine.addParameter(String.format("%s:%s", serverConfiguration.getServerName(), serverConfiguration.getServerPort()));
 
         return commandLine.createProcess();
     }

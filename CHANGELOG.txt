@@ -1,4 +1,5 @@
 Version 0.3.0:
+    * [add] Support more than 1 server (See the README on how to manage them)
     * [fix] Darcula settings icon is not displayed on the explorer when no server has been set
 
 Version 0.2.1:

@@ -20,17 +20,20 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.SimpleTree;
 import com.intellij.ui.treeStructure.Tree;
 import org.codinjutsu.tools.mongo.MongoComponent;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
+import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
 import org.codinjutsu.tools.mongo.model.MongoServer;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
+import org.codinjutsu.tools.mongo.view.action.MongoConsoleAction;
 import org.codinjutsu.tools.mongo.view.action.OpenPluginSettingsAction;
 import org.codinjutsu.tools.mongo.view.action.RefreshServerAction;
 import org.codinjutsu.tools.mongo.view.action.ViewCollectionValuesAction;
@@ -43,6 +46,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
+import java.util.List;
 
 public class MongoExplorerPanel extends JPanel implements Disposable {
 
@@ -55,14 +59,14 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
     private JPanel toolBarPanel;
 
+    private final Project project;
     private final MongoManager mongoManager;
-    private final MongoConfiguration configuration;
     private final MongoComponent.RunnerCallback runnerCallback;
-    private MongoServer mongoServer;
+    private List<ServerConfiguration> serverConfigurations;
 
-    public MongoExplorerPanel(MongoManager mongoManager, MongoConfiguration configuration, MongoComponent.RunnerCallback runnerCallback) {
+    public MongoExplorerPanel(Project project, MongoManager mongoManager, MongoComponent.RunnerCallback runnerCallback) {
+        this.project = project;
         this.mongoManager = mongoManager;
-        this.configuration = configuration;
         this.runnerCallback = runnerCallback;
 
         treePanel.setLayout(new BorderLayout());
@@ -89,32 +93,46 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
     private void init() {
         try {
-            mongoTree.setRootVisible(true);
-            mongoServer = mongoManager.loadDatabaseCollections(configuration);
-            final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(mongoServer);
-            if (mongoServer.hasDatabases()) {
-                for (MongoDatabase mongoDatabase : mongoServer.getDatabases()) {
-                    DefaultMutableTreeNode databaseNode = new DefaultMutableTreeNode(mongoDatabase);
-                    for (MongoCollection collection : mongoDatabase.getCollections()) {
-                        if (shouldNotIgnore(collection, configuration)) {
-                            databaseNode.add(new DefaultMutableTreeNode(collection));
+            mongoTree.setRootVisible(false);
+            final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
+
+            serverConfigurations = MongoConfiguration.getInstance(project).getServerConfigurations();
+            for (ServerConfiguration serverConfiguration : serverConfigurations) {
+
+                MongoServer mongoServer = new MongoServer(serverConfiguration);
+                final DefaultMutableTreeNode serverNode = new DefaultMutableTreeNode(mongoServer);
+                rootNode.add(serverNode);
+
+                if (!serverConfiguration.isConnectOnIdeStartup()) {
+                    continue;
+                }
+                serverConfiguration.setServerVersion(mongoManager.connect(mongoServer.getConfiguration()));
+                mongoServer = mongoManager.loadDatabaseCollections(mongoServer);
+                if (mongoServer.hasDatabases()) {
+                    for (MongoDatabase mongoDatabase : mongoServer.getDatabases()) {
+                        DefaultMutableTreeNode databaseNode = new DefaultMutableTreeNode(mongoDatabase);
+                        for (MongoCollection collection : mongoDatabase.getCollections()) {
+                            if (shouldNotIgnore(collection, serverConfiguration)) {
+                                databaseNode.add(new DefaultMutableTreeNode(collection));
+                            }
                         }
+                        serverNode.add(databaseNode);
                     }
-                    rootNode.add(databaseNode);
                 }
             }
+
             mongoTree.invalidate();
             mongoTree.setModel(new DefaultTreeModel(rootNode));
             mongoTree.revalidate();
 
         } catch (ConfigurationException confEx) {
-            mongoServer = null;
+            serverConfigurations = null;
             mongoTree.setModel(null);
             mongoTree.setRootVisible(false);
         }
     }
 
-    private static boolean shouldNotIgnore(MongoCollection collection, MongoConfiguration configuration) {
+    private static boolean shouldNotIgnore(MongoCollection collection, ServerConfiguration configuration) {
         return !configuration.getCollectionsToIgnore().contains(collection.getName());
     }
 
@@ -124,6 +142,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         if (ApplicationManager.getApplication() != null) {
             actionGroup.add(new RefreshServerAction(this));
             actionGroup.add(new ViewCollectionValuesAction(this));
+            actionGroup.add(new MongoConsoleAction(this));
             actionGroup.addSeparator();
             actionGroup.add(new OpenPluginSettingsAction());
         }
@@ -133,14 +152,6 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
                 if (!(mouseEvent.getSource() instanceof JTree)) {
-                    return;
-                }
-                DefaultMutableTreeNode lastSelectedNode = (DefaultMutableTreeNode) mongoTree.getLastSelectedPathComponent();
-                if (lastSelectedNode == null) {
-                    return;
-                }
-
-                if (!(lastSelectedNode.getUserObject() instanceof MongoCollection)) {
                     return;
                 }
 
@@ -167,6 +178,21 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         return null;
     }
 
+    public ServerConfiguration getConfiguration() {
+        DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) mongoTree.getLastSelectedPathComponent();
+        if (treeNode != null) {
+            Object userObject = treeNode.getUserObject();
+            if (userObject instanceof MongoCollection) {
+                return ((MongoServer) ((DefaultMutableTreeNode) treeNode.getParent().getParent()).getUserObject()).getConfiguration();
+            }
+
+            if (userObject instanceof MongoServer) {
+                return ((MongoServer) userObject).getConfiguration();
+            }
+        }
+        return null;
+    }
+
 
     public MongoCollection getSelectedCollectionValues() {
         MongoCollection selectedCollection = getSelectedCollection();
@@ -177,8 +203,9 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         return selectedCollection;
     }
 
+
     public void loadSelectedCollectionValues() {
-        runnerCallback.execute(getSelectedCollectionValues());
+        runnerCallback.execute(getConfiguration(), getSelectedCollectionValues());
     }
 
     private Tree createTree() {
@@ -186,13 +213,13 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         SimpleTree tree = new SimpleTree() {
 
             private final JLabel myLabel = new JLabel(
-                    String.format("<html><center>No mongo server available<br><br>You may use <img src=\"%s\"> to set or fix Mongo configuration</center></html>", pluginSettingsUrl)
+                    String.format("<html><center>No Mongo server available<br><br>You may use <img src=\"%s\"> to add or fix configuration</center></html>", pluginSettingsUrl)
             );
 
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                if (mongoServer != null && mongoServer.hasDatabases()) return;
+                if (serverConfigurations != null && !serverConfigurations.isEmpty()) return;
 
                 myLabel.setFont(getFont());
                 myLabel.setBackground(getBackground());

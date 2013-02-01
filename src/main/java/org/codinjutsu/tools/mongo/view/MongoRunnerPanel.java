@@ -26,7 +26,7 @@ import com.intellij.ui.awt.RelativePoint;
 import com.intellij.ui.components.panels.NonOpaquePanel;
 import com.mongodb.util.JSONParseException;
 import org.apache.commons.lang.StringUtils;
-import org.codinjutsu.tools.mongo.MongoConfiguration;
+import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
@@ -43,17 +43,16 @@ public class MongoRunnerPanel extends JPanel {
     private final MongoResultPanel resultPanel;
     private QueryPanel queryPanel;
 
-    private final MongoConfiguration configuration;
     private final MongoManager mongoManager;
+    private ServerConfiguration currentConfiguration;
     private MongoCollection currentMongoCollection;
 
-    public MongoRunnerPanel(Project project, MongoConfiguration configuration, MongoManager mongoManager) {
-        this.configuration = configuration;
+    public MongoRunnerPanel(Project project, MongoManager mongoManager) {
         this.mongoManager = mongoManager;
 
         errorPanel.setLayout(new BorderLayout());
 
-        queryPanel = createQueryPanel(project, configuration.getServerVersion());
+        queryPanel = createQueryPanel(project, getServerVersion());
         queryPanel.setCallback(new ErrorQueryCallback());
 
         splitter.setFirstComponent(queryPanel);
@@ -67,6 +66,10 @@ public class MongoRunnerPanel extends JPanel {
         add(rootPanel);
 
         resultPanel.shouldShowTreeResult(false);
+    }
+
+    private String getServerVersion() {
+        return "2.2";
     }
 
     private MongoResultPanel createResultPanel() {
@@ -95,7 +98,8 @@ public class MongoRunnerPanel extends JPanel {
     }
 
 
-    public void showResults(MongoCollection mongoCollection) {
+    public void showResults(ServerConfiguration configuration, MongoCollection mongoCollection) {
+        currentConfiguration = configuration;
         currentMongoCollection = mongoCollection;
         executeQuery();
     }
@@ -104,7 +108,7 @@ public class MongoRunnerPanel extends JPanel {
         try {
             errorPanel.setVisible(false);
 
-            MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(configuration, currentMongoCollection, queryPanel.getQueryOptions());
+            MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(currentConfiguration, currentMongoCollection, queryPanel.getQueryOptions());
             resultPanel.updateResultTree(mongoCollectionResult);
         } catch (Exception ex) {
             errorPanel.invalidate();

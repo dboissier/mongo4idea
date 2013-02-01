@@ -20,7 +20,7 @@ import com.mongodb.*;
 import com.mongodb.util.JSON;
 import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
-import org.codinjutsu.tools.mongo.MongoConfiguration;
+import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.MongoAggregateOperator;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
@@ -34,14 +34,14 @@ import java.util.List;
 public class MongoManagerTest {
 
     private MongoManager mongoManager;
-    private MongoConfiguration mongoConfiguration;
+    private ServerConfiguration serverConfiguration;
 
 
     @Test
     public void loadCollectionsWithEmptyFilter() throws Exception {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
         mongoQueryOptions.setResultLimit(3);
-        MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(mongoConfiguration, new MongoCollection("dummyCollection", "test"), mongoQueryOptions);
+        MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(serverConfiguration, new MongoCollection("dummyCollection", "test"), mongoQueryOptions);
         Assert.assertNotNull(mongoCollectionResult);
         Assert.assertEquals(3, mongoCollectionResult.getMongoObjects().size());
     }
@@ -52,7 +52,7 @@ public class MongoManagerTest {
         mongoQueryOptions.addQuery(MongoAggregateOperator.MATCH, "{ 'price': 15}");
         mongoQueryOptions.addQuery(MongoAggregateOperator.PROJECT, "{ 'label': 1, 'price': 1}");
         mongoQueryOptions.addQuery(MongoAggregateOperator.GROUP, "{ '_id': '$label', 'total': {'$sum': '$price'}}");
-        MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(mongoConfiguration, new MongoCollection("dummyCollection", "test"), mongoQueryOptions);
+        MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(serverConfiguration, new MongoCollection("dummyCollection", "test"), mongoQueryOptions);
         Assert.assertNotNull(mongoCollectionResult);
 
         List<DBObject> mongoObjects = mongoCollectionResult.getMongoObjects();
@@ -72,7 +72,9 @@ public class MongoManagerTest {
         fillCollectionWithJsonData(dummyCollection, IOUtils.toString(getClass().getResourceAsStream("dummyCollection.json")));
 
         mongoManager = new MongoManager();
-        mongoConfiguration = new MongoConfiguration();
+        serverConfiguration = new ServerConfiguration();
+        serverConfiguration.setServerName("localhost");
+        serverConfiguration.setServerPort(27017);
     }
 
     private static void fillCollectionWithJsonData(DBCollection collection, String jsonResource) throws IOException {

@@ -1,16 +1,16 @@
 package org.codinjutsu.tools.mongo.view;
 
-import org.codinjutsu.tools.mongo.MongoConfiguration;
+import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.mockito.Mockito;
 import org.uispec4j.Panel;
 import org.uispec4j.TextBox;
 import org.uispec4j.UISpecTestCase;
 
-public class ConfigurationPanelTest extends UISpecTestCase {
+public class ServerConfigurationPanelTest extends UISpecTestCase {
 
     private Panel uiSpecPanel;
-    private ConfigurationPanel configurationPanel;
+    private ServerConfigurationPanel configurationPanel;
     private MongoManager mongoManager;
 
     public void testForm() throws Exception {
@@ -19,9 +19,8 @@ public class ConfigurationPanelTest extends UISpecTestCase {
         uiSpecPanel.getTextBox("usernameField").setText("john");
         uiSpecPanel.getPasswordField("passwordField").setPassword("johnpassword");
 
-        MongoConfiguration configuration = new MongoConfiguration();
+        ServerConfiguration configuration = new ServerConfiguration();
 
-        assertTrue(configurationPanel.isModified(configuration));
         configurationPanel.applyConfigurationData(configuration);
 
         assertEquals("localhost", configuration.getServerName());
@@ -31,7 +30,7 @@ public class ConfigurationPanelTest extends UISpecTestCase {
     }
 
     public void testLoadConfiguration() throws Exception {
-        MongoConfiguration configuration = new MongoConfiguration();
+        ServerConfiguration configuration = new ServerConfiguration();
         configuration.setServerName("localhost");
         configuration.setServerPort(25);
         configuration.setUsername("john");
@@ -46,7 +45,7 @@ public class ConfigurationPanelTest extends UISpecTestCase {
     }
 
     public void testConnectionWithSuccess() {
-        MongoConfiguration configuration = new MongoConfiguration();
+        ServerConfiguration configuration = new ServerConfiguration();
         configuration.setServerName("localhost");
         configuration.setServerPort(27017);
 
@@ -59,7 +58,7 @@ public class ConfigurationPanelTest extends UISpecTestCase {
     }
 
     public void testConnectionWithFailure() {
-        MongoConfiguration configuration = new MongoConfiguration();
+        ServerConfiguration configuration = new ServerConfiguration();
         configuration.setServerName("myserver");
         configuration.setServerPort(25);
 
@@ -77,11 +76,7 @@ public class ConfigurationPanelTest extends UISpecTestCase {
     public void setUp() throws Exception {
         super.setUp();
         mongoManager = Mockito.spy(new MongoManager());
-        configurationPanel = new ConfigurationPanel(mongoManager) {
-            @Override
-            protected void installBrowserListener() {
-            }
-        };
+        configurationPanel = new ServerConfigurationPanel(mongoManager);
         uiSpecPanel = new Panel(configurationPanel.getRootPanel());
     }
 }
