@@ -16,6 +16,9 @@
 
 package org.codinjutsu.tools.mongo.view;
 
+import com.intellij.ide.actions.CloseTabToolbarAction;
+import com.intellij.openapi.Disposable;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.Messages;
@@ -35,7 +38,7 @@ import org.codinjutsu.tools.mongo.model.MongoServer;
 import javax.swing.*;
 import java.awt.*;
 
-public class MongoRunnerPanel extends JPanel {
+public class MongoRunnerPanel extends JPanel implements Disposable {
 
     private JPanel rootPanel;
     private Splitter splitter;
@@ -47,17 +50,17 @@ public class MongoRunnerPanel extends JPanel {
     private ServerConfiguration currentConfiguration;
     private MongoCollection currentMongoCollection;
 
-    public MongoRunnerPanel(Project project, MongoManager mongoManager) {
+    public MongoRunnerPanel(Project project, MongoManager mongoManager, ServerConfiguration configuration) {
         this.mongoManager = mongoManager;
 
         errorPanel.setLayout(new BorderLayout());
 
-        queryPanel = createQueryPanel(project, getServerVersion());
+        queryPanel = createQueryPanel(project, configuration.getServerVersion());
         queryPanel.setCallback(new ErrorQueryCallback());
 
         splitter.setFirstComponent(queryPanel);
 
-        resultPanel = createResultPanel();
+        resultPanel = createResultPanel(project);
         splitter.setSecondComponent(resultPanel);
 
         splitter.setProportion(0.30f);
@@ -68,12 +71,8 @@ public class MongoRunnerPanel extends JPanel {
         resultPanel.shouldShowTreeResult(false);
     }
 
-    private String getServerVersion() {
-        return "2.2";
-    }
-
-    private MongoResultPanel createResultPanel() {
-        return new MongoResultPanel();
+    private MongoResultPanel createResultPanel(Project project) {
+        return new MongoResultPanel(project);
     }
 
     protected QueryPanel createQueryPanel(Project project, String serverVersion) {
@@ -86,10 +85,9 @@ public class MongoRunnerPanel extends JPanel {
         return aQueryPanel;
     }
 
-    public void installActions() {
-        queryPanel.installActions(this);
+    public void installActions(MongoResultManager.CloseAction closeAction) {
+        queryPanel.installActions(this, closeAction);
         resultPanel.installActions();
-
     }
 
 
@@ -119,6 +117,12 @@ public class MongoRunnerPanel extends JPanel {
         }
     }
 
+    @Override
+    public void dispose() {
+        queryPanel.dispose();
+        resultPanel.dispose();
+    }
+
     private static class ErrorQueryCallback implements QueryPanel.QueryCallback {
 
         @Override
@@ -136,4 +140,5 @@ public class MongoRunnerPanel extends JPanel {
             balloon.show(new RelativePoint(editorComponent, new Point(0, 0)), Balloon.Position.above);
         }
     }
+
 }

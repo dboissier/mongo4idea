@@ -70,7 +70,7 @@ public class MongoConfigurable extends BaseConfigurable {
     }
 
     @Nullable
-    @Override
+//    @Override
     public Icon getIcon() {
         return null;
     }

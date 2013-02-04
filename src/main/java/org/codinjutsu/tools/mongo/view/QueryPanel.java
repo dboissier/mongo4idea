@@ -79,7 +79,7 @@ public class QueryPanel extends JPanel implements Disposable {
 
     public void withAggregation() {
         withAggregation = true;
-        Disposer.register(project, this);
+//        Disposer.register(project, this);
         queryContainerPanel.setLayout(new BoxLayout(queryContainerPanel, BoxLayout.Y_AXIS));
         addOperatorPanel(MongoAggregateOperator.MATCH);
     }
@@ -88,7 +88,6 @@ public class QueryPanel extends JPanel implements Disposable {
         withAggregation = false;
         Editor editor = createEditor();
         filterPanel = new FilterPanel(editor);
-        Disposer.register(project, this);
         queryContainerPanel.setLayout(new BorderLayout());
         queryContainerPanel.add(filterPanel, BorderLayout.CENTER);
         myUpdateAlarm.setActivationComponent(editor.getComponent());
@@ -195,7 +194,7 @@ public class QueryPanel extends JPanel implements Disposable {
         return withAggregation;
     }
 
-    public void installActions(MongoRunnerPanel mongoRunnerPanel) {
+    public void installActions(MongoRunnerPanel mongoRunnerPanel, MongoResultManager.CloseAction closeAction) {
         DefaultActionGroup actionQueryGroup = new DefaultActionGroup("MongoQueryGroup", true);
         if (ApplicationManager.getApplication() != null) {
             actionQueryGroup.add(new ExecuteQuery(mongoRunnerPanel));
@@ -203,6 +202,7 @@ public class QueryPanel extends JPanel implements Disposable {
             actionQueryGroup.addSeparator();
             actionQueryGroup.add(new AddOperatorPanelAction(this));
             actionQueryGroup.add(new CopyQueryAction(this));
+            actionQueryGroup.add(closeAction);
         }
         GuiUtils.installActionGroupInToolBar(actionQueryGroup, toolBarPanel, ActionManager.getInstance(), "MongoQueryGroupActions", false);
     }

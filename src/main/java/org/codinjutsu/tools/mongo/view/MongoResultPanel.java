@@ -16,10 +16,14 @@
 
 package org.codinjutsu.tools.mongo.view;
 
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.PopupHandler;
+import com.intellij.ui.components.JBScrollPane;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
@@ -38,7 +42,7 @@ import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MongoResultPanel extends JPanel {
+public class MongoResultPanel extends JPanel implements Disposable {
 
     private JPanel resultToolbar;
     private JPanel mainPanel;
@@ -46,16 +50,17 @@ public class MongoResultPanel extends JPanel {
 
     private boolean sortByKey = false;
 
-    private final JsonTreeView jsonResultTree = new JsonTreeView();
+    private JsonTreeView jsonResultTree = new JsonTreeView();
 
-    public MongoResultPanel() {
+    public MongoResultPanel(Project project) {
         setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
 
         treePanel.setLayout(new BorderLayout());
-        treePanel.add(new JScrollPane(jsonResultTree));
+        treePanel.add(new JBScrollPane(jsonResultTree));
 
         resultToolbar.setLayout(new BorderLayout());
+        Disposer.register(project, this);
     }
 
 
@@ -131,6 +136,11 @@ public class MongoResultPanel extends JPanel {
 
     public boolean isNotEmpty() {
         return jsonResultTree.isVisible();
+    }
+
+    @Override
+    public void dispose() {
+        jsonResultTree = null;
     }
 
 

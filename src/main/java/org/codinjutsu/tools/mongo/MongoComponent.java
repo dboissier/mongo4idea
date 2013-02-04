@@ -28,13 +28,11 @@ import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
-import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
-import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.MongoConfigurable;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
-import org.codinjutsu.tools.mongo.view.MongoRunnerPanel;
+import org.codinjutsu.tools.mongo.view.MongoResultManager;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -62,7 +60,6 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
     private Project project;
     private MongoManager mongoManager;
     private MongoExplorerPanel mongoExplorerPanel;
-    private MongoRunnerPanel mongoRunnerPanel;
 
 
     public MongoComponent(Project project) {
@@ -83,7 +80,7 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
     }
 
     @Nullable
-    @Override
+//    @Override
     public Icon getIcon() {
         return null;
     }
@@ -108,42 +105,22 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
 
     public void projectOpened() {
         mongoManager = new MongoManager();
-        //TODO refactor
-        try {
-//            TODO need to rewrite this
-//            configuration.setServerVersion(mongoManager.connect(configuration.getServerName(), configuration.getServerPort(), configuration.getUsername(), configuration.getPassword()));
-        } catch (org.codinjutsu.tools.mongo.logic.ConfigurationException e) {
-            //TODO do something
-        }
+
+        MongoResultManager.getInstance(project).init(project, mongoManager);
+
         ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
-        mongoRunnerPanel = new MongoRunnerPanel(project, mongoManager);
-        Content mongoRunner = ContentFactory.SERVICE.getInstance().createContent(mongoRunnerPanel, null, false);
-        final ToolWindow toolMongoRunnerWindow = toolWindowManager.registerToolWindow(MONGO_RUNNER, false, ToolWindowAnchor.BOTTOM);
-        toolMongoRunnerWindow.getContentManager().addContent(mongoRunner);
-        toolMongoRunnerWindow.setIcon(MONGO_ICON);
-
-        mongoExplorerPanel = new MongoExplorerPanel(project, mongoManager, new RunnerCallback() {
-
-            public void execute(final ServerConfiguration configuration, final MongoCollection mongoCollection) {
-                toolMongoRunnerWindow.activate(new Runnable() {
-                    @Override
-                    public void run() {
-                        mongoRunnerPanel.showResults(configuration, mongoCollection);
-                    }
-                });
-            }
-        });
+        mongoExplorerPanel = new MongoExplorerPanel(project, mongoManager);
         Content mongoExplorer = ContentFactory.SERVICE.getInstance().createContent(mongoExplorerPanel, null, false);
         ToolWindow toolMongoExplorerWindow = toolWindowManager.registerToolWindow(MONGO_EXPLORER, false, ToolWindowAnchor.RIGHT);
         toolMongoExplorerWindow.getContentManager().addContent(mongoExplorer);
         toolMongoExplorerWindow.setIcon(MONGO_ICON);
 
-        mongoRunnerPanel.installActions();
         mongoExplorerPanel.installActions();
     }
 
     public void projectClosed() {
         ToolWindowManager.getInstance(project).unregisterToolWindow(MONGO_EXPLORER);
+        MongoResultManager.getInstance(project).unregisterMyself();
     }
 
     public JComponent createComponent() {
@@ -168,10 +145,5 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
 
     public void disposeUIResources() {
 
-    }
-
-    public interface RunnerCallback {
-
-        void execute(ServerConfiguration configuration, MongoCollection runnable);
     }
 }

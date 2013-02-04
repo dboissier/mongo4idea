@@ -61,13 +61,11 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
     private final Project project;
     private final MongoManager mongoManager;
-    private final MongoComponent.RunnerCallback runnerCallback;
     private List<ServerConfiguration> serverConfigurations;
 
-    public MongoExplorerPanel(Project project, MongoManager mongoManager, MongoComponent.RunnerCallback runnerCallback) {
+    public MongoExplorerPanel(Project project, MongoManager mongoManager) {
         this.project = project;
         this.mongoManager = mongoManager;
-        this.runnerCallback = runnerCallback;
 
         treePanel.setLayout(new BorderLayout());
 
@@ -205,7 +203,8 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
 
     public void loadSelectedCollectionValues() {
-        runnerCallback.execute(getConfiguration(), getSelectedCollectionValues());
+        MongoResultManager.getInstance(project).addResultContent(getConfiguration(), getSelectedCollectionValues());
+        MongoResultManager.getInstance(project).showToolWindow(true);
     }
 
     private Tree createTree() {

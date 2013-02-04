@@ -32,6 +32,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <projectService serviceInterface="org.codinjutsu.tools.mongo.MongoConfiguration" serviceImplementation="org.codinjutsu.tools.mongo.MongoConfiguration"/>
+        <projectService serviceInterface="org.codinjutsu.tools.mongo.view.MongoResultManager" serviceImplementation="org.codinjutsu.tools.mongo.view.MongoResultManager"/>
         <!--<configurationType implementation="org.codinjutsu.tools.mongo.runner.MongoRunConfigurationType"/>-->
     </extensions>
 

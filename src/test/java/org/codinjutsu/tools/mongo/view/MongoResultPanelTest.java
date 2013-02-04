@@ -16,6 +16,8 @@
 
 package org.codinjutsu.tools.mongo.view;
 
+import com.intellij.mock.MockProject;
+import com.intellij.openapi.command.impl.DummyProject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.apache.commons.io.IOUtils;
@@ -222,7 +224,7 @@ public class MongoResultPanelTest extends UISpecTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        mongoResultPanel = new MongoResultPanel();
+        mongoResultPanel = new MongoResultPanel(DummyProject.getInstance());
         uiSpecPanel = new Panel(mongoResultPanel);
     }
 
