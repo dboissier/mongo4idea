@@ -16,6 +16,7 @@
 
 package org.codinjutsu.tools.mongo.view;
 
+import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
 import org.codinjutsu.tools.mongo.model.MongoServer;
@@ -40,9 +41,11 @@ public class MongoTreeRenderer extends DefaultTreeCellRenderer {
         Object userObject = node.getUserObject();
         if (userObject instanceof MongoServer) {
             MongoServer mongoServer = (MongoServer) userObject;
-            super.getTreeCellRendererComponent(mongoTree, mongoServer.getLabel(), isSelected, isExpanded, isLeaf, row, focus);
+            String host = String.format("%s/%s", mongoServer.getServerName(), mongoServer.getServerPort());
+            String label = mongoServer.getLabel();
+            super.getTreeCellRendererComponent(mongoTree, StringUtils.isBlank(label) ? host : label, isSelected, isExpanded, isLeaf, row, focus);
             setIcon(MONGO_SERVER);
-            setToolTipText(String.format("%s/%s", mongoServer.getServerName(), mongoServer.getServerPort()));
+            setToolTipText(host);
             return this;
         } else if (userObject instanceof MongoDatabase) {
             MongoDatabase mongoDatabase = (MongoDatabase) userObject;

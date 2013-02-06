@@ -47,7 +47,7 @@ public class MongoServer {
         return configuration.getPassword();
     }
 
-    public Object getLabel() {
+    public String getLabel() {
         return configuration.getLabel();
     }
 
