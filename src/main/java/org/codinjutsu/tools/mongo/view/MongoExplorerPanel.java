@@ -203,6 +203,15 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                     return;
                 }
 
+                DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) mongoTree.getLastSelectedPathComponent();
+                if (treeNode == null) {
+                    return;
+                }
+
+                if (!(treeNode.getUserObject() instanceof MongoCollection)) {
+                    return;
+                }
+
                 if (mouseEvent.getClickCount() == 2) {
                     loadSelectedCollectionValues();
                 }

@@ -25,9 +25,10 @@ import java.util.List;
 public class MongoServerTableModel extends AbstractTableModel implements ItemRemovable {
     private final String[] columnNames = new String[]{
             "Label",
-            "URL"
+            "URL",
+            "Autoconnect"
     };
-    private final Class[] columnClasses = new Class[]{String.class, String.class};
+    private final Class[] columnClasses = new Class[]{String.class, String.class, Boolean.class};
 
     private final List<ServerConfiguration> mongoServerConfigurations;
 
@@ -44,7 +45,7 @@ public class MongoServerTableModel extends AbstractTableModel implements ItemRem
     }
 
     public int getColumnCount() {
-        return 2;
+        return 3;
     }
 
     public int getRowCount() {
@@ -53,7 +54,7 @@ public class MongoServerTableModel extends AbstractTableModel implements ItemRem
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return columnIndex == 1;
+        return false;
     }
 
     public Object getValueAt(int row, int column) {
@@ -64,6 +65,9 @@ public class MongoServerTableModel extends AbstractTableModel implements ItemRem
             }
             case 1: { // "URL" column
                 return configuration.getUrl();
+            }
+            case 2: { // "Autoconnect" column
+                return configuration.isConnectOnIdeStartup();
             }
             default: {
                 throw new IllegalArgumentException();
@@ -80,6 +84,10 @@ public class MongoServerTableModel extends AbstractTableModel implements ItemRem
             }
             case 1: {
                 //do nothing url is computed from serverName and serverPort
+                break;
+            }
+            case 2: {
+                configuration.setConnectOnIdeStartup((Boolean) value);
                 break;
             }
             default: {

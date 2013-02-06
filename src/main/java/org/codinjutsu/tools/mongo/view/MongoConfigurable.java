@@ -16,24 +16,36 @@
 
 package org.codinjutsu.tools.mongo.view;
 
+import com.intellij.execution.ExecutionException;
+import com.intellij.execution.configurations.GeneralCommandLine;
+import com.intellij.execution.process.CapturingProcessHandler;
+import com.intellij.execution.process.ProcessOutput;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.options.BaseConfigurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.LabeledComponent;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.ui.*;
+import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.table.JBTable;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
+import org.codinjutsu.tools.mongo.utils.MongoUtils;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 
@@ -52,6 +64,7 @@ public class MongoConfigurable extends BaseConfigurable {
     private final MongoServerTableModel tableModel;
     private LabeledComponent<TextFieldWithBrowseButton> shellPathField;
     private JPanel mongoShellOptionsPanel;
+    private JLabel testMongoPathFeedbackLabel;
 
     public MongoConfigurable(Project project, MongoConfiguration configuration, MongoManager mongoManager) {
         this.project = project;
@@ -70,7 +83,6 @@ public class MongoConfigurable extends BaseConfigurable {
     }
 
     @Nullable
-//    @Override
     public Icon getIcon() {
         return null;
     }
@@ -107,6 +119,11 @@ public class MongoConfigurable extends BaseConfigurable {
                 table.getEmptyText().setText("No server configuration set");
                 table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
+                TableColumn autoConnectColumn = table.getColumnModel().getColumn(2);
+                int width = table.getFontMetrics(table.getFont()).stringWidth(table.getColumnName(2)) + 10;
+                autoConnectColumn.setPreferredWidth(width);
+                autoConnectColumn.setMaxWidth(width);
+                autoConnectColumn.setMinWidth(width);
 
                 return ToolbarDecorator.createDecorator(table)
                         .setAddAction(new AnActionButtonRunnable() {
@@ -187,22 +204,53 @@ public class MongoConfigurable extends BaseConfigurable {
 
         mongoShellOptionsPanel = new JPanel();
         mongoShellOptionsPanel.setLayout(new BoxLayout(mongoShellOptionsPanel, BoxLayout.X_AXIS));
-        mongoShellOptionsPanel.setBorder(IdeBorderFactory.createTitledBorder("Misc options", true));
         shellPathField = createShellPathField();
+        mongoShellOptionsPanel.add(new JLabel("Path to Mongo executable:"));
         mongoShellOptionsPanel.add(shellPathField);
+        mongoShellOptionsPanel.add(createTestButton());
+        mongoShellOptionsPanel.add(createFeedbackLabel());
 
-        mainPanel.add(mongoShellOptionsPanel, BorderLayout.SOUTH);
+        mainPanel.add(mongoShellOptionsPanel, BorderLayout.NORTH);
 
         return mainPanel;
     }
 
+    private JLabel createFeedbackLabel() {
+        testMongoPathFeedbackLabel = new JLabel();
+        return testMongoPathFeedbackLabel;
+    }
+
+    private JButton createTestButton() {
+        JButton testButton = new JButton("Test");
+        testButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                testPath();
+            }
+        });
+        return testButton;
+    }
+
+    private void testPath() {
+        try {
+            testMongoPathFeedbackLabel.setIcon(null);
+            if (MongoUtils.checkMongoShellPath(getShellPath())) {
+                testMongoPathFeedbackLabel.setIcon(ServerConfigurationPanel.SUCCESS);
+            } else {
+                testMongoPathFeedbackLabel.setIcon(ServerConfigurationPanel.FAIL);
+            }
+        } catch (ExecutionException e) {
+            Messages.showErrorDialog(mainPanel, e.getMessage(), "Error during mong shell path checking...");
+            return;
+        }
+    }
+
     private LabeledComponent<TextFieldWithBrowseButton> createShellPathField() {
         LabeledComponent<TextFieldWithBrowseButton> shellPathField = new LabeledComponent<TextFieldWithBrowseButton>();
-        shellPathField.setText("Mongo shell path");
         TextFieldWithBrowseButton component = new TextFieldWithBrowseButton();
         component.getChildComponent().setName("shellPathField");
         shellPathField.setComponent(component);
-        shellPathField.getComponent().addBrowseFolderListener("Mongo shell path", "", null,
+        shellPathField.getComponent().addBrowseFolderListener("Mongo shell configuration", "", null,
                 new FileChooserDescriptor(true, false, false, false, false, false));
 
         shellPathField.getComponent().setText(configuration.getShellPath());
@@ -259,7 +307,6 @@ public class MongoConfigurable extends BaseConfigurable {
 
     @Override
     public void reset() {
-        shellPathField.getComponent().setText(configuration.getShellPath());
     }
 
     @Override

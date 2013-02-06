@@ -33,8 +33,8 @@ import java.util.Set;
 
 public class ServerConfigurationPanel {
 
-    private static final Icon SUCCESS = GuiUtils.loadIcon("success.png");
-    private static final Icon FAIL = GuiUtils.loadIcon("fail.png");
+    public static final Icon SUCCESS = GuiUtils.loadIcon("success.png");
+    public static final Icon FAIL = GuiUtils.loadIcon("fail.png");
 
     private JPanel rootPanel;
 

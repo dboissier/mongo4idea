@@ -45,21 +45,21 @@ import javax.swing.*;
 )
 public class MongoComponent implements ProjectComponent, Configurable, PersistentStateComponent<MongoConfiguration> {
 
-    public static final String MONGO_COMPONENT_NAME = "Mongo";
-
-    public static final String MONGO_EXPLORER = "Mongo Explorer";
-    public static final String MONGO_RUNNER = "Mongo Runner";
-
     private static final String MONGO_PLUGIN_NAME = "Mongo Plugin";
+    private static final String MONGO_EXPLORER = "Mongo Explorer";
 
-    public static final Icon MONGO_ICON = GuiUtils.loadIcon("mongo_logo.png");
+    private static final Icon MONGO_ICON = GuiUtils.loadIcon("mongo_logo.png");
+
+    public static final String MONGO_COMPONENT_NAME = "Mongo";
 
     private MongoConfiguration configuration;
 
-    private MongoConfigurable mongoConfigurable;
     private Project project;
     private MongoManager mongoManager;
+
+    private MongoConfigurable mongoConfigurable;
     private MongoExplorerPanel mongoExplorerPanel;
+    private JComponent mongoConfigurableComponent;
 
 
     public MongoComponent(Project project) {
@@ -80,7 +80,6 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
     }
 
     @Nullable
-//    @Override
     public Icon getIcon() {
         return null;
     }
@@ -110,12 +109,13 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
 
         ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
         mongoExplorerPanel = new MongoExplorerPanel(project, mongoManager);
+        mongoExplorerPanel.installActions();
         Content mongoExplorer = ContentFactory.SERVICE.getInstance().createContent(mongoExplorerPanel, null, false);
+
         ToolWindow toolMongoExplorerWindow = toolWindowManager.registerToolWindow(MONGO_EXPLORER, false, ToolWindowAnchor.RIGHT);
         toolMongoExplorerWindow.getContentManager().addContent(mongoExplorer);
         toolMongoExplorerWindow.setIcon(MONGO_ICON);
 
-        mongoExplorerPanel.installActions();
     }
 
     public void projectClosed() {
@@ -126,8 +126,9 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
     public JComponent createComponent() {
         if (mongoConfigurable == null) {
             mongoConfigurable = new MongoConfigurable(project, configuration, mongoManager);
+            mongoConfigurableComponent = mongoConfigurable.createComponent();
         }
-        return mongoConfigurable.createComponent();
+        return mongoConfigurableComponent;
     }
 
     public boolean isModified() {
@@ -144,6 +145,6 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
     }
 
     public void disposeUIResources() {
-
+        mongoConfigurable.disposeUIResources();
     }
 }
