@@ -1,10 +1,14 @@
 # Mongo Plugin for IntelliJ IDEA
 
+## Important Note for the 0.3.0 version
+
+This release supports more than one mongo server, so the current Mongo plugin configuration in the IntelliJ project will be broken.
+
 ## ChangeLog
 See CHANGELOG.txt
 
 ## Description
-This plugin integrates MongoDB Server with database/collections tree,  Query Runner and Shell console.
+This plugin integrates MongoDB Servers with database/collections tree,  Query Runner and Shell console.
 
 ## Plugin Compatibility
 This plugin was built with JDK 1.6 and ideaIU-11.1.4 version.
@@ -14,10 +18,16 @@ Download this plugin from your IDE (Mongo Plugin)
 
 ## Configuration steps
 
+When you open the Mongo explorer, you will see an empty tree :
+
+![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-explorerWithoutDB.png?raw=true)
+
+* To manager your Mongo servers, click on the Mongo Settings button located on the upper toolbar of the Mongo explorer Right Panel
+
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-configuration.png?raw=true)
 
-* The plugin intends to connect to the local Mongo server with default parameters (127.0.0.1/27017)
-* If you need to specify another server, click on the Mongo Settings button located on the upper toolbar of the Mongo explorer Right Panel
+* You can edit your mongo shell path with a test button
+* To add a server, click on the **[+]** button and a dialog will appear
 * If the server requires authentication, you can put your credentials
 * If you want to hide some collections, you can put them in the **Collections to ignore** field.
 * You can click on the **Test Connection** button to check your server configuration
@@ -28,11 +38,11 @@ Download this plugin from your IDE (Mongo Plugin)
 
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-explorerWithDB.png?raw=true)
 
-The tree displays for each database all collections. Just double-click on a collection and the results will be displayed in the Mongo Runner Panel.
+The tree displays for each server all databases with its collections. Just double-click on a collection and the results will be displayed in the Mongo Runner panel.
+If you double-click on another collection, a new tab will appears side of the previous.
 
-If the server does not respond, you have the following message:
+![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-multipleTab.png?raw=true)
 
-![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-explorerWithoutDB.png?raw=true)
 
 ### Mongo Runner
 The panel is divided into 2 parts.
@@ -88,4 +98,5 @@ I would like to thank:
 * Mark James author of the famfamfam web site who provides beautiful icons.
 * [Jean Baptiste Potonnier](https://github.com/JJeeb) for the suggestion to create this plugin
 * Neko team, my first beta testers ;)
+* All users of this plugin who sent me valuable suggestions.
 * My wife and my daughter who support me to have fun in software development and also remind me my husband/father duty ;).
