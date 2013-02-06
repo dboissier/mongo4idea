@@ -16,19 +16,36 @@
 
 package org.codinjutsu.tools.mongo;
 
-import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.components.*;
 import com.intellij.openapi.project.Project;
+import com.intellij.util.xmlb.XmlSerializerUtil;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class MongoConfiguration {
+@State(
+        name = "MongoConfiguration",
+        storages = {
+                @Storage(file = "$PROJECT_FILE$"),
+                @Storage( file = "$PROJECT_CONFIG_DIR$/mongoSettings.xml", scheme = StorageScheme.DIRECTORY_BASED)
+        }
+)
+public class MongoConfiguration implements PersistentStateComponent<MongoConfiguration>{
 
     private List<ServerConfiguration> serverConfigurations = new LinkedList<ServerConfiguration>();
     private String shellPath;
 
     public static MongoConfiguration getInstance(Project project) {
         return ServiceManager.getService(project, MongoConfiguration.class);
+    }
+
+
+    public MongoConfiguration getState() {
+        return this;
+    }
+
+    public void loadState(MongoConfiguration mongoConfiguration) {
+        XmlSerializerUtil.copyBean(mongoConfiguration, this);
     }
 
     public void setServerConfigurations(List<ServerConfiguration> serverConfigurations) {

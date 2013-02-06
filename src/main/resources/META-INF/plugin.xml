@@ -24,17 +24,20 @@
 
     <depends>com.intellij.modules.lang</depends>
 
+    <extensions defaultExtensionNs="com.intellij">
+        <projectService serviceInterface="org.codinjutsu.tools.mongo.MongoConfiguration" serviceImplementation="org.codinjutsu.tools.mongo.MongoConfiguration"/>
+        <projectService serviceInterface="org.codinjutsu.tools.mongo.view.MongoWindowManager" serviceImplementation="org.codinjutsu.tools.mongo.view.MongoWindowManager"/>
+        <projectService serviceInterface="org.codinjutsu.tools.mongo.logic.MongoManager" serviceImplementation="org.codinjutsu.tools.mongo.logic.MongoManager"/>
+        <projectConfigurable instance="org.codinjutsu.tools.mongo.view.MongoConfigurable" id="preferences.mongoOptions"/>
+        <!--<configurationType implementation="org.codinjutsu.tools.mongo.runner.MongoRunConfigurationType"/>-->
+    </extensions>
+
     <project-components>
         <component>
             <implementation-class>org.codinjutsu.tools.mongo.MongoComponent</implementation-class>
         </component>
     </project-components>
 
-    <extensions defaultExtensionNs="com.intellij">
-        <projectService serviceInterface="org.codinjutsu.tools.mongo.MongoConfiguration" serviceImplementation="org.codinjutsu.tools.mongo.MongoConfiguration"/>
-        <projectService serviceInterface="org.codinjutsu.tools.mongo.view.MongoResultManager" serviceImplementation="org.codinjutsu.tools.mongo.view.MongoResultManager"/>
-        <!--<configurationType implementation="org.codinjutsu.tools.mongo.runner.MongoRunConfigurationType"/>-->
-    </extensions>
 
     <actions>
         <action id="Mongo.Shell.Execute" class="com.intellij.openapi.actionSystem.EmptyAction"

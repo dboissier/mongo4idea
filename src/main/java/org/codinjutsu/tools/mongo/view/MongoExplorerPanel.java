@@ -83,7 +83,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         reloadAllServerConfigurations(true);
     }
 
-    public void reloadConfiguration() {
+    public void reloadConfiguration() {//TODO add clearSelection flag before
         ServerConfiguration serverConfiguration = getConfiguration();
         if (serverConfiguration != null) {
             reloadSelectedServerConfiguration();
@@ -275,8 +275,8 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
     }
 
     public void loadSelectedCollectionValues() {
-        MongoResultManager.getInstance(project).addResultContent(getConfiguration(), getSelectedCollectionValues());
-        MongoResultManager.getInstance(project).showToolWindow(true);
+        MongoWindowManager.getInstance(project).addResultContent(getConfiguration(), getSelectedCollectionValues());
+        MongoWindowManager.getInstance(project).showToolWindow(true);
     }
 
     private Tree createTree() {

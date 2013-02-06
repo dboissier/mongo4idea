@@ -20,7 +20,10 @@ import com.intellij.ide.actions.CloseTabToolbarAction;
 import com.intellij.ide.impl.ContentManagerWatcher;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.components.State;
+import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.wm.ToolWindow;
@@ -28,6 +31,8 @@ import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
+import org.codinjutsu.tools.mongo.MongoComponent;
+import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
@@ -35,24 +40,30 @@ import org.codinjutsu.tools.mongo.utils.GuiUtils;
 
 import javax.swing.*;
 
-public class MongoResultManager {
+
+public class MongoWindowManager  {
 
     public static final Icon MONGO_ICON = GuiUtils.loadIcon("mongo_logo.png");
 
     public static final String MONGO_RUNNER = "Mongo Runner";
 
+    private static final String MONGO_EXPLORER = "Mongo Explorer";
+
     private final Key<Boolean> MONGO_CONTENT_KEY = Key.create("MongoResultManager.MONGO_CONTENT_KEY");
+
+
     private ToolWindow mongoResultWindow;
     private Project project;
     private MongoManager mongoManager;
+    private MongoExplorerPanel mongoExplorerPanel;
 
-    public static final MongoResultManager getInstance(Project project) {
-        return ServiceManager.getService(project, MongoResultManager.class);
+    public static final MongoWindowManager getInstance(Project project) {
+        return ServiceManager.getService(project, MongoWindowManager.class);
     }
 
-    public void init(Project project, MongoManager mongoManager) {
+    public MongoWindowManager(Project project) {
         this.project = project;
-        this.mongoManager = mongoManager;
+        this.mongoManager = MongoManager.getInstance(project);
 
         ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
         mongoResultWindow = toolWindowManager.registerToolWindow(MONGO_RUNNER, true, ToolWindowAnchor.BOTTOM);
@@ -60,6 +71,14 @@ public class MongoResultManager {
         mongoResultWindow.setIcon(MONGO_ICON);
 
         new ContentManagerWatcher(mongoResultWindow, mongoResultWindow.getContentManager());
+
+        mongoExplorerPanel = new MongoExplorerPanel(project, mongoManager);
+        mongoExplorerPanel.installActions();
+        Content mongoExplorer = ContentFactory.SERVICE.getInstance().createContent(mongoExplorerPanel, null, false);
+
+        ToolWindow toolMongoExplorerWindow = toolWindowManager.registerToolWindow(MONGO_EXPLORER, false, ToolWindowAnchor.RIGHT);
+        toolMongoExplorerWindow.getContentManager().addContent(mongoExplorer);
+        toolMongoExplorerWindow.setIcon(MONGO_ICON);
     }
 
     public void showToolWindow(boolean activateWindow) {
@@ -105,10 +124,15 @@ public class MongoResultManager {
 
     public void unregisterMyself() {
         ToolWindowManager.getInstance(project).unregisterToolWindow(MONGO_RUNNER);
+        ToolWindowManager.getInstance(project).unregisterToolWindow(MONGO_EXPLORER);
     }
 
     public void closeContent(Content content) {
         mongoResultWindow.getContentManager().removeContent(content, true);
+    }
+
+    public void apply() {
+        mongoExplorerPanel.reloadConfiguration();
     }
 
     static class CloseAction extends CloseTabToolbarAction {
@@ -127,7 +151,7 @@ public class MongoResultManager {
 
         @Override
         public void actionPerformed(AnActionEvent e) {
-            MongoResultManager.getInstance(project).closeContent(content);
+            MongoWindowManager.getInstance(project).closeContent(content);
         }
     }
 }

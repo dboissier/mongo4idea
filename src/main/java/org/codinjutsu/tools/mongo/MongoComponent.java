@@ -16,76 +16,20 @@
 
 package org.codinjutsu.tools.mongo;
 
-import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.components.ProjectComponent;
-import com.intellij.openapi.components.State;
-import com.intellij.openapi.components.Storage;
-import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.components.*;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowAnchor;
-import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.ui.content.Content;
-import com.intellij.ui.content.ContentFactory;
-import org.codinjutsu.tools.mongo.logic.MongoManager;
-import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.MongoConfigurable;
-import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
-import org.codinjutsu.tools.mongo.view.MongoResultManager;
-import org.jetbrains.annotations.Nls;
+import org.codinjutsu.tools.mongo.view.MongoWindowManager;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
 
-@State(
-        name = MongoComponent.MONGO_COMPONENT_NAME,
-        storages = {@Storage(id = "MongoSettings", file = "$PROJECT_FILE$")}
-)
-public class MongoComponent implements ProjectComponent, Configurable, PersistentStateComponent<MongoConfiguration> {
-
-    private static final String MONGO_PLUGIN_NAME = "Mongo Plugin";
-    private static final String MONGO_EXPLORER = "Mongo Explorer";
-
-    private static final Icon MONGO_ICON = GuiUtils.loadIcon("mongo_logo.png");
+public class MongoComponent extends AbstractProjectComponent {
 
     public static final String MONGO_COMPONENT_NAME = "Mongo";
 
-    private MongoConfiguration configuration;
-
-    private Project project;
-    private MongoManager mongoManager;
-
-    private MongoConfigurable mongoConfigurable;
-    private MongoExplorerPanel mongoExplorerPanel;
-    private JComponent mongoConfigurableComponent;
-
-
     public MongoComponent(Project project) {
-        this.project = project;
-        this.configuration = MongoConfiguration.getInstance(project);
-    }
+        super(project);
 
-
-    public void initComponent() {
-    }
-
-    public void disposeComponent() {
-    }
-
-    @Nls
-    public String getDisplayName() {
-        return MONGO_PLUGIN_NAME;
-    }
-
-    @Nullable
-    public Icon getIcon() {
-        return null;
-    }
-
-    public String getHelpTopic() {
-        return null;
     }
 
     @NotNull
@@ -93,58 +37,13 @@ public class MongoComponent implements ProjectComponent, Configurable, Persisten
         return MONGO_COMPONENT_NAME;
     }
 
-    public MongoConfiguration getState() {
-        return configuration;
-    }
 
-    public void loadState(MongoConfiguration mongoConfiguration) {
-        configuration.setServerConfigurations(mongoConfiguration.getServerConfigurations());
-        configuration.setShellPath(mongoConfiguration.getShellPath());
-    }
 
     public void projectOpened() {
-        mongoManager = new MongoManager();
-
-        MongoResultManager.getInstance(project).init(project, mongoManager);
-
-        ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
-        mongoExplorerPanel = new MongoExplorerPanel(project, mongoManager);
-        mongoExplorerPanel.installActions();
-        Content mongoExplorer = ContentFactory.SERVICE.getInstance().createContent(mongoExplorerPanel, null, false);
-
-        ToolWindow toolMongoExplorerWindow = toolWindowManager.registerToolWindow(MONGO_EXPLORER, false, ToolWindowAnchor.RIGHT);
-        toolMongoExplorerWindow.getContentManager().addContent(mongoExplorer);
-        toolMongoExplorerWindow.setIcon(MONGO_ICON);
-
+        MongoWindowManager.getInstance(myProject);
     }
 
     public void projectClosed() {
-        ToolWindowManager.getInstance(project).unregisterToolWindow(MONGO_EXPLORER);
-        MongoResultManager.getInstance(project).unregisterMyself();
-    }
-
-    public JComponent createComponent() {
-        if (mongoConfigurable == null) {
-            mongoConfigurable = new MongoConfigurable(project, configuration, mongoManager);
-            mongoConfigurableComponent = mongoConfigurable.createComponent();
-        }
-        return mongoConfigurableComponent;
-    }
-
-    public boolean isModified() {
-        return mongoConfigurable.isModified();
-    }
-
-    public void apply() throws ConfigurationException {
-        mongoConfigurable.apply();
-        mongoExplorerPanel.reloadConfiguration();
-    }
-
-    public void reset() {
-        mongoConfigurable.reset();
-    }
-
-    public void disposeUIResources() {
-        mongoConfigurable.disposeUIResources();
+        MongoWindowManager.getInstance(myProject).unregisterMyself();
     }
 }

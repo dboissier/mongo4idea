@@ -20,6 +20,9 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.CapturingProcessHandler;
 import com.intellij.execution.process.ProcessOutput;
+import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.State;
+import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.options.BaseConfigurable;
 import com.intellij.openapi.options.ConfigurationException;
@@ -32,6 +35,7 @@ import com.intellij.ui.*;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.table.JBTable;
 import org.apache.commons.lang.StringUtils;
+import org.codinjutsu.tools.mongo.MongoComponent;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
@@ -47,14 +51,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+
 
 public class MongoConfigurable extends BaseConfigurable {
 
 
     private final Project project;
 
-    private final MongoConfiguration configuration;
+    private MongoConfiguration configuration;
     private final MongoManager mongoManager;
 
     private final List<ServerConfiguration> configurations;
@@ -66,20 +72,20 @@ public class MongoConfigurable extends BaseConfigurable {
     private JPanel mongoShellOptionsPanel;
     private JLabel testMongoPathFeedbackLabel;
 
-    public MongoConfigurable(Project project, MongoConfiguration configuration, MongoManager mongoManager) {
+
+    public MongoConfigurable(Project project) {
         this.project = project;
-        this.configuration = configuration;
-        this.mongoManager = mongoManager;
-        configurations = configuration.getServerConfigurations();
+        this.configuration = MongoConfiguration.getInstance(project);
+        this.mongoManager = MongoManager.getInstance(project);
+        configurations = new LinkedList<ServerConfiguration>(this.configuration.getServerConfigurations());
         tableModel = new MongoServerTableModel(configurations);
         mainPanel = new JPanel(new BorderLayout());
     }
 
-
     @Nls
     @Override
     public String getDisplayName() {
-        return "Mongo Configuration";
+        return "Mongo servers";
     }
 
     @Nullable
@@ -96,6 +102,17 @@ public class MongoConfigurable extends BaseConfigurable {
     @Nullable
     @Override
     public JComponent createComponent() {
+        mongoShellOptionsPanel = new JPanel();
+        mongoShellOptionsPanel.setLayout(new BoxLayout(mongoShellOptionsPanel, BoxLayout.X_AXIS));
+        shellPathField = createShellPathField();
+        mongoShellOptionsPanel.add(new JLabel("Path to Mongo executable:"));
+        mongoShellOptionsPanel.add(shellPathField);
+        mongoShellOptionsPanel.add(createTestButton());
+        mongoShellOptionsPanel.add(createFeedbackLabel());
+
+        mainPanel.add(mongoShellOptionsPanel, BorderLayout.NORTH);
+
+
         PanelWithButtons panelWithButtons = new PanelWithButtons() {
 
             {
@@ -184,15 +201,6 @@ public class MongoConfigurable extends BaseConfigurable {
                                     return;
                                 }
                                 TableUtil.removeSelectedItems(table);
-
-                                ServerConfiguration configurationToBeRemoved = configurations.get(selectedIndex);
-                                Iterator<ServerConfiguration> iterator = configurations.iterator();
-                                while (iterator.hasNext()) {
-                                    ServerConfiguration next = iterator.next();
-                                    if (next.equals(configurationToBeRemoved)) {
-                                        iterator.remove();
-                                    }
-                                }
                             }
                         })
                         .setRemoveActionName("removeServer")
@@ -201,16 +209,6 @@ public class MongoConfigurable extends BaseConfigurable {
         };
 
         mainPanel.add(panelWithButtons, BorderLayout.CENTER);
-
-        mongoShellOptionsPanel = new JPanel();
-        mongoShellOptionsPanel.setLayout(new BoxLayout(mongoShellOptionsPanel, BoxLayout.X_AXIS));
-        shellPathField = createShellPathField();
-        mongoShellOptionsPanel.add(new JLabel("Path to Mongo executable:"));
-        mongoShellOptionsPanel.add(shellPathField);
-        mongoShellOptionsPanel.add(createTestButton());
-        mongoShellOptionsPanel.add(createFeedbackLabel());
-
-        mainPanel.add(mongoShellOptionsPanel, BorderLayout.NORTH);
 
         return mainPanel;
     }
@@ -272,6 +270,8 @@ public class MongoConfigurable extends BaseConfigurable {
         if (isShellPathModified()) {
             configuration.setShellPath(getShellPath());
         }
+
+        MongoWindowManager.getInstance(project).apply();
     }
 
     private boolean isShellPathModified() {

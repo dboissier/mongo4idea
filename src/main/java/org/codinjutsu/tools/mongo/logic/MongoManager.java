@@ -16,6 +16,8 @@
 
 package org.codinjutsu.tools.mongo.logic;
 
+import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.project.Project;
 import com.mongodb.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -29,6 +31,10 @@ import java.util.*;
 public class MongoManager {
 
     private static final Logger LOG = Logger.getLogger(MongoManager.class);
+
+    public static MongoManager getInstance(Project project) {
+        return  ServiceManager.getService(project, MongoManager.class);
+    }
 
     public String connect(ServerConfiguration configuration) {
         return connect(configuration.getServerName(), configuration.getServerPort(), configuration.getUsername(), configuration.getPassword());
@@ -106,6 +112,7 @@ public class MongoManager {
 
     }
 
+
     private MongoCollectionResult aggregate(MongoQueryOptions mongoQueryOptions, MongoCollectionResult mongoCollectionResult, DBCollection collection) {
         List<DBObject> otherOperations = mongoQueryOptions.getOperationsExceptTheFirst();
         AggregationOutput aggregate = collection.aggregate(mongoQueryOptions.getFirstOperation(), otherOperations.toArray(new DBObject[otherOperations.size()]));
@@ -116,7 +123,6 @@ public class MongoManager {
         }
         return mongoCollectionResult;
     }
-
 
     private MongoCollectionResult find(MongoQueryOptions mongoQueryOptions, MongoCollectionResult mongoCollectionResult, DBCollection collection) {
         DBObject filter = mongoQueryOptions.getFilter();

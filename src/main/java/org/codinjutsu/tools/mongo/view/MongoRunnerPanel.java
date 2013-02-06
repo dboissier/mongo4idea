@@ -85,7 +85,7 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
         return aQueryPanel;
     }
 
-    public void installActions(MongoResultManager.CloseAction closeAction) {
+    public void installActions(MongoWindowManager.CloseAction closeAction) {
         queryPanel.installActions(this, closeAction);
         resultPanel.installActions();
     }

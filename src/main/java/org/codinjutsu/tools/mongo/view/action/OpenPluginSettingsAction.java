@@ -25,6 +25,7 @@ import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import org.codinjutsu.tools.mongo.MongoComponent;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
+import org.codinjutsu.tools.mongo.view.MongoConfigurable;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 
 import javax.swing.*;
@@ -44,7 +45,7 @@ public class OpenPluginSettingsAction extends AnAction implements DumbAware {
     }
 
     private static void showSettingsFor(Project project) {
-        ShowSettingsUtil.getInstance().showSettingsDialog(project, MongoComponent.class);
+        ShowSettingsUtil.getInstance().showSettingsDialog(project, "Mongo servers");
     }
 
     static Project getProject(AnActionEvent event) {

@@ -20,8 +20,6 @@ import com.intellij.openapi.command.impl.DummyProject;
 import com.intellij.testFramework.PlatformTestCase;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
-import org.codinjutsu.tools.mongo.logic.MongoManager;
-import org.mockito.Mockito;
 import org.uispec4j.Panel;
 import org.uispec4j.UISpec4J;
 import org.uispec4j.interception.toolkit.UISpecDisplay;
@@ -41,7 +39,7 @@ public class MongoConfigurableTest extends PlatformTestCase {
     }
 
     public void _testEmptyConfiguration() throws Exception {
-        mongoConfigurable = new MongoConfigurable(DummyProject.getInstance(), new MongoConfiguration(), Mockito.mock(MongoManager.class));
+        mongoConfigurable = new MongoConfigurable(DummyProject.getInstance());
         Panel uiSpecPanel = new Panel(mongoConfigurable.createComponent());
         uiSpecPanel.getTable().isEmpty().check();
         uiSpecPanel.getTextBox("shellPathField").textIsEmpty().check();
@@ -75,7 +73,7 @@ public class MongoConfigurableTest extends PlatformTestCase {
         configuration.setServerConfigurations(Arrays.asList(localConfiguration, remoteConfiguration));
         configuration.setShellPath("/usr/bin/mongo");
 
-        mongoConfigurable = new MongoConfigurable(DummyProject.getInstance(), configuration, Mockito.mock(MongoManager.class));
+        mongoConfigurable = new MongoConfigurable(DummyProject.getInstance());
         Panel uiSpecPanel = new Panel(mongoConfigurable.createComponent());
 
         uiSpecPanel.getTable().contentEquals(new Object[][] {

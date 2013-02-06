@@ -32,7 +32,6 @@ import com.intellij.openapi.editor.ex.util.LexerEditorHighlighter;
 import com.intellij.openapi.editor.highlighter.EditorHighlighter;
 import com.intellij.openapi.fileTypes.PlainTextSyntaxHighlighterFactory;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.components.panels.NonOpaquePanel;
 import com.intellij.util.Alarm;
 import com.mongodb.util.JSONParseException;
@@ -194,7 +193,7 @@ public class QueryPanel extends JPanel implements Disposable {
         return withAggregation;
     }
 
-    public void installActions(MongoRunnerPanel mongoRunnerPanel, MongoResultManager.CloseAction closeAction) {
+    public void installActions(MongoRunnerPanel mongoRunnerPanel, MongoWindowManager.CloseAction closeAction) {
         DefaultActionGroup actionQueryGroup = new DefaultActionGroup("MongoQueryGroup", true);
         if (ApplicationManager.getApplication() != null) {
             actionQueryGroup.add(new ExecuteQuery(mongoRunnerPanel));
