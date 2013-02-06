@@ -29,6 +29,7 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
+import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -66,16 +67,27 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
 
         MongoConfiguration mongoConfiguration = MongoConfiguration.getInstance(getProject());
         String shellPath = mongoConfiguration.getShellPath();
-        VirtualFile mongoHomeDir = LocalFileSystem.getInstance().findFileByPath(FileUtil.toSystemIndependentName(shellPath));
-        if (mongoHomeDir == null) {
-            throw new ExecutionException(String.format("Cannot find Mongo shell path '%s'", shellPath));
-        }
-
-
         final GeneralCommandLine commandLine = new GeneralCommandLine();
         commandLine.setExePath(shellPath);
 
         commandLine.addParameter(String.format("%s:%s", serverConfiguration.getServerName(), serverConfiguration.getServerPort()));
+
+        String username = serverConfiguration.getUsername();
+        if (StringUtils.isNotBlank(username)) {
+            commandLine.addParameter("--username");
+            commandLine.addParameter(username);
+        }
+
+        String password = serverConfiguration.getPassword();
+        if (StringUtils.isNotBlank(password)) {
+            commandLine.addParameter("--password");
+            commandLine.addParameter(password);
+        }
+
+        String shellArgumentsLine = serverConfiguration.getShellArgumentsLine();
+        if (StringUtils.isNotBlank(shellArgumentsLine)) {
+            commandLine.addParameter(shellArgumentsLine);
+        }
 
         return commandLine.createProcess();
     }
