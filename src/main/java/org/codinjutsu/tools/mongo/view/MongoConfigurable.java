@@ -113,35 +113,62 @@ public class MongoConfigurable extends BaseConfigurable {
                             @Override
                             public void run(AnActionButton button) {
                                 stopEditing();
+
                                 ServerConfiguration serverConfiguration = new ServerConfiguration();
+
                                 ConfigurationDialog dialog = new ConfigurationDialog(mainPanel, mongoManager, serverConfiguration);
-                                dialog.setTitle("Edit Mongo Server");
+                                dialog.setTitle("Add a Mongo server");
                                 dialog.show();
                                 if (!dialog.isOK()) {
                                     return;
                                 }
+
                                 configurations.add(serverConfiguration);
                                 int index = configurations.size() - 1;
                                 tableModel.fireTableRowsInserted(index, index);
                                 table.getSelectionModel().setSelectionInterval(index, index);
                                 table.scrollRectToVisible(table.getCellRect(index, 0, true));
                             }
-                        }).setEditAction(new AnActionButtonRunnable() {
-                            @Override
-                            public void run(AnActionButton button) {
-                                editSelectedConfiguration();
-                            }
-                        }).setRemoveAction(new AnActionButtonRunnable() {
+                        })
+                        .setAddActionName("addServer")
+                        .setEditAction(new AnActionButtonRunnable() {
                             @Override
                             public void run(AnActionButton button) {
                                 stopEditing();
+
                                 int selectedIndex = table.getSelectedRow();
                                 if (selectedIndex < 0 || selectedIndex >= tableModel.getRowCount()) {
                                     return;
                                 }
-                                ServerConfiguration configurationToBeRemoved = configurations.get(selectedIndex);
+                                ServerConfiguration sourceConfiguration = configurations.get(selectedIndex);
+                                ServerConfiguration configuration1 = sourceConfiguration.clone();
+
+
+                                ConfigurationDialog dialog = new ConfigurationDialog(mainPanel, mongoManager, configuration1);
+                                dialog.setTitle("Edit a Mongo server");
+                                dialog.show();
+                                if (!dialog.isOK()) {
+                                    return;
+                                }
+
+                                configurations.set(selectedIndex, configuration1);
+                                tableModel.fireTableRowsUpdated(selectedIndex, selectedIndex);
+                                table.getSelectionModel().setSelectionInterval(selectedIndex, selectedIndex);
+                            }
+                        })
+                        .setEditActionName("editServer")
+                        .setRemoveAction(new AnActionButtonRunnable() {
+                            @Override
+                            public void run(AnActionButton button) {
+                                stopEditing();
+
+                                int selectedIndex = table.getSelectedRow();
+                                if (selectedIndex < 0 || selectedIndex >= tableModel.getRowCount()) {
+                                    return;
+                                }
                                 TableUtil.removeSelectedItems(table);
 
+                                ServerConfiguration configurationToBeRemoved = configurations.get(selectedIndex);
                                 Iterator<ServerConfiguration> iterator = configurations.iterator();
                                 while (iterator.hasNext()) {
                                     ServerConfiguration next = iterator.next();
@@ -150,7 +177,9 @@ public class MongoConfigurable extends BaseConfigurable {
                                     }
                                 }
                             }
-                        }).disableUpDownActions().createPanel();
+                        })
+                        .setRemoveActionName("removeServer")
+                        .disableUpDownActions().createPanel();
             }
         };
 
@@ -170,16 +199,19 @@ public class MongoConfigurable extends BaseConfigurable {
     private LabeledComponent<TextFieldWithBrowseButton> createShellPathField() {
         LabeledComponent<TextFieldWithBrowseButton> shellPathField = new LabeledComponent<TextFieldWithBrowseButton>();
         shellPathField.setText("Mongo shell path");
-        shellPathField.setComponent(new TextFieldWithBrowseButton());
-        shellPathField.getComponent().setName("shellPathField");
+        TextFieldWithBrowseButton component = new TextFieldWithBrowseButton();
+        component.getChildComponent().setName("shellPathField");
+        shellPathField.setComponent(component);
         shellPathField.getComponent().addBrowseFolderListener("Mongo shell path", "", null,
                 new FileChooserDescriptor(true, false, false, false, false, false));
+
+        shellPathField.getComponent().setText(configuration.getShellPath());
 
         return shellPathField;
     }
 
     public boolean isModified() {
-        return areConfigurationsModified() || isShellModified();
+        return areConfigurationsModified() || isShellPathModified();
     }
 
     @Override
@@ -189,12 +221,12 @@ public class MongoConfigurable extends BaseConfigurable {
             configuration.setServerConfigurations(configurations);
         }
 
-        if (isShellModified()) {
+        if (isShellPathModified()) {
             configuration.setShellPath(getShellPath());
         }
     }
 
-    private boolean isShellModified() {
+    private boolean isShellPathModified() {
         String existingShellPath = MongoConfiguration.getInstance(project).getShellPath();
 
         return !StringUtils.equals(existingShellPath, getShellPath());
@@ -227,7 +259,7 @@ public class MongoConfigurable extends BaseConfigurable {
 
     @Override
     public void reset() {
-        //TODO
+        shellPathField.getComponent().setText(configuration.getShellPath());
     }
 
     @Override
@@ -248,22 +280,4 @@ public class MongoConfigurable extends BaseConfigurable {
         }
     }
 
-    private void editSelectedConfiguration() {
-        stopEditing();
-        int selectedIndex = table.getSelectedRow();
-        if (selectedIndex < 0 || selectedIndex >= tableModel.getRowCount()) {
-            return;
-        }
-        ServerConfiguration sourceConfiguration = configurations.get(selectedIndex);
-        ServerConfiguration configuration = sourceConfiguration.clone();
-        ConfigurationDialog dialog = new ConfigurationDialog(mainPanel, mongoManager, configuration);
-        dialog.setTitle("");
-        dialog.show();
-        if (!dialog.isOK()) {
-            return;
-        }
-        configurations.set(selectedIndex, configuration);
-        tableModel.fireTableRowsUpdated(selectedIndex, selectedIndex);
-        table.getSelectionModel().setSelectionInterval(selectedIndex, selectedIndex);
-    }
 }

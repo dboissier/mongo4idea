@@ -76,7 +76,7 @@ public class MongoResultManager {
         ApplicationManager.getApplication().invokeLater(new Runnable() {
             @Override
             public void run() {
-                mongoRunnerPanel.showResults(configuration, mongoCollection);
+                mongoRunnerPanel.showResults();
             }
         });
     }
@@ -86,7 +86,7 @@ public class MongoResultManager {
         String tabName = String.format("%s/%s/%s", configuration.getLabel(), mongoCollection.getDatabaseName(), mongoCollection.getName());
         Content content = mongoResultWindow.getContentManager().findContent(tabName);
         if (content == null) {
-            final MongoRunnerPanel mongoRunnerPanel = new MongoRunnerPanel(project, mongoManager, configuration);
+            final MongoRunnerPanel mongoRunnerPanel = new MongoRunnerPanel(project, mongoManager, configuration, mongoCollection);
             Content mongoResultContent = ContentFactory.SERVICE.getInstance().createContent(mongoRunnerPanel, tabName, false);
 
             mongoRunnerPanel.installActions(new CloseAction(project, mongoResultContent));
@@ -97,7 +97,7 @@ public class MongoResultManager {
 
             return mongoRunnerPanel;
 
-        } else {//TODO Need to refactor this
+        } else {
             mongoResultWindow.getContentManager().setSelectedContent(content);
             return (MongoRunnerPanel) content.getComponent();
         }

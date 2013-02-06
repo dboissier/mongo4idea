@@ -81,4 +81,8 @@ public class MongoServer {
     public ServerConfiguration getConfiguration() {
         return configuration;
     }
+
+    public void cleanAllDatabases() {
+        databases.clear();
+    }
 }

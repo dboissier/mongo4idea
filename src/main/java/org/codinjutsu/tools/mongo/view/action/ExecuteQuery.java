@@ -18,7 +18,6 @@ package org.codinjutsu.tools.mongo.view.action;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.MongoRunnerPanel;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 
@@ -42,6 +41,6 @@ public class ExecuteQuery extends AnAction {
 
     @Override
     public void update(AnActionEvent event) {
-        event.getPresentation().setEnabled(mongoRunnerPanel.getCurrentMongoCollection() != null);
+        event.getPresentation().setEnabled(mongoRunnerPanel.getMongoCollection() != null);
     }
 }

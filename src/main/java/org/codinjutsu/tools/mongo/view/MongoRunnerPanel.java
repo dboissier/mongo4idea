@@ -16,9 +16,7 @@
 
 package org.codinjutsu.tools.mongo.view;
 
-import com.intellij.ide.actions.CloseTabToolbarAction;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.Messages;
@@ -47,11 +45,13 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
     private QueryPanel queryPanel;
 
     private final MongoManager mongoManager;
-    private ServerConfiguration currentConfiguration;
-    private MongoCollection currentMongoCollection;
+    private ServerConfiguration configuration;
+    private MongoCollection mongoCollection;
 
-    public MongoRunnerPanel(Project project, MongoManager mongoManager, ServerConfiguration configuration) {
+    public MongoRunnerPanel(Project project, MongoManager mongoManager, ServerConfiguration configuration, MongoCollection mongoCollection) {
         this.mongoManager = mongoManager;
+        this.mongoCollection = mongoCollection;
+        this.configuration = configuration;
 
         errorPanel.setLayout(new BorderLayout());
 
@@ -91,14 +91,12 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
     }
 
 
-    public MongoCollection getCurrentMongoCollection() {
-        return currentMongoCollection;
+    public MongoCollection getMongoCollection() {
+        return mongoCollection;
     }
 
 
-    public void showResults(ServerConfiguration configuration, MongoCollection mongoCollection) {
-        currentConfiguration = configuration;
-        currentMongoCollection = mongoCollection;
+    public void showResults() {
         executeQuery();
     }
 
@@ -106,7 +104,7 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
         try {
             errorPanel.setVisible(false);
 
-            MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(currentConfiguration, currentMongoCollection, queryPanel.getQueryOptions());
+            MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(configuration, mongoCollection, queryPanel.getQueryOptions());
             resultPanel.updateResultTree(mongoCollectionResult);
         } catch (Exception ex) {
             errorPanel.invalidate();

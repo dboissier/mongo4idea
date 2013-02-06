@@ -24,7 +24,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.SimpleTree;
 import com.intellij.ui.treeStructure.Tree;
-import org.codinjutsu.tools.mongo.MongoComponent;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
@@ -81,31 +80,38 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
         toolBarPanel.setLayout(new BorderLayout());
 
-        init();
+        reloadAllServerConfigurations(true);
     }
 
     public void reloadConfiguration() {
-        init();
+        ServerConfiguration serverConfiguration = getConfiguration();
+        if (serverConfiguration != null) {
+            reloadSelectedServerConfiguration();
+        } else {
+            reloadAllServerConfigurations(false);
+        }
     }
 
+    private void reloadSelectedServerConfiguration() {
+        ApplicationManager.getApplication().invokeLater(new Runnable() {
 
-    private void init() {
-        try {
-            mongoTree.setRootVisible(false);
-            final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
+            @Override
+            public void run() {
+                mongoTree.invalidate();
 
-            serverConfigurations = MongoConfiguration.getInstance(project).getServerConfigurations();
-            for (ServerConfiguration serverConfiguration : serverConfigurations) {
-
-                MongoServer mongoServer = new MongoServer(serverConfiguration);
-                final DefaultMutableTreeNode serverNode = new DefaultMutableTreeNode(mongoServer);
-                rootNode.add(serverNode);
-
-                if (!serverConfiguration.isConnectOnIdeStartup()) {
-                    continue;
+                DefaultMutableTreeNode serverNode = getSelectedServerNode();
+                if (serverNode == null) {
+                    return;
                 }
+
+                serverNode.removeAllChildren();
+
+                MongoServer mongoServer = (MongoServer) serverNode.getUserObject();
+                mongoServer.cleanAllDatabases();
+                ServerConfiguration serverConfiguration = mongoServer.getConfiguration();
                 serverConfiguration.setServerVersion(mongoManager.connect(mongoServer.getConfiguration()));
                 mongoServer = mongoManager.loadDatabaseCollections(mongoServer);
+
                 if (mongoServer.hasDatabases()) {
                     for (MongoDatabase mongoDatabase : mongoServer.getDatabases()) {
                         DefaultMutableTreeNode databaseNode = new DefaultMutableTreeNode(mongoDatabase);
@@ -117,17 +123,61 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                         serverNode.add(databaseNode);
                     }
                 }
+
+                ((DefaultTreeModel) mongoTree.getModel()).reload(serverNode);
+
+                mongoTree.revalidate();
+
             }
+        });
+    }
 
-            mongoTree.invalidate();
-            mongoTree.setModel(new DefaultTreeModel(rootNode));
-            mongoTree.revalidate();
 
-        } catch (ConfigurationException confEx) {
-            serverConfigurations = null;
-            mongoTree.setModel(null);
-            mongoTree.setRootVisible(false);
-        }
+    private void reloadAllServerConfigurations(final boolean loadOnStartup) {
+        ApplicationManager.getApplication().invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    mongoTree.setRootVisible(false);
+                    final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
+
+                    serverConfigurations = MongoConfiguration.getInstance(project).getServerConfigurations();
+                    for (ServerConfiguration serverConfiguration : serverConfigurations) {
+
+                        MongoServer mongoServer = new MongoServer(serverConfiguration);
+                        final DefaultMutableTreeNode serverNode = new DefaultMutableTreeNode(mongoServer);
+                        rootNode.add(serverNode);
+
+                        if (loadOnStartup && !serverConfiguration.isConnectOnIdeStartup()) {
+                            continue;
+                        }
+                        serverConfiguration.setServerVersion(mongoManager.connect(mongoServer.getConfiguration()));
+                        mongoServer = mongoManager.loadDatabaseCollections(mongoServer);
+                        if (mongoServer.hasDatabases()) {
+                            for (MongoDatabase mongoDatabase : mongoServer.getDatabases()) {
+                                DefaultMutableTreeNode databaseNode = new DefaultMutableTreeNode(mongoDatabase);
+                                for (MongoCollection collection : mongoDatabase.getCollections()) {
+                                    if (shouldNotIgnore(collection, serverConfiguration)) {
+                                        databaseNode.add(new DefaultMutableTreeNode(collection));
+                                    }
+                                }
+                                serverNode.add(databaseNode);
+                            }
+                        }
+                    }
+
+                    mongoTree.invalidate();
+                    mongoTree.setModel(new DefaultTreeModel(rootNode));
+                    mongoTree.revalidate();
+
+                } catch (ConfigurationException confEx) {
+                    serverConfigurations = null;
+                    mongoTree.setModel(null);
+                    mongoTree.setRootVisible(false);
+                }
+            }
+        });
     }
 
     private static boolean shouldNotIgnore(MongoCollection collection, ServerConfiguration configuration) {
@@ -165,42 +215,55 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
     }
 
-    private MongoCollection getSelectedCollection() {
+    public DefaultMutableTreeNode getSelectedCollectionNode() {
         DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) mongoTree.getLastSelectedPathComponent();
         if (treeNode != null) {
             Object userObject = treeNode.getUserObject();
             if (userObject instanceof MongoCollection) {
-                return (MongoCollection) userObject;
+                return treeNode;
+            }
+        }
+        return null;
+    }
+
+
+    public DefaultMutableTreeNode getSelectedServerNode() {
+        DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) mongoTree.getLastSelectedPathComponent();
+        if (treeNode != null) {
+            Object userObject = treeNode.getUserObject();
+            if (userObject instanceof MongoCollection) {
+                return (DefaultMutableTreeNode) treeNode.getParent().getParent();
+            }
+
+            if (userObject instanceof MongoDatabase) {
+                return (DefaultMutableTreeNode) treeNode.getParent();
+            }
+
+            if (userObject instanceof MongoServer) {
+                return treeNode;
             }
         }
         return null;
     }
 
     public ServerConfiguration getConfiguration() {
-        DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) mongoTree.getLastSelectedPathComponent();
-        if (treeNode != null) {
-            Object userObject = treeNode.getUserObject();
-            if (userObject instanceof MongoCollection) {
-                return ((MongoServer) ((DefaultMutableTreeNode) treeNode.getParent().getParent()).getUserObject()).getConfiguration();
-            }
 
-            if (userObject instanceof MongoServer) {
-                return ((MongoServer) userObject).getConfiguration();
-            }
-        }
-        return null;
-    }
-
-
-    public MongoCollection getSelectedCollectionValues() {
-        MongoCollection selectedCollection = getSelectedCollection();
-        if (selectedCollection == null) {
+        DefaultMutableTreeNode serverNode = getSelectedServerNode();
+        if (serverNode == null) {
             return null;
         }
 
-        return selectedCollection;
+        return ((MongoServer) serverNode.getUserObject()).getConfiguration();
     }
 
+    public MongoCollection getSelectedCollectionValues() {
+        DefaultMutableTreeNode collectionNode = getSelectedCollectionNode();
+        if (collectionNode == null) {
+            return null;
+        }
+
+        return (MongoCollection) collectionNode.getUserObject();
+    }
 
     public void loadSelectedCollectionValues() {
         MongoResultManager.getInstance(project).addResultContent(getConfiguration(), getSelectedCollectionValues());

@@ -24,7 +24,7 @@ public class StyleAttributesUtils {
     private static StyleAttributesProvider styleAttributesProvider = null;
 
 
-    public static StyleAttributesProvider getInstance() {//TODO see how to put it into the pico container
+    public static StyleAttributesProvider getInstance() {
         if (styleAttributesProvider == null) {
             if (GuiUtils.isUnderDarcula()) {
                 styleAttributesProvider = new DarculaStyleAttributesProvider();

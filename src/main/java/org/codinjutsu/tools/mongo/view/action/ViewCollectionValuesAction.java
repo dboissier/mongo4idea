@@ -38,6 +38,6 @@ public class ViewCollectionValuesAction extends AnAction implements DumbAware {
 
     @Override
     public void update(AnActionEvent event) {
-        event.getPresentation().setEnabled(mongoExplorerPanel.getSelectedCollectionValues() != null);
+        event.getPresentation().setEnabled(mongoExplorerPanel.getSelectedCollectionNode() != null);
     }
 }
