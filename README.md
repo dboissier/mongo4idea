@@ -2,7 +2,7 @@
 
 ## Important Note for the 0.3.0 version
 
-This release supports more than one mongo server, so the current Mongo plugin configuration in the IntelliJ project will be broken.
+This release supports more than one mongo server, so you will need to reconfigure it after installing it.
 
 ## ChangeLog
 See CHANGELOG.txt
