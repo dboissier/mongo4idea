@@ -24,7 +24,7 @@ import java.util.Set;
 
 public class ServerConfiguration implements Cloneable {
 
-    private static final String DEFAULT_SERVER_NAME = "localhost";
+    private static final String DEFAULT_URL = "localhost";
     public static final int DEFAULT_PORT = DBPort.PORT;
 
 
@@ -119,6 +119,13 @@ public class ServerConfiguration implements Cloneable {
 
     public String getUrl() {
         return String.format("%s/%s", serverName, serverPort);
+    }
+
+    public static ServerConfiguration byDefault() {
+        ServerConfiguration serverConfiguration = new ServerConfiguration();
+        serverConfiguration.setServerName(DEFAULT_URL);
+        serverConfiguration.setServerPort(DEFAULT_PORT);
+        return serverConfiguration;
     }
 
 

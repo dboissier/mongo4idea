@@ -148,7 +148,7 @@ public class MongoConfigurable extends BaseConfigurable {
                             public void run(AnActionButton button) {
                                 stopEditing();
 
-                                ServerConfiguration serverConfiguration = new ServerConfiguration();
+                                ServerConfiguration serverConfiguration = ServerConfiguration.byDefault();
 
                                 ConfigurationDialog dialog = new ConfigurationDialog(mainPanel, mongoManager, serverConfiguration);
                                 dialog.setTitle("Add a Mongo server");
@@ -175,17 +175,17 @@ public class MongoConfigurable extends BaseConfigurable {
                                     return;
                                 }
                                 ServerConfiguration sourceConfiguration = configurations.get(selectedIndex);
-                                ServerConfiguration configuration1 = sourceConfiguration.clone();
+                                ServerConfiguration copiedCconfiguration = sourceConfiguration.clone();
 
 
-                                ConfigurationDialog dialog = new ConfigurationDialog(mainPanel, mongoManager, configuration1);
+                                ConfigurationDialog dialog = new ConfigurationDialog(mainPanel, mongoManager, copiedCconfiguration);
                                 dialog.setTitle("Edit a Mongo server");
                                 dialog.show();
                                 if (!dialog.isOK()) {
                                     return;
                                 }
 
-                                configurations.set(selectedIndex, configuration1);
+                                configurations.set(selectedIndex, copiedCconfiguration);
                                 tableModel.fireTableRowsUpdated(selectedIndex, selectedIndex);
                                 table.getSelectionModel().setSelectionInterval(selectedIndex, selectedIndex);
                             }
