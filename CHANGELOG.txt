@@ -1,9 +1,10 @@
 Version 0.3.0:
+    * [add] #20 Support more than 1 server (See the README on how to manage them)
+    * [add] #6 Show results collection in a new tab
+    * [add] Mongo shell can run for each configuration
     * [add] #26 Enable/Disable mongo server connection on IDE startup
     * [add] #24 Collection sort
-    * [add] #20 Support more than 1 server (See the README on how to manage them)
-    * [add] Mongo shell can run for each configuration
-    * [add] #6 Show results collection in a new tab
+    * [add] Expand / Collapse All for tree results
     * [fix] Darcula settings icon is not displayed on the explorer when no server has been set
     * [fix] #27 The plugin should not connect to default localhost/27017 when running for the first time
 
