@@ -48,6 +48,6 @@ public class SortResultsByKeysAction extends ToggleAction {
 
     @Override
     public void update(AnActionEvent event) {
-        event.getPresentation().setEnabled(!mongoResultPanel.isNotEmpty());
+        event.getPresentation().setEnabled(mongoResultPanel.isNotEmpty());
     }
 }

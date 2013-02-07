@@ -16,14 +16,18 @@
 
 package org.codinjutsu.tools.mongo.view;
 
+import com.intellij.ide.CommonActionsManager;
+import com.intellij.ide.TreeExpander;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.PopupHandler;
 import com.intellij.ui.components.JBScrollPane;
+import com.intellij.util.ui.tree.TreeUtil;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
@@ -90,24 +94,58 @@ public class MongoResultPanel extends JPanel implements Disposable {
         actionResultGroup.addSeparator();
         actionResultGroup.add(new CopyResultAction(this));
 
-        GuiUtils.installActionGroupInToolBar(actionResultGroup, resultToolbar, ActionManager.getInstance(), "MongoQueryGroupActions", false);
+        final TreeExpander treeExpander = new TreeExpander() {
+            @Override
+            public void expandAll() {
+                MongoResultPanel.this.expandAll();
+            }
 
-        installActionGroupInPopupMenu(actionResultGroup, jsonResultTree, ActionManager.getInstance());
+            @Override
+            public boolean canExpand() {
+                return true;
+            }
+
+            @Override
+            public void collapseAll() {
+                MongoResultPanel.this.collapseAll();
+            }
+
+            @Override
+            public boolean canCollapse() {
+                return true;
+            }
+        };
+
+        CommonActionsManager actionsManager = CommonActionsManager.getInstance();
+
+        final AnAction expandAllAction = actionsManager.createExpandAllAction(treeExpander, mainPanel);
+        final AnAction collapseAllAction = actionsManager.createCollapseAllAction(treeExpander, mainPanel);
+
+        Disposer.register(this, new Disposable() {
+            @Override
+            public void dispose() {
+                collapseAllAction.unregisterCustomShortcutSet(mainPanel);
+                expandAllAction.unregisterCustomShortcutSet(mainPanel);
+            }
+        });
+
+        actionResultGroup.add(expandAllAction);
+        actionResultGroup.add(collapseAllAction);
+
+        GuiUtils.installActionGroupInToolBar(actionResultGroup, resultToolbar, ActionManager.getInstance(), "MongoQueryGroupActions", false);
     }
 
+    private void expandAll() {
+        TreeUtil.expandAll(jsonResultTree);
+    }
+
+    private void collapseAll() {
+        TreeUtil.collapseAll(jsonResultTree, 0);
+        TreeUtil.expand(jsonResultTree, 0);
+    }
     public void shouldShowTreeResult(boolean visible) {
         jsonResultTree.setVisible(visible);
     }
-
-    private static void installActionGroupInPopupMenu(ActionGroup group,
-                                                      JComponent component,
-                                                      ActionManager actionManager) {
-        if (actionManager == null) {
-            return;
-        }
-        PopupHandler.installPopupHandler(component, group, "POPUP", actionManager);
-    }
-
 
     public String getSelectedNodeStringifiedValue() {
         DefaultMutableTreeNode lastSelectedResultNode = (DefaultMutableTreeNode) jsonResultTree.getLastSelectedPathComponent();
