@@ -31,7 +31,7 @@ public class ExecuteQuery extends AnAction {
         super("Execute query", "Execute query with options", StyleAttributesUtils.getInstance().getExecuteIcon());
         this.mongoRunnerPanel = mongoRunnerPanel;
 
-        registerCustomShortcutSet(KeyEvent.VK_F5, InputEvent.CTRL_MASK, mongoRunnerPanel);
+        registerCustomShortcutSet(KeyEvent.VK_ENTER, InputEvent.CTRL_MASK, mongoRunnerPanel);
     }
 
     @Override

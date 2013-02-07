@@ -67,7 +67,7 @@ When you type **CTRL+SPACE** key shortcut a popup is displayed in which you can 
 
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-operatorPopup.png?raw=true)
 
-Either you click on the run query button or else type **CTRL+F5** shortcut to run the query
+Either you click on the run query button or else type **CTRL+ENTER** shortcut to run the query
 If your server version is at least 2.2, you can use the aggregation framework. You can add a pipeline operation by clicking on the [+] button.
 You can also copy/paste the query you wrote.
 
