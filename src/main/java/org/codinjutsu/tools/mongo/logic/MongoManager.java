@@ -140,7 +140,7 @@ public class MongoManager {
     }
 
     //Note : Hack of MongoClient#getDatabaseNames to retry with provided credentials
-    public List<String> getDatabaseNames(MongoClient mongo, String username, String password){
+    List<String> getDatabaseNames(MongoClient mongo, String username, String password){
 
         BasicDBObject cmd = new BasicDBObject();
         cmd.put("listDatabases", 1);

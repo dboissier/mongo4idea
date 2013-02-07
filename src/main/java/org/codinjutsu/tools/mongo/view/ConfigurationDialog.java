@@ -24,13 +24,13 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.*;
 
-public class ConfigurationDialog extends DialogWrapper {
+class ConfigurationDialog extends DialogWrapper {
 
     private final MongoManager mongoManager;
     private final ServerConfiguration configuration;
     private ServerConfigurationPanel serverConfigurationPanel;
 
-    public ConfigurationDialog(Component parent, MongoManager mongoManager, ServerConfiguration configuration) {
+    ConfigurationDialog(Component parent, MongoManager mongoManager, ServerConfiguration configuration) {
         super(parent, true);
         this.mongoManager = mongoManager;
         this.configuration = configuration;

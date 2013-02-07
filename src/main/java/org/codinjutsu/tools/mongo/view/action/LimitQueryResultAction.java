@@ -29,7 +29,7 @@ import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
-public class LimitQueryResultAction extends AnAction implements CustomComponentAction {
+class LimitQueryResultAction extends AnAction implements CustomComponentAction {
 
     private final JTextField limitTextField;
     private final QueryPanel queryPanel;

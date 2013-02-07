@@ -28,7 +28,7 @@ public enum MongoAggregateOperator {
 
     private final String operator;
 
-    MongoAggregateOperator(String operator) {
+    private MongoAggregateOperator(String operator) {
         this.operator = operator;
     }
 

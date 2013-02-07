@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class MongoComponent extends AbstractProjectComponent {
 
-    public static final String MONGO_COMPONENT_NAME = "Mongo";
+    private static final String MONGO_COMPONENT_NAME = "Mongo";
 
     public MongoComponent(Project project) {
         super(project);

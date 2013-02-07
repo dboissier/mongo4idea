@@ -42,11 +42,11 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
     private Splitter splitter;
     private JPanel errorPanel;
     private final MongoResultPanel resultPanel;
-    private QueryPanel queryPanel;
+    private final QueryPanel queryPanel;
 
     private final MongoManager mongoManager;
-    private ServerConfiguration configuration;
-    private MongoCollection mongoCollection;
+    private final ServerConfiguration configuration;
+    private final MongoCollection mongoCollection;
 
     public MongoRunnerPanel(Project project, MongoManager mongoManager, ServerConfiguration configuration, MongoCollection mongoCollection) {
         this.mongoManager = mongoManager;
@@ -68,14 +68,14 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
         setLayout(new BorderLayout());
         add(rootPanel);
 
-        resultPanel.shouldShowTreeResult(false);
+        resultPanel.hideResultTree();
     }
 
     private MongoResultPanel createResultPanel(Project project) {
         return new MongoResultPanel(project);
     }
 
-    protected QueryPanel createQueryPanel(Project project, String serverVersion) {
+    QueryPanel createQueryPanel(Project project, String serverVersion) {
         QueryPanel aQueryPanel = new QueryPanel(project);
         if (MongoServer.isCompliantWithPipelineOperations(serverVersion)) {
             aQueryPanel.withAggregation();

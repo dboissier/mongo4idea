@@ -48,7 +48,7 @@ public class OpenPluginSettingsAction extends AnAction implements DumbAware {
         ShowSettingsUtil.getInstance().showSettingsDialog(project, "Mongo servers");
     }
 
-    static Project getProject(AnActionEvent event) {
+    private static Project getProject(AnActionEvent event) {
         DataContext dataContext = event.getDataContext();
         return PlatformDataKeys.PROJECT.getData(dataContext);
     }

@@ -60,7 +60,7 @@ public class MongoConfigurable extends BaseConfigurable {
 
     private final Project project;
 
-    private MongoConfiguration configuration;
+    private final MongoConfiguration configuration;
     private final MongoManager mongoManager;
 
     private final List<ServerConfiguration> configurations;
@@ -69,7 +69,6 @@ public class MongoConfigurable extends BaseConfigurable {
     private JBTable table;
     private final MongoServerTableModel tableModel;
     private LabeledComponent<TextFieldWithBrowseButton> shellPathField;
-    private JPanel mongoShellOptionsPanel;
     private JLabel testMongoPathFeedbackLabel;
 
 
@@ -102,7 +101,7 @@ public class MongoConfigurable extends BaseConfigurable {
     @Nullable
     @Override
     public JComponent createComponent() {
-        mongoShellOptionsPanel = new JPanel();
+        JPanel mongoShellOptionsPanel = new JPanel();
         mongoShellOptionsPanel.setLayout(new BoxLayout(mongoShellOptionsPanel, BoxLayout.X_AXIS));
         shellPathField = createShellPathField();
         mongoShellOptionsPanel.add(new JLabel("Path to Mongo executable:"));
@@ -151,7 +150,7 @@ public class MongoConfigurable extends BaseConfigurable {
                                 ServerConfiguration serverConfiguration = ServerConfiguration.byDefault();
 
                                 ConfigurationDialog dialog = new ConfigurationDialog(mainPanel, mongoManager, serverConfiguration);
-                                dialog.setTitle("Add a Mongo server");
+                                dialog.setTitle("Add a Mongo Server");
                                 dialog.show();
                                 if (!dialog.isOK()) {
                                     return;
@@ -179,7 +178,7 @@ public class MongoConfigurable extends BaseConfigurable {
 
 
                                 ConfigurationDialog dialog = new ConfigurationDialog(mainPanel, mongoManager, copiedCconfiguration);
-                                dialog.setTitle("Edit a Mongo server");
+                                dialog.setTitle("Edit a Mongo Server");
                                 dialog.show();
                                 if (!dialog.isOK()) {
                                     return;
@@ -238,8 +237,7 @@ public class MongoConfigurable extends BaseConfigurable {
                 testMongoPathFeedbackLabel.setIcon(ServerConfigurationPanel.FAIL);
             }
         } catch (ExecutionException e) {
-            Messages.showErrorDialog(mainPanel, e.getMessage(), "Error during mong shell path checking...");
-            return;
+            Messages.showErrorDialog(mainPanel, e.getMessage(), "Error During Mongo Shell Path Checking...");
         }
     }
 

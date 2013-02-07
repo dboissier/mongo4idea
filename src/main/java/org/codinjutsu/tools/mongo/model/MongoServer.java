@@ -70,12 +70,8 @@ public class MongoServer {
         }
 
         String[] versionNumbers = StringUtils.split(serverVersion, ".");
-        if (Integer.parseInt(versionNumbers[0]) >= 2
-                && Integer.parseInt(versionNumbers[1]) >= 2) {
-            return true;
-        }
 
-        return false;
+        return Integer.parseInt(versionNumbers[0]) >= 2 && Integer.parseInt(versionNumbers[1]) >= 2;
     }
 
     public ServerConfiguration getConfiguration() {

@@ -38,7 +38,7 @@ public class ServerConfiguration implements Cloneable {
 
     private boolean connectOnIdeStartup = false;
 
-    public List<String> collectionsToIgnore = new LinkedList<String>();
+    private final List<String> collectionsToIgnore = new LinkedList<String>();
 
     private String serverVersion;
     private String shellArgumentsLine;

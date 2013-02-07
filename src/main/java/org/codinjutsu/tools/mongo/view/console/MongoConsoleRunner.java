@@ -40,7 +40,7 @@ import java.io.Reader;
 
 public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoConsoleView> {
 
-    public static final Key<Boolean> MONGO_SHELL_FILE = Key.create("MONGO_SHELL_FILE");
+    private static final Key<Boolean> MONGO_SHELL_FILE = Key.create("MONGO_SHELL_FILE");
     private final ServerConfiguration serverConfiguration;
 
 
@@ -94,23 +94,13 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
 
     @Override
     protected OSProcessHandler createProcessHandler(Process process) {
-        return new OSProcessHandler(process, null) {
-            @Override
-            protected Reader createProcessOutReader() {
-                return super.createProcessOutReader();
-            }
-        };
+        return new OSProcessHandler(process, null);
     }
 
     @NotNull
     @Override
     protected ConsoleExecuteActionHandler createConsoleExecuteActionHandler() {
         ConsoleExecuteActionHandler handler = new ConsoleExecuteActionHandler(getProcessHandler(), false) {
-            @Override
-            public void processLine(String line) {
-                super.processLine(line);
-            }
-
             @Override
             public String getEmptyExecuteAction() {
                 return "Mongo.Shell.Execute";

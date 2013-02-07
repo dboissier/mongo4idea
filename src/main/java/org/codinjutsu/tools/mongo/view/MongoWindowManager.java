@@ -43,25 +43,25 @@ import javax.swing.*;
 
 public class MongoWindowManager  {
 
-    public static final Icon MONGO_ICON = GuiUtils.loadIcon("mongo_logo.png");
+    private static final Icon MONGO_ICON = GuiUtils.loadIcon("mongo_logo.png");
 
-    public static final String MONGO_RUNNER = "Mongo Runner";
+    private static final String MONGO_RUNNER = "Mongo Runner";
 
     private static final String MONGO_EXPLORER = "Mongo Explorer";
 
     private final Key<Boolean> MONGO_CONTENT_KEY = Key.create("MongoResultManager.MONGO_CONTENT_KEY");
 
 
-    private ToolWindow mongoResultWindow;
-    private Project project;
-    private MongoManager mongoManager;
-    private MongoExplorerPanel mongoExplorerPanel;
+    private final ToolWindow mongoResultWindow;
+    private final Project project;
+    private final MongoManager mongoManager;
+    private final MongoExplorerPanel mongoExplorerPanel;
 
-    public static final MongoWindowManager getInstance(Project project) {
+    public static MongoWindowManager getInstance(Project project) {
         return ServiceManager.getService(project, MongoWindowManager.class);
     }
 
-    public MongoWindowManager(Project project) {
+    private MongoWindowManager(Project project) {
         this.project = project;
         this.mongoManager = MongoManager.getInstance(project);
 
@@ -81,9 +81,9 @@ public class MongoWindowManager  {
         toolMongoExplorerWindow.setIcon(MONGO_ICON);
     }
 
-    public void showToolWindow(boolean activateWindow) {
+    public void showToolWindow() {
         mongoResultWindow.show(null);
-        if (activateWindow && !mongoResultWindow.isActive()) {
+        if (!mongoResultWindow.isActive()) {
             mongoResultWindow.activate(null);
         }
     }
@@ -127,7 +127,7 @@ public class MongoWindowManager  {
         ToolWindowManager.getInstance(project).unregisterToolWindow(MONGO_EXPLORER);
     }
 
-    public void closeContent(Content content) {
+    void closeContent(Content content) {
         mongoResultWindow.getContentManager().removeContent(content, true);
     }
 
@@ -142,11 +142,6 @@ public class MongoWindowManager  {
         private CloseAction(Project project, Content content) {
             this.project = project;
             this.content = content;
-        }
-
-        @Override
-        public void update(AnActionEvent e) {
-            super.update(e);
         }
 
         @Override

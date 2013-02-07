@@ -30,7 +30,7 @@ public class MongoQueryOptions {
     public static final int DEFAULT_RESULT_LIMIT = 300;
 
     private static final BasicDBObject EMPTY_FILTER = new BasicDBObject();
-    private List<DBObject> operations = new LinkedList<DBObject>();
+    private final List<DBObject> operations = new LinkedList<DBObject>();
 
     private DBObject filter = EMPTY_FILTER;
 

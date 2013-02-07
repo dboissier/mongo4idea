@@ -66,7 +66,7 @@ public class MongoRunConfigurationType implements ConfigurationType {
         }
 
         public RunConfiguration createTemplateConfiguration(Project project) {
-            return new MongoRunConfiguration("Mongo Script", project, this);
+            return new MongoRunConfiguration(project, this);
         }
 
     }

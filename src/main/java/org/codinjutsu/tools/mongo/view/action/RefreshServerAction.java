@@ -29,7 +29,7 @@ public class RefreshServerAction extends AnAction implements DumbAware {
 
     private static final Icon REFRESH = StyleAttributesUtils.getInstance().getRefreshIcon();
 
-    private MongoExplorerPanel mongoExplorerPanel;
+    private final MongoExplorerPanel mongoExplorerPanel;
 
     public RefreshServerAction(MongoExplorerPanel mongoExplorerPanel) {
         super("Refresh server", "Refresh server data", REFRESH);

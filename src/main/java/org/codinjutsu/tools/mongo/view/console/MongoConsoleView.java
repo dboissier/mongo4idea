@@ -8,4 +8,6 @@ public class MongoConsoleView extends LanguageConsoleViewImpl {
     public MongoConsoleView(Project project) {
         super(project, "Mongo Console", StdFileTypes.PLAIN_TEXT.getLanguage());
     }
+
+
 }

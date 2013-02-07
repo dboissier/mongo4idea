@@ -54,7 +54,7 @@ import java.util.List;
 
 public class QueryPanel extends JPanel implements Disposable {
 
-    private List<OperatorPanel> operatorPanels = new LinkedList<OperatorPanel>();
+    private final List<OperatorPanel> operatorPanels = new LinkedList<OperatorPanel>();
 
     private boolean withAggregation = false;
 
@@ -78,7 +78,6 @@ public class QueryPanel extends JPanel implements Disposable {
 
     public void withAggregation() {
         withAggregation = true;
-//        Disposer.register(project, this);
         queryContainerPanel.setLayout(new BoxLayout(queryContainerPanel, BoxLayout.Y_AXIS));
         addOperatorPanel(MongoAggregateOperator.MATCH);
     }

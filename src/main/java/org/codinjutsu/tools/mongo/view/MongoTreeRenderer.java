@@ -27,7 +27,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.*;
 
-public class MongoTreeRenderer extends DefaultTreeCellRenderer {
+class MongoTreeRenderer extends DefaultTreeCellRenderer {
 
     private static final Icon MONGO_SERVER = GuiUtils.loadIcon("mongo_logo.png");
     private static final Icon MONGO_DATABASE = GuiUtils.loadIcon("database.png");

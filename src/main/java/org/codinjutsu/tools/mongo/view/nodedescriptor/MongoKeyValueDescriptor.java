@@ -27,8 +27,8 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
     private static final String TO_STRING_TEMPLATE = "{ \"%s\" : %s}";
     private static final String TO_STRING_FOR_STRING_VALUE_TEMPLATE = "{ \"%s\" : \"%s\"}";
 
-    protected final String key;
-    protected final Object value;
+    final String key;
+    final Object value;
 
     private final SimpleTextAttributes textAttributes;
 
@@ -55,7 +55,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
         return String.format(TO_STRING_TEMPLATE, key, value);
     }
 
-    protected String getDescription() {
+    String getDescription() {
         String stringifiedValue = value.toString();
         if (stringifiedValue.length() > MAX_LENGTH) {
             return StringUtils.abbreviateInCenter(stringifiedValue, MAX_LENGTH);

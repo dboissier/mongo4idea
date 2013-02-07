@@ -23,8 +23,8 @@ import org.codinjutsu.tools.mongo.utils.StringUtils;
 
 public class MongoValueDescriptor implements MongoNodeDescriptor {
 
-    protected final int index;
-    protected final Object value;
+    private final int index;
+    private final Object value;
     private final SimpleTextAttributes textAttributes;
 
     private MongoValueDescriptor(int index, Object value, SimpleTextAttributes textAttributes) {
@@ -40,11 +40,11 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
         }
     }
 
-    protected String getDescription() {
+    String getDescription() {
         return String.format("%s", getStringValue());
     }
 
-    protected String getStringValue() {
+    String getStringValue() {
         String stringifiedValue = value.toString();
         if (stringifiedValue.length() > MAX_LENGTH) {
             return StringUtils.abbreviateInCenter(stringifiedValue, MAX_LENGTH);

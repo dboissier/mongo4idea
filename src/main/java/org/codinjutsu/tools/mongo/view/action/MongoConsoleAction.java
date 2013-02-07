@@ -47,15 +47,10 @@ public class MongoConsoleAction extends AnAction implements DumbAware {
         if (!enabled) {
             return;
         }
-        
 
         MongoConfiguration configuration = MongoConfiguration.getInstance(project);
-        if (configuration != null) {
-            enabled = enabled && StringUtils.isNotBlank(configuration.getShellPath());
-        }
 
-        e.getPresentation().setVisible(enabled);
-
+        e.getPresentation().setVisible(configuration != null && StringUtils.isNotBlank(configuration.getShellPath()));
         e.getPresentation().setEnabled(mongoExplorerPanel.getSelectedServerNode() != null );
     }
 
@@ -64,11 +59,7 @@ public class MongoConsoleAction extends AnAction implements DumbAware {
         final Project project = e.getData(PlatformDataKeys.PROJECT);
         assert project != null;
 
-
-
         runShell(project);
-
-        return;
     }
 
     private void runShell(Project project) {

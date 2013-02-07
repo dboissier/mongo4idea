@@ -143,8 +143,8 @@ public class MongoResultPanel extends JPanel implements Disposable {
         TreeUtil.collapseAll(jsonResultTree, 0);
         TreeUtil.expand(jsonResultTree, 0);
     }
-    public void shouldShowTreeResult(boolean visible) {
-        jsonResultTree.setVisible(visible);
+    public void hideResultTree() {
+        jsonResultTree.setVisible(false);
     }
 
     public String getSelectedNodeStringifiedValue() {

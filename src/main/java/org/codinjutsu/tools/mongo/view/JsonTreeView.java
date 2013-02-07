@@ -19,7 +19,7 @@ package org.codinjutsu.tools.mongo.view;
 import javax.swing.*;
 import javax.swing.tree.TreeSelectionModel;
 
-public class JsonTreeView extends JTree {
+class JsonTreeView extends JTree {
 
     public JsonTreeView() {
         setName("resultTree");

@@ -54,7 +54,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
     private JPanel rootPanel;
 
     private JPanel treePanel;
-    private Tree mongoTree;
+    private final Tree mongoTree;
 
     private JPanel toolBarPanel;
 
@@ -265,7 +265,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         return ((MongoServer) serverNode.getUserObject()).getConfiguration();
     }
 
-    public MongoCollection getSelectedCollectionValues() {
+    MongoCollection getSelectedCollectionValues() {
         DefaultMutableTreeNode collectionNode = getSelectedCollectionNode();
         if (collectionNode == null) {
             return null;
@@ -276,7 +276,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
     public void loadSelectedCollectionValues() {
         MongoWindowManager.getInstance(project).addResultContent(getConfiguration(), getSelectedCollectionValues());
-        MongoWindowManager.getInstance(project).showToolWindow(true);
+        MongoWindowManager.getInstance(project).showToolWindow();
     }
 
     private Tree createTree() {

@@ -24,7 +24,7 @@ import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
-public class MongoCommandLineState extends CommandLineState {
+class MongoCommandLineState extends CommandLineState {
 
     private final MongoRunConfiguration mongoRunConfiguration;
 
@@ -36,11 +36,8 @@ public class MongoCommandLineState extends CommandLineState {
     @NotNull
     @Override
     protected ProcessHandler startProcess() throws ExecutionException {
-
-        boolean ansiColoring = true;
         GeneralCommandLine commandLine = generateCommandLine();
-        final OSProcessHandler processHandler = ansiColoring ? new ColoredProcessHandler(commandLine)
-                : new DefaultJavaProcessHandler(commandLine);
+        final OSProcessHandler processHandler = new ColoredProcessHandler(commandLine);
         ProcessTerminatedListener.attach(processHandler);
         return processHandler;
     }

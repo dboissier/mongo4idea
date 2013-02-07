@@ -40,7 +40,7 @@ import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class MongoRunConfiguration extends RuntimeConfiguration {
+class MongoRunConfiguration extends RuntimeConfiguration {
 
     private String scriptPath;
     private String shellParameters;
@@ -51,8 +51,8 @@ public class MongoRunConfiguration extends RuntimeConfiguration {
     private String password;
 
 
-    protected MongoRunConfiguration(String name, Project project, ConfigurationFactory factory) {
-        super(name, project, factory);
+    MongoRunConfiguration(Project project, ConfigurationFactory factory) {
+        super("Mongo Script", project, factory);
     }
 
     @Override

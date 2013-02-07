@@ -22,7 +22,7 @@ import org.codinjutsu.tools.mongo.ServerConfiguration;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
-public class MongoServerTableModel extends AbstractTableModel implements ItemRemovable {
+class MongoServerTableModel extends AbstractTableModel implements ItemRemovable {
     private final String[] columnNames = new String[]{
             "Label",
             "URL",
