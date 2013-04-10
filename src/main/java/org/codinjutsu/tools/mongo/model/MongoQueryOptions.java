@@ -43,9 +43,12 @@ public class MongoQueryOptions {
 
     public void addQuery(MongoAggregateOperator operator, String query) {
         if (!StringUtils.isBlank(query)) {
-            DBObject operationObject = (DBObject) JSON.parse(query);
-
-            operations.add(new BasicDBObject(operator.getLabel(), operationObject));
+            operations.add(
+                    new BasicDBObject(
+                            operator.getLabel(),
+                            operator.getOperatorValueConverter().convert(query)
+                    )
+            );
         }
     }
 

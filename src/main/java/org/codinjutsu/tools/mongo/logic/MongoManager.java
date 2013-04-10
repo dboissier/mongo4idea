@@ -115,7 +115,6 @@ public class MongoManager {
 
     }
 
-
     private MongoCollectionResult aggregate(MongoQueryOptions mongoQueryOptions, MongoCollectionResult mongoCollectionResult, DBCollection collection) {
         List<DBObject> otherOperations = mongoQueryOptions.getOperationsExceptTheFirst();
         AggregationOutput aggregate = collection.aggregate(mongoQueryOptions.getFirstOperation(), otherOperations.toArray(new DBObject[otherOperations.size()]));
