@@ -68,7 +68,10 @@ public class MongoManager {
         try {
             MongoClient mongo = new MongoClient(mongoServer.getServerName(), mongoServer.getServerPort());
 
-            List<String> databaseNames = getDatabaseNames(mongo, mongoServer.getUsername(), mongoServer.getPassword());
+            List<String> databaseNames = mongoServer.getConfiguration().getDatabases();
+            if (databaseNames.isEmpty()) {
+                databaseNames = getDatabaseNames(mongo, mongoServer.getUsername(), mongoServer.getPassword());
+            }
             for (String databaseName : databaseNames) {
                 DB database = mongo.getDB(databaseName);
                 MongoDatabase mongoDatabase = new MongoDatabase(database.getName());
@@ -140,7 +143,7 @@ public class MongoManager {
     }
 
     //Note : Hack of MongoClient#getDatabaseNames to retry with provided credentials
-    List<String> getDatabaseNames(MongoClient mongo, String username, String password){
+    List<String> getDatabaseNames(MongoClient mongo, String username, String password) {
 
         BasicDBObject cmd = new BasicDBObject();
         cmd.put("listDatabases", 1);
@@ -154,7 +157,7 @@ public class MongoManager {
             if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
                 boolean authenticate = adminDb.authenticate(username, password.toCharArray());
                 if (!authenticate) {
-                    throw new ConfigurationException("Invalid creadentials");
+                    throw new ConfigurationException("Invalid credentials");
                 }
                 res = adminDb.command(cmd, mongo.getOptions());
             }
@@ -162,12 +165,12 @@ public class MongoManager {
 
         res.throwOnError();
 
-        List l = (List)res.get("databases");
+        List l = (List) res.get("databases");
 
         List<String> list = new ArrayList<String>();
 
         for (Object o : l) {
-            list.add(((BasicDBObject)o).getString("name"));
+            list.add(((BasicDBObject) o).getString("name"));
         }
         return list;
     }

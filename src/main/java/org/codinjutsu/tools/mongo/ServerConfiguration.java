@@ -38,7 +38,8 @@ public class ServerConfiguration implements Cloneable {
 
     private boolean connectOnIdeStartup = false;
 
-    private final List<String> collectionsToIgnore = new LinkedList<String>();
+    private List<String> databases = new LinkedList<String>();
+    private List<String> collectionsToIgnore = new LinkedList<String>();
 
     private String serverVersion;
     private String shellArgumentsLine;
@@ -84,9 +85,16 @@ public class ServerConfiguration implements Cloneable {
         this.password = password;
     }
 
-    public void setCollectionsToIgnore(Set<String> collectionsToIgnore) {
-        this.collectionsToIgnore.clear();
-        this.collectionsToIgnore.addAll(collectionsToIgnore);
+    public void setDatabases(List<String> databases) {
+        this.databases = databases;
+    }
+
+    public List<String> getDatabases() {
+        return databases;
+    }
+
+    public void setCollectionsToIgnore(List<String> collectionsToIgnore) {
+        this.collectionsToIgnore = collectionsToIgnore;
     }
 
     public List<String> getCollectionsToIgnore() {
@@ -121,6 +129,7 @@ public class ServerConfiguration implements Cloneable {
         return String.format("%s/%s", serverName, serverPort);
     }
 
+
     public static ServerConfiguration byDefault() {
         ServerConfiguration serverConfiguration = new ServerConfiguration();
         serverConfiguration.setServerName(DEFAULT_URL);
@@ -128,12 +137,50 @@ public class ServerConfiguration implements Cloneable {
         return serverConfiguration;
     }
 
-
     public ServerConfiguration clone() {
         try {
             return (ServerConfiguration) super.clone();
         } catch (CloneNotSupportedException e) {
             return null;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ServerConfiguration that = (ServerConfiguration) o;
+
+        if (connectOnIdeStartup != that.connectOnIdeStartup) return false;
+        if (serverPort != that.serverPort) return false;
+        if (collectionsToIgnore != null ? !collectionsToIgnore.equals(that.collectionsToIgnore) : that.collectionsToIgnore != null)
+            return false;
+        if (databases != null ? !databases.equals(that.databases) : that.databases != null) return false;
+        if (label != null ? !label.equals(that.label) : that.label != null) return false;
+        if (password != null ? !password.equals(that.password) : that.password != null) return false;
+        if (serverName != null ? !serverName.equals(that.serverName) : that.serverName != null) return false;
+        if (serverVersion != null ? !serverVersion.equals(that.serverVersion) : that.serverVersion != null)
+            return false;
+        if (shellArgumentsLine != null ? !shellArgumentsLine.equals(that.shellArgumentsLine) : that.shellArgumentsLine != null)
+            return false;
+        if (username != null ? !username.equals(that.username) : that.username != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = label != null ? label.hashCode() : 0;
+        result = 31 * result + (serverName != null ? serverName.hashCode() : 0);
+        result = 31 * result + serverPort;
+        result = 31 * result + (username != null ? username.hashCode() : 0);
+        result = 31 * result + (password != null ? password.hashCode() : 0);
+        result = 31 * result + (connectOnIdeStartup ? 1 : 0);
+        result = 31 * result + (databases != null ? databases.hashCode() : 0);
+        result = 31 * result + (collectionsToIgnore != null ? collectionsToIgnore.hashCode() : 0);
+        result = 31 * result + (serverVersion != null ? serverVersion.hashCode() : 0);
+        result = 31 * result + (shellArgumentsLine != null ? shellArgumentsLine.hashCode() : 0);
+        return result;
     }
 }

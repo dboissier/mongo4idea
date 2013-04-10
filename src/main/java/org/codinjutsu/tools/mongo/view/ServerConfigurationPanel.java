@@ -27,9 +27,7 @@ import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class ServerConfigurationPanel {
 
@@ -51,6 +49,7 @@ public class ServerConfigurationPanel {
     private JPanel mongoShellOptionsPanel;
     private JTextField labelField;
     private JCheckBox autoConnectCheckBox;
+    private JTextField databaseListField;
 
     private final MongoManager mongoManager;
 
@@ -69,6 +68,8 @@ public class ServerConfigurationPanel {
         feedbackLabel.setName("feedbackLabel");
         labelField.setName("labelField");
         autoConnectCheckBox.setName("autoConnectField");
+        databaseListField.setName("databaseListField");
+        databaseListField.setToolTipText("If your access is restricted to some specific databases, you can add them in this field");
 
         initListeners();
     }
@@ -96,18 +97,34 @@ public class ServerConfigurationPanel {
         return rootPanel;
     }
 
-    private Set<String> getCollectionsToIgnore() {
+
+    private List<String> getDatabases() {
+        String databaseListText = databaseListField.getText();
+        if (StringUtils.isNotBlank(databaseListText)) {
+            String[] databaseList = databaseListText.split(",");
+
+            List<String> databases = new LinkedList<String>();
+            for (String database : databaseList) {
+                databases.add(StringUtils.trim(database));
+            }
+            return databases;
+        }
+        return Collections.emptyList();
+    }
+
+
+    private List<String> getCollectionsToIgnore() {
         String collectionsToIgnoreText = collectionsToIgnoreField.getText();
         if (StringUtils.isNotBlank(collectionsToIgnoreText)) {
             String[] collectionsToIgnore = collectionsToIgnoreText.split(",");
 
-            Set<String> collections = new HashSet<String>();
+            List<String> collections = new LinkedList<String>();
             for (String collectionToIgnore : collectionsToIgnore) {
                 collections.add(StringUtils.trim(collectionToIgnore));
             }
             return collections;
         }
-        return Collections.emptySet();
+        return Collections.emptyList();
     }
 
     public void applyConfigurationData(ServerConfiguration configuration) {
@@ -117,6 +134,7 @@ public class ServerConfigurationPanel {
         configuration.setUsername(getUsername());
         configuration.setPassword(getPassword());
         configuration.setCollectionsToIgnore(getCollectionsToIgnore());
+        configuration.setDatabases(getDatabases());
         configuration.setShellArgumentsLine(getShellArgumentsLine());
         configuration.setConnectOnIdeStartup(isAutoConnect());
         configuration.setServerVersion(serverVersion);
@@ -182,6 +200,7 @@ public class ServerConfigurationPanel {
         usernameField.setText(configuration.getUsername());
         passwordField.setText(configuration.getPassword());
         collectionsToIgnoreField.setText(StringUtils.join(configuration.getCollectionsToIgnore(), ","));
+        databaseListField.setText(StringUtils.join(configuration.getDatabases(), ","));
         shellArgumentsLineField.setText(configuration.getShellArgumentsLine());
         autoConnectCheckBox.setSelected(configuration.isConnectOnIdeStartup());
         serverVersion = configuration.getServerVersion();

@@ -24,6 +24,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.SimpleTree;
 import com.intellij.ui.treeStructure.Tree;
+import com.intellij.util.ui.tree.TreeUtil;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
@@ -83,7 +84,10 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         reloadAllServerConfigurations(true);
     }
 
-    public void reloadConfiguration() {//TODO add clearSelection flag before
+    public void reloadConfiguration(boolean clearSelection) {
+        if (clearSelection) {
+            TreeUtil.removeSelected(mongoTree);
+        }
         ServerConfiguration serverConfiguration = getConfiguration();
         if (serverConfiguration != null) {
             reloadSelectedServerConfiguration();
@@ -128,6 +132,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
                 mongoTree.revalidate();
 
+                TreeUtil.expand(mongoTree, 3);
             }
         });
     }
@@ -170,6 +175,8 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                     mongoTree.invalidate();
                     mongoTree.setModel(new DefaultTreeModel(rootNode));
                     mongoTree.revalidate();
+
+                    TreeUtil.expand(mongoTree, 3);
 
                 } catch (ConfigurationException confEx) {
                     serverConfigurations = null;
