@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 David Boissier
+ * Copyright (c) 2013 David Boissier
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,7 +132,7 @@ public class JsonTreeModel extends DefaultTreeModel {
     }
 
 
-    private static TreeNode buildJsonTree(MongoCollectionResult mongoCollectionResult) {
+    public static TreeNode buildJsonTree(MongoCollectionResult mongoCollectionResult) {
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(new ResultNode(mongoCollectionResult.getCollectionName()));
 
         List<DBObject> mongoObjects = mongoCollectionResult.getMongoObjects();

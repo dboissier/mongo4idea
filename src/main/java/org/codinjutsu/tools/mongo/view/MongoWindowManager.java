@@ -61,7 +61,7 @@ public class MongoWindowManager  {
         return ServiceManager.getService(project, MongoWindowManager.class);
     }
 
-    private MongoWindowManager(Project project) {
+    public MongoWindowManager(Project project) {
         this.project = project;
         this.mongoManager = MongoManager.getInstance(project);
 

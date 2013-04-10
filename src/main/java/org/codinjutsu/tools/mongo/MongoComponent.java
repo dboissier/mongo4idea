@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 David Boissier
+ * Copyright (c) 2013 David Boissier
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,8 @@
 
 package org.codinjutsu.tools.mongo;
 
-import com.intellij.openapi.components.*;
+import com.intellij.openapi.components.AbstractProjectComponent;
 import com.intellij.openapi.project.Project;
-import org.codinjutsu.tools.mongo.view.MongoConfigurable;
 import org.codinjutsu.tools.mongo.view.MongoWindowManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,7 +35,6 @@ public class MongoComponent extends AbstractProjectComponent {
     public String getComponentName() {
         return MONGO_COMPONENT_NAME;
     }
-
 
 
     public void projectOpened() {
