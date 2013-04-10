@@ -1,5 +1,10 @@
 # Mongo Plugin for IntelliJ IDEA
 
+## Snapshot version
+
+If you want to test the latest features, you can download the [latest snapshot](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.3.1-SNAPSHOT-distribution.zip?raw=true).
+To install it, **Settings -> Plugins -> Install from disk** and restart your IDE.
+
 ## Important Note for the 0.3.0 version
 
 This release supports more than one mongo server, so you will need to reconfigure it after installing it.
