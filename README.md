@@ -1,9 +1,14 @@
 # Mongo Plugin for IntelliJ IDEA
 
-## Snapshot version
+## Version 0.3.1-SNAPSHOT
 
 If you want to test the latest features, you can download the [latest snapshot](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.3.1-SNAPSHOT-distribution.zip?raw=true).
+
 To install it, **Settings -> Plugins -> Install from disk** and restart your IDE.
+
+### Last features
+* You can specify databases (separated by comma **,** character) in the configuration. It prevents the plugin to discover the server databases and allows to connect directly to the databases you set (issues [#31](https://github.com/dboissier/mongo4idea/issues/31) and [#35](https://github.com/dboissier/mongo4idea/issues/35)).
+* $unwind, $limit and $skip operations for aggregation have been fixed (issue [#32](https://github.com/dboissier/mongo4idea/issues/32))
 
 ## Important Note for the 0.3.0 version
 
