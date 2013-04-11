@@ -124,8 +124,14 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
     private static class ErrorQueryCallback implements QueryPanel.QueryCallback {
 
         @Override
-        public void notifyOnErrorForOperator(JComponent editorComponent, JSONParseException ex) {
-            String message = StringUtils.removeStart(ex.getMessage(), "\n");
+        public void notifyOnErrorForOperator(JComponent editorComponent, Exception ex) {
+
+            String message;
+            if (ex instanceof JSONParseException) {
+                message = StringUtils.removeStart(ex.getMessage(), "\n");
+            } else {
+                message = String.format("%s: %s", ex.getClass().getSimpleName(), ex.getMessage());
+            }
             NonOpaquePanel nonOpaquePanel = new NonOpaquePanel();
             JTextPane textPane = Messages.configureMessagePaneUi(new JTextPane(), message);
             textPane.setBackground(MessageType.ERROR.getPopupBackground());

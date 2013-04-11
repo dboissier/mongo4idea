@@ -161,6 +161,8 @@ public class QueryPanel extends JPanel implements Disposable {
                     mongoQueryOptions.addQuery(operatorPanel.getOperator(), operatorPanel.getQuery());
                 } catch (JSONParseException ex) {
                     callback.notifyOnErrorForOperator(operatorPanel.getEditorComponent(), ex);
+                } catch (NumberFormatException ex) {
+                    callback.notifyOnErrorForOperator(operatorPanel.getEditorComponent(), ex);
                 }
             }
         } else {
@@ -311,6 +313,6 @@ public class QueryPanel extends JPanel implements Disposable {
 
     public interface QueryCallback {
 
-        void notifyOnErrorForOperator(JComponent editorComponent, JSONParseException ex);
+        void notifyOnErrorForOperator(JComponent editorComponent, Exception ex);
     }
 }
