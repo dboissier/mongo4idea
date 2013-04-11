@@ -26,7 +26,10 @@ import org.codinjutsu.tools.mongo.model.*;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class MongoManager {
 
@@ -37,19 +40,22 @@ public class MongoManager {
     }
 
     public String connect(ServerConfiguration configuration) {
-        return connect(configuration.getServerName(), configuration.getServerPort(), configuration.getUsername(), configuration.getPassword());
+        return connectAndReturnServerVersion(configuration.getServerName(), configuration.getServerPort(), configuration.getUsername(), configuration.getPassword(), configuration.getUserDatabase());
     }
 
-    public String connect(String serverName, int serverPort, String username, String password) {
+    public String connectAndReturnServerVersion(String serverName, int serverPort, String username, String password, String userDatabase) {
+
+        MongoClient mongo = null;
         try {
-            MongoClient mongo = new MongoClient(serverName, serverPort);
-            List<String> databaseNames = getDatabaseNames(mongo, username, password);
-            if (databaseNames.isEmpty()) {
-                throw new ConfigurationException("No databases were found");
+            mongo = createMongoClient(serverName, serverPort);
+
+            DB databaseForTesting;
+            if (StringUtils.isNotEmpty(userDatabase)) {
+                databaseForTesting = mongo.getDB(userDatabase);
+            } else {
+                databaseForTesting = mongo.getDB("admin");
             }
 
-
-            DB databaseForTesting = mongo.getDB("admin");
             if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
                 databaseForTesting.authenticate(username, password.toCharArray());
             }
@@ -61,32 +67,59 @@ public class MongoManager {
         } catch (MongoException ex) {
             LOG.error("Error when accessing Mongo server", ex);
             throw new ConfigurationException(ex);
+        } finally {
+            if (mongo != null) {
+                mongo.close();
+            }
         }
     }
 
     public MongoServer loadDatabaseCollections(MongoServer mongoServer) {
+        MongoClient mongo = null;
         try {
-            MongoClient mongo = new MongoClient(mongoServer.getServerName(), mongoServer.getServerPort());
+            mongo = createMongoClient(mongoServer.getServerName(), mongoServer.getServerPort());
 
-            List<String> databaseNames = mongoServer.getConfiguration().getDatabases();
-            if (databaseNames.isEmpty()) {
-                databaseNames = getDatabaseNames(mongo, mongoServer.getUsername(), mongoServer.getPassword());
-            }
-            for (String databaseName : databaseNames) {
-                DB database = mongo.getDB(databaseName);
-                MongoDatabase mongoDatabase = new MongoDatabase(database.getName());
-
-                Set<String> collectionNames = database.getCollectionNames();
-                for (String collectionName : collectionNames) {
-                    mongoDatabase.addCollection(new MongoCollection(collectionName, database.getName()));
+            String userDatabase = mongoServer.getConfiguration().getUserDatabase();
+            if (StringUtils.isNotEmpty(userDatabase)) {
+                DB database = mongo.getDB(userDatabase);
+                if (!database.isAuthenticated()) {
+                    database.authenticate(mongoServer.getUsername(), mongoServer.getPassword().toCharArray());
                 }
-                mongoServer.addDatabase(mongoDatabase);
+                mongoServer.addDatabase(createMongoDatabaseAndItsCollections(database));
+            } else {
+                List<String> databaseNames = getDatabaseNames(mongo, mongoServer.getUsername(), mongoServer.getPassword());
+                for (String databaseName : databaseNames) {
+                    DB database = mongo.getDB(databaseName);
+                    mongoServer.addDatabase(createMongoDatabaseAndItsCollections(database));
+                }
             }
+
             return mongoServer;
         } catch (Exception ex) {
             LOG.error("Error when collecting Mongo databases", ex);
             throw new ConfigurationException(ex);
+        } finally {
+            if (mongo != null) {
+                mongo.close();
+            }
         }
+    }
+
+    private MongoDatabase createMongoDatabaseAndItsCollections(DB database) {
+        MongoDatabase mongoDatabase = new MongoDatabase(database.getName());
+
+
+        Set<String> collectionNames = database.getCollectionNames();
+        for (String collectionName : collectionNames) {
+            mongoDatabase.addCollection(new MongoCollection(collectionName, database.getName()));
+        }
+        return mongoDatabase;
+    }
+
+    private MongoClient createMongoClient(String serverName, int serverPort) throws UnknownHostException {
+        String textURI = String.format("mongodb://%s:%s", serverName, serverPort);
+        MongoClientURI mongoClientURI = new MongoClientURI(textURI);
+        return new MongoClient(mongoClientURI);
     }
 
     public MongoCollectionResult loadCollectionValues(ServerConfiguration configuration, MongoCollection mongoCollection, MongoQueryOptions mongoQueryOptions) {

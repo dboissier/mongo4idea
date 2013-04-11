@@ -20,7 +20,6 @@ import com.mongodb.DBPort;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 public class ServerConfiguration implements Cloneable {
 
@@ -38,7 +37,7 @@ public class ServerConfiguration implements Cloneable {
 
     private boolean connectOnIdeStartup = false;
 
-    private List<String> databases = new LinkedList<String>();
+    private String userDatabase;
     private List<String> collectionsToIgnore = new LinkedList<String>();
 
     private String serverVersion;
@@ -85,12 +84,12 @@ public class ServerConfiguration implements Cloneable {
         this.password = password;
     }
 
-    public void setDatabases(List<String> databases) {
-        this.databases = databases;
+    public void setUserDatabase(String userDatabase) {
+        this.userDatabase = userDatabase;
     }
 
-    public List<String> getDatabases() {
-        return databases;
+    public String getUserDatabase() {
+        return userDatabase;
     }
 
     public void setCollectionsToIgnore(List<String> collectionsToIgnore) {
@@ -156,7 +155,7 @@ public class ServerConfiguration implements Cloneable {
         if (serverPort != that.serverPort) return false;
         if (collectionsToIgnore != null ? !collectionsToIgnore.equals(that.collectionsToIgnore) : that.collectionsToIgnore != null)
             return false;
-        if (databases != null ? !databases.equals(that.databases) : that.databases != null) return false;
+        if (userDatabase != null ? !userDatabase.equals(that.userDatabase) : that.userDatabase != null) return false;
         if (label != null ? !label.equals(that.label) : that.label != null) return false;
         if (password != null ? !password.equals(that.password) : that.password != null) return false;
         if (serverName != null ? !serverName.equals(that.serverName) : that.serverName != null) return false;
@@ -177,7 +176,7 @@ public class ServerConfiguration implements Cloneable {
         result = 31 * result + (username != null ? username.hashCode() : 0);
         result = 31 * result + (password != null ? password.hashCode() : 0);
         result = 31 * result + (connectOnIdeStartup ? 1 : 0);
-        result = 31 * result + (databases != null ? databases.hashCode() : 0);
+        result = 31 * result + (userDatabase != null ? userDatabase.hashCode() : 0);
         result = 31 * result + (collectionsToIgnore != null ? collectionsToIgnore.hashCode() : 0);
         result = 31 * result + (serverVersion != null ? serverVersion.hashCode() : 0);
         result = 31 * result + (shellArgumentsLine != null ? shellArgumentsLine.hashCode() : 0);

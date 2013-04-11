@@ -215,12 +215,13 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                     return;
                 }
 
-                if (!(treeNode.getUserObject() instanceof MongoCollection)) {
-                    return;
-                }
-
                 if (mouseEvent.getClickCount() == 2) {
-                    loadSelectedCollectionValues();
+
+                    if (treeNode.getUserObject() instanceof MongoCollection) {
+                        loadSelectedCollectionValues();
+                    } else if (treeNode.getUserObject() instanceof MongoServer && treeNode.getChildCount() == 0) {
+                        reloadConfiguration(false);
+                    }
                 }
             }
         });

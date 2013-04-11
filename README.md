@@ -7,12 +7,8 @@ If you want to test the latest features, you can download the [latest snapshot](
 To install it, **Settings -> Plugins -> Install from disk** and restart your IDE.
 
 ### Last features
-* You can specify databases (separated by comma **,** character) in the configuration. It prevents the plugin to discover the server databases and allows to connect directly to the databases you set (issues [#31](https://github.com/dboissier/mongo4idea/issues/31) and [#35](https://github.com/dboissier/mongo4idea/issues/35)).
+* If your access is restricted to a specific database you can set it in the configuration (issues [#31](https://github.com/dboissier/mongo4idea/issues/31) and [#35](https://github.com/dboissier/mongo4idea/issues/35)).
 * $unwind, $limit and $skip operations for aggregation have been fixed (issue [#32](https://github.com/dboissier/mongo4idea/issues/32))
-
-## Important Note for the 0.3.0 version
-
-This release supports more than one mongo server, so you will need to reconfigure it after installing it.
 
 ## ChangeLog
 See CHANGELOG.txt

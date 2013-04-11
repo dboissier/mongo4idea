@@ -27,7 +27,9 @@ import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ServerConfigurationPanel {
 
@@ -49,7 +51,7 @@ public class ServerConfigurationPanel {
     private JPanel mongoShellOptionsPanel;
     private JTextField labelField;
     private JCheckBox autoConnectCheckBox;
-    private JTextField databaseListField;
+    private JTextField databaseField;
 
     private final MongoManager mongoManager;
 
@@ -68,8 +70,8 @@ public class ServerConfigurationPanel {
         feedbackLabel.setName("feedbackLabel");
         labelField.setName("labelField");
         autoConnectCheckBox.setName("autoConnectField");
-        databaseListField.setName("databaseListField");
-        databaseListField.setToolTipText("If your access is restricted to some specific databases, you can add them in this field");
+        databaseField.setName("databaseListField");
+        databaseField.setToolTipText("If your access is restricted to a specific database, you can set it right here");
 
         initListeners();
     }
@@ -79,7 +81,7 @@ public class ServerConfigurationPanel {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    serverVersion = mongoManager.connect(getServerName(), getServerPort(), getUsername(), getPassword());
+                    serverVersion = mongoManager.connectAndReturnServerVersion(getServerName(), getServerPort(), getUsername(), getPassword(), getDatabases());
 
                     feedbackLabel.setIcon(SUCCESS);
                     feedbackLabel.setText("");
@@ -98,18 +100,12 @@ public class ServerConfigurationPanel {
     }
 
 
-    private List<String> getDatabases() {
-        String databaseListText = databaseListField.getText();
-        if (StringUtils.isNotBlank(databaseListText)) {
-            String[] databaseList = databaseListText.split(",");
-
-            List<String> databases = new LinkedList<String>();
-            for (String database : databaseList) {
-                databases.add(StringUtils.trim(database));
-            }
-            return databases;
+    private String getDatabases() {
+        String userDatabase = databaseField.getText();
+        if (StringUtils.isNotBlank(userDatabase)) {
+            return userDatabase;
         }
-        return Collections.emptyList();
+        return null;
     }
 
 
@@ -134,7 +130,7 @@ public class ServerConfigurationPanel {
         configuration.setUsername(getUsername());
         configuration.setPassword(getPassword());
         configuration.setCollectionsToIgnore(getCollectionsToIgnore());
-        configuration.setDatabases(getDatabases());
+        configuration.setUserDatabase(getDatabases());
         configuration.setShellArgumentsLine(getShellArgumentsLine());
         configuration.setConnectOnIdeStartup(isAutoConnect());
         configuration.setServerVersion(serverVersion);
@@ -200,7 +196,7 @@ public class ServerConfigurationPanel {
         usernameField.setText(configuration.getUsername());
         passwordField.setText(configuration.getPassword());
         collectionsToIgnoreField.setText(StringUtils.join(configuration.getCollectionsToIgnore(), ","));
-        databaseListField.setText(StringUtils.join(configuration.getDatabases(), ","));
+        databaseField.setText(configuration.getUserDatabase());
         shellArgumentsLineField.setText(configuration.getShellArgumentsLine());
         autoConnectCheckBox.setSelected(configuration.isConnectOnIdeStartup());
         serverVersion = configuration.getServerVersion();
