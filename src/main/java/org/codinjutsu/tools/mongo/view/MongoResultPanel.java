@@ -19,14 +19,13 @@ package org.codinjutsu.tools.mongo.view;
 import com.intellij.ide.CommonActionsManager;
 import com.intellij.ide.TreeExpander;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
-import com.intellij.ui.PopupHandler;
 import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.treeStructure.treetable.TreeTableTree;
 import com.intellij.util.ui.tree.TreeUtil;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
@@ -35,13 +34,14 @@ import org.codinjutsu.tools.mongo.view.action.CopyResultAction;
 import org.codinjutsu.tools.mongo.view.action.SortResultsByKeysAction;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeModel;
 import org.codinjutsu.tools.mongo.view.model.MongoComparator;
-import org.codinjutsu.tools.mongo.view.model.ResultNode;
+import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoResultDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,14 +54,13 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
     private boolean sortByKey = false;
 
-    private JsonTreeView jsonResultTree = new JsonTreeView();
+    private JsonTreeTableView jsonTreeTableView;
 
     public MongoResultPanel(Project project) {
         setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
 
         treePanel.setLayout(new BorderLayout());
-        treePanel.add(new JBScrollPane(jsonResultTree));
 
         resultToolbar.setLayout(new BorderLayout());
         Disposer.register(project, this);
@@ -71,20 +70,21 @@ public class MongoResultPanel extends JPanel implements Disposable {
     public void setSortedByKey(boolean sortedByKey) {
         sortByKey = sortedByKey;
 
-        jsonResultTree.invalidate();
-        ((DefaultTreeModel) jsonResultTree.getModel()).reload();
-        jsonResultTree.repaint();
-        jsonResultTree.validate();
+//        jsonResultTree.invalidate();
+//        ((DefaultTreeModel) jsonResultTree.getModel()).reload();
+//        jsonResultTree.repaint();
+//        jsonResultTree.validate();
     }
 
 
     public void updateResultTree(MongoCollectionResult mongoCollectionResult) {
-        jsonResultTree.invalidate();
-        jsonResultTree.setVisible(true);
-        JsonTreeModel jsonTreeModel = new JsonTreeModel(mongoCollectionResult);
-        jsonTreeModel.setMongoComparator(new MongoKeyComparator());
-        jsonResultTree.setModel(jsonTreeModel);
-        jsonResultTree.validate();
+        jsonTreeTableView = new JsonTreeTableView(JsonTreeModel.buildJsonTree(mongoCollectionResult));
+
+        treePanel.invalidate();
+        treePanel.removeAll();
+        treePanel.add(new JBScrollPane(jsonTreeTableView));
+
+        treePanel.validate();
     }
 
 
@@ -136,27 +136,30 @@ public class MongoResultPanel extends JPanel implements Disposable {
     }
 
     private void expandAll() {
-        TreeUtil.expandAll(jsonResultTree);
+        TreeUtil.expandAll(jsonTreeTableView.getTree());
     }
 
     private void collapseAll() {
-        TreeUtil.collapseAll(jsonResultTree, 0);
-        TreeUtil.expand(jsonResultTree, 0);
+        TreeTableTree tree = jsonTreeTableView.getTree();
+        TreeUtil.collapseAll(tree, 0);
+        TreeUtil.expand(tree, 0);
     }
     public void hideResultTree() {
-        jsonResultTree.setVisible(false);
+//        jsonResultTree.setVisible(false);
     }
 
     public String getSelectedNodeStringifiedValue() {
-        DefaultMutableTreeNode lastSelectedResultNode = (DefaultMutableTreeNode) jsonResultTree.getLastSelectedPathComponent();
+        DefaultMutableTreeNode lastSelectedResultNode = (DefaultMutableTreeNode) jsonTreeTableView.getTree().getLastSelectedPathComponent();
         if (lastSelectedResultNode == null) {
             return null;
         }
         Object userObject = lastSelectedResultNode.getUserObject();
+        if (userObject instanceof MongoResultDescriptor) {
+            return stringifyResult(lastSelectedResultNode);
+        }
+
         if (userObject instanceof MongoNodeDescriptor) {
             return userObject.toString();
-        } else if (userObject instanceof ResultNode) {
-            return stringifyResult(lastSelectedResultNode);
         }
         return null;
     }
@@ -173,12 +176,13 @@ public class MongoResultPanel extends JPanel implements Disposable {
     }
 
     public boolean isNotEmpty() {
-        return jsonResultTree.isVisible();
+//        return jsonResultTree.isVisible();
+        return false;
     }
 
     @Override
     public void dispose() {
-        jsonResultTree = null;
+        jsonTreeTableView = null;
     }
 
 

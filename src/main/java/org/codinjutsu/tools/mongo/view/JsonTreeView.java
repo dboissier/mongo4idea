@@ -23,7 +23,7 @@ class JsonTreeView extends JTree {
 
     public JsonTreeView() {
         setName("resultTree");
-        setCellRenderer(new MongoResultCellRenderer());
+//        setCellRenderer(new MongoResultCellRenderer());
         getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     }
 }

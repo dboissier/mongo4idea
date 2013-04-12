@@ -21,10 +21,10 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
+import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoResultDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoValueDescriptor;
 
 import javax.swing.event.TreeModelListener;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import java.util.Collections;
@@ -63,8 +63,8 @@ public class JsonTreeModel extends DefaultTreeModel {
     }
 
     private void rebuildCustomizedModel() {
-        DefaultMutableTreeNode sourceRoot = (DefaultMutableTreeNode) super.getRoot();
-        DefaultMutableTreeNode sortedRoot = (DefaultMutableTreeNode) sourceRoot.clone();
+        JsonTreeNode sourceRoot = (JsonTreeNode) super.getRoot();
+        JsonTreeNode sortedRoot = (JsonTreeNode) sourceRoot.clone();
 
         sortChildNodes(sourceRoot, sortedRoot);
 
@@ -80,11 +80,11 @@ public class JsonTreeModel extends DefaultTreeModel {
         getCustomizedModel().reload();
     }
 
-    private void sortChildNodes(DefaultMutableTreeNode source, DefaultMutableTreeNode target) {
-        List<DefaultMutableTreeNode> mongoNodeList = new LinkedList<DefaultMutableTreeNode>();
+    private void sortChildNodes(JsonTreeNode source, JsonTreeNode target) {
+        List<JsonTreeNode> mongoNodeList = new LinkedList<JsonTreeNode>();
         for (int i = 0; i < source.getChildCount(); i++) {
-            DefaultMutableTreeNode sourceChild = (DefaultMutableTreeNode) source.getChildAt(i);
-            DefaultMutableTreeNode targetChild = (DefaultMutableTreeNode) sourceChild.clone();
+            JsonTreeNode sourceChild = (JsonTreeNode) source.getChildAt(i);
+            JsonTreeNode targetChild = (JsonTreeNode) sourceChild.clone();
 
             sortChildNodes(sourceChild, targetChild);
             mongoNodeList.add(targetChild);
@@ -94,7 +94,7 @@ public class JsonTreeModel extends DefaultTreeModel {
             Collections.sort(mongoNodeList, mongoComparator);
         }
 
-        for (DefaultMutableTreeNode mongoNode : mongoNodeList) {
+        for (JsonTreeNode mongoNode : mongoNodeList) {
             target.add(mongoNode);
         }
 
@@ -133,7 +133,7 @@ public class JsonTreeModel extends DefaultTreeModel {
 
 
     public static TreeNode buildJsonTree(MongoCollectionResult mongoCollectionResult) {
-        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(new ResultNode(mongoCollectionResult.getCollectionName()));
+        JsonTreeNode rootNode = new JsonTreeNode(new MongoResultDescriptor(mongoCollectionResult.getCollectionName()));
 
         List<DBObject> mongoObjects = mongoCollectionResult.getMongoObjects();
         int i = 0;
@@ -141,7 +141,7 @@ public class JsonTreeModel extends DefaultTreeModel {
             if (mongoObject instanceof BasicDBList) {
                 processDbObject(rootNode, mongoObject);
             } else if (mongoObject instanceof BasicDBObject) {
-                DefaultMutableTreeNode currentNode = new DefaultMutableTreeNode(MongoValueDescriptor.createDescriptor(i++, mongoObject));
+                JsonTreeNode currentNode = new JsonTreeNode(MongoValueDescriptor.createDescriptor(i++, mongoObject));
                 processDbObject(currentNode, mongoObject);
                 rootNode.add(currentNode);
             }
@@ -149,12 +149,12 @@ public class JsonTreeModel extends DefaultTreeModel {
         return rootNode;
     }
 
-    private static void processDbObject(DefaultMutableTreeNode parentNode, DBObject mongoObject) {
+    private static void processDbObject(JsonTreeNode parentNode, DBObject mongoObject) {
         if (mongoObject instanceof BasicDBList) {
             BasicDBList mongoObjectList = (BasicDBList) mongoObject;
             for (int i = 0; i < mongoObjectList.size(); i++) {
                 Object mongoObjectOfList = mongoObjectList.get(i);
-                DefaultMutableTreeNode currentNode = new DefaultMutableTreeNode(MongoValueDescriptor.createDescriptor(i, mongoObjectOfList));
+                JsonTreeNode currentNode = new JsonTreeNode(MongoValueDescriptor.createDescriptor(i, mongoObjectOfList));
                 if (mongoObjectOfList instanceof DBObject) {
                     processDbObject(currentNode, (DBObject) mongoObjectOfList);
                 }
@@ -164,7 +164,7 @@ public class JsonTreeModel extends DefaultTreeModel {
             BasicDBObject basicDBObject = (BasicDBObject) mongoObject;
             for (String key : basicDBObject.keySet()) {
                 Object value = basicDBObject.get(key);
-                DefaultMutableTreeNode currentNode = new DefaultMutableTreeNode(MongoKeyValueDescriptor.createDescriptor(key, value));
+                JsonTreeNode currentNode = new JsonTreeNode(MongoKeyValueDescriptor.createDescriptor(key, value));
                 if (value instanceof DBObject) {
                     processDbObject(currentNode, (DBObject) value);
                 }

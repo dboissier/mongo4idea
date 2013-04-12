@@ -81,7 +81,7 @@ public class ServerConfigurationPanel {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    serverVersion = mongoManager.connectAndReturnServerVersion(getServerName(), getServerPort(), getUsername(), getPassword(), getDatabases());
+                    serverVersion = mongoManager.connectAndReturnServerVersion(getServerName(), getServerPort(), getUsername(), getPassword(), getUserDatabase());
 
                     feedbackLabel.setIcon(SUCCESS);
                     feedbackLabel.setText("");
@@ -100,15 +100,6 @@ public class ServerConfigurationPanel {
     }
 
 
-    private String getDatabases() {
-        String userDatabase = databaseField.getText();
-        if (StringUtils.isNotBlank(userDatabase)) {
-            return userDatabase;
-        }
-        return null;
-    }
-
-
     private List<String> getCollectionsToIgnore() {
         String collectionsToIgnoreText = collectionsToIgnoreField.getText();
         if (StringUtils.isNotBlank(collectionsToIgnoreText)) {
@@ -123,6 +114,7 @@ public class ServerConfigurationPanel {
         return Collections.emptyList();
     }
 
+
     public void applyConfigurationData(ServerConfiguration configuration) {
         configuration.setLabel(getLabel());
         configuration.setServerName(getServerName());
@@ -130,7 +122,7 @@ public class ServerConfigurationPanel {
         configuration.setUsername(getUsername());
         configuration.setPassword(getPassword());
         configuration.setCollectionsToIgnore(getCollectionsToIgnore());
-        configuration.setUserDatabase(getDatabases());
+        configuration.setUserDatabase(getUserDatabase());
         configuration.setShellArgumentsLine(getShellArgumentsLine());
         configuration.setConnectOnIdeStartup(isAutoConnect());
         configuration.setServerVersion(serverVersion);
@@ -152,18 +144,10 @@ public class ServerConfigurationPanel {
         return null;
     }
 
-    private String getPassword() {
-        char[] password = passwordField.getPassword();
-        if (password != null && password.length != 0) {
-            return String.valueOf(password);
-        }
-        return null;
-    }
-
-    private String getUsername() {
-        String username = usernameField.getText();
-        if (StringUtils.isNotBlank(username)) {
-            return username;
+    private String getUserDatabase() {
+        String userDatabase = databaseField.getText();
+        if (StringUtils.isNotBlank(userDatabase)) {
+            return userDatabase;
         }
         return null;
     }
@@ -174,6 +158,22 @@ public class ServerConfigurationPanel {
             return Integer.valueOf(serverPort);
         }
         return 0;
+    }
+
+    private String getUsername() {
+        String username = usernameField.getText();
+        if (StringUtils.isNotBlank(username)) {
+            return username;
+        }
+        return null;
+    }
+
+    private String getPassword() {
+        char[] password = passwordField.getPassword();
+        if (password != null && password.length != 0) {
+            return String.valueOf(password);
+        }
+        return null;
     }
 
     private String getShellArgumentsLine() {

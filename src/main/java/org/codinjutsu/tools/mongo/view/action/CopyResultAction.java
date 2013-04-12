@@ -48,6 +48,6 @@ public class CopyResultAction extends AnAction implements DumbAware {
 
     @Override
     public void update(AnActionEvent event) {
-        event.getPresentation().setEnabled(mongoResultPanel.getSelectedNodeStringifiedValue() != null);
+        event.getPresentation().setEnabled(mongoResultPanel.isNotEmpty());
     }
 }

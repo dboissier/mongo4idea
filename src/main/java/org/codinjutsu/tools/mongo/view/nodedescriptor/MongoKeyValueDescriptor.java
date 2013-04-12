@@ -16,6 +16,7 @@
 
 package org.codinjutsu.tools.mongo.view.nodedescriptor;
 
+import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.mongodb.DBObject;
@@ -41,9 +42,19 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
     public void appendText(ColoredTreeCellRenderer cellRenderer, boolean isNodeExpanded) {
         cellRenderer.append(String.format(STRING_SURROUNDED, key), TEXT_ATTRIBUTES_PROVIDER.getKeyValueAttribute());
         if (!isNodeExpanded) {
-            cellRenderer.append(": ");
+
             cellRenderer.append(getDescription(), getTextAttributes());
         }
+    }
+
+    public void renderTextValue(ColoredTableCellRenderer cellRenderer, boolean isNodeExpanded) {
+        if (!isNodeExpanded) {
+            cellRenderer.append(getDescription(), getTextAttributes());
+        }
+    }
+
+    public void renderTextKey(ColoredTreeCellRenderer cellRenderer) {
+        cellRenderer.append(String.format(STRING_SURROUNDED, key), TEXT_ATTRIBUTES_PROVIDER.getKeyValueAttribute());
     }
 
     public String getKey() {
