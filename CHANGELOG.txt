@@ -1,7 +1,8 @@
-Version 0.3.1
+Version 0.4.0
     * [fix] #32 $unwind operator does not work
     * [fix] #35 No way to connect to server if Autoconnect is disabled
     * [add] #31 Specific database can be set in the configuration
+    * [add] #30 Results are rendered in a TreeTable
 
 Version 0.3.0:
     * [fix] Darcula settings icon is not displayed on the explorer when no server has been set

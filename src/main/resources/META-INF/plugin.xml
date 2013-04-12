@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2012 David Boissier
+  ~ Copyright (c) 2013 David Boissier
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 <idea-plugin version="2">
     <name>Mongo Plugin</name>
     <description>Mongo integration for Intellij</description>
-    <version>0.3.0</version>
+    <version>0.4.0</version>
     <vendor email="david.boissier [at] gmail [dot] com" url="http://codinjutsu.blogspot.com">David Boissier</vendor>
 
     <idea-version since-build="117.963"/>
@@ -49,6 +49,6 @@
 
 
     <change-notes><![CDATA[
-<a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.3.0/CHANGELOG.txt">Changelog</a>
+<a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.4.0/CHANGELOG.txt">Changelog</a>
 ]]> </change-notes>
 </idea-plugin>
