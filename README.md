@@ -2,13 +2,14 @@
 
 ## Version 0.3.1-SNAPSHOT
 
-If you want to test the latest features, you can download the [latest snapshot](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.3.1-SNAPSHOT-distribution.zip?raw=true).
+If you want to test the latest features, you can download the [latest snapshot](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.4.0-SNAPSHOT-distribution.zip?raw=true).
 
 To install it, **Settings -> Plugins -> Install from disk** and restart your IDE.
 
 ### Last features
 * If your access is restricted to a specific database you can set it in the configuration (issues [#31](https://github.com/dboissier/mongo4idea/issues/31) and [#35](https://github.com/dboissier/mongo4idea/issues/35)).
 * $unwind, $limit and $skip operations for aggregation have been fixed (issue [#32](https://github.com/dboissier/mongo4idea/issues/32))
+* Results are displayed in a table view (issue [#30](https://github.com/dboissier/mongo4idea/issues/30)
 
 ## ChangeLog
 See CHANGELOG.txt
@@ -24,7 +25,7 @@ Download this plugin from your IDE (Mongo Plugin)
 
 ## Configuration steps
 
-When you open the Mongo explorer, you will see an empty tree :
+When you open the Mongo explorer, you will see an empty tree:
 
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-explorerWithoutDB.png?raw=true)
 
@@ -50,7 +51,6 @@ The tree displays for each server all databases with its collections. Just doubl
 If you double-click on another collection, a new tab will appears side of the previous.
 
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-multipleTab.png?raw=true)
-
 
 ### Mongo Runner
 The panel is divided into 2 parts.
@@ -102,7 +102,7 @@ If you set the mongo client path (e.g. /usr/bin/mongo), you can run the console 
 I would like to thank:
 * MongoDB team
 * Mongo Java Driver team
-* Jetbrains Team for the great sources of the Groovy Plugin that help me to improve this stuff
+* Jetbrains Team for the great sources of IntelliJ Community Edition that help me to improve this stuff
 * Mark James author of the famfamfam web site who provides beautiful icons.
 * [Jean Baptiste Potonnier](https://github.com/JJeeb) for the suggestion to create this plugin
 * Neko team, my first beta testers ;)
