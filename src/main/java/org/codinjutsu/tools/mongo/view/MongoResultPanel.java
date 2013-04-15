@@ -79,7 +79,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
     public void updateResultTree(MongoCollectionResult mongoCollectionResult) {
         jsonTreeTableView = new JsonTreeTableView(JsonTreeModel.buildJsonTree(mongoCollectionResult));
-
+        jsonTreeTableView.setName("treeTable");
         treePanel.invalidate();
         treePanel.removeAll();
         treePanel.add(new JBScrollPane(jsonTreeTableView));

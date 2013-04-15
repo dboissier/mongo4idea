@@ -18,8 +18,8 @@ package org.codinjutsu.tools.mongo.view.nodedescriptor;
 
 import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.ColoredTreeCellRenderer;
-import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
+import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 
 public interface MongoNodeDescriptor {
 
@@ -30,6 +30,4 @@ public interface MongoNodeDescriptor {
     void appendText(ColoredTreeCellRenderer cellRenderer, boolean isNodeExpanded);
 
     void renderTextValue(ColoredTableCellRenderer cellRenderer, boolean isNodeExpanded);
-
-    void renderTextKey(ColoredTreeCellRenderer cellRenderer);
 }

@@ -28,7 +28,7 @@ public class JsonTreeNode extends DefaultMutableTreeNode {
         setUserObject(nodeDescriptor);
     }
 
-    public Object getValue() {
+    public MongoNodeDescriptor getDescriptor() {
         return nodeDescriptor;
     }
 }

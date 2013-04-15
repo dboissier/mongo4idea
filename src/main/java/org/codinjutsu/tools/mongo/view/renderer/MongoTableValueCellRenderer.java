@@ -41,7 +41,6 @@ public class MongoTableValueCellRenderer extends ColoredTableCellRenderer {
 
         JsonTreeNode jsonTreeNode = (JsonTreeNode) node;
 
-        MongoNodeDescriptor descriptor = (MongoNodeDescriptor) jsonTreeNode.getValue();
-        descriptor.renderTextValue(this, tree.isExpanded(pathForRow));
+        jsonTreeNode.getDescriptor().renderTextValue(this, tree.isExpanded(pathForRow));
     }
 }

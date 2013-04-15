@@ -16,18 +16,20 @@
 
 package org.codinjutsu.tools.mongo.view;
 
-import com.intellij.mock.MockProject;
 import com.intellij.openapi.command.impl.DummyProject;
+import com.intellij.ui.ColoredTreeCellRenderer;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.apache.commons.io.IOUtils;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
+import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.uispec4j.DefaultTreeCellValueConverter;
 import org.uispec4j.Panel;
 import org.uispec4j.Tree;
 import org.uispec4j.UISpecTestCase;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.io.IOException;
 
@@ -243,6 +245,28 @@ public class MongoResultPanelTest extends UISpecTestCase {
         protected JLabel getLabel(Component renderedComponent) {
             MongoResultCellRenderer mongoResultCellRenderer = (MongoResultCellRenderer) renderedComponent;
             return new JLabel(mongoResultCellRenderer.toString());
+        }
+    }
+
+    public static class MongoResultCellRenderer extends ColoredTreeCellRenderer {
+
+
+        @Override
+        public void customizeCellRenderer(final JTree tree,
+                                          final Object value,
+                                          final boolean selected,
+                                          final boolean expanded,
+                                          final boolean leaf,
+                                          final int row,
+                                          final boolean hasFocus) {
+
+            final DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+            final Object userObject = node.getUserObject();
+
+            if (userObject instanceof MongoNodeDescriptor) {
+                MongoNodeDescriptor mongoValueDescriptor = (MongoNodeDescriptor) userObject;
+                mongoValueDescriptor.appendText(this, expanded);
+            }
         }
     }
 }

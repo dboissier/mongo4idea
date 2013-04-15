@@ -16,22 +16,23 @@
 
 package org.codinjutsu.tools.mongo.view;
 
+import com.intellij.ui.dualView.TreeTableView;
 import com.intellij.ui.treeStructure.treetable.*;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.UIUtil;
+import com.intellij.util.ui.tree.TreeUtil;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
-import org.codinjutsu.tools.mongo.view.renderer.MongoTableKeyCellRenderer;
+import org.codinjutsu.tools.mongo.view.renderer.MongoKeyCellRenderer;
 import org.codinjutsu.tools.mongo.view.renderer.MongoTableValueCellRenderer;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeNode;
 
-public class JsonTreeTableView extends TreeTable {
+public class JsonTreeTableView extends TreeTableView {
 
-    private final TreeCellRenderer mongoTableKeyCellRenderer = new MongoTableKeyCellRenderer();
+    private final MongoKeyCellRenderer mongoKeyCellRenderer = new MongoKeyCellRenderer();
 
     private static final ColumnInfo KEY = new ColumnInfo("Key") {
 
@@ -39,11 +40,10 @@ public class JsonTreeTableView extends TreeTable {
         public Object valueOf(Object o) {
             if (o instanceof JsonTreeNode) {
                 JsonTreeNode node = (JsonTreeNode) o;
-                return node.getValue();
+                return node.getDescriptor();
             }
             return o.toString();
         }
-
 
         @Override
         public Class getColumnClass() {
@@ -55,6 +55,7 @@ public class JsonTreeTableView extends TreeTable {
             return false;
         }
     };
+
     private static final ColumnInfo VALUE = new ColumnInfo("Value") {
         private final TableCellRenderer myRenderer = new MongoTableValueCellRenderer();
 
@@ -62,7 +63,7 @@ public class JsonTreeTableView extends TreeTable {
         public Object valueOf(Object o) {
             if (o instanceof JsonTreeNode) {
                 JsonTreeNode node = (JsonTreeNode) o;
-                return node.getValue();
+                return node.getDescriptor();
             }
 
             return null;
@@ -81,33 +82,31 @@ public class JsonTreeTableView extends TreeTable {
     private static final ColumnInfo[] COLUMNS = new ColumnInfo[]{KEY, VALUE};
 
     public JsonTreeTableView(TreeNode rootNode) {
-        super(new ListTreeTableModel(rootNode, COLUMNS));
-        TreeTableTree tree = getTree();
-        tree.setCellRenderer(mongoTableKeyCellRenderer);
+        super(new ListTreeTableModelOnColumns(rootNode, COLUMNS));
+        final TreeTableTree tree = getTree();
         tree.setShowsRootHandles(true);
+        UIUtil.setLineStyleAngled(tree);
+        tree.setCellRenderer(mongoKeyCellRenderer);
+
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         final TableColumn keyColumn = getColumnModel().getColumn(0);
         final TableColumn valueColumn = getColumnModel().getColumn(1);
         keyColumn.setResizable(true);
         valueColumn.setResizable(true);
+
+        TreeUtil.expand(tree, 2);
+
+        int maxWidth = tree.getPreferredScrollableViewportSize().width + 10;
+        keyColumn.setPreferredWidth(maxWidth);
+        keyColumn.setMinWidth(maxWidth);
+        keyColumn.setMaxWidth(maxWidth);
     }
-
-    @Override
-    public TreeTableCellRenderer createTableRenderer(TreeTableModel treeTableModel) {
-        TreeTableCellRenderer tableRenderer = super.createTableRenderer(treeTableModel);
-        UIUtil.setLineStyleAngled(tableRenderer);
-        tableRenderer.setRootVisible(false);
-        tableRenderer.setShowsRootHandles(true);
-
-        return tableRenderer;
-    }
-
 
     public TableCellRenderer getCellRenderer(int row, int column) {
         if (column == 0) {
             return super.getCellRenderer(row, column);
         }
-        return COLUMNS[column].getRenderer(null);
+        return VALUE.getRenderer(null);
     }
 }

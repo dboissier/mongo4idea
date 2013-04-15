@@ -53,8 +53,8 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
         }
     }
 
-    public void renderTextKey(ColoredTreeCellRenderer cellRenderer) {
-        cellRenderer.append(String.format(STRING_SURROUNDED, key), TEXT_ATTRIBUTES_PROVIDER.getKeyValueAttribute());
+    public String renderedKeyText() {
+        return String.format(STRING_SURROUNDED, key);
     }
 
     public String getKey() {
@@ -74,8 +74,8 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
         return stringifiedValue;
     }
 
-    private SimpleTextAttributes getTextAttributes() {
-        return this.textAttributes;
+    public SimpleTextAttributes getTextAttributes() {
+        return textAttributes;
     }
 
 
