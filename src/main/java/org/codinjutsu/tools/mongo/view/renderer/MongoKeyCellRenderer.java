@@ -18,64 +18,22 @@ package org.codinjutsu.tools.mongo.view.renderer;
 
 import com.intellij.ui.SimpleTextAttributes;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
-import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
-import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoResultDescriptor;
-import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoValueDescriptor;
-import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.*;
 
-//TODO does not with ColoredTreeCellRenderer (text is truncated, I do not know why: Has to do it manually and ugly :(
 public class MongoKeyCellRenderer extends DefaultTreeCellRenderer {
 
-
-    private static final SimpleTextAttributes KEY_ATTRIBUTE = StyleAttributesUtils.getInstance().getKeyValueAttribute();
-    private static final SimpleTextAttributes INDEX_ATTRIBUTE = StyleAttributesUtils.getInstance().getIndexAttribute();
-
-//
-//    @Override
-//    public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-//
-//        TreePath pathForRow = tree.getPathForRow(row);
-//        if (pathForRow == null) {
-//            return;
-//        }
-//        final DefaultMutableTreeNode node = (DefaultMutableTreeNode) pathForRow.getLastPathComponent();
-//        if (node == null || !(node instanceof JsonTreeNode)) {
-//            return;
-//        }
-//
-//        JsonTreeNode jsonTreeNode = (JsonTreeNode) node;
-//
-//        MongoNodeDescriptor descriptor = jsonTreeNode.getDescriptor();
-//        descriptor.renderTextKey(this);
-//    }
-
-
     @Override
-    public Component getTreeCellRendererComponent(JTree jTree, Object obj, boolean b, boolean b2, boolean b3, int i, boolean b4) {
+    public Component getTreeCellRendererComponent(JTree tree, Object obj, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
         MongoNodeDescriptor descriptor = ((JsonTreeNode) obj).getDescriptor();
-        String text;
-        SimpleTextAttributes attributes;
-        if (descriptor instanceof MongoKeyValueDescriptor) {
-            MongoKeyValueDescriptor keyValueDescriptor = (MongoKeyValueDescriptor) descriptor;
-            text = keyValueDescriptor.renderedKeyText();
-            attributes = KEY_ATTRIBUTE;
-        } else if (descriptor instanceof MongoValueDescriptor) {
-            MongoValueDescriptor valueDescriptor = (MongoValueDescriptor) descriptor;
-            text = valueDescriptor.getFormattedText();
-            attributes = INDEX_ATTRIBUTE;
-        } else {
-            MongoResultDescriptor valueDescriptor = (MongoResultDescriptor) descriptor;
-            text = valueDescriptor.getRenderedText();
-            attributes = valueDescriptor.getTextAttributes();
-        }
+        String text = descriptor.getFormattedText();
+        SimpleTextAttributes attributes = descriptor.getNodeTextAttributes();
 
 
-        JLabel rendererComponent = (JLabel) super.getTreeCellRendererComponent(jTree, text, b, b2, b3, i, b4);
+        JLabel rendererComponent = (JLabel) super.getTreeCellRendererComponent(tree, text, selected, expanded, leaf, row, hasFocus);
         rendererComponent.setForeground(attributes.getFgColor());
         rendererComponent.setFont(rendererComponent.getFont().deriveFont(attributes.getFontStyle()));
         rendererComponent.setIcon(null);

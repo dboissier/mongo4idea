@@ -25,8 +25,6 @@ import javax.swing.*;
 
 public class MongoResultDescriptor implements MongoNodeDescriptor {
 
-    private static final Icon MONGO_ICON = GuiUtils.loadIcon("mongo_logo.png");
-
     private final String formattedText;
     private SimpleTextAttributes attributes;
 
@@ -37,20 +35,14 @@ public class MongoResultDescriptor implements MongoNodeDescriptor {
     }
 
     @Override
-    public void appendText(ColoredTreeCellRenderer cellRenderer, boolean isNodeExpanded) {
-        cellRenderer.append(formattedText, attributes);
-        cellRenderer.setIcon(MONGO_ICON);
+    public void renderValue(ColoredTableCellRenderer cellRenderer, boolean isNodeExpanded) {
     }
 
-    @Override
-    public void renderTextValue(ColoredTableCellRenderer cellRenderer, boolean isNodeExpanded) {
-    }
-
-    public String getRenderedText() {
+    public String getFormattedText() {
         return formattedText;
     }
 
-    public SimpleTextAttributes getTextAttributes() {
+    public SimpleTextAttributes getNodeTextAttributes() {
         return attributes;
     }
 }

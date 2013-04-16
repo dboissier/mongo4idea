@@ -17,7 +17,6 @@
 package org.codinjutsu.tools.mongo.view.nodedescriptor;
 
 import com.intellij.ui.ColoredTableCellRenderer;
-import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.mongodb.DBObject;
 import org.codinjutsu.tools.mongo.utils.StringUtils;
@@ -26,35 +25,30 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
     private static final String STRING_SURROUNDED = "\"%s\"";
     private static final String TO_STRING_TEMPLATE = "{ \"%s\" : %s}";
-    private static final String TO_STRING_FOR_STRING_VALUE_TEMPLATE = "{ \"%s\" : \"%s\"}";
 
     final String key;
     final Object value;
 
-    private final SimpleTextAttributes textAttributes;
+    private final SimpleTextAttributes valueTextAttributes;
 
-    private MongoKeyValueDescriptor(String key, Object value, SimpleTextAttributes textAttributes) {
+    private MongoKeyValueDescriptor(String key, Object value, SimpleTextAttributes valueTextAttributes) {
         this.key = key;
         this.value = value;
-        this.textAttributes = textAttributes;
+        this.valueTextAttributes = valueTextAttributes;
     }
 
-    public void appendText(ColoredTreeCellRenderer cellRenderer, boolean isNodeExpanded) {
-        cellRenderer.append(String.format(STRING_SURROUNDED, key), TEXT_ATTRIBUTES_PROVIDER.getKeyValueAttribute());
+    public void renderValue(ColoredTableCellRenderer cellRenderer, boolean isNodeExpanded) {
         if (!isNodeExpanded) {
-
-            cellRenderer.append(getDescription(), getTextAttributes());
+            cellRenderer.append(getValueAndAbbreviateIfNecessary(), valueTextAttributes);
         }
     }
 
-    public void renderTextValue(ColoredTableCellRenderer cellRenderer, boolean isNodeExpanded) {
-        if (!isNodeExpanded) {
-            cellRenderer.append(getDescription(), getTextAttributes());
-        }
-    }
-
-    public String renderedKeyText() {
+    public String getFormattedText() {
         return String.format(STRING_SURROUNDED, key);
+    }
+
+    public SimpleTextAttributes getNodeTextAttributes() {
+        return TEXT_ATTRIBUTES_PROVIDER.getKeyValueAttribute();
     }
 
     public String getKey() {
@@ -66,16 +60,12 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
         return String.format(TO_STRING_TEMPLATE, key, value);
     }
 
-    String getDescription() {
+    protected String getValueAndAbbreviateIfNecessary() {
         String stringifiedValue = value.toString();
         if (stringifiedValue.length() > MAX_LENGTH) {
             return StringUtils.abbreviateInCenter(stringifiedValue, MAX_LENGTH);
         }
         return stringifiedValue;
-    }
-
-    public SimpleTextAttributes getTextAttributes() {
-        return textAttributes;
     }
 
 
@@ -85,7 +75,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
             super(key, null, TEXT_ATTRIBUTES_PROVIDER.getNullAttribute());
         }
 
-        protected String getDescription() {
+        protected String getValueAndAbbreviateIfNecessary() {
             return "null";
         }
     }
@@ -93,11 +83,13 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
     private static class MongoKeyStringValueDescriptor extends MongoKeyValueDescriptor {
 
+        private static final String TO_STRING_FOR_STRING_VALUE_TEMPLATE = "{ \"%s\" : \"%s\"}";
+
         private MongoKeyStringValueDescriptor(String key, String value) {
             super(key, value, TEXT_ATTRIBUTES_PROVIDER.getStringAttribute());
         }
 
-        protected String getDescription() {
+        protected String getValueAndAbbreviateIfNecessary() {
             return String.format(STRING_SURROUNDED, value);
         }
 

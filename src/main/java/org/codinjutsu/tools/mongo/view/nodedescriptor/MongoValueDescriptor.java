@@ -17,7 +17,6 @@
 package org.codinjutsu.tools.mongo.view.nodedescriptor;
 
 import com.intellij.ui.ColoredTableCellRenderer;
-import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.mongodb.DBObject;
 import org.codinjutsu.tools.mongo.utils.StringUtils;
@@ -26,24 +25,17 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
 
     private final int index;
     private final Object value;
-    private final SimpleTextAttributes textAttributes;
+    private final SimpleTextAttributes valueTextAttributes;
 
-    private MongoValueDescriptor(int index, Object value, SimpleTextAttributes textAttributes) {
+    private MongoValueDescriptor(int index, Object value, SimpleTextAttributes valueTextAttributes) {
         this.index = index;
         this.value = value;
-        this.textAttributes = textAttributes;
+        this.valueTextAttributes = valueTextAttributes;
     }
 
-    public void appendText(ColoredTreeCellRenderer cellRenderer, boolean isNodeExpanded) {
-        cellRenderer.append(getFormattedText(), TEXT_ATTRIBUTES_PROVIDER.getIndexAttribute());
+    public void renderValue(ColoredTableCellRenderer cellRenderer, boolean isNodeExpanded) {
         if (!isNodeExpanded) {
-            cellRenderer.append(getDescription(), textAttributes);
-        }
-    }
-
-    public void renderTextValue(ColoredTableCellRenderer cellRenderer, boolean isNodeExpanded) {
-        if (!isNodeExpanded) {
-            cellRenderer.append(getDescription(), textAttributes);
+            cellRenderer.append(getDescription(), valueTextAttributes);
         }
     }
 
@@ -51,11 +43,15 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
         return String.format("[%s] ", index);
     }
 
-    String getDescription() {
-        return String.format("%s", getStringValue());
+    public SimpleTextAttributes getNodeTextAttributes() {
+        return TEXT_ATTRIBUTES_PROVIDER.getIndexAttribute();
     }
 
-    protected String getStringValue() {
+    protected String getDescription() {
+        return String.format("%s", getValueAndAbbreviateIfNecessary());
+    }
+
+    protected String getValueAndAbbreviateIfNecessary() {
         String stringifiedValue = value.toString();
         if (stringifiedValue.length() > MAX_LENGTH) {
             return StringUtils.abbreviateInCenter(stringifiedValue, MAX_LENGTH);
@@ -75,7 +71,7 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
         }
 
         protected String getDescription() {
-            return String.format("\"%s\"", getStringValue());
+            return String.format("\"%s\"", getValueAndAbbreviateIfNecessary());
         }
     }
 

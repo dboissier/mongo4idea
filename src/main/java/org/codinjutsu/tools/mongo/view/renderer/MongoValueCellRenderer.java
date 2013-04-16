@@ -20,13 +20,11 @@ import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.treeStructure.treetable.TreeTable;
 import com.intellij.ui.treeStructure.treetable.TreeTableTree;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
-import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-public class MongoTableValueCellRenderer extends ColoredTableCellRenderer {
+public class MongoValueCellRenderer extends ColoredTableCellRenderer {
 
     @Override
     protected void customizeCellRenderer(JTable table, Object value, boolean selected, boolean hasFocus, int row, int column) {
@@ -34,13 +32,8 @@ public class MongoTableValueCellRenderer extends ColoredTableCellRenderer {
         TreeTableTree tree = ((TreeTable) table).getTree();
         TreePath pathForRow = tree.getPathForRow(row);
 
-        final DefaultMutableTreeNode node = (DefaultMutableTreeNode) pathForRow.getLastPathComponent();
-        if (!(node instanceof JsonTreeNode)) {
-            append("Pouet Pouet");
-        }
+        final JsonTreeNode node = (JsonTreeNode) pathForRow.getLastPathComponent();
 
-        JsonTreeNode jsonTreeNode = (JsonTreeNode) node;
-
-        jsonTreeNode.getDescriptor().renderTextValue(this, tree.isExpanded(pathForRow));
+        node.getDescriptor().renderValue(this, tree.isExpanded(pathForRow));
     }
 }

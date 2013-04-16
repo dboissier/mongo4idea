@@ -17,7 +17,7 @@
 package org.codinjutsu.tools.mongo.view.nodedescriptor;
 
 import com.intellij.ui.ColoredTableCellRenderer;
-import com.intellij.ui.ColoredTreeCellRenderer;
+import com.intellij.ui.SimpleTextAttributes;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 
@@ -27,7 +27,9 @@ public interface MongoNodeDescriptor {
 
     StyleAttributesProvider TEXT_ATTRIBUTES_PROVIDER = StyleAttributesUtils.getInstance();
 
-    void appendText(ColoredTreeCellRenderer cellRenderer, boolean isNodeExpanded);
+    void renderValue(ColoredTableCellRenderer cellRenderer, boolean isNodeExpanded);
 
-    void renderTextValue(ColoredTableCellRenderer cellRenderer, boolean isNodeExpanded);
+    SimpleTextAttributes getNodeTextAttributes();
+
+    String getFormattedText();
 }

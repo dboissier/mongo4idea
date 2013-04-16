@@ -17,19 +17,16 @@
 package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.openapi.command.impl.DummyProject;
-import com.intellij.ui.ColoredTreeCellRenderer;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.apache.commons.io.IOUtils;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
-import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.uispec4j.DefaultTreeCellValueConverter;
 import org.uispec4j.Panel;
 import org.uispec4j.Tree;
 import org.uispec4j.UISpecTestCase;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.io.IOException;
 
@@ -41,7 +38,7 @@ public class MongoResultPanelTest extends UISpecTestCase {
 
 
     public void testDisplayTreeWithASimpleArray() throws Exception {
-        mongoResultPanel.updateResultTree(createCollectionResults("simpleArray.json", "mycollec"));
+        mongoResultPanel.updateResultTableTree(createCollectionResults("simpleArray.json", "mycollec"));
 
         Tree tree = uiSpecPanel.getTree();
         tree.setCellValueConverter(new TreeCellConverter());
@@ -56,7 +53,7 @@ public class MongoResultPanelTest extends UISpecTestCase {
 
 
     public void testDisplayTreeWithASimpleDocument() throws Exception {
-        mongoResultPanel.updateResultTree(createCollectionResults("simpleDocument.json", "mycollec"));
+        mongoResultPanel.updateResultTableTree(createCollectionResults("simpleDocument.json", "mycollec"));
 
         Tree tree = uiSpecPanel.getTree();
         tree.setCellValueConverter(new TreeCellConverter());
@@ -72,7 +69,7 @@ public class MongoResultPanelTest extends UISpecTestCase {
 
 
     public void testDisplayTreeWithAStructuredDocument() throws Exception {
-        mongoResultPanel.updateResultTree(createCollectionResults("structuredDocument.json", "mycollec"));
+        mongoResultPanel.updateResultTableTree(createCollectionResults("structuredDocument.json", "mycollec"));
 
         Tree tree = uiSpecPanel.getTree();
         tree.setCellValueConverter(new TreeCellConverter());
@@ -94,7 +91,7 @@ public class MongoResultPanelTest extends UISpecTestCase {
 
 
     public void testDisplayTreeWithAnArrayOfStructuredDocument() throws Exception {
-        mongoResultPanel.updateResultTree(createCollectionResults("arrayOfDocuments.json", "mycollec"));
+        mongoResultPanel.updateResultTableTree(createCollectionResults("arrayOfDocuments.json", "mycollec"));
 
         Tree tree = uiSpecPanel.getTree();
         tree.setCellValueConverter(new TreeCellConverter());
@@ -126,7 +123,7 @@ public class MongoResultPanelTest extends UISpecTestCase {
     }
 
     public void testDisplayTreeSortedbyKey() throws Exception {
-        mongoResultPanel.updateResultTree(createCollectionResults("structuredDocument.json", "mycollec"));
+        mongoResultPanel.updateResultTableTree(createCollectionResults("structuredDocument.json", "mycollec"));
 
         mongoResultPanel.setSortedByKey(true);
 
@@ -169,7 +166,7 @@ public class MongoResultPanelTest extends UISpecTestCase {
     }
 
     public void testCopyMongoObjectNodeValue() throws Exception {
-        mongoResultPanel.updateResultTree(createCollectionResults("structuredDocument.json", "mycollec"));
+        mongoResultPanel.updateResultTableTree(createCollectionResults("structuredDocument.json", "mycollec"));
         Tree tree = uiSpecPanel.getTree();
         tree.setCellValueConverter(new TreeCellConverter());
         tree.select("[0]");
@@ -184,7 +181,7 @@ public class MongoResultPanelTest extends UISpecTestCase {
     }
 
     public void testCopyMongoResults() throws Exception {
-        mongoResultPanel.updateResultTree(createCollectionResults("arrayOfDocuments.json", "mycollec"));
+        mongoResultPanel.updateResultTableTree(createCollectionResults("arrayOfDocuments.json", "mycollec"));
 
         Tree tree = uiSpecPanel.getTree();
         tree.setCellValueConverter(new TreeCellConverter());
@@ -243,30 +240,7 @@ public class MongoResultPanelTest extends UISpecTestCase {
 
         @Override
         protected JLabel getLabel(Component renderedComponent) {
-            MongoResultCellRenderer mongoResultCellRenderer = (MongoResultCellRenderer) renderedComponent;
-            return new JLabel(mongoResultCellRenderer.toString());
-        }
-    }
-
-    public static class MongoResultCellRenderer extends ColoredTreeCellRenderer {
-
-
-        @Override
-        public void customizeCellRenderer(final JTree tree,
-                                          final Object value,
-                                          final boolean selected,
-                                          final boolean expanded,
-                                          final boolean leaf,
-                                          final int row,
-                                          final boolean hasFocus) {
-
-            final DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-            final Object userObject = node.getUserObject();
-
-            if (userObject instanceof MongoNodeDescriptor) {
-                MongoNodeDescriptor mongoValueDescriptor = (MongoNodeDescriptor) userObject;
-                mongoValueDescriptor.appendText(this, expanded);
-            }
+            return new JLabel("");
         }
     }
 }

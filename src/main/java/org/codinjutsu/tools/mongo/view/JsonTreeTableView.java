@@ -17,32 +17,27 @@
 package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.ui.dualView.TreeTableView;
-import com.intellij.ui.treeStructure.treetable.*;
+import com.intellij.ui.treeStructure.treetable.ListTreeTableModelOnColumns;
+import com.intellij.ui.treeStructure.treetable.TreeTableModel;
+import com.intellij.ui.treeStructure.treetable.TreeTableTree;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.tree.TreeUtil;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
 import org.codinjutsu.tools.mongo.view.renderer.MongoKeyCellRenderer;
-import org.codinjutsu.tools.mongo.view.renderer.MongoTableValueCellRenderer;
+import org.codinjutsu.tools.mongo.view.renderer.MongoValueCellRenderer;
 
-import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.tree.TreeNode;
 
 public class JsonTreeTableView extends TreeTableView {
 
-    private final MongoKeyCellRenderer mongoKeyCellRenderer = new MongoKeyCellRenderer();
-
     private static final ColumnInfo KEY = new ColumnInfo("Key") {
 
-        @Override
-        public Object valueOf(Object o) {
-            if (o instanceof JsonTreeNode) {
-                JsonTreeNode node = (JsonTreeNode) o;
-                return node.getDescriptor();
-            }
-            return o.toString();
+        public Object valueOf(Object obj) {
+            JsonTreeNode node = (JsonTreeNode) obj;
+            return node.getDescriptor();
         }
 
         @Override
@@ -57,16 +52,11 @@ public class JsonTreeTableView extends TreeTableView {
     };
 
     private static final ColumnInfo VALUE = new ColumnInfo("Value") {
-        private final TableCellRenderer myRenderer = new MongoTableValueCellRenderer();
+        private final TableCellRenderer myRenderer = new MongoValueCellRenderer();
 
-        @Override
-        public Object valueOf(Object o) {
-            if (o instanceof JsonTreeNode) {
-                JsonTreeNode node = (JsonTreeNode) o;
-                return node.getDescriptor();
-            }
-
-            return null;
+        public Object valueOf(Object obj) {
+            JsonTreeNode node = (JsonTreeNode) obj;
+            return node.getDescriptor();
         }
 
         @Override
@@ -86,9 +76,7 @@ public class JsonTreeTableView extends TreeTableView {
         final TreeTableTree tree = getTree();
         tree.setShowsRootHandles(true);
         UIUtil.setLineStyleAngled(tree);
-        tree.setCellRenderer(mongoKeyCellRenderer);
-
-        setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tree.setCellRenderer(new MongoKeyCellRenderer());
 
         final TableColumn keyColumn = getColumnModel().getColumn(0);
         final TableColumn valueColumn = getColumnModel().getColumn(1);
@@ -101,12 +89,5 @@ public class JsonTreeTableView extends TreeTableView {
         keyColumn.setPreferredWidth(maxWidth);
         keyColumn.setMinWidth(maxWidth);
         keyColumn.setMaxWidth(maxWidth);
-    }
-
-    public TableCellRenderer getCellRenderer(int row, int column) {
-        if (column == 0) {
-            return super.getCellRenderer(row, column);
-        }
-        return VALUE.getRenderer(null);
     }
 }

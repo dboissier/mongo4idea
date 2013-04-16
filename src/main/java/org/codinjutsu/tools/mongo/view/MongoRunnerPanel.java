@@ -105,7 +105,7 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
             errorPanel.setVisible(false);
 
             MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(configuration, mongoCollection, queryPanel.getQueryOptions());
-            resultPanel.updateResultTree(mongoCollectionResult);
+            resultPanel.updateResultTableTree(mongoCollectionResult);
         } catch (Exception ex) {
             errorPanel.invalidate();
             errorPanel.removeAll();
