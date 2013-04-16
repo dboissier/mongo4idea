@@ -67,8 +67,6 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
 
         setLayout(new BorderLayout());
         add(rootPanel);
-
-        resultPanel.hideResultTree();
     }
 
     private MongoResultPanel createResultPanel(Project project) {

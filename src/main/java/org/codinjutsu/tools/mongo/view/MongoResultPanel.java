@@ -31,22 +31,23 @@ import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.CopyResultAction;
-import org.codinjutsu.tools.mongo.view.action.SortResultsByKeysAction;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeModel;
+import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
 import org.codinjutsu.tools.mongo.view.model.MongoComparator;
-import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoResultDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
+import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoResultDescriptor;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 
 public class MongoResultPanel extends JPanel implements Disposable {
+
+    private final MongoComparator resultComparator = new MongoKeyComparator();
 
     private JPanel resultToolbar;
     private JPanel mainPanel;
@@ -70,10 +71,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
     public void setSortedByKey(boolean sortedByKey) {
         sortByKey = sortedByKey;
 
-//        jsonResultTree.invalidate();
-//        ((DefaultTreeModel) jsonResultTree.getModel()).reload();
-//        jsonResultTree.repaint();
-//        jsonResultTree.validate();
+        TreeUtil.sort((DefaultTreeModel) jsonTreeTableView.getTree().getModel(), resultComparator);
     }
 
 
@@ -90,8 +88,8 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
     public void installActions() {
         DefaultActionGroup actionResultGroup = new DefaultActionGroup("MongoResultGroup", true);
-        actionResultGroup.add(new SortResultsByKeysAction(this));
-        actionResultGroup.addSeparator();
+//        actionResultGroup.add(new SortResultsByKeysAction(this));
+//        actionResultGroup.addSeparator();
         actionResultGroup.add(new CopyResultAction(this));
 
         final TreeExpander treeExpander = new TreeExpander() {
@@ -141,27 +139,20 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
     private void collapseAll() {
         TreeTableTree tree = jsonTreeTableView.getTree();
-        TreeUtil.collapseAll(tree, 0);
-        TreeUtil.expand(tree, 0);
-    }
-    public void hideResultTree() {
-//        jsonResultTree.setVisible(false);
+        TreeUtil.collapseAll(tree, 1);
     }
 
     public String getSelectedNodeStringifiedValue() {
-        DefaultMutableTreeNode lastSelectedResultNode = (DefaultMutableTreeNode) jsonTreeTableView.getTree().getLastSelectedPathComponent();
+        JsonTreeNode lastSelectedResultNode = (JsonTreeNode) jsonTreeTableView.getTree().getLastSelectedPathComponent();
         if (lastSelectedResultNode == null) {
-            return null;
+            lastSelectedResultNode = (JsonTreeNode) jsonTreeTableView.getTree().getModel().getRoot();
         }
-        Object userObject = lastSelectedResultNode.getUserObject();
+        MongoNodeDescriptor userObject = lastSelectedResultNode.getDescriptor();
         if (userObject instanceof MongoResultDescriptor) {
             return stringifyResult(lastSelectedResultNode);
         }
 
-        if (userObject instanceof MongoNodeDescriptor) {
-            return userObject.toString();
-        }
-        return null;
+        return userObject.toString();
     }
 
 
@@ -173,11 +164,6 @@ public class MongoResultPanel extends JPanel implements Disposable {
         }
 
         return String.format("[ %s ]", StringUtils.join(stringifiedObjects, " , "));
-    }
-
-    public boolean isNotEmpty() {
-//        return jsonResultTree.isVisible();
-        return false;
     }
 
     @Override
@@ -193,13 +179,13 @@ public class MongoResultPanel extends JPanel implements Disposable {
         }
 
         @Override
-        public int compare(DefaultMutableTreeNode node1, DefaultMutableTreeNode node2) {
-            Object userObjectNode1 = node1.getUserObject();
-            Object userObjectNode2 = node2.getUserObject();
-            if (userObjectNode1 instanceof MongoKeyValueDescriptor) {
-                MongoKeyValueDescriptor mongoKeyValueDescriptorNode1 = (MongoKeyValueDescriptor) userObjectNode1;
-                if (userObjectNode2 instanceof MongoKeyValueDescriptor) {
-                    MongoKeyValueDescriptor mongoKeyValueDescriptorNode2 = (MongoKeyValueDescriptor) userObjectNode2;
+        public int compare(JsonTreeNode node1, JsonTreeNode node2) {
+            MongoNodeDescriptor descriptorNode1 = node1.getDescriptor();
+            MongoNodeDescriptor descriptorNode2 = node2.getDescriptor();
+            if (descriptorNode1 instanceof MongoKeyValueDescriptor) {
+                MongoKeyValueDescriptor mongoKeyValueDescriptorNode1 = (MongoKeyValueDescriptor) descriptorNode1;
+                if (descriptorNode2 instanceof MongoKeyValueDescriptor) {
+                    MongoKeyValueDescriptor mongoKeyValueDescriptorNode2 = (MongoKeyValueDescriptor) descriptorNode2;
 
                     return mongoKeyValueDescriptorNode1.getKey().compareTo(mongoKeyValueDescriptorNode2.getKey());
                 }
@@ -207,7 +193,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
                 return 1;
             }
 
-            if (userObjectNode2 instanceof MongoKeyValueDescriptor) {
+            if (descriptorNode2 instanceof MongoKeyValueDescriptor) {
                 return -1;
             }
 

@@ -43,7 +43,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
         }
     }
 
-    public String getFormattedText() {
+    public String getNodeText() {
         return String.format(STRING_SURROUNDED, key);
     }
 

@@ -39,7 +39,7 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
         }
     }
 
-    public String getFormattedText() {
+    public String getNodeText() {
         return String.format("[%s] ", index);
     }
 

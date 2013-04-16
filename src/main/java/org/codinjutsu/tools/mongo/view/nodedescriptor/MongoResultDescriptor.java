@@ -38,7 +38,7 @@ public class MongoResultDescriptor implements MongoNodeDescriptor {
     public void renderValue(ColoredTableCellRenderer cellRenderer, boolean isNodeExpanded) {
     }
 
-    public String getFormattedText() {
+    public String getNodeText() {
         return formattedText;
     }
 

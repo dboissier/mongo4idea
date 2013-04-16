@@ -19,7 +19,7 @@ package org.codinjutsu.tools.mongo.view.model;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.Comparator;
 
-public interface MongoComparator extends Comparator<DefaultMutableTreeNode> {
+public interface MongoComparator extends Comparator<JsonTreeNode> {
 
     boolean isApplicable();
 
@@ -30,7 +30,7 @@ public interface MongoComparator extends Comparator<DefaultMutableTreeNode> {
         }
 
         @Override
-        public int compare(DefaultMutableTreeNode treeNode1, DefaultMutableTreeNode treeNode2) {
+        public int compare(JsonTreeNode treeNode1, JsonTreeNode treeNode2) {
             return 0;
         }
     };

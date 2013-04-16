@@ -31,5 +31,5 @@ public interface MongoNodeDescriptor {
 
     SimpleTextAttributes getNodeTextAttributes();
 
-    String getFormattedText();
+    String getNodeText();
 }

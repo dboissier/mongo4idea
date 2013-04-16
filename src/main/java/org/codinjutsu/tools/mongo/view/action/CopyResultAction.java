@@ -45,9 +45,4 @@ public class CopyResultAction extends AnAction implements DumbAware {
     public void actionPerformed(AnActionEvent anActionEvent) {
         CopyPasteManager.getInstance().setContents(new StringSelection(mongoResultPanel.getSelectedNodeStringifiedValue()));
     }
-
-    @Override
-    public void update(AnActionEvent event) {
-        event.getPresentation().setEnabled(mongoResultPanel.isNotEmpty());
-    }
 }

@@ -29,7 +29,7 @@ public class MongoKeyCellRenderer extends DefaultTreeCellRenderer {
     @Override
     public Component getTreeCellRendererComponent(JTree tree, Object obj, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
         MongoNodeDescriptor descriptor = ((JsonTreeNode) obj).getDescriptor();
-        String text = descriptor.getFormattedText();
+        String text = descriptor.getNodeText();
         SimpleTextAttributes attributes = descriptor.getNodeTextAttributes();
 
 
