@@ -1,4 +1,5 @@
 Version 0.4.0
+    * [fix] #33 Error marker in popup points to incorrect position
     * [fix] #32 $unwind operator does not work
     * [fix] #35 No way to connect to server if Autoconnect is disabled
     * [add] #31 Specific database can be set in the configuration

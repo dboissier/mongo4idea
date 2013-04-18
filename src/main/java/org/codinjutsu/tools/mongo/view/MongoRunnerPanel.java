@@ -25,6 +25,7 @@ import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.ui.awt.RelativePoint;
 import com.intellij.ui.components.panels.NonOpaquePanel;
+import com.intellij.util.ui.UIUtil;
 import com.mongodb.util.JSONParseException;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
@@ -121,6 +122,8 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
 
     private static class ErrorQueryCallback implements QueryPanel.QueryCallback {
 
+        private static final Font COURIER_FONT = new Font("Courier", Font.PLAIN, UIUtil.getLabelFont().getSize());
+
         @Override
         public void notifyOnErrorForOperator(JComponent editorComponent, Exception ex) {
 
@@ -132,6 +135,7 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
             }
             NonOpaquePanel nonOpaquePanel = new NonOpaquePanel();
             JTextPane textPane = Messages.configureMessagePaneUi(new JTextPane(), message);
+            textPane.setFont(COURIER_FONT);
             textPane.setBackground(MessageType.ERROR.getPopupBackground());
             nonOpaquePanel.add(textPane, BorderLayout.CENTER);
             nonOpaquePanel.add(new JLabel(MessageType.ERROR.getDefaultIcon()), BorderLayout.WEST);

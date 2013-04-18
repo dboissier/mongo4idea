@@ -8,7 +8,8 @@ To install it, **Settings -> Plugins -> Install from disk** and restart your IDE
 
 ### Last features
 * If your access is restricted to a specific database you can set it in the configuration (issues [#31](https://github.com/dboissier/mongo4idea/issues/31) and [#35](https://github.com/dboissier/mongo4idea/issues/35)).
-* $unwind, $limit and $skip operations for aggregation have been fixed (issue [#32](https://github.com/dboissier/mongo4idea/issues/32))
+* Fixed $unwind, $limit and $skip operations for aggregation(issue [#32](https://github.com/dboissier/mongo4idea/issues/32))
+* Fixed rrror marker in popup points to incorrect position(issue [#33](https://github.com/dboissier/mongo4idea/issues/33))
 * Results are displayed in a table view (issue [#30](https://github.com/dboissier/mongo4idea/issues/30)
 
 ## ChangeLog
