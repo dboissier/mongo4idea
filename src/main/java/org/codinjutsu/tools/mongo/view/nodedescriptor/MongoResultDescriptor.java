@@ -19,30 +19,23 @@ package org.codinjutsu.tools.mongo.view.nodedescriptor;
 import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
-import org.codinjutsu.tools.mongo.utils.GuiUtils;
-
-import javax.swing.*;
 
 public class MongoResultDescriptor implements MongoNodeDescriptor {
 
     private final String formattedText;
-    private SimpleTextAttributes attributes;
 
     public MongoResultDescriptor(String collectionName) {
         formattedText = String.format("results of '%s'", collectionName);
-        attributes = SimpleTextAttributes.REGULAR_ATTRIBUTES;
-
     }
 
-    @Override
     public void renderValue(ColoredTableCellRenderer cellRenderer, boolean isNodeExpanded) {
+    }
+
+    public void renderNode(ColoredTreeCellRenderer cellRenderer) {
+
     }
 
     public String getNodeText() {
         return formattedText;
-    }
-
-    public SimpleTextAttributes getNodeTextAttributes() {
-        return attributes;
     }
 }

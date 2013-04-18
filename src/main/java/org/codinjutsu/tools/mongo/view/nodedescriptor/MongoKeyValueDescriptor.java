@@ -17,6 +17,7 @@
 package org.codinjutsu.tools.mongo.view.nodedescriptor;
 
 import com.intellij.ui.ColoredTableCellRenderer;
+import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.mongodb.DBObject;
 import org.codinjutsu.tools.mongo.utils.StringUtils;
@@ -43,12 +44,12 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
         }
     }
 
-    public String getNodeText() {
-        return String.format(STRING_SURROUNDED, key);
+    public void renderNode(ColoredTreeCellRenderer cellRenderer) {
+        cellRenderer.append(getNodeText(), TEXT_ATTRIBUTES_PROVIDER.getKeyValueAttribute());
     }
 
-    public SimpleTextAttributes getNodeTextAttributes() {
-        return TEXT_ATTRIBUTES_PROVIDER.getKeyValueAttribute();
+    public String getNodeText() {
+        return String.format(STRING_SURROUNDED, key);
     }
 
     public String getKey() {

@@ -19,6 +19,7 @@ package org.codinjutsu.tools.mongo.view;
 import com.intellij.ui.TreeTableSpeedSearch;
 import com.intellij.ui.dualView.TreeTableView;
 import com.intellij.ui.treeStructure.treetable.ListTreeTableModelOnColumns;
+import com.intellij.ui.treeStructure.treetable.TreeTable;
 import com.intellij.ui.treeStructure.treetable.TreeTableModel;
 import com.intellij.ui.treeStructure.treetable.TreeTableTree;
 import com.intellij.util.containers.Convertor;
@@ -36,7 +37,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-public class JsonTreeTableView extends TreeTableView {
+public class JsonTreeTableView extends TreeTable {
 
     private static final ColumnInfo KEY = new ColumnInfo("Key") {
 
@@ -81,10 +82,9 @@ public class JsonTreeTableView extends TreeTableView {
         final TreeTableTree tree = getTree();
 
         tree.setShowsRootHandles(true);
+        tree.setRootVisible(false);
         UIUtil.setLineStyleAngled(tree);
-        tree.setCellRenderer(new MongoKeyCellRenderer());
-
-        setTableHeader(null);
+        setTreeCellRenderer(new MongoKeyCellRenderer());
 
         TreeUtil.expand(tree, 2);
 
@@ -102,5 +102,16 @@ public class JsonTreeTableView extends TreeTableView {
                 return descriptor.getNodeText();
             }
         });
+    }
+
+    @Override
+    public TableCellRenderer getCellRenderer(int row, int column) {
+        TreePath treePath = getTree().getPathForRow(row);
+        if (treePath == null) return super.getCellRenderer(row, column);
+
+        Object node = treePath.getLastPathComponent();
+
+        TableCellRenderer renderer = COLUMNS[column].getRenderer(node);
+        return renderer == null ? super.getCellRenderer(row, column) : renderer;
     }
 }

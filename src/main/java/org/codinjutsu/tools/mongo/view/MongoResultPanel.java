@@ -55,7 +55,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
     private boolean sortByKey = false;
 
-    private JsonTreeTableView jsonTreeTableView;
+    JsonTreeTableView jsonTreeTableView;
 
     public MongoResultPanel(Project project) {
         setLayout(new BorderLayout());

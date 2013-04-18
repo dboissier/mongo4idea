@@ -16,27 +16,18 @@
 
 package org.codinjutsu.tools.mongo.view.renderer;
 
-import com.intellij.ui.SimpleTextAttributes;
+import com.intellij.ui.ColoredTreeCellRenderer;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import java.awt.*;
 
-public class MongoKeyCellRenderer extends DefaultTreeCellRenderer {
+public class MongoKeyCellRenderer extends ColoredTreeCellRenderer {
 
     @Override
-    public Component getTreeCellRendererComponent(JTree tree, Object obj, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-        MongoNodeDescriptor descriptor = ((JsonTreeNode) obj).getDescriptor();
-        String text = descriptor.getNodeText();
-        SimpleTextAttributes attributes = descriptor.getNodeTextAttributes();
+    public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+        MongoNodeDescriptor descriptor = ((JsonTreeNode) value).getDescriptor();
 
-
-        JLabel rendererComponent = (JLabel) super.getTreeCellRendererComponent(tree, text, selected, expanded, leaf, row, hasFocus);
-        rendererComponent.setForeground(attributes.getFgColor());
-        rendererComponent.setFont(rendererComponent.getFont().deriveFont(attributes.getFontStyle()));
-        rendererComponent.setIcon(null);
-        return rendererComponent;
+        descriptor.renderNode(this);
     }
 }
