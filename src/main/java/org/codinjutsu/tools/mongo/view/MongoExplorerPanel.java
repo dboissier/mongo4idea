@@ -147,7 +147,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                     mongoTree.setRootVisible(false);
                     final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
 
-                    serverConfigurations = MongoConfiguration.getInstance(project).getServerConfigurations();
+                    serverConfigurations = getServerConfigurations();
                     for (ServerConfiguration serverConfiguration : serverConfigurations) {
 
                         MongoServer mongoServer = new MongoServer(serverConfiguration);
@@ -185,6 +185,10 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                 }
             }
         });
+    }
+
+    protected List<ServerConfiguration> getServerConfigurations() {
+        return MongoConfiguration.getInstance(project).getServerConfigurations();
     }
 
     private static boolean shouldNotIgnore(MongoCollection collection, ServerConfiguration configuration) {

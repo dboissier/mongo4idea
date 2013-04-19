@@ -50,7 +50,6 @@ public class MongoResultPanelTest {
 
     @Before
     public void setUp() throws Exception {
-
         mongoResultPanel = GuiActionRunner.execute(new GuiQuery<MongoResultPanel>() {
             protected MongoResultPanel executeInEDT() {
                 return new MongoResultPanel(DummyProject.getInstance());
@@ -67,7 +66,7 @@ public class MongoResultPanelTest {
         frameFixture.table().cellReader(new MyJTableCellReader())
                 .requireColumnCount(2)
                 .requireContents(new String[][]{
-                        {"[0]", "toto"},
+                        {"[0]", "\"toto\""},
                         {"[1]", "true"},
                         {"[2]", "10"},
                         {"[3]", "null"},
@@ -82,10 +81,10 @@ public class MongoResultPanelTest {
                 .requireColumnCount(2)
                 .requireContents(new String[][]{
                         {"[0]", "{ \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"image\" :  null }"},
-                        {"\"id\"", "{ \"id\" : 0}"},
-                        {"\"label\"", "{ \"label\" : \"toto\"}"},
-                        {"\"visible\"", "{ \"visible\" : false}"},
-                        {"\"image\"", "{ \"image\" : null}"}
+                        {"\"id\"", "0"},
+                        {"\"label\"", "\"toto\""},
+                        {"\"visible\"", "false"},
+                        {"\"image\"", "null"}
                 });
     }
 
@@ -98,53 +97,53 @@ public class MongoResultPanelTest {
                 .requireColumnCount(2)
                 .requireContents(new String[][]{
                         {"[0]", "{ \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}"},
-                        {"\"id\"", "{ \"id\" : 0}"},
-                        {"\"label\"", "{ \"label\" : \"toto\"}"},
-                        {"\"visible\"", "{ \"visible\" : false}"},
-                        {"\"doc\"", "{ \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}"},
-                        {"\"title\"", "{ \"title\" : \"hello\"}"},
-                        {"\"nbPages\"", "{ \"nbPages\" : 10}"},
-                        {"\"keyWord\"", "{ \"keyWord\" : [ \"toto\" , true , 10]}"},
-                        {"[0]", "toto"},
+                        {"\"id\"", "0"},
+                        {"\"label\"", "\"toto\""},
+                        {"\"visible\"", "false"},
+                        {"\"doc\"", "{ \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}"},
+                        {"\"title\"", "\"hello\""},
+                        {"\"nbPages\"", "10"},
+                        {"\"keyWord\"", "[ \"toto\" , true , 10]"},
+                        {"[0]", "\"toto\""},
                         {"[1]", "true"},
                         {"[2]", "10"},
                 });
     }
 
-    //
-//    @Test
-//    public void testDisplayTreeWithAnArrayOfStructuredDocument() throws Exception {
-//        mongoResultPanel.updateResultTableTree(createCollectionResults("arrayOfDocuments.json", "mycollec"));
-//
-//        Tree tree = uiSpecPanel.getTree();
-//        tree.setCellValueConverter(new TreeCellConverter());
-//        tree.contentEquals(
-//                "results of 'mycollec' #(bold)\n" +
-//                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} #(bold)\n" +
-//                        "    \"id\": 0 #(bold)\n" +
-//                        "    \"label\": \"toto\" #(bold)\n" +
-//                        "    \"visible\": false #(bold)\n" +
-//                        "    \"doc\": { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]} #(bold)\n" +
-//                        "      \"title\": \"hello\" #(bold)\n" +
-//                        "      \"nbPages\": 10 #(bold)\n" +
-//                        "      \"keyWord\": [ \"toto\" , true , 10] #(bold)\n" +
-//                        "        [0] \"toto\" #(bold)\n" +
-//                        "        [1] true #(bold)\n" +
-//                        "        [2] 10 #(bold)\n" +
-//                        "  [1] { \"id\" : 1 , \"label\" : \"tata\" , \"visible\" : true , \"doc\" : { \"title\" : \"ola\" , \"nbPages\" : 1 , \"keyWord\" : [ \"tutu\" , false , 10]}} #(bold)\n" +
-//                        "    \"id\": 1 #(bold)\n" +
-//                        "    \"label\": \"tata\" #(bold)\n" +
-//                        "    \"visible\": true #(bold)\n" +
-//                        "    \"doc\": { \"title\" : \"ola\" , \"nbPages\" : 1 , \"keyWord\" : [ \"tutu\" , false , 10]} #(bold)\n" +
-//                        "      \"title\": \"ola\" #(bold)\n" +
-//                        "      \"nbPages\": 1 #(bold)\n" +
-//                        "      \"keyWord\": [ \"tutu\" , false , 10] #(bold)\n" +
-//                        "        [0] \"tutu\" #(bold)\n" +
-//                        "        [1] false #(bold)\n" +
-//                        "        [2] 10 #(bold)\n"
-//        ).check();
-//    }
-//
+
+    @Test
+    public void testDisplayTreeWithAnArrayOfStructuredDocument() throws Exception {
+        mongoResultPanel.updateResultTableTree(createCollectionResults("arrayOfDocuments.json", "mycollec"));
+
+        TreeUtil.expandAll(mongoResultPanel.jsonTreeTableView.getTree());
+        frameFixture.table().cellReader(new MyJTableCellReader())
+                .requireContents(new String[][]{
+
+                        {"[0]", "{ \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}"},
+                        {"\"id\"", "0"},
+                        {"\"label\"", "\"toto\""},
+                        {"\"visible\"", "false"},
+                        {"\"doc\"", "{ \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}"},
+                        {"\"title\"", "\"hello\""},
+                        {"\"nbPages\"", "10"},
+                        {"\"keyWord\"", "[ \"toto\" , true , 10]"},
+                        {"[0]", "\"toto\""},
+                        {"[1]", "true"},
+                        {"[2]", "10"},
+                        {"[1]", "{ \"id\" : 1 , \"label\" : \"tata\" , \"visible\" : true , \"doc\" : { \"title\" : \"ola\" , \"nbPages\" : 1 , \"keyWord\" : [ \"tutu\" , false , 10]}}"},
+                        {"\"id\"", "1"},
+                        {"\"label\"", "\"tata\""},
+                        {"\"visible\"", "true"},
+                        {"\"doc\"", "{ \"title\" : \"ola\" , \"nbPages\" : 1 , \"keyWord\" : [ \"tutu\" , false , 10]}"},
+                        {"\"title\"", "\"ola\""},
+                        {"\"nbPages\"", "1"},
+                        {"\"keyWord\"", "[ \"tutu\" , false , 10]"},
+                        {"[0]", "\"tutu\""},
+                        {"[1]", "false"},
+                        {"[2]", "10"},
+                });
+    }
+
 //    @Test
 //    public void testDisplayTreeSortedbyKey() throws Exception {
 //        mongoResultPanel.updateResultTableTree(createCollectionResults("structuredDocument.json", "mycollec"));
@@ -154,18 +153,18 @@ public class MongoResultPanelTest {
 //        Tree tree = uiSpecPanel.getTree();
 //        tree.setCellValueConverter(new TreeCellConverter());
 //        tree.contentEquals(
-//                "results of 'mycollec' #(bold)\n" +
-//                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} #(bold)\n" +
-//                        "    \"doc\": { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]} #(bold)\n" +
-//                        "      \"keyWord\": [ \"toto\" , true , 10] #(bold)\n" +
-//                        "        [0] \"toto\" #(bold)\n" +
-//                        "        [1] true #(bold)\n" +
-//                        "        [2] 10 #(bold)\n" +
-//                        "      \"nbPages\": 10 #(bold)\n" +
-//                        "      \"title\": \"hello\" #(bold)\n" +
-//                        "    \"id\": 0 #(bold)\n" +
-//                        "    \"label\": \"toto\" #(bold)\n" +
-//                        "    \"visible\": false #(bold)\n"
+//                "results of 'mycollec'\n" +
+//                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}\n" +
+//                        "    \"doc\": { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}\n" +
+//                        "      \"keyWord\": [ \"toto\" , true , 10]\n" +
+//                        "        [0] \"toto\"\n" +
+//                        "        [1] true\n" +
+//                        "        [2] 10\n" +
+//                        "      \"nbPages\": 10\n" +
+//                        "      \"title\": \"hello\"\n" +
+//                        "    \"id\": 0\n" +
+//                        "    \"label\": \"toto\"\n" +
+//                        "    \"visible\": false\n"
 //        ).check();
 //
 //
@@ -174,21 +173,21 @@ public class MongoResultPanelTest {
 //        tree = uiSpecPanel.getTree();
 //        tree.setCellValueConverter(new TreeCellConverter());
 //        tree.contentEquals(
-//                "results of 'mycollec' #(bold)\n" +
-//                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} #(bold)\n" +
-//                        "    \"id\": 0 #(bold)\n" +
-//                        "    \"label\": \"toto\" #(bold)\n" +
-//                        "    \"visible\": false #(bold)\n" +
-//                        "    \"doc\": { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]} #(bold)\n" +
-//                        "      \"title\": \"hello\" #(bold)\n" +
-//                        "      \"nbPages\": 10 #(bold)\n" +
-//                        "      \"keyWord\": [ \"toto\" , true , 10] #(bold)\n" +
-//                        "        [0] \"toto\" #(bold)\n" +
-//                        "        [1] true #(bold)\n" +
-//                        "        [2] 10 #(bold)\n"
+//                "results of 'mycollec'\n" +
+//                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}\n" +
+//                        "    \"id\": 0\n" +
+//                        "    \"label\": \"toto\"\n" +
+//                        "    \"visible\": false\n" +
+//                        "    \"doc\": { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}\n" +
+//                        "      \"title\": \"hello\"\n" +
+//                        "      \"nbPages\": 10\n" +
+//                        "      \"keyWord\": [ \"toto\" , true , 10]\n" +
+//                        "        [0] \"toto\"\n" +
+//                        "        [1] true\n" +
+//                        "        [2] 10\n"
 //        ).check();
 //    }
-//
+
     @Test
     public void testCopyMongoObjectNodeValue() throws Exception {
         mongoResultPanel.updateResultTableTree(createCollectionResults("structuredDocument.json", "mycollec"));
@@ -210,33 +209,31 @@ public class MongoResultPanelTest {
 
         TreeUtil.expandAll(mongoResultPanel.jsonTreeTableView.getTree());
 
-//        Tree tree = uiSpecPanel.getTree();
-//        tree.setCellValueConverter(new TreeCellConverter());
-//        tree.contentEquals(
-//                "results of 'mycollec' #(bold)\n" +
-//                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} #(bold)\n" +
-//                        "    \"id\": 0 #(bold)\n" +
-//                        "    \"label\": \"toto\" #(bold)\n" +
-//                        "    \"visible\": false #(bold)\n" +
-//                        "    \"doc\": { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]} #(bold)\n" +
-//                        "      \"title\": \"hello\" #(bold)\n" +
-//                        "      \"nbPages\": 10 #(bold)\n" +
-//                        "      \"keyWord\": [ \"toto\" , true , 10] #(bold)\n" +
-//                        "        [0] \"toto\" #(bold)\n" +
-//                        "        [1] true #(bold)\n" +
-//                        "        [2] 10 #(bold)\n" +
-//                        "  [1] { \"id\" : 1 , \"label\" : \"tata\" , \"visible\" : true , \"doc\" : { \"title\" : \"ola\" , \"nbPages\" : 1 , \"keyWord\" : [ \"tutu\" , false , 10]}} #(bold)\n" +
-//                        "    \"id\": 1 #(bold)\n" +
-//                        "    \"label\": \"tata\" #(bold)\n" +
-//                        "    \"visible\": true #(bold)\n" +
-//                        "    \"doc\": { \"title\" : \"ola\" , \"nbPages\" : 1 , \"keyWord\" : [ \"tutu\" , false , 10]} #(bold)\n" +
-//                        "      \"title\": \"ola\" #(bold)\n" +
-//                        "      \"nbPages\": 1 #(bold)\n" +
-//                        "      \"keyWord\": [ \"tutu\" , false , 10] #(bold)\n" +
-//                        "        [0] \"tutu\" #(bold)\n" +
-//                        "        [1] false #(bold)\n" +
-//                        "        [2] 10 #(bold)\n"
-//        ).check();
+        frameFixture.table().cellReader(new MyJTableCellReader())
+                .requireContents(new String[][]{
+                        {"[0]", "{ \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}"},
+                        {"\"id\"", "0"},
+                        {"\"label\"","\"toto\""},
+                        {"\"visible\"", "false"},
+                        {"\"doc\"", "{ \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}"},
+                        {"\"title\"", "\"hello\""},
+                        {"\"nbPages\"", "10"},
+                        {"\"keyWord\"", "[ \"toto\" , true , 10]"},
+                        {"[0]", "\"toto\""},
+                        {"[1]", "true"},
+                        {"[2]", "10"},
+                        {"[1]", "{ \"id\" : 1 , \"label\" : \"tata\" , \"visible\" : true , \"doc\" : { \"title\" : \"ola\" , \"nbPages\" : 1 , \"keyWord\" : [ \"tutu\" , false , 10]}}"},
+                        {"\"id\"", "1"},
+                        {"\"label\"", "\"tata\""},
+                        {"\"visible\"", "true"},
+                        {"\"doc\"", "{ \"title\" : \"ola\" , \"nbPages\" : 1 , \"keyWord\" : [ \"tutu\" , false , 10]}"},
+                        {"\"title\"", "\"ola\""},
+                        {"\"nbPages\"", "1"},
+                        {"\"keyWord\"", "[ \"tutu\" , false , 10]"},
+                        {"[0]", "\"tutu\""},
+                        {"[1]","false"},
+                        {"[2]", "10"},
+                });
 
         assertEquals("[ " +
                 "{ \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}} , " +
@@ -260,9 +257,9 @@ public class MongoResultPanelTest {
         public String valueAt(JTable table, int row, int column) {
             MongoNodeDescriptor nodeDescriptor = (MongoNodeDescriptor) table.getValueAt(row, column);
             if (column == 0) {
-                return nodeDescriptor.getNodeText();
+                return nodeDescriptor.getFormattedKey();
             }
-            return nodeDescriptor.toString();
+            return nodeDescriptor.getFormattedValue();
         }
     }
 }

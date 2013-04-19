@@ -45,11 +45,16 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
     }
 
     public void renderNode(ColoredTreeCellRenderer cellRenderer) {
-        cellRenderer.append(getNodeText(), TEXT_ATTRIBUTES_PROVIDER.getKeyValueAttribute());
+        cellRenderer.append(getFormattedKey(), TEXT_ATTRIBUTES_PROVIDER.getKeyValueAttribute());
     }
 
-    public String getNodeText() {
+    public String getFormattedKey() {
         return String.format(STRING_SURROUNDED, key);
+    }
+
+    @Override
+    public String getFormattedValue() {
+        return getValueAndAbbreviateIfNecessary();
     }
 
     public String getKey() {

@@ -1,6 +1,6 @@
 # Mongo Plugin for IntelliJ IDEA
 
-## Version 0.3.1-SNAPSHOT
+## Version 0.4.0-SNAPSHOT
 
 If you want to test the latest features, you can download the [latest snapshot](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.4.0-SNAPSHOT-distribution.zip?raw=true).
 

@@ -17,7 +17,6 @@
 package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.ui.TreeTableSpeedSearch;
-import com.intellij.ui.dualView.TreeTableView;
 import com.intellij.ui.treeStructure.treetable.ListTreeTableModelOnColumns;
 import com.intellij.ui.treeStructure.treetable.TreeTable;
 import com.intellij.ui.treeStructure.treetable.TreeTableModel;
@@ -27,7 +26,6 @@ import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.tree.TreeUtil;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
-import org.codinjutsu.tools.mongo.view.model.MongoComparator;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.codinjutsu.tools.mongo.view.renderer.MongoKeyCellRenderer;
 import org.codinjutsu.tools.mongo.view.renderer.MongoValueCellRenderer;
@@ -90,16 +88,16 @@ public class JsonTreeTableView extends TreeTable {
 
         int maxWidth = tree.getPreferredScrollableViewportSize().width + 10;
         final TableColumn keyColumn = getColumnModel().getColumn(0);
-        keyColumn.setPreferredWidth(maxWidth);
         keyColumn.setMinWidth(maxWidth);
         keyColumn.setMaxWidth(maxWidth);
+        keyColumn.setPreferredWidth(maxWidth);
 
         new TreeTableSpeedSearch(this, new Convertor<TreePath, String>() {
             @Override
             public String convert(final TreePath path) {
                 final JsonTreeNode node = (JsonTreeNode)path.getLastPathComponent();
                 MongoNodeDescriptor descriptor = node.getDescriptor();
-                return descriptor.getNodeText();
+                return descriptor.getFormattedKey();
             }
         });
     }

@@ -35,7 +35,12 @@ public class MongoResultDescriptor implements MongoNodeDescriptor {
 
     }
 
-    public String getNodeText() {
+    public String getFormattedKey() {
         return formattedText;
+    }
+
+    @Override
+    public String getFormattedValue() {
+        return "";
     }
 }

@@ -36,20 +36,21 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
 
     public void renderValue(ColoredTableCellRenderer cellRenderer, boolean isNodeExpanded) {
         if (!isNodeExpanded) {
-            cellRenderer.append(getDescription(), valueTextAttributes);
+            cellRenderer.append(getFormattedValue(), valueTextAttributes);
         }
     }
 
     @Override
     public void renderNode(ColoredTreeCellRenderer cellRenderer) {
-        cellRenderer.append(getNodeText(), TEXT_ATTRIBUTES_PROVIDER.getIndexAttribute());
+        cellRenderer.append(getFormattedKey(), TEXT_ATTRIBUTES_PROVIDER.getIndexAttribute());
     }
 
-    public String getNodeText() {
+    public String getFormattedKey() {
         return String.format("[%s]", index);
     }
 
-    protected String getDescription() {
+    @Override
+    public String getFormattedValue() {
         return String.format("%s", getValueAndAbbreviateIfNecessary());
     }
 
@@ -72,7 +73,8 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
             super(index, value, TEXT_ATTRIBUTES_PROVIDER.getStringAttribute());
         }
 
-        protected String getDescription() {
+        @Override
+        public String getFormattedValue() {
             return String.format("\"%s\"", getValueAndAbbreviateIfNecessary());
         }
     }
@@ -83,7 +85,8 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
             super(index, null, TEXT_ATTRIBUTES_PROVIDER.getNullAttribute());
         }
 
-        protected String getDescription() {
+        @Override
+        public String getFormattedValue() {
             return "null";
         }
 
