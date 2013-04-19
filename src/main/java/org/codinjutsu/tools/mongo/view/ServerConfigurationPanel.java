@@ -73,6 +73,7 @@ public class ServerConfigurationPanel {
         databaseField.setName("databaseListField");
         databaseField.setToolTipText("If your access is restricted to a specific database, you can set it right here");
 
+        testConnectionButton.setName("testConnection");
         initListeners();
     }
 

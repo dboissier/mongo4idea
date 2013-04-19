@@ -17,7 +17,6 @@
 package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.openapi.command.impl.DummyProject;
-import com.intellij.ui.treeStructure.treetable.TreeTableTree;
 import com.intellij.util.ui.tree.TreeUtil;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
@@ -34,11 +33,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeNode;
-import java.awt.*;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
@@ -78,7 +72,6 @@ public class MongoResultPanelTest {
                         {"[2]", "10"},
                         {"[3]", "null"},
                 });
-
     }
 
     @Test
