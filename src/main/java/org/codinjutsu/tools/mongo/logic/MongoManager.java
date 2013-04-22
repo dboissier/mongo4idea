@@ -26,10 +26,7 @@ import org.codinjutsu.tools.mongo.model.*;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class MongoManager {
 
@@ -116,16 +113,10 @@ public class MongoManager {
         return mongoDatabase;
     }
 
-    private MongoClient createMongoClient(String serverName, int serverPort) throws UnknownHostException {
-        String textURI = String.format("mongodb://%s:%s", serverName, serverPort);
-        MongoClientURI mongoClientURI = new MongoClientURI(textURI);
-        return new MongoClient(mongoClientURI);
-    }
-
     public MongoCollectionResult loadCollectionValues(ServerConfiguration configuration, MongoCollection mongoCollection, MongoQueryOptions mongoQueryOptions) {
-        MongoCollectionResult mongoCollectionResult = new MongoCollectionResult(mongoCollection.getName());
+        MongoClient mongo = null;
         try {
-            Mongo mongo = new Mongo(configuration.getServerName(), configuration.getServerPort());
+            mongo = createMongoClient(configuration.getServerName(), configuration.getServerPort());
             DB database = mongo.getDB(mongoCollection.getDatabaseName());
 
             String username = configuration.getUsername();
@@ -136,6 +127,7 @@ public class MongoManager {
 
             DBCollection collection = database.getCollection(mongoCollection.getName());
 
+            MongoCollectionResult mongoCollectionResult = new MongoCollectionResult(mongoCollection.getName());
             if (mongoQueryOptions.isAggregate()) {
                 return aggregate(mongoQueryOptions, mongoCollectionResult, collection);
             }
@@ -144,8 +136,18 @@ public class MongoManager {
 
         } catch (UnknownHostException ex) {
             throw new ConfigurationException(ex);
+        } finally {
+            if (mongo != null) {
+                mongo.close();
+            }
         }
 
+    }
+
+    private MongoClient createMongoClient(String serverName, int serverPort) throws UnknownHostException {
+        String textURI = String.format("mongodb://%s:%s", serverName, serverPort);
+        MongoClientURI mongoClientURI = new MongoClientURI(textURI);
+        return new MongoClient(mongoClientURI);
     }
 
     private MongoCollectionResult aggregate(MongoQueryOptions mongoQueryOptions, MongoCollectionResult mongoCollectionResult, DBCollection collection) {
