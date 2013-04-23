@@ -78,7 +78,7 @@ public class MongoServer {
         return configuration;
     }
 
-    public void cleanAllDatabases() {
+    public void clearAllDatabases() {
         databases.clear();
     }
 }

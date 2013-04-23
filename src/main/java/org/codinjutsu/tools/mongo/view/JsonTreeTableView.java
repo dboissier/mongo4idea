@@ -95,7 +95,7 @@ public class JsonTreeTableView extends TreeTable {
         new TreeTableSpeedSearch(this, new Convertor<TreePath, String>() {
             @Override
             public String convert(final TreePath path) {
-                final JsonTreeNode node = (JsonTreeNode)path.getLastPathComponent();
+                final JsonTreeNode node = (JsonTreeNode) path.getLastPathComponent();
                 MongoNodeDescriptor descriptor = node.getDescriptor();
                 return descriptor.getFormattedKey();
             }

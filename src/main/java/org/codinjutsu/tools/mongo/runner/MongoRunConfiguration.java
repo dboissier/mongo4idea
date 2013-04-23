@@ -34,7 +34,6 @@ import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;

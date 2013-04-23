@@ -22,7 +22,6 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBScrollPane;
-import com.intellij.ui.treeStructure.SimpleTree;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.tree.TreeUtil;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
@@ -111,7 +110,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                 serverNode.removeAllChildren();
 
                 MongoServer mongoServer = (MongoServer) serverNode.getUserObject();
-                mongoServer.cleanAllDatabases();
+                mongoServer.clearAllDatabases();
                 ServerConfiguration serverConfiguration = mongoServer.getConfiguration();
                 serverConfiguration.setServerVersion(mongoManager.connect(mongoServer.getConfiguration()));
                 mongoServer = mongoManager.loadDatabaseCollections(mongoServer);
@@ -293,7 +292,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
     private Tree createTree() {
 
-        SimpleTree tree = new SimpleTree() {
+        Tree tree = new Tree() {
 
             private final JLabel myLabel = new JLabel(
                     String.format("<html><center>No Mongo server available<br><br>You may use <img src=\"%s\"> to add or fix configuration</center></html>", pluginSettingsUrl)

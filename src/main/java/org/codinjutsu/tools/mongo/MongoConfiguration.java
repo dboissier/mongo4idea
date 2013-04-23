@@ -27,10 +27,10 @@ import java.util.List;
         name = "MongoConfiguration",
         storages = {
                 @Storage(file = "$PROJECT_FILE$"),
-                @Storage( file = "$PROJECT_CONFIG_DIR$/mongoSettings.xml", scheme = StorageScheme.DIRECTORY_BASED)
+                @Storage(file = "$PROJECT_CONFIG_DIR$/mongoSettings.xml", scheme = StorageScheme.DIRECTORY_BASED)
         }
 )
-public class MongoConfiguration implements PersistentStateComponent<MongoConfiguration>{
+public class MongoConfiguration implements PersistentStateComponent<MongoConfiguration> {
 
     private List<ServerConfiguration> serverConfigurations = new LinkedList<ServerConfiguration>();
     private String shellPath;

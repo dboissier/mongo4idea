@@ -16,7 +16,6 @@
 
 package org.codinjutsu.tools.mongo.view.model;
 
-import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.Comparator;
 
 public interface MongoComparator extends Comparator<JsonTreeNode> {

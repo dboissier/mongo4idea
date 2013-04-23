@@ -20,10 +20,7 @@ import com.intellij.ide.actions.CloseTabToolbarAction;
 import com.intellij.ide.impl.ContentManagerWatcher;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.components.State;
-import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.wm.ToolWindow;
@@ -31,8 +28,6 @@ import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
-import org.codinjutsu.tools.mongo.MongoComponent;
-import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
@@ -41,7 +36,7 @@ import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import javax.swing.*;
 
 
-public class MongoWindowManager  {
+public class MongoWindowManager {
 
     private static final Icon MONGO_ICON = GuiUtils.loadIcon("mongo_logo.png");
 

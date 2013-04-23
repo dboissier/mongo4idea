@@ -23,7 +23,6 @@ import com.intellij.openapi.ui.popup.PopupChooserBuilder;
 import com.intellij.ui.awt.RelativePoint;
 import com.intellij.ui.components.JBList;
 import org.codinjutsu.tools.mongo.model.MongoAggregateOperator;
-import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.QueryPanel;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 
