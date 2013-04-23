@@ -25,8 +25,9 @@ When you open the Mongo explorer, you will see an panel:
 * You can edit your mongo shell path with a test button
 * To add a server, click on the **[+]** button and a dialog will appear
 * Set a label for your server, this will be more convenient to distinguish each of them in the Mongo explorer
-* If your access is restricted to a specific database, type its name in the corresponding field
-* If the server requires authentication, you can put your credentials
+* Set the server info as the example in the above screenshot*
+* If your access is restricted to a specific database, just type it in the corresponding field
+* Put your credentials if your server requires authentication
 * You can let the plugin connect to the server on the IDE startup by clicking on the corresponding checkbox
 * If you want to hide some collections, you can put them in the **Collections to ignore** field.
 * You can click on the **Test Connection** button to check your server configuration
