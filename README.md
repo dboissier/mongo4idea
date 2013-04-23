@@ -1,16 +1,4 @@
-# Mongo Plugin for IntelliJ IDEA
-
-## Version 0.4.0-SNAPSHOT
-
-If you want to test the latest features, you can download the [latest snapshot](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.4.0-SNAPSHOT-distribution.zip?raw=true).
-
-To install it, **Settings -> Plugins -> Install from disk** and restart your IDE.
-
-### Last features
-* If your access is restricted to a specific database you can set it in the configuration (issues [#31](https://github.com/dboissier/mongo4idea/issues/31) and [#35](https://github.com/dboissier/mongo4idea/issues/35))
-* Fixed $unwind, $limit and $skip operations for aggregation (issue [#32](https://github.com/dboissier/mongo4idea/issues/32))
-* Fixed rrror marker in popup points to incorrect position (issue [#33](https://github.com/dboissier/mongo4idea/issues/33))
-* Results are displayed in a table view (issue [#30](https://github.com/dboissier/mongo4idea/issues/30))
+# Mongo Plugin for IntelliJ IDEA version 0.4.0
 
 ## ChangeLog
 See CHANGELOG.txt
@@ -19,7 +7,7 @@ See CHANGELOG.txt
 This plugin integrates MongoDB Servers with database/collections tree,  Query Runner and Shell console.
 
 ## Plugin Compatibility
-This plugin was built with JDK 1.6 and ideaIU-11.1.4 version.
+This plugin was built with JDK 1.6 and ideaIU-11.1.5 version.
 
 ## How to install it?
 Download this plugin from your IDE (Mongo Plugin)
@@ -37,6 +25,7 @@ When you open the Mongo explorer, you will see an empty tree:
 * You can edit your mongo shell path with a test button
 * To add a server, click on the **[+]** button and a dialog will appear
 * Set a label for your server, this will be more convenient to distinguish each of them in the Mongo explorer
+* If your access is restricted to a specific database, type its name in the corresponding field
 * If the server requires authentication, you can put your credentials
 * You can let the plugin connect to the server on the IDE startup by clicking on the corresponding checkbox
 * If you want to hide some collections, you can put them in the **Collections to ignore** field.
@@ -61,10 +50,6 @@ The panel is divided into 2 parts.
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-findAll.png?raw=true)
 
 You can copy the result and paste in a text editor.
-
-If you use the Darcula Theme then the results are displayed as follow:
-
-![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea_darcula.png?raw=true)
 
 * Left part allows to specify a query (in json format).
 
