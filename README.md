@@ -1,7 +1,7 @@
 # Mongo Plugin for IntelliJ IDEA version 0.4.0
 
 ## ChangeLog
-See CHANGELOG.txt
+See [CHANGELOG.txt](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)
 
 ## Description
 This plugin integrates MongoDB Servers with database/collections tree,  Query Runner and Shell console.
@@ -14,7 +14,7 @@ Download this plugin from your IDE (Mongo Plugin)
 
 ## Configuration steps
 
-When you open the Mongo explorer, you will see an empty tree:
+When you open the Mongo explorer, you will see an panel:
 
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-explorerWithoutDB.png?raw=true)
 
