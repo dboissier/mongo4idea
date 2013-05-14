@@ -80,14 +80,16 @@ public class MongoManager {
             mongo = createMongoClient(mongoServer.getServerName(), mongoServer.getServerPort());
 
             String userDatabase = mongoServer.getConfiguration().getUserDatabase();
+            String username = mongoServer.getUsername();
+            String password = mongoServer.getPassword();
             if (StringUtils.isNotEmpty(userDatabase)) {
                 DB database = mongo.getDB(userDatabase);
-                if (!database.isAuthenticated()) {
-                    database.authenticate(mongoServer.getUsername(), mongoServer.getPassword().toCharArray());
+                if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password) && !database.isAuthenticated()) {
+                    database.authenticate(username, password.toCharArray());
                 }
                 mongoServer.addDatabase(createMongoDatabaseAndItsCollections(database));
             } else {
-                List<String> databaseNames = getDatabaseNames(mongo, mongoServer.getUsername(), mongoServer.getPassword());
+                List<String> databaseNames = getDatabaseNames(mongo, username, password);
                 for (String databaseName : databaseNames) {
                     DB database = mongo.getDB(databaseName);
                     mongoServer.addDatabase(createMongoDatabaseAndItsCollections(database));
