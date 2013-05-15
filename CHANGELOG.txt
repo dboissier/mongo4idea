@@ -1,6 +1,7 @@
 Version 0.4.1
     * [fix] #40 NullPointerException when database name is specified
-    * [upd] #41 Make port field a little larger
+    * [upd] #41 Make the port field a little larger
+
 Version 0.4.0
     * [fix] #39 Mongo connection leak
     * [fix] #33 Error marker in popup points to incorrect position
