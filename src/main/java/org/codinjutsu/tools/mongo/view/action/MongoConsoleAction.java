@@ -63,7 +63,7 @@ public class MongoConsoleAction extends AnAction implements DumbAware {
     }
 
     private void runShell(Project project) {
-        MongoConsoleRunner consoleRunner = new MongoConsoleRunner(project, mongoExplorerPanel.getConfiguration());
+        MongoConsoleRunner consoleRunner = new MongoConsoleRunner(project, mongoExplorerPanel.getConfiguration(), mongoExplorerPanel.getSelectedDatabase());
         try {
             consoleRunner.initAndRun();
         } catch (ExecutionException e1) {

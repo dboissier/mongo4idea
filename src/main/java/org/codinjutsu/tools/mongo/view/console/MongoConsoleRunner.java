@@ -29,20 +29,25 @@ import com.intellij.psi.PsiFile;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
+import org.codinjutsu.tools.mongo.model.MongoDatabase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import javax.swing.tree.DefaultMutableTreeNode;
 
 
 public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoConsoleView> {
 
     private static final Key<Boolean> MONGO_SHELL_FILE = Key.create("MONGO_SHELL_FILE");
     private final ServerConfiguration serverConfiguration;
+    private final MongoDatabase database;
 
 
-    public MongoConsoleRunner(@NotNull Project project, ServerConfiguration serverConfiguration) {
+    public MongoConsoleRunner(@NotNull Project project, ServerConfiguration serverConfiguration, MongoDatabase database) {
         super(project, "Mongo Shell", "/tmp");
 
         this.serverConfiguration = serverConfiguration;
+        this.database = database;
     }
 
     @Override
@@ -65,7 +70,7 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
         final GeneralCommandLine commandLine = new GeneralCommandLine();
         commandLine.setExePath(shellPath);
 
-        commandLine.addParameter(String.format("%s:%s", serverConfiguration.getServerName(), serverConfiguration.getServerPort()));
+        commandLine.addParameter(String.format("%s:%s/%s", serverConfiguration.getServerName(), serverConfiguration.getServerPort(), database == null ? "test" : database.getName()));
 
         String username = serverConfiguration.getUsername();
         if (StringUtils.isNotBlank(username)) {

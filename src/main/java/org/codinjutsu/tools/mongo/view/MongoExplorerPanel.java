@@ -235,18 +235,6 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
     }
 
-    public DefaultMutableTreeNode getSelectedCollectionNode() {
-        DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) mongoTree.getLastSelectedPathComponent();
-        if (treeNode != null) {
-            Object userObject = treeNode.getUserObject();
-            if (userObject instanceof MongoCollection) {
-                return treeNode;
-            }
-        }
-        return null;
-    }
-
-
     public DefaultMutableTreeNode getSelectedServerNode() {
         DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) mongoTree.getLastSelectedPathComponent();
         if (treeNode != null) {
@@ -266,6 +254,34 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         return null;
     }
 
+
+    private DefaultMutableTreeNode getSelectedDatabaseNode() {
+        DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) mongoTree.getLastSelectedPathComponent();
+        if (treeNode != null) {
+            Object userObject = treeNode.getUserObject();
+            if (userObject instanceof MongoCollection) {
+                return (DefaultMutableTreeNode) treeNode.getParent();
+            }
+
+            if (userObject instanceof MongoDatabase) {
+                return treeNode;
+            }
+        }
+
+        return null;
+    }
+
+    public DefaultMutableTreeNode getSelectedCollectionNode() {
+        DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) mongoTree.getLastSelectedPathComponent();
+        if (treeNode != null) {
+            Object userObject = treeNode.getUserObject();
+            if (userObject instanceof MongoCollection) {
+                return treeNode;
+            }
+        }
+        return null;
+    }
+
     public ServerConfiguration getConfiguration() {
 
         DefaultMutableTreeNode serverNode = getSelectedServerNode();
@@ -274,6 +290,16 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         }
 
         return ((MongoServer) serverNode.getUserObject()).getConfiguration();
+    }
+
+    public MongoDatabase getSelectedDatabase() {
+        DefaultMutableTreeNode databaseNode = getSelectedDatabaseNode();
+        if (databaseNode == null) {
+            return null;
+        }
+
+        return (MongoDatabase) databaseNode.getUserObject();
+
     }
 
     MongoCollection getSelectedCollectionValues() {
