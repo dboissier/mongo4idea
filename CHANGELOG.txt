@@ -1,5 +1,6 @@
 Version 0.4.2
-    * [fix] #42 Console always connects with test database
+    * [add] #43 Add expand/collapse actions for the mongo explorer
+    * [fix] #42 Console always connects with 'test' database
 
 Version 0.4.1
     * [fix] #40 NullPointerException when database name is specified
