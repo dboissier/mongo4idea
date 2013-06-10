@@ -16,11 +16,15 @@
 
 package org.codinjutsu.tools.mongo.view;
 
+import com.intellij.ide.CommonActionsManager;
+import com.intellij.ide.TreeExpander;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.tree.TreeUtil;
@@ -196,14 +200,53 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
     public void installActions() {
 
+        final TreeExpander treeExpander = new TreeExpander() {
+            @Override
+            public void expandAll() {
+                MongoExplorerPanel.this.expandAll();
+            }
+
+            @Override
+            public boolean canExpand() {
+                return true;
+            }
+
+            @Override
+            public void collapseAll() {
+                MongoExplorerPanel.this.collapseAll();
+            }
+
+            @Override
+            public boolean canCollapse() {
+                return true;
+            }
+        };
+
+        CommonActionsManager actionsManager = CommonActionsManager.getInstance();
+
+        final AnAction expandAllAction = actionsManager.createExpandAllAction(treeExpander, rootPanel);
+        final AnAction collapseAllAction = actionsManager.createCollapseAllAction(treeExpander, rootPanel);
+
+        Disposer.register(this, new Disposable() {
+            @Override
+            public void dispose() {
+                collapseAllAction.unregisterCustomShortcutSet(rootPanel);
+                expandAllAction.unregisterCustomShortcutSet(rootPanel);
+            }
+        });
+
+
         DefaultActionGroup actionGroup = new DefaultActionGroup("MongoExplorerGroup", true);
         if (ApplicationManager.getApplication() != null) {
             actionGroup.add(new RefreshServerAction(this));
             actionGroup.add(new ViewCollectionValuesAction(this));
+            actionGroup.add(expandAllAction);
+            actionGroup.add(collapseAllAction);
             actionGroup.add(new MongoConsoleAction(this));
             actionGroup.addSeparator();
             actionGroup.add(new OpenPluginSettingsAction());
         }
+
         GuiUtils.installActionGroupInToolBar(actionGroup, toolBarPanel, ActionManager.getInstance(), "MongoExplorerActions", true);
 
         mongoTree.addMouseListener(new MouseAdapter() {
@@ -228,6 +271,14 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                 }
             }
         });
+    }
+
+    private void expandAll() {
+        TreeUtil.expandAll(mongoTree);
+    }
+
+    private void collapseAll() {
+        TreeUtil.collapseAll(mongoTree, 1);
     }
 
     @Override
