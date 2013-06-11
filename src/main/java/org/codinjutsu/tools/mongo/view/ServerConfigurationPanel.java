@@ -16,6 +16,8 @@
 
 package org.codinjutsu.tools.mongo.view;
 
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
+import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.RawCommandLineEditor;
 import org.apache.commons.lang.StringUtils;
@@ -52,6 +54,7 @@ public class ServerConfigurationPanel {
     private JTextField labelField;
     private JCheckBox autoConnectCheckBox;
     private JTextField databaseField;
+    private TextFieldWithBrowseButton shellWorkingDirField;
 
     private final MongoManager mongoManager;
 
@@ -74,6 +77,8 @@ public class ServerConfigurationPanel {
         databaseField.setToolTipText("If your access is restricted to a specific database, you can set it right here");
 
         testConnectionButton.setName("testConnection");
+
+        shellWorkingDirField.setText(null);
         initListeners();
     }
 
@@ -125,6 +130,7 @@ public class ServerConfigurationPanel {
         configuration.setCollectionsToIgnore(getCollectionsToIgnore());
         configuration.setUserDatabase(getUserDatabase());
         configuration.setShellArgumentsLine(getShellArgumentsLine());
+        configuration.setShellWorkingDir(getShellWorkingDir());
         configuration.setConnectOnIdeStartup(isAutoConnect());
         configuration.setServerVersion(serverVersion);
     }
@@ -186,6 +192,15 @@ public class ServerConfigurationPanel {
         return null;
     }
 
+    private String getShellWorkingDir() {
+        String shellWorkingDir = shellWorkingDirField.getText();
+        if (StringUtils.isNotBlank(shellWorkingDir)) {
+            return shellWorkingDir;
+        }
+
+        return null;
+    }
+
     private boolean isAutoConnect() {
         return autoConnectCheckBox.isSelected();
     }
@@ -199,7 +214,15 @@ public class ServerConfigurationPanel {
         collectionsToIgnoreField.setText(StringUtils.join(configuration.getCollectionsToIgnore(), ","));
         databaseField.setText(configuration.getUserDatabase());
         shellArgumentsLineField.setText(configuration.getShellArgumentsLine());
+        shellWorkingDirField.setText(configuration.getShellWorkingDir());
         autoConnectCheckBox.setSelected(configuration.isConnectOnIdeStartup());
         serverVersion = configuration.getServerVersion();
+    }
+
+    private void createUIComponents() {
+        shellWorkingDirField = new TextFieldWithBrowseButton();
+        shellWorkingDirField.addBrowseFolderListener("Mongo shell working directory", "", null,
+                new FileChooserDescriptor(false, true, false, false, false, false));
+        shellWorkingDirField.setName("shellWorkingDirField");
     }
 }

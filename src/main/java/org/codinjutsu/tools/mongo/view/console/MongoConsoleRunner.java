@@ -72,6 +72,11 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
 
         commandLine.addParameter(String.format("%s:%s/%s", serverConfiguration.getServerName(), serverConfiguration.getServerPort(), database == null ? "test" : database.getName()));
 
+        String shellWorkingDir = serverConfiguration.getShellWorkingDir();
+        if (StringUtils.isNotBlank(shellWorkingDir)) {
+            commandLine.setWorkDirectory(shellWorkingDir);
+        }
+
         String username = serverConfiguration.getUsername();
         if (StringUtils.isNotBlank(username)) {
             commandLine.addParameter("--username");

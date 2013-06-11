@@ -42,6 +42,7 @@ public class ServerConfiguration implements Cloneable {
 
     private String serverVersion;
     private String shellArgumentsLine;
+    private String shellWorkingDir;
 
 
     public String getServerName() {
@@ -108,14 +109,6 @@ public class ServerConfiguration implements Cloneable {
         return serverVersion;
     }
 
-    public String getShellArgumentsLine() {
-        return shellArgumentsLine;
-    }
-
-    public void setShellArgumentsLine(String shellArgumentsLine) {
-        this.shellArgumentsLine = shellArgumentsLine;
-    }
-
     public String getLabel() {
         return label;
     }
@@ -124,10 +117,25 @@ public class ServerConfiguration implements Cloneable {
         this.label = label;
     }
 
+    public String getShellArgumentsLine() {
+        return shellArgumentsLine;
+    }
+
+    public void setShellArgumentsLine(String shellArgumentsLine) {
+        this.shellArgumentsLine = shellArgumentsLine;
+    }
+
+    public String getShellWorkingDir() {
+        return shellWorkingDir;
+    }
+
+    public void setShellWorkingDir(String shellWorkingDir) {
+        this.shellWorkingDir = shellWorkingDir;
+    }
+
     public String getUrl() {
         return String.format("%s/%s", serverName, serverPort);
     }
-
 
     public static ServerConfiguration byDefault() {
         ServerConfiguration serverConfiguration = new ServerConfiguration();
@@ -155,7 +163,6 @@ public class ServerConfiguration implements Cloneable {
         if (serverPort != that.serverPort) return false;
         if (collectionsToIgnore != null ? !collectionsToIgnore.equals(that.collectionsToIgnore) : that.collectionsToIgnore != null)
             return false;
-        if (userDatabase != null ? !userDatabase.equals(that.userDatabase) : that.userDatabase != null) return false;
         if (label != null ? !label.equals(that.label) : that.label != null) return false;
         if (password != null ? !password.equals(that.password) : that.password != null) return false;
         if (serverName != null ? !serverName.equals(that.serverName) : that.serverName != null) return false;
@@ -163,6 +170,9 @@ public class ServerConfiguration implements Cloneable {
             return false;
         if (shellArgumentsLine != null ? !shellArgumentsLine.equals(that.shellArgumentsLine) : that.shellArgumentsLine != null)
             return false;
+        if (shellWorkingDir != null ? !shellWorkingDir.equals(that.shellWorkingDir) : that.shellWorkingDir != null)
+            return false;
+        if (userDatabase != null ? !userDatabase.equals(that.userDatabase) : that.userDatabase != null) return false;
         if (username != null ? !username.equals(that.username) : that.username != null) return false;
 
         return true;
@@ -180,6 +190,7 @@ public class ServerConfiguration implements Cloneable {
         result = 31 * result + (collectionsToIgnore != null ? collectionsToIgnore.hashCode() : 0);
         result = 31 * result + (serverVersion != null ? serverVersion.hashCode() : 0);
         result = 31 * result + (shellArgumentsLine != null ? shellArgumentsLine.hashCode() : 0);
+        result = 31 * result + (shellWorkingDir != null ? shellWorkingDir.hashCode() : 0);
         return result;
     }
 }

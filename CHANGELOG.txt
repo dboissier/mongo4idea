@@ -1,4 +1,5 @@
 Version 0.4.2
+    * [add] #44 Configuration: set working directory for mongo shell
     * [add] #43 Add expand/collapse actions for the mongo explorer
     * [fix] #42 Console always connects with 'test' database
 
