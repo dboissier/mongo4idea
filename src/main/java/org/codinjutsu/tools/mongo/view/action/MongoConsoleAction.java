@@ -51,7 +51,7 @@ public class MongoConsoleAction extends AnAction implements DumbAware {
         MongoConfiguration configuration = MongoConfiguration.getInstance(project);
 
         e.getPresentation().setVisible(configuration != null && StringUtils.isNotBlank(configuration.getShellPath()));
-        e.getPresentation().setEnabled(mongoExplorerPanel.getSelectedServerNode() != null);
+        e.getPresentation().setEnabled(mongoExplorerPanel.getSelectedDatabase() != null);
     }
 
     @Override
