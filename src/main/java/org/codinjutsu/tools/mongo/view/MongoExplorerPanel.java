@@ -25,6 +25,7 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.ui.PopupHandler;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.tree.TreeUtil;
@@ -36,10 +37,7 @@ import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
 import org.codinjutsu.tools.mongo.model.MongoServer;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
-import org.codinjutsu.tools.mongo.view.action.MongoConsoleAction;
-import org.codinjutsu.tools.mongo.view.action.OpenPluginSettingsAction;
-import org.codinjutsu.tools.mongo.view.action.RefreshServerAction;
-import org.codinjutsu.tools.mongo.view.action.ViewCollectionValuesAction;
+import org.codinjutsu.tools.mongo.view.action.*;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -87,19 +85,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         reloadAllServerConfigurations(true);
     }
 
-    public void reloadConfiguration(boolean clearSelection) {
-        if (clearSelection) {
-            TreeUtil.removeSelected(mongoTree);
-        }
-        ServerConfiguration serverConfiguration = getConfiguration();
-        if (serverConfiguration != null) {
-            reloadSelectedServerConfiguration();
-        } else {
-            reloadAllServerConfigurations(false);
-        }
-    }
-
-    private void reloadSelectedServerConfiguration() {
+    public void reloadSelectedServerConfiguration() {
         ApplicationManager.getApplication().invokeLater(new Runnable() {
 
             @Override
@@ -116,20 +102,8 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                 MongoServer mongoServer = (MongoServer) serverNode.getUserObject();
                 mongoServer.clearAllDatabases();
                 ServerConfiguration serverConfiguration = mongoServer.getConfiguration();
-                serverConfiguration.setServerVersion(mongoManager.connect(mongoServer.getConfiguration()));
-                mongoServer = mongoManager.loadDatabaseCollections(mongoServer);
 
-                if (mongoServer.hasDatabases()) {
-                    for (MongoDatabase mongoDatabase : mongoServer.getDatabases()) {
-                        DefaultMutableTreeNode databaseNode = new DefaultMutableTreeNode(mongoDatabase);
-                        for (MongoCollection collection : mongoDatabase.getCollections()) {
-                            if (shouldNotIgnore(collection, serverConfiguration)) {
-                                databaseNode.add(new DefaultMutableTreeNode(collection));
-                            }
-                        }
-                        serverNode.add(databaseNode);
-                    }
-                }
+                addIfPossibleDatabase(serverConfiguration, mongoServer, serverNode);
 
                 ((DefaultTreeModel) mongoTree.getModel()).reload(serverNode);
 
@@ -141,7 +115,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
     }
 
 
-    private void reloadAllServerConfigurations(final boolean loadOnStartup) {
+    public void reloadAllServerConfigurations(final boolean loadOnStartup) {
         ApplicationManager.getApplication().invokeLater(new Runnable() {
 
             @Override
@@ -160,19 +134,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                         if (loadOnStartup && !serverConfiguration.isConnectOnIdeStartup()) {
                             continue;
                         }
-                        serverConfiguration.setServerVersion(mongoManager.connect(mongoServer.getConfiguration()));
-                        mongoServer = mongoManager.loadDatabaseCollections(mongoServer);
-                        if (mongoServer.hasDatabases()) {
-                            for (MongoDatabase mongoDatabase : mongoServer.getDatabases()) {
-                                DefaultMutableTreeNode databaseNode = new DefaultMutableTreeNode(mongoDatabase);
-                                for (MongoCollection collection : mongoDatabase.getCollections()) {
-                                    if (shouldNotIgnore(collection, serverConfiguration)) {
-                                        databaseNode.add(new DefaultMutableTreeNode(collection));
-                                    }
-                                }
-                                serverNode.add(databaseNode);
-                            }
-                        }
+                        addIfPossibleDatabase(serverConfiguration, mongoServer, serverNode);
                     }
 
                     mongoTree.invalidate();
@@ -188,6 +150,28 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                 }
             }
         });
+    }
+
+    private void addIfPossibleDatabase(ServerConfiguration serverConfiguration, MongoServer mongoServer, DefaultMutableTreeNode serverNode) {
+        try {
+            serverConfiguration.setServerVersion(mongoManager.connect(mongoServer.getConfiguration()));
+            mongoServer = mongoManager.loadDatabaseCollections(mongoServer);
+            if (mongoServer.hasDatabases()) {
+                for (MongoDatabase mongoDatabase : mongoServer.getDatabases()) {
+                    DefaultMutableTreeNode databaseNode = new DefaultMutableTreeNode(mongoDatabase);
+                    for (MongoCollection collection : mongoDatabase.getCollections()) {
+                        if (shouldNotIgnore(collection, serverConfiguration)) {
+                            databaseNode.add(new DefaultMutableTreeNode(collection));
+                        }
+                    }
+                    serverNode.add(databaseNode);
+                }
+            }
+
+            mongoServer.setStatus(MongoServer.Status.OK);
+        } catch (ConfigurationException ex) {
+            mongoServer.setStatus(MongoServer.Status.ERROR);
+        }
     }
 
     protected List<ServerConfiguration> getServerConfigurations() {
@@ -236,9 +220,9 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         });
 
 
-        DefaultActionGroup actionGroup = new DefaultActionGroup("MongoExplorerGroup", true);
+        DefaultActionGroup actionGroup = new DefaultActionGroup("MongoExplorerGroup", false);
         if (ApplicationManager.getApplication() != null) {
-            actionGroup.add(new RefreshServerAction(this));
+            actionGroup.add(new RefreshAllServerAction(this));
             actionGroup.add(new ViewCollectionValuesAction(this));
             actionGroup.add(expandAllAction);
             actionGroup.add(collapseAllAction);
@@ -248,6 +232,13 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         }
 
         GuiUtils.installActionGroupInToolBar(actionGroup, toolBarPanel, ActionManager.getInstance(), "MongoExplorerActions", true);
+
+        DefaultActionGroup actionPopupGroup = new DefaultActionGroup("MongoExplorerPopupGroup", true);
+        if (ApplicationManager.getApplication() != null) {
+            actionPopupGroup.add(new RefreshServerAction(this));
+        }
+
+        PopupHandler.installPopupHandler(mongoTree, actionPopupGroup, "POPUP", ActionManager.getInstance());
 
         mongoTree.addMouseListener(new MouseAdapter() {
             @Override
@@ -265,8 +256,6 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
                     if (treeNode.getUserObject() instanceof MongoCollection) {
                         loadSelectedCollectionValues();
-                    } else if (treeNode.getUserObject() instanceof MongoServer && treeNode.getChildCount() == 0) {
-                        reloadConfiguration(false);
                     }
                 }
             }

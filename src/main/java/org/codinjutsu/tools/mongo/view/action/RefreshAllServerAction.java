@@ -24,17 +24,19 @@ import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 
 import javax.swing.*;
 
-public class RefreshServerAction extends AnAction implements DumbAware {
+public class RefreshAllServerAction extends AnAction implements DumbAware {
+
+    private static final Icon REFRESH = StyleAttributesUtils.getInstance().getRefreshIcon();
 
     private final MongoExplorerPanel mongoExplorerPanel;
 
-    public RefreshServerAction(MongoExplorerPanel mongoExplorerPanel) {
-        super("Refresh this server");
+    public RefreshAllServerAction(MongoExplorerPanel mongoExplorerPanel) {
+        super("Refresh all servers", "Refresh all servers", REFRESH);
         this.mongoExplorerPanel = mongoExplorerPanel;
     }
 
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
-        mongoExplorerPanel.reloadSelectedServerConfiguration();
+        mongoExplorerPanel.reloadAllServerConfigurations(false);
     }
 }

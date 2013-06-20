@@ -87,7 +87,6 @@ public class ServerConfigurationPanelTest {
         frameFixture.textBox("passwordField").requireText("johnpassword");
     }
 
-
     @Test
     public void connectionWithSuccess() {
         ServerConfiguration configuration = new ServerConfiguration();

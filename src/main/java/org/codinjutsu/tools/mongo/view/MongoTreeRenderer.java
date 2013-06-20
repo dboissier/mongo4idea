@@ -32,6 +32,7 @@ class MongoTreeRenderer extends DefaultTreeCellRenderer {
     private static final Icon MONGO_SERVER = GuiUtils.loadIcon("mongo_logo.png");
     private static final Icon MONGO_DATABASE = GuiUtils.loadIcon("database.png");
     private static final Icon MONGO_COLLECTION = GuiUtils.loadIcon("folder.png");
+    private static final Icon MONGO_SERVER_ERROR = GuiUtils.loadIcon("mongo_warning.png");
 
     @Override
     public Component getTreeCellRendererComponent(JTree mongoTree, Object value, boolean isSelected, boolean isExpanded, boolean isLeaf, int row, boolean focus) {
@@ -41,11 +42,18 @@ class MongoTreeRenderer extends DefaultTreeCellRenderer {
         Object userObject = node.getUserObject();
         if (userObject instanceof MongoServer) {
             MongoServer mongoServer = (MongoServer) userObject;
-            String host = String.format("%s/%s", mongoServer.getServerName(), mongoServer.getServerPort());
             String label = mongoServer.getLabel();
+            String host = String.format("%s/%s", mongoServer.getServerName(), mongoServer.getServerPort());
             super.getTreeCellRendererComponent(mongoTree, StringUtils.isBlank(label) ? host : label, isSelected, isExpanded, isLeaf, row, focus);
-            setIcon(MONGO_SERVER);
-            setToolTipText(host);
+
+            if (MongoServer.Status.OK.equals(mongoServer.getStatus())) {
+                setToolTipText(host);
+                setIcon(MONGO_SERVER);
+            } else {
+                setForeground(Color.RED);
+                setIcon(MONGO_SERVER_ERROR);
+                setToolTipText("Unable to connect");
+            }
             return this;
         } else if (userObject instanceof MongoDatabase) {
             MongoDatabase mongoDatabase = (MongoDatabase) userObject;

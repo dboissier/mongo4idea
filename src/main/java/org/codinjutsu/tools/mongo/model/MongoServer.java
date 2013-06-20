@@ -24,8 +24,14 @@ import java.util.List;
 
 public class MongoServer {
 
+    public enum Status {
+        OK, ERROR
+    }
+
     private final List<MongoDatabase> databases = new LinkedList<MongoDatabase>();
     private final ServerConfiguration configuration;
+
+    private Status status = Status.OK;
 
     public MongoServer(ServerConfiguration configuration) {
         this.configuration = configuration;
@@ -61,6 +67,14 @@ public class MongoServer {
 
     public List<MongoDatabase> getDatabases() {
         return databases;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public static boolean isCompliantWithPipelineOperations(String serverVersion) {

@@ -127,7 +127,7 @@ public class MongoWindowManager {
     }
 
     public void apply() {
-        mongoExplorerPanel.reloadConfiguration(true);
+        mongoExplorerPanel.reloadAllServerConfigurations(true);
     }
 
     static class CloseAction extends CloseTabToolbarAction {
