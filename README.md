@@ -2,7 +2,9 @@
 
 ## Version 0.4.3-SNAPSHOT
 
-Not available yet
+To detect if mongo server is compliant with aggregation framework, **db.version()** expression is sent to the server for evaluation. This information is used for fitting the UI of the query panel. In some case, even if authentication is successfull, this operation is not permitted.
+
+This instruction has been removed and now the user can toggle aggregation/find query with a button located on the toolbar of the query. It is more convenient and removes the issue mentionned above.
 
 ## ChangeLog
 See [CHANGELOG.txt](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)

@@ -32,7 +32,6 @@ import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
-import org.codinjutsu.tools.mongo.model.MongoServer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,7 +55,7 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
 
         errorPanel.setLayout(new BorderLayout());
 
-        queryPanel = createQueryPanel(project, configuration.getServerVersion());
+        queryPanel = new QueryPanel(project);
         queryPanel.setCallback(new ErrorQueryCallback());
 
         splitter.setFirstComponent(queryPanel);
@@ -72,16 +71,6 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
 
     private MongoResultPanel createResultPanel(Project project) {
         return new MongoResultPanel(project);
-    }
-
-    QueryPanel createQueryPanel(Project project, String serverVersion) {
-        QueryPanel aQueryPanel = new QueryPanel(project);
-        if (MongoServer.isCompliantWithPipelineOperations(serverVersion)) {
-            aQueryPanel.withAggregation();
-        } else {
-            aQueryPanel.withSimpleFilter();
-        }
-        return aQueryPanel;
     }
 
     public void installActions(MongoWindowManager.CloseAction closeAction) {

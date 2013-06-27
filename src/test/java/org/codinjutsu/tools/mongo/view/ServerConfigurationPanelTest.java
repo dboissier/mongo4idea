@@ -97,7 +97,7 @@ public class ServerConfigurationPanelTest {
 
         frameFixture.button("testConnection").click();
 
-        Mockito.verify(mongoManager, Mockito.times(1)).connectAndReturnServerVersion("localhost", 27017, null, null, null);
+        Mockito.verify(mongoManager, Mockito.times(1)).connect("localhost", 27017, null, null, null);
     }
 
     @Test
@@ -112,6 +112,6 @@ public class ServerConfigurationPanelTest {
         frameFixture.label("feedbackLabel")
                 .requireText("java.net.UnknownHostException: myserver");
 
-        Mockito.verify(mongoManager, Mockito.times(1)).connectAndReturnServerVersion("myserver", 25, null, null, null);
+        Mockito.verify(mongoManager, Mockito.times(1)).connect("myserver", 25, null, null, null);
     }
 }

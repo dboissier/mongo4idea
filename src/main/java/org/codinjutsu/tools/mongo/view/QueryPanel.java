@@ -39,10 +39,7 @@ import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoAggregateOperator;
 import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
-import org.codinjutsu.tools.mongo.view.action.AddOperatorPanelAction;
-import org.codinjutsu.tools.mongo.view.action.CopyQueryAction;
-import org.codinjutsu.tools.mongo.view.action.ExecuteQuery;
-import org.codinjutsu.tools.mongo.view.action.OperatorCompletionAction;
+import org.codinjutsu.tools.mongo.view.action.*;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 
 import javax.swing.*;
@@ -54,7 +51,10 @@ import java.util.List;
 
 public class QueryPanel extends JPanel implements Disposable {
 
+    private static final String FIND_PANEL = "FIND";
+    private static final String AGGREGATION_PANEL = "AGGREGATION";
     private final List<OperatorPanel> operatorPanels = new LinkedList<OperatorPanel>();
+    private final CardLayout cardLayout;
 
     private boolean withAggregation = false;
 
@@ -66,6 +66,7 @@ public class QueryPanel extends JPanel implements Disposable {
     private JPanel queryContainerPanel;
     private final Project project;
     private QueryCallback callback;
+    private JPanel aggregationPanel;
 
     public QueryPanel(Project project) {
         this.project = project;
@@ -74,21 +75,30 @@ public class QueryPanel extends JPanel implements Disposable {
         toolBarPanel.setLayout(new BorderLayout());
         setLayout(new BorderLayout());
         add(mainPanel);
-    }
 
-    public void withAggregation() {
+        cardLayout = new CardLayout();
+        queryContainerPanel.setLayout(cardLayout);
+
         withAggregation = true;
-        queryContainerPanel.setLayout(new BoxLayout(queryContainerPanel, BoxLayout.Y_AXIS));
+        aggregationPanel = new JPanel();
+        aggregationPanel.setLayout(new BoxLayout(aggregationPanel, BoxLayout.Y_AXIS));
         addOperatorPanel(MongoAggregateOperator.MATCH);
-    }
+        queryContainerPanel.add(AGGREGATION_PANEL, aggregationPanel);
 
-    public void withSimpleFilter() {
-        withAggregation = false;
         Editor editor = createEditor();
         filterPanel = new FilterPanel(editor);
-        queryContainerPanel.setLayout(new BorderLayout());
-        queryContainerPanel.add(filterPanel, BorderLayout.CENTER);
+        queryContainerPanel.add(FIND_PANEL, filterPanel);
         myUpdateAlarm.setActivationComponent(editor.getComponent());
+    }
+
+    public void toggleToFind() {
+        withAggregation = false;
+        cardLayout.show(queryContainerPanel, FIND_PANEL);
+    }
+
+    public void toggleToAggregation() {
+        withAggregation = true;
+        cardLayout.show(queryContainerPanel, AGGREGATION_PANEL);
     }
 
     public void addOperatorPanel(MongoAggregateOperator selectedOperator) {
@@ -98,17 +108,17 @@ public class QueryPanel extends JPanel implements Disposable {
         myUpdateAlarm.setActivationComponent(matchOperatorPanel);
 
         invalidate();
-        queryContainerPanel.add(matchOperatorPanel);
+        aggregationPanel.add(matchOperatorPanel);
         validate();
     }
 
     private void removeOperatorPanel(OperatorPanel operatorPanel) {
         operatorPanel.dispose();
         operatorPanels.remove(operatorPanel);
-        queryContainerPanel.invalidate();
-        queryContainerPanel.remove(operatorPanel);
-        queryContainerPanel.validate();
-        queryContainerPanel.updateUI();
+        aggregationPanel.invalidate();
+        aggregationPanel.remove(operatorPanel);
+        aggregationPanel.validate();
+        aggregationPanel.updateUI();
     }
 
 
@@ -198,7 +208,7 @@ public class QueryPanel extends JPanel implements Disposable {
         DefaultActionGroup actionQueryGroup = new DefaultActionGroup("MongoQueryGroup", true);
         if (ApplicationManager.getApplication() != null) {
             actionQueryGroup.add(new ExecuteQuery(mongoRunnerPanel));
-//            actionQueryGroup.add(new LimitQueryResultAction(this));
+            actionQueryGroup.add(new EnableAggregateAction(this));
             actionQueryGroup.addSeparator();
             actionQueryGroup.add(new AddOperatorPanelAction(this));
             actionQueryGroup.add(new CopyQueryAction(this));
@@ -226,6 +236,9 @@ public class QueryPanel extends JPanel implements Disposable {
             this.editor = editor;
             setLayout(new BorderLayout());
             add(editor.getComponent(), BorderLayout.CENTER);
+            NonOpaquePanel headPanel = new NonOpaquePanel();
+            headPanel.add(new JLabel("find"));
+            add(headPanel, BorderLayout.NORTH);
         }
 
         public String getQuery() {

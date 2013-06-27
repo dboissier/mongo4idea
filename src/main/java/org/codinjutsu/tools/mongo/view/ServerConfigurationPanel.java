@@ -87,7 +87,7 @@ public class ServerConfigurationPanel {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    serverVersion = mongoManager.connectAndReturnServerVersion(getServerName(), getServerPort(), getUsername(), getPassword(), getUserDatabase());
+                    mongoManager.connect(getServerName(), getServerPort(), getUsername(), getPassword(), getUserDatabase());
 
                     feedbackLabel.setIcon(SUCCESS);
                     feedbackLabel.setText("");
@@ -132,7 +132,6 @@ public class ServerConfigurationPanel {
         configuration.setShellArgumentsLine(getShellArgumentsLine());
         configuration.setShellWorkingDir(getShellWorkingDir());
         configuration.setConnectOnIdeStartup(isAutoConnect());
-        configuration.setServerVersion(serverVersion);
     }
 
     private String getLabel() {
@@ -216,7 +215,6 @@ public class ServerConfigurationPanel {
         shellArgumentsLineField.setText(configuration.getShellArgumentsLine());
         shellWorkingDirField.setText(configuration.getShellWorkingDir());
         autoConnectCheckBox.setSelected(configuration.isConnectOnIdeStartup());
-        serverVersion = configuration.getServerVersion();
     }
 
     private void createUIComponents() {

@@ -154,7 +154,6 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
     private void addIfPossibleDatabase(ServerConfiguration serverConfiguration, MongoServer mongoServer, DefaultMutableTreeNode serverNode) {
         try {
-            serverConfiguration.setServerVersion(mongoManager.connect(mongoServer.getConfiguration()));
             mongoServer = mongoManager.loadDatabaseCollections(mongoServer);
             if (mongoServer.hasDatabases()) {
                 for (MongoDatabase mongoDatabase : mongoServer.getDatabases()) {

@@ -40,7 +40,6 @@ public class ServerConfiguration implements Cloneable {
     private String userDatabase;
     private List<String> collectionsToIgnore = new LinkedList<String>();
 
-    private String serverVersion;
     private String shellArgumentsLine;
     private String shellWorkingDir;
 
@@ -101,14 +100,6 @@ public class ServerConfiguration implements Cloneable {
         return collectionsToIgnore;
     }
 
-    public void setServerVersion(String serverVersion) {
-        this.serverVersion = serverVersion;
-    }
-
-    public String getServerVersion() {
-        return serverVersion;
-    }
-
     public String getLabel() {
         return label;
     }
@@ -166,8 +157,6 @@ public class ServerConfiguration implements Cloneable {
         if (label != null ? !label.equals(that.label) : that.label != null) return false;
         if (password != null ? !password.equals(that.password) : that.password != null) return false;
         if (serverName != null ? !serverName.equals(that.serverName) : that.serverName != null) return false;
-        if (serverVersion != null ? !serverVersion.equals(that.serverVersion) : that.serverVersion != null)
-            return false;
         if (shellArgumentsLine != null ? !shellArgumentsLine.equals(that.shellArgumentsLine) : that.shellArgumentsLine != null)
             return false;
         if (shellWorkingDir != null ? !shellWorkingDir.equals(that.shellWorkingDir) : that.shellWorkingDir != null)
@@ -188,7 +177,6 @@ public class ServerConfiguration implements Cloneable {
         result = 31 * result + (connectOnIdeStartup ? 1 : 0);
         result = 31 * result + (userDatabase != null ? userDatabase.hashCode() : 0);
         result = 31 * result + (collectionsToIgnore != null ? collectionsToIgnore.hashCode() : 0);
-        result = 31 * result + (serverVersion != null ? serverVersion.hashCode() : 0);
         result = 31 * result + (shellArgumentsLine != null ? shellArgumentsLine.hashCode() : 0);
         result = 31 * result + (shellWorkingDir != null ? shellWorkingDir.hashCode() : 0);
         return result;

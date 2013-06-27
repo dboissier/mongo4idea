@@ -1,3 +1,7 @@
+Version 0.4.3
+    * [add] Enable aggregation query toggle button
+    * [fix] #46 In some case db.version() evaluation is not permitted on the database (depending on the security)
+
 Version 0.4.2
     * [add] #44 Configuration: set working directory for mongo shell
     * [add] #43 Add expand/collapse actions for the mongo explorer

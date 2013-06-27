@@ -39,11 +39,11 @@ public class MongoManager {
         return ServiceManager.getService(project, MongoManager.class);
     }
 
-    public String connect(ServerConfiguration configuration) {
-        return connectAndReturnServerVersion(configuration.getServerName(), configuration.getServerPort(), configuration.getUsername(), configuration.getPassword(), configuration.getUserDatabase());
+    public void connect(ServerConfiguration configuration) {
+        connect(configuration.getServerName(), configuration.getServerPort(), configuration.getUsername(), configuration.getPassword(), configuration.getUserDatabase());
     }
 
-    public String connectAndReturnServerVersion(String serverName, int serverPort, String username, String password, String userDatabase) {
+    public void connect(String serverName, int serverPort, String username, String password, String userDatabase) {
 
         MongoClient mongo = null;
         try {
@@ -59,8 +59,6 @@ public class MongoManager {
             if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
                 databaseForTesting.authenticate(username, password.toCharArray());
             }
-
-            return (String) databaseForTesting.eval("db.version();");
 
         } catch (IOException ex) {
             throw new ConfigurationException(ex);
