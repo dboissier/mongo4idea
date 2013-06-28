@@ -6,9 +6,16 @@ Not available yet.
 
 ## Last developer notes
 
+If you want to test the latest features, you can download the latest [snapshot](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.4.3-SNAPSHOT-distribution.zip).
+
+To install it, Settings -> Plugins -> Install from disk and restart your IDE.
+
+
+### Developer notes
 To detect if mongo server is compliant with aggregation framework, **db.version()** expression is sent to the server for evaluation. This information is used for fitting the UI of the query panel. In some case, even if authentication is successfull, this operation is not permitted.
 
 This instruction has been removed and now the user can switch to aggregation/find query with a button located on the toolbar of the query. It is more convenient and removes the issue mentionned above.
+
 
 
 ## ChangeLog
