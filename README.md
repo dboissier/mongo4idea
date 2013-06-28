@@ -1,10 +1,15 @@
-# Mongo Plugin for IntelliJ IDEA version 0.4.2
+# Mongo Plugin for IntelliJ IDEA version 0.4.3
 
-## Version 0.4.3-SNAPSHOT
+## Version 0.4.4-SNAPSHOT
+
+Not available yet.
+
+## Last developer notes
 
 To detect if mongo server is compliant with aggregation framework, **db.version()** expression is sent to the server for evaluation. This information is used for fitting the UI of the query panel. In some case, even if authentication is successfull, this operation is not permitted.
 
-This instruction has been removed and now the user can toggle aggregation/find query with a button located on the toolbar of the query. It is more convenient and removes the issue mentionned above.
+This instruction has been removed and now the user can switch to aggregation/find query with a button located on the toolbar of the query. It is more convenient and removes the issue mentionned above.
+
 
 ## ChangeLog
 See [CHANGELOG.txt](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)
@@ -71,12 +76,11 @@ Either you click on the run query button or else type **CTRL+ENTER** shortcut to
 If your server version is at least 2.2, you can use the aggregation framework. You can add a pipeline operation by clicking on the [+] button.
 You can also copy/paste the query you wrote.
 
-By default, Aggregation query is enable. you can switch to find query by clicking on the tooggle button:
+![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-aggregation.png?raw=true)
+
+**NEW** By default, Aggregation query is enable. you can switch to find query by clicking on the tooggle button:
 
 ![Switch to Find/Aggregation Query](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-switchFindAggregationQuery?raw=true)
-
-
-![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-aggregation.png?raw=true)
 
 If you have an error during query execution, a feedback panel is displayed below:
 
@@ -101,7 +105,7 @@ If you set the mongo client path (e.g. /usr/bin/mongo), you can run the console 
 I would like to thank:
 * MongoDB team
 * Mongo Java Driver team
-* Jetbrains Team for the great sources of IntelliJ Community Edition that help me to improve this stuff
+* Jetbrains Team for the great sources of IntelliJ Community Edition which help me to improve this plugin
 * Mark James author of the famfamfam web site who provides beautiful icons.
 * [Jean Baptiste Potonnier](https://github.com/JJeeb) for the suggestion to create this plugin
 * Neko team, my first beta testers ;)
