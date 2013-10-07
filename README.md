@@ -79,7 +79,7 @@ You can also copy/paste the query you wrote.
 
 **NEW** By default, Aggregation query is enable. you can switch to find query by clicking on the tooggle button:
 
-![Switch to Find/Aggregation Query](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-switchFindAggregationQuery?raw=true)
+![Switch to Find/Aggregation Query](https://raw.github.com/dboissier/mongo4idea/master/doc/mongo4idea-switchFindAggregationQuery.png)
 
 If you have an error during query execution, a feedback panel is displayed below:
 
