@@ -1,8 +1,17 @@
 # Mongo Plugin for IntelliJ IDEA version 0.4.3
 
-## Version 0.4.4-SNAPSHOT
+## Version [0.5.0-Idea13-SNAPSHOT](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.5.0-SNAPSHOT-for-Idea13-distribution.zip?raw=true)
 
-Not available yet.
+[fix] Fatal Error with WebStorm 7 RC 131.130 (I had to compile with Idea 13 plateform, but without any changes, strange isn't it?)
+
+Upcoming features:
+* Edition mode in the result view
+** drop a collection
+** remove a document 
+** remove any key
+** update a key value
+
+
 
 ## Last developer notes
 
