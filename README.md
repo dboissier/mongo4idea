@@ -4,12 +4,11 @@
 
 [fix] Fatal Error with WebStorm 7 RC 131.130 (I had to compile with Idea 13 plateform, but without any changes, strange isn't it?)
 
-Upcoming features:
-* Edition mode in the result view
-** drop a collection
-** remove a document 
-** remove any key
-** update a key value
+**WIP**: Edition mode in the result view
+* drop a collection
+* remove a document 
+* remove any key
+* update a key value
 
 
 
