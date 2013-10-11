@@ -58,8 +58,6 @@ public class ServerConfigurationPanel {
 
     private final MongoManager mongoManager;
 
-    private String serverVersion = "";
-
 
     public ServerConfigurationPanel(MongoManager mongoManager) {
         this.mongoManager = mongoManager;
