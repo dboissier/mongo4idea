@@ -22,13 +22,15 @@ import com.intellij.ui.SimpleTextAttributes;
 import com.mongodb.DBObject;
 import org.codinjutsu.tools.mongo.utils.StringUtils;
 
+import java.util.Date;
+
 public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
     private static final String STRING_SURROUNDED = "\"%s\"";
     private static final String TO_STRING_TEMPLATE = "{ \"%s\" : %s}";
 
-    final String key;
-    final Object value;
+    protected final String key;
+    protected Object value;
 
     private final SimpleTextAttributes valueTextAttributes;
 
@@ -59,6 +61,14 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
     public String getKey() {
         return key;
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
     }
 
     @Override

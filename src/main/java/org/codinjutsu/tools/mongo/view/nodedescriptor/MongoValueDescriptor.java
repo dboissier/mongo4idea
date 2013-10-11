@@ -25,7 +25,7 @@ import org.codinjutsu.tools.mongo.utils.StringUtils;
 public class MongoValueDescriptor implements MongoNodeDescriptor {
 
     private final int index;
-    private final Object value;
+    private Object value;
     private final SimpleTextAttributes valueTextAttributes;
 
     private MongoValueDescriptor(int index, Object value, SimpleTextAttributes valueTextAttributes) {
@@ -60,6 +60,16 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
             return StringUtils.abbreviateInCenter(stringifiedValue, MAX_LENGTH);
         }
         return stringifiedValue;
+    }
+
+    @Override
+    public Object getValue() {
+        return value;
+    }
+
+    @Override
+    public void setValue(Object value) {
+        this.value = value;
     }
 
     @Override

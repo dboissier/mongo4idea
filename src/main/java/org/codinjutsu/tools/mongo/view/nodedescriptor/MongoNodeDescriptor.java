@@ -34,4 +34,8 @@ public interface MongoNodeDescriptor {
     String getFormattedKey();
 
     String getFormattedValue();
+
+    Object getValue();
+
+    void setValue(Object value);
 }

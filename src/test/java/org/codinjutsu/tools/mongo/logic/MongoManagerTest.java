@@ -47,6 +47,27 @@ public class MongoManagerTest {
     }
 
     @Test
+    public void updateMongoDocument() throws Exception {
+        MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
+        mongoQueryOptions.addQuery(MongoAggregateOperator.MATCH, "{ 'label': 'tete', }");
+        MongoCollection mongoCollection = new MongoCollection("dummyCollection", "test");
+        MongoCollectionResult initialData = mongoManager.loadCollectionValues(serverConfiguration, mongoCollection, mongoQueryOptions);
+        Assert.assertEquals(1, initialData.getMongoObjects().size());
+        DBObject initialMongoDocument = initialData.getMongoObjects().get(0);
+
+        initialMongoDocument.put("price", 25);
+        mongoManager.update(serverConfiguration, mongoCollection, initialMongoDocument);
+
+        MongoCollectionResult updatedResult = mongoManager.loadCollectionValues(serverConfiguration, mongoCollection, mongoQueryOptions);
+        List<DBObject> updatedMongoDocuments = updatedResult.getMongoObjects();
+        Assert.assertEquals(1, updatedMongoDocuments.size());
+        DBObject updatedMongoDocument = updatedMongoDocuments.get(0);
+
+        Assert.assertEquals(25, updatedMongoDocument.get("price"));
+    }
+
+
+    @Test
     public void loadCollectionsWithMatchOperator() throws Exception {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
         mongoQueryOptions.addQuery(MongoAggregateOperator.MATCH, "{ 'price': 15}");
@@ -61,10 +82,9 @@ public class MongoManagerTest {
         Assert.assertEquals("{ \"_id\" : \"tutu\" , \"total\" : 15}", mongoObjects.get(0).toString());
         Assert.assertEquals("{ \"_id\" : \"tata\" , \"total\" : 30}", mongoObjects.get(1).toString());
     }
-
     @Before
     public void setUp() throws Exception {
-        Mongo mongo = new Mongo();
+        Mongo mongo = new Mongo("localhost", 33333);
         DB db = mongo.getDB("test");
 
         DBCollection dummyCollection = db.getCollection("dummyCollection");
@@ -74,7 +94,7 @@ public class MongoManagerTest {
         mongoManager = new MongoManager();
         serverConfiguration = new ServerConfiguration();
         serverConfiguration.setServerName("localhost");
-        serverConfiguration.setServerPort(27017);
+        serverConfiguration.setServerPort(33333);
     }
 
     private static void fillCollectionWithJsonData(DBCollection collection, String jsonResource) throws IOException {

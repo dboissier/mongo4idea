@@ -23,17 +23,23 @@ import com.intellij.ui.treeStructure.treetable.TreeTableModel;
 import com.intellij.ui.treeStructure.treetable.TreeTableTree;
 import com.intellij.util.containers.Convertor;
 import com.intellij.util.ui.ColumnInfo;
+import com.intellij.util.ui.SortableColumnModel;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.tree.TreeUtil;
-import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
+import com.mongodb.DBObject;
+import org.bson.types.ObjectId;
+import org.codinjutsu.tools.mongo.view.editor.MongoValueCellEditor;import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.codinjutsu.tools.mongo.view.renderer.MongoKeyCellRenderer;
 import org.codinjutsu.tools.mongo.view.renderer.MongoValueCellRenderer;
+import org.jetbrains.annotations.Nullable;
 
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import java.util.Date;
 
 public class JsonTreeTableView extends TreeTable {
 
@@ -55,28 +61,19 @@ public class JsonTreeTableView extends TreeTable {
         }
     };
 
-    private static final ColumnInfo VALUE = new ColumnInfo("Value") {
-        private final TableCellRenderer myRenderer = new MongoValueCellRenderer();
+    private static final ColumnInfo READONLY_VALUE = new ReadOnlyValueColumnInfo();
 
-        public Object valueOf(Object obj) {
-            JsonTreeNode node = (JsonTreeNode) obj;
-            return node.getDescriptor();
-        }
+    private static final ColumnInfo WRITABLE_VALUE = new WritableColumnInfo();
 
-        @Override
-        public TableCellRenderer getRenderer(Object o) {
-            return myRenderer;
-        }
+    public static final ColumnInfo[] COLUMNS_FOR_READING = new ColumnInfo[]{KEY, READONLY_VALUE};
+    public static final ColumnInfo[] COLUMNS_FOR_WRITING = new ColumnInfo[]{KEY, WRITABLE_VALUE};
 
-        @Override
-        public boolean isCellEditable(Object o) {
-            return false;
-        }
-    };
-    private static final ColumnInfo[] COLUMNS = new ColumnInfo[]{KEY, VALUE};
+    private final ColumnInfo[] columns;
 
-    public JsonTreeTableView(TreeNode rootNode) {
-        super(new ListTreeTableModelOnColumns(rootNode, COLUMNS));
+    public JsonTreeTableView(TreeNode rootNode, ColumnInfo[] columnInfos) {
+        super(new ListTreeTableModelOnColumns(rootNode, columnInfos));
+        this.columns = columnInfos;
+
         final TreeTableTree tree = getTree();
 
         tree.setShowsRootHandles(true);
@@ -109,7 +106,65 @@ public class JsonTreeTableView extends TreeTable {
 
         Object node = treePath.getLastPathComponent();
 
-        TableCellRenderer renderer = COLUMNS[column].getRenderer(node);
+        TableCellRenderer renderer = this.columns[column].getRenderer(node);
         return renderer == null ? super.getCellRenderer(row, column) : renderer;
+    }
+
+    private static class ReadOnlyValueColumnInfo extends ColumnInfo {
+        private final TableCellRenderer myRenderer = new MongoValueCellRenderer();
+
+        public ReadOnlyValueColumnInfo() {
+            super("Value");
+        }
+
+        public Object valueOf(Object obj) {
+            JsonTreeNode node = (JsonTreeNode) obj;
+            return node.getDescriptor();
+        }
+
+        @Override
+        public TableCellRenderer getRenderer(Object o) {
+            return myRenderer;
+        }
+
+        @Nullable
+        @Override
+        public boolean isCellEditable(Object o) {
+            return false;
+        }
+    }
+
+    private static class WritableColumnInfo extends ReadOnlyValueColumnInfo {
+        private final TableCellEditor myEditor = new MongoValueCellEditor();
+
+        @Override
+        public boolean isCellEditable(Object o) {
+            JsonTreeNode treeNode = (JsonTreeNode) o;
+            Object value = treeNode.getDescriptor().getValue();
+            if (value instanceof DBObject) {
+                return false;
+            }
+
+            if (value instanceof Date) {
+                return false;
+            }
+
+            if (value instanceof ObjectId) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Nullable
+        @Override
+        public TableCellEditor getEditor(Object o) {
+            return myEditor;
+        }
+
+        @Override
+        public void setValue(Object o, Object value) {
+            System.out.println("node = " + o + " - value =" + String.valueOf(value));
+        }
     }
 }

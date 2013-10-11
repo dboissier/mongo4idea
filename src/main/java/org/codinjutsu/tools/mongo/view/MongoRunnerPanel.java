@@ -26,6 +26,7 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.ui.awt.RelativePoint;
 import com.intellij.ui.components.panels.NonOpaquePanel;
 import com.intellij.util.ui.UIUtil;
+import com.mongodb.DBObject;
 import com.mongodb.util.JSONParseException;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
@@ -48,7 +49,7 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
     private final ServerConfiguration configuration;
     private final MongoCollection mongoCollection;
 
-    public MongoRunnerPanel(Project project, MongoManager mongoManager, ServerConfiguration configuration, MongoCollection mongoCollection) {
+    public MongoRunnerPanel(Project project, final MongoManager mongoManager, final ServerConfiguration configuration, final MongoCollection mongoCollection) {
         this.mongoManager = mongoManager;
         this.mongoCollection = mongoCollection;
         this.configuration = configuration;
@@ -60,7 +61,12 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
 
         splitter.setFirstComponent(queryPanel);
 
-        resultPanel = createResultPanel(project);
+        resultPanel = createResultPanel(project, new UpdateCallback() {
+
+            public void updateMongoDocument(DBObject mongoDocument) {
+                mongoManager.update(configuration, mongoCollection, mongoDocument);
+            }
+        });
         splitter.setSecondComponent(resultPanel);
 
         splitter.setProportion(0.30f);
@@ -69,8 +75,8 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
         add(rootPanel);
     }
 
-    private MongoResultPanel createResultPanel(Project project) {
-        return new MongoResultPanel(project);
+    private MongoResultPanel createResultPanel(Project project, UpdateCallback updateCallback) {
+        return new MongoResultPanel(project, updateCallback);
     }
 
     public void installActions(MongoWindowManager.CloseAction closeAction) {
@@ -136,4 +142,7 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
         }
     }
 
+    interface UpdateCallback {
+        void updateMongoDocument(DBObject mongoDocument);
+    }
 }

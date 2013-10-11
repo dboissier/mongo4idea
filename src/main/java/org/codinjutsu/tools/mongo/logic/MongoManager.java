@@ -149,6 +149,32 @@ public class MongoManager {
 
     }
 
+    public void update(ServerConfiguration configuration, MongoCollection mongoCollection, DBObject mongoDocument) {
+        MongoClient mongo = null;
+        try {
+            String databaseName = mongoCollection.getDatabaseName();
+            mongo = createMongoClient(configuration.getServerName(), configuration.getServerPort(), databaseName);
+
+            DB database = mongo.getDB(databaseName);
+
+            String username = configuration.getUsername();
+            String password = configuration.getPassword();
+            if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
+                database.authenticate(username, password.toCharArray());
+            }
+
+            DBCollection collection = database.getCollection(mongoCollection.getName());
+
+            collection.save(mongoDocument);
+        } catch (UnknownHostException ex) {
+            throw new ConfigurationException(ex);
+        } finally {
+            if (mongo != null) {
+                mongo.close();
+            }
+        }
+    }
+
     private MongoClient createMongoClient(String serverName, int serverPort, String userDatabase) throws UnknownHostException {
         String textURI;
         if (StringUtils.isEmpty(userDatabase)) {

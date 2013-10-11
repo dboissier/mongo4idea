@@ -42,4 +42,14 @@ public class MongoResultDescriptor implements MongoNodeDescriptor {
     public String getFormattedValue() {
         return "";
     }
+
+    @Override
+    public String getValue() {
+        return null;
+    }
+
+    @Override
+    public void setValue(Object value) {
+
+    }
 }

@@ -24,111 +24,15 @@ import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoResultDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoValueDescriptor;
 
-import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 public class JsonTreeModel extends DefaultTreeModel {
 
 
-    private DefaultTreeModel customizedModel;
-
-    private MongoComparator mongoComparator;
-
-    private boolean needsUpdate = true;
-
-
     public JsonTreeModel(MongoCollectionResult mongoCollectionResult) {
         super(buildJsonTree(mongoCollectionResult));
-    }
-
-    @Override
-    public void reload() {
-        super.reload();
-        getCustomizedModel().reload();
-        needsUpdate = true;
-    }
-
-
-    private DefaultTreeModel getCustomizedModel() {
-        if (needsUpdate) {
-            needsUpdate = false;
-            rebuildCustomizedModel();
-        }
-        return customizedModel;
-
-    }
-
-    private void rebuildCustomizedModel() {
-        JsonTreeNode sourceRoot = (JsonTreeNode) super.getRoot();
-        JsonTreeNode sortedRoot = (JsonTreeNode) sourceRoot.clone();
-
-        sortChildNodes(sourceRoot, sortedRoot);
-
-        customizedModel = new DefaultTreeModel(sortedRoot);
-
-        Object[] listeners = listenerList.getListenerList();
-        for (int i = listeners.length - 2; i >= 0; i -= 2) {
-            if (listeners[i] == TreeModelListener.class) {
-                customizedModel.addTreeModelListener((TreeModelListener) listeners[i + 1]);
-            }
-        }
-
-        getCustomizedModel().reload();
-    }
-
-    private void sortChildNodes(JsonTreeNode source, JsonTreeNode target) {
-        List<JsonTreeNode> mongoNodeList = new LinkedList<JsonTreeNode>();
-        for (int i = 0; i < source.getChildCount(); i++) {
-            JsonTreeNode sourceChild = (JsonTreeNode) source.getChildAt(i);
-            JsonTreeNode targetChild = (JsonTreeNode) sourceChild.clone();
-
-            sortChildNodes(sourceChild, targetChild);
-            mongoNodeList.add(targetChild);
-        }
-
-        if (mongoComparator.isApplicable()) {
-            Collections.sort(mongoNodeList, mongoComparator);
-        }
-
-        for (JsonTreeNode mongoNode : mongoNodeList) {
-            target.add(mongoNode);
-        }
-
-    }
-
-    @Override
-    public int getChildCount(Object parent) {
-        return getCustomizedModel().getChildCount(parent);
-    }
-
-
-    @Override
-    public Object getRoot() {
-        return getCustomizedModel().getRoot();
-    }
-
-    @Override
-    public Object getChild(Object parent, int index) {
-        return getCustomizedModel().getChild(parent, index);
-    }
-
-
-    @Override
-    public int getIndexOfChild(Object parent, Object child) {
-        return getCustomizedModel().getIndexOfChild(parent, child);
-    }
-
-    @Override
-    public boolean isLeaf(Object node) {
-        return getCustomizedModel().isLeaf(node);
-    }
-
-    public void setMongoComparator(MongoComparator mongoComparator) {
-        this.mongoComparator = mongoComparator;
     }
 
 
@@ -146,6 +50,12 @@ public class JsonTreeModel extends DefaultTreeModel {
                 rootNode.add(currentNode);
             }
         }
+        return rootNode;
+    }
+
+    public static TreeNode buildJsonTree(String collectionName, DBObject mongoObject) {
+        JsonTreeNode rootNode = new JsonTreeNode(new MongoResultDescriptor(collectionName));
+        processDbObject(rootNode, mongoObject);
         return rootNode;
     }
 

@@ -52,7 +52,12 @@ public class MongoResultPanelTest {
     public void setUp() throws Exception {
         mongoResultPanel = GuiActionRunner.execute(new GuiQuery<MongoResultPanel>() {
             protected MongoResultPanel executeInEDT() {
-                return new MongoResultPanel(DummyProject.getInstance());
+                return new MongoResultPanel(DummyProject.getInstance(), new MongoRunnerPanel.UpdateCallback() {
+                    @Override
+                    public void updateMongoDocument(DBObject mongoDocument) {
+                        //todo need to make a logstring here
+                    }
+                });
             }
         });
 
@@ -63,7 +68,7 @@ public class MongoResultPanelTest {
     public void displayTreeWithASimpleArray() throws Exception {
         mongoResultPanel.updateResultTableTree(createCollectionResults("simpleArray.json", "mycollec"));
 
-        frameFixture.table().cellReader(new MyJTableCellReader())
+        frameFixture.table("resultTreeTable").cellReader(new MyJTableCellReader())
                 .requireColumnCount(2)
                 .requireContents(new String[][]{
                         {"[0]", "\"toto\""},
@@ -77,7 +82,7 @@ public class MongoResultPanelTest {
     public void testDisplayTreeWithASimpleDocument() throws Exception {
         mongoResultPanel.updateResultTableTree(createCollectionResults("simpleDocument.json", "mycollec"));
 
-        frameFixture.table().cellReader(new MyJTableCellReader())
+        frameFixture.table("resultTreeTable").cellReader(new MyJTableCellReader())
                 .requireColumnCount(2)
                 .requireContents(new String[][]{
                         {"[0]", "{ \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"image\" :  null }"},
@@ -92,8 +97,8 @@ public class MongoResultPanelTest {
     @Test
     public void testDisplayTreeWithAStructuredDocument() throws Exception {
         mongoResultPanel.updateResultTableTree(createCollectionResults("structuredDocument.json", "mycollec"));
-        TreeUtil.expandAll(mongoResultPanel.jsonTreeTableView.getTree());
-        frameFixture.table().cellReader(new MyJTableCellReader())
+        TreeUtil.expandAll(mongoResultPanel.resultTableView.getTree());
+        frameFixture.table("resultTreeTable").cellReader(new MyJTableCellReader())
                 .requireColumnCount(2)
                 .requireContents(new String[][]{
                         {"[0]", "{ \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}"},
@@ -115,8 +120,8 @@ public class MongoResultPanelTest {
     public void testDisplayTreeWithAnArrayOfStructuredDocument() throws Exception {
         mongoResultPanel.updateResultTableTree(createCollectionResults("arrayOfDocuments.json", "mycollec"));
 
-        TreeUtil.expandAll(mongoResultPanel.jsonTreeTableView.getTree());
-        frameFixture.table().cellReader(new MyJTableCellReader())
+        TreeUtil.expandAll(mongoResultPanel.resultTableView.getTree());
+        frameFixture.table("resultTreeTable").cellReader(new MyJTableCellReader())
                 .requireContents(new String[][]{
 
                         {"[0]", "{ \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}"},
@@ -144,62 +149,18 @@ public class MongoResultPanelTest {
                 });
     }
 
-//    @Test
-//    public void testDisplayTreeSortedbyKey() throws Exception {
-//        mongoResultPanel.updateResultTableTree(createCollectionResults("structuredDocument.json", "mycollec"));
-//
-//        mongoResultPanel.setSortedByKey(true);
-//
-//        Tree tree = uiSpecPanel.getTree();
-//        tree.setCellValueConverter(new TreeCellConverter());
-//        tree.contentEquals(
-//                "results of 'mycollec'\n" +
-//                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}\n" +
-//                        "    \"doc\": { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}\n" +
-//                        "      \"keyWord\": [ \"toto\" , true , 10]\n" +
-//                        "        [0] \"toto\"\n" +
-//                        "        [1] true\n" +
-//                        "        [2] 10\n" +
-//                        "      \"nbPages\": 10\n" +
-//                        "      \"title\": \"hello\"\n" +
-//                        "    \"id\": 0\n" +
-//                        "    \"label\": \"toto\"\n" +
-//                        "    \"visible\": false\n"
-//        ).check();
-//
-//
-//        mongoResultPanel.setSortedByKey(false);
-//
-//        tree = uiSpecPanel.getTree();
-//        tree.setCellValueConverter(new TreeCellConverter());
-//        tree.contentEquals(
-//                "results of 'mycollec'\n" +
-//                        "  [0] { \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}\n" +
-//                        "    \"id\": 0\n" +
-//                        "    \"label\": \"toto\"\n" +
-//                        "    \"visible\": false\n" +
-//                        "    \"doc\": { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}\n" +
-//                        "      \"title\": \"hello\"\n" +
-//                        "      \"nbPages\": 10\n" +
-//                        "      \"keyWord\": [ \"toto\" , true , 10]\n" +
-//                        "        [0] \"toto\"\n" +
-//                        "        [1] true\n" +
-//                        "        [2] 10\n"
-//        ).check();
-//    }
-
     @Test
     public void testCopyMongoObjectNodeValue() throws Exception {
         mongoResultPanel.updateResultTableTree(createCollectionResults("structuredDocument.json", "mycollec"));
-        TreeUtil.expandAll(mongoResultPanel.jsonTreeTableView.getTree());
+        TreeUtil.expandAll(mongoResultPanel.resultTableView.getTree());
 
-        mongoResultPanel.jsonTreeTableView.setRowSelectionInterval(0, 0);
+        mongoResultPanel.resultTableView.setRowSelectionInterval(0, 0);
         assertEquals("{ \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}", mongoResultPanel.getSelectedNodeStringifiedValue());
 
-        mongoResultPanel.jsonTreeTableView.setRowSelectionInterval(2, 2);
+        mongoResultPanel.resultTableView.setRowSelectionInterval(2, 2);
         assertEquals("{ \"label\" : \"toto\"}", mongoResultPanel.getSelectedNodeStringifiedValue());
 
-        mongoResultPanel.jsonTreeTableView.setRowSelectionInterval(4, 4);
+        mongoResultPanel.resultTableView.setRowSelectionInterval(4, 4);
         assertEquals("{ \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}", mongoResultPanel.getSelectedNodeStringifiedValue());
     }
 
@@ -207,9 +168,9 @@ public class MongoResultPanelTest {
     public void copyMongoResults() throws Exception {
         mongoResultPanel.updateResultTableTree(createCollectionResults("arrayOfDocuments.json", "mycollec"));
 
-        TreeUtil.expandAll(mongoResultPanel.jsonTreeTableView.getTree());
+        TreeUtil.expandAll(mongoResultPanel.resultTableView.getTree());
 
-        frameFixture.table().cellReader(new MyJTableCellReader())
+        frameFixture.table("resultTreeTable").cellReader(new MyJTableCellReader())
                 .requireContents(new String[][]{
                         {"[0]", "{ \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}"},
                         {"\"id\"", "0"},
