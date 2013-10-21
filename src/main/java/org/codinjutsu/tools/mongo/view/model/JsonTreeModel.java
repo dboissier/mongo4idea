@@ -21,11 +21,14 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
+import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoResultDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoValueDescriptor;
 
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
+import java.util.Enumeration;
+import java.util.LinkedList;
 import java.util.List;
 
 public class JsonTreeModel extends DefaultTreeModel {
@@ -53,8 +56,8 @@ public class JsonTreeModel extends DefaultTreeModel {
         return rootNode;
     }
 
-    public static TreeNode buildJsonTree(String collectionName, DBObject mongoObject) {
-        JsonTreeNode rootNode = new JsonTreeNode(new MongoResultDescriptor(collectionName));
+    public static TreeNode buildJsonTree(DBObject mongoObject) {
+        JsonTreeNode rootNode = new JsonTreeNode(new MongoResultDescriptor(mongoObject));//TODO crappy
         processDbObject(rootNode, mongoObject);
         return rootNode;
     }
@@ -83,4 +86,44 @@ public class JsonTreeModel extends DefaultTreeModel {
         }
     }
 
+    public static DBObject buildDBObject(JsonTreeNode rootNode) {
+        BasicDBObject basicDBObject = new BasicDBObject();
+        Enumeration children = rootNode.children();
+        while (children.hasMoreElements()) {
+            JsonTreeNode node = (JsonTreeNode) children.nextElement();
+            MongoKeyValueDescriptor descriptor = (MongoKeyValueDescriptor) node.getDescriptor();
+            Object value = descriptor.getValue();
+            if (value instanceof DBObject) {
+                if (value instanceof BasicDBList) {
+                    basicDBObject.put(descriptor.getKey(), buildDBList(node));
+                } else {
+                    basicDBObject.put(descriptor.getKey(), buildDBObject(node));
+                }
+            } else {
+                basicDBObject.put(descriptor.getKey(), value);
+            }
+        }
+
+        return basicDBObject;
+    }
+
+    private static DBObject buildDBList(JsonTreeNode parentNode) {
+        BasicDBList basicDBList = new BasicDBList();
+        Enumeration children = parentNode.children();
+        while (children.hasMoreElements()) {
+            JsonTreeNode node = (JsonTreeNode) children.nextElement();
+            MongoValueDescriptor descriptor = (MongoValueDescriptor) node.getDescriptor();
+            Object value = descriptor.getValue();
+            if (value instanceof DBObject) {
+                if (value instanceof BasicDBList) {
+                    basicDBList.add(buildDBList(node));
+                } else {
+                    basicDBList.add(buildDBObject(node));
+                }
+            } else {
+                basicDBList.add(value);
+            }
+        }
+        return basicDBList;
+    }
 }

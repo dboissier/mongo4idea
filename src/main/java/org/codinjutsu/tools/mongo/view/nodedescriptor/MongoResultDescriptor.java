@@ -18,13 +18,21 @@ package org.codinjutsu.tools.mongo.view.nodedescriptor;
 
 import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.ColoredTreeCellRenderer;
+import com.mongodb.DBObject;
 
 public class MongoResultDescriptor implements MongoNodeDescriptor {
 
     private final String formattedText;
+    private DBObject mongoObject;
 
     public MongoResultDescriptor(String collectionName) {
         formattedText = String.format("results of '%s'", collectionName);
+        mongoObject = null;
+    }
+
+    public MongoResultDescriptor(DBObject mongoObject) {
+        this("");
+        this.mongoObject = mongoObject;
     }
 
     public void renderValue(ColoredTableCellRenderer cellRenderer, boolean isNodeExpanded) {

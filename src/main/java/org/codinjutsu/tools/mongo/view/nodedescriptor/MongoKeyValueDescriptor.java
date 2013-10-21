@@ -20,6 +20,7 @@ import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.mongodb.DBObject;
+import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.utils.StringUtils;
 
 import java.util.Date;
@@ -126,6 +127,8 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
             return new MongoKeyValueDescriptor(key, value, TEXT_ATTRIBUTES_PROVIDER.getBooleanAttribute());
         } else if (value instanceof Integer) {
             return new MongoKeyValueDescriptor(key, value, TEXT_ATTRIBUTES_PROVIDER.getIntegerAttribute());
+        } else if (value instanceof ObjectId) {
+            return new MongoKeyValueDescriptor(key, value, TEXT_ATTRIBUTES_PROVIDER.getObjectIdAttribute());
         } else if (value instanceof DBObject) {
             return new MongoKeyValueDescriptor(key, value, TEXT_ATTRIBUTES_PROVIDER.getDBObjectAttribute());
         } else {

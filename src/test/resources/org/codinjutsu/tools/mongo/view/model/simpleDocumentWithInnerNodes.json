@@ -1,0 +1,11 @@
+{
+    "_id": "50b8d63414f85401b9268b99",
+    "label": "toto",
+    "visible": false,
+    "image": null,
+    "innerdoc": {
+        "title" : "What?",
+        "numberOfPages": 52,
+        "soldOut": true
+    }
+}

@@ -18,9 +18,11 @@ package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.openapi.command.impl.DummyProject;
 import com.intellij.util.ui.tree.TreeUtil;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.apache.commons.io.IOUtils;
+import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.fest.swing.driver.BasicJTableCellReader;
@@ -28,8 +30,10 @@ import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiQuery;
 import org.fest.swing.fixture.Containers;
 import org.fest.swing.fixture.FrameFixture;
+import org.fest.swing.fixture.JTableFixture;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.swing.*;
@@ -52,10 +56,20 @@ public class MongoResultPanelTest {
     public void setUp() throws Exception {
         mongoResultPanel = GuiActionRunner.execute(new GuiQuery<MongoResultPanel>() {
             protected MongoResultPanel executeInEDT() {
-                return new MongoResultPanel(DummyProject.getInstance(), new MongoRunnerPanel.UpdateCallback() {
+                return new MongoResultPanel(DummyProject.getInstance(), new MongoRunnerPanel.MongoDocumentOperations() {
                     @Override
                     public void updateMongoDocument(DBObject mongoDocument) {
-                        //todo need to make a logstring here
+
+                    }
+
+                    @Override
+                    public DBObject getMongoDocument(ObjectId objectId) {
+                        return new BasicDBObject();
+                    }
+
+                    @Override
+                    public void deleteMongoDocument(DBObject mongoDocument) {
+
                     }
                 });
             }
@@ -150,6 +164,42 @@ public class MongoResultPanelTest {
     }
 
     @Test
+    @Ignore
+    public void testEditMongoDocument() throws Exception {
+        MongoCollectionResult mongoCollectionResult = createCollectionResults("simpleDocumentForEdition.json", "mycollec");
+
+//        Hack to convert an id into an ObjectId
+//        DBObject document = mongoCollectionResult.getMongoObjects().get(0);
+//        document.put("_id", new ObjectId(String.valueOf(document.get("_id"))));
+
+        mongoResultPanel.updateResultTableTree(mongoCollectionResult);
+
+        JTableFixture resultTableFixture =
+                frameFixture.table("resultTreeTable")
+                        .cellReader(new MyJTableCellReader())
+                        .requireContents(new String[][]{
+                                {"[0]", "{ \"_id\" : \"50b8d63414f85401b9268b99\" , \"label\" : \"toto\" , \"visible\" : false , \"image\" :  null }"},
+                                {"\"_id\"", "\"50b8d63414f85401b9268b99\""},
+                                {"\"label\"", "\"toto\""},
+                                {"\"visible\"", "false"},
+                                {"\"image\"", "null"}
+                        });
+
+        resultTableFixture.cell(resultTableFixture.cell("\"50b8d63414f85401b9268b99\"")).click();
+
+        frameFixture.table("editionTreeTable").cellReader(new MyJTableCellReader())
+                .requireColumnCount(2)
+                .requireContents(new String[][]{
+                        {"[0]", "{ \"_id\" : 50b8d63414f85401b9268b99 , \"label\" : \"toto\" , \"visible\" : false , \"image\" :  null }"},
+                        {"\"_id\"", "50b8d63414f85401b9268b99"},
+                        {"\"label\"", "\"toto\""},
+                        {"\"visible\"", "false"},
+                        {"\"image\"", "null"}
+                });
+
+    }
+
+    @Test
     public void testCopyMongoObjectNodeValue() throws Exception {
         mongoResultPanel.updateResultTableTree(createCollectionResults("structuredDocument.json", "mycollec"));
         TreeUtil.expandAll(mongoResultPanel.resultTableView.getTree());
@@ -174,7 +224,7 @@ public class MongoResultPanelTest {
                 .requireContents(new String[][]{
                         {"[0]", "{ \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}"},
                         {"\"id\"", "0"},
-                        {"\"label\"","\"toto\""},
+                        {"\"label\"", "\"toto\""},
                         {"\"visible\"", "false"},
                         {"\"doc\"", "{ \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}"},
                         {"\"title\"", "\"hello\""},
@@ -192,7 +242,7 @@ public class MongoResultPanelTest {
                         {"\"nbPages\"", "1"},
                         {"\"keyWord\"", "[ \"tutu\" , false , 10]"},
                         {"[0]", "\"tutu\""},
-                        {"[1]","false"},
+                        {"[1]", "false"},
                         {"[2]", "10"},
                 });
 

@@ -36,6 +36,8 @@ public interface StyleAttributesProvider {
 
     SimpleTextAttributes getDBObjectAttribute();
 
+    SimpleTextAttributes getObjectIdAttribute();
+
     Icon getAddIcon();
 
     Icon getCloseIcon();
@@ -47,4 +49,6 @@ public interface StyleAttributesProvider {
     Icon getSettingsIcon();
 
     Icon getRefreshIcon();
+
+    Icon getEditIcon();
 }

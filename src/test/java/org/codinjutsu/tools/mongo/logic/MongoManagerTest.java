@@ -68,6 +68,23 @@ public class MongoManagerTest {
 
 
     @Test
+    public void deleteMongoDocument() throws Exception {
+        MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
+        mongoQueryOptions.addQuery(MongoAggregateOperator.MATCH, "{ 'label': 'tete', }");
+        MongoCollection mongoCollection = new MongoCollection("dummyCollection", "test");
+        MongoCollectionResult initialData = mongoManager.loadCollectionValues(serverConfiguration, mongoCollection, mongoQueryOptions);
+        Assert.assertEquals(1, initialData.getMongoObjects().size());
+        DBObject initialMongoDocument = initialData.getMongoObjects().get(0);
+
+        mongoManager.delete(serverConfiguration, mongoCollection, initialMongoDocument);
+
+        MongoCollectionResult deleteResult = mongoManager.loadCollectionValues(serverConfiguration, mongoCollection, mongoQueryOptions);
+        List<DBObject> updatedMongoDocuments = deleteResult.getMongoObjects();
+        Assert.assertEquals(0, updatedMongoDocuments.size());
+    }
+
+
+    @Test
     public void loadCollectionsWithMatchOperator() throws Exception {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
         mongoQueryOptions.addQuery(MongoAggregateOperator.MATCH, "{ 'price': 15}");

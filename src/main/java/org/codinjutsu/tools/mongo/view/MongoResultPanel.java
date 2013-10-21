@@ -23,12 +23,14 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.treetable.TreeTableTree;
 import com.intellij.util.ui.tree.TreeUtil;
 import com.mongodb.DBObject;
 import org.apache.commons.lang.StringUtils;
+import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.CopyResultAction;
@@ -40,45 +42,118 @@ import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoResultDescriptor;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 import java.util.List;
 
 public class MongoResultPanel extends JPanel implements Disposable {
 
-    private final MongoRunnerPanel.UpdateCallback updateCallback;
+    private final MongoRunnerPanel.MongoDocumentOperations mongoDocumentOperations;
     private JPanel resultToolbar;
     private JPanel mainPanel;
-    private JPanel treePanel;
-    private JPanel editionPanel;
+    private JPanel containerPanel;
+    private Splitter splitter;
+    private JPanel resultTreePanel;
+    private MongoEditionPanel mongoEditionPanel;
 
     JsonTreeTableView resultTableView;
-    JsonTreeTableView editTableView;
 
-    public MongoResultPanel(Project project, MongoRunnerPanel.UpdateCallback updateCallback) {
-        this.updateCallback = updateCallback;
+
+    public MongoResultPanel(Project project, MongoRunnerPanel.MongoDocumentOperations mongoDocumentOperations) {
+        this.mongoDocumentOperations = mongoDocumentOperations;
         setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
 
-        treePanel.setLayout(new BorderLayout());
+        splitter = new Splitter(false, 0.6f);
+
+        resultTreePanel = new JPanel(new BorderLayout());
+
+        splitter.setFirstComponent(resultTreePanel);
+
+        mongoEditionPanel = createMongoEditionPanel();
+
+        containerPanel.setLayout(new BorderLayout());
+        containerPanel.add(splitter);
 
         resultToolbar.setLayout(new BorderLayout());
         Disposer.register(project, this);
+    }
+
+    private MongoEditionPanel createMongoEditionPanel() {
+        MongoEditionPanel panel = new MongoEditionPanel();
+
+        panel.init(mongoDocumentOperations, new ActionCallback() {
+            public void afterOperation() {
+                hideEditionPanel();
+            }
+        });
+        return panel;
+    }
+
+    private void hideEditionPanel() {
+        splitter.setSecondComponent(null);
     }
 
 
     public void updateResultTableTree(MongoCollectionResult mongoCollectionResult) {
         resultTableView = new JsonTreeTableView(JsonTreeModel.buildJsonTree(mongoCollectionResult), JsonTreeTableView.COLUMNS_FOR_READING);
         resultTableView.setName("resultTreeTable");
-        treePanel.invalidate();
-        treePanel.removeAll();
-        treePanel.add(new JBScrollPane(resultTableView));
 
-        treePanel.validate();
+        resultTableView.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                if (mouseEvent.getClickCount() == 2 && MongoResultPanel.this.isSelectedNodeObjectId()) {
+                    MongoResultPanel.this.editSelectedMongoDocument();
+                }
+            }
+        });
+
+        resultTreePanel.invalidate();
+        resultTreePanel.removeAll();
+        resultTreePanel.add(new JBScrollPane(resultTableView));
+        resultTreePanel.validate();
     }
 
-    public void editMongoDocument(DBObject mongoDocument) {
-        editTableView = new JsonTreeTableView(JsonTreeModel.buildJsonTree("", mongoDocument), JsonTreeTableView.COLUMNS_FOR_READING);
+    public void editSelectedMongoDocument() {
 
+        DBObject mongoDocument = getSelectedMongoDocument();
+
+        if (mongoDocument == null) {
+            return;
+        }
+
+        mongoEditionPanel.updateEditionTree(mongoDocument);
+
+        splitter.setSecondComponent(mongoEditionPanel);
+    }
+
+    private DBObject getSelectedMongoDocument() {
+        TreeTableTree tree = resultTableView.getTree();
+        JsonTreeNode treeNode = (JsonTreeNode) tree.getLastSelectedPathComponent();
+        if (treeNode == null) {
+            return null;
+        }
+
+        MongoNodeDescriptor descriptor = treeNode.getDescriptor();
+        Object value = descriptor.getValue();
+        if (value instanceof ObjectId) {
+            return mongoDocumentOperations.getMongoDocument((ObjectId) value);
+        }
+
+        return null;
+    }
+
+    public boolean isSelectedNodeObjectId() {
+        TreeTableTree tree = resultTableView.getTree();
+        JsonTreeNode treeNode = (JsonTreeNode) tree.getLastSelectedPathComponent();
+        if (treeNode == null) {
+            return false;
+        }
+
+        Object value = treeNode.getDescriptor().getValue();
+
+        return value instanceof ObjectId;
     }
 
     public void installActions() {
@@ -162,6 +237,10 @@ public class MongoResultPanel extends JPanel implements Disposable {
     @Override
     public void dispose() {
         resultTableView = null;
-        editTableView = null;
+        mongoEditionPanel.dispose();
+    }
+
+    public interface ActionCallback {
+        void afterOperation();
     }
 }

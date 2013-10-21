@@ -35,6 +35,7 @@ public class DefaultStyleAttributesProvider implements StyleAttributesProvider {
     private static final SimpleTextAttributes STRING_TEXT_ATTRIBUTE = new SimpleTextAttributes(Font.PLAIN, LIGNT_GREEN);
     private static final SimpleTextAttributes NULL_TEXT_ATTRIBUTE = new SimpleTextAttributes(Font.ITALIC, LIGHT_GRAY);
     private static final SimpleTextAttributes DBOBJECT_TEXT_ATTRIBUTE = new SimpleTextAttributes(Font.BOLD, LIGHT_GRAY);
+    private static final SimpleTextAttributes OBJECT_ID_TEXT_ATTRIBUTE = INTEGER_TEXT_ATTRIBUTE;
 
     @Override
     public SimpleTextAttributes getIndexAttribute() {
@@ -72,6 +73,11 @@ public class DefaultStyleAttributesProvider implements StyleAttributesProvider {
     }
 
     @Override
+    public SimpleTextAttributes getObjectIdAttribute() {
+        return OBJECT_ID_TEXT_ATTRIBUTE;
+    }
+
+    @Override
     public Icon getAddIcon() {
         return GuiUtils.loadIcon("add.png");
     }
@@ -99,5 +105,10 @@ public class DefaultStyleAttributesProvider implements StyleAttributesProvider {
     @Override
     public Icon getRefreshIcon() {
         return GuiUtils.loadIcon("refresh.png");
+    }
+
+    @Override
+    public Icon getEditIcon() {
+        return GuiUtils.loadIcon("edit.png");
     }
 }

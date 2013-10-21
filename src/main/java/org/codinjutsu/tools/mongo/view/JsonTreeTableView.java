@@ -23,15 +23,17 @@ import com.intellij.ui.treeStructure.treetable.TreeTableModel;
 import com.intellij.ui.treeStructure.treetable.TreeTableTree;
 import com.intellij.util.containers.Convertor;
 import com.intellij.util.ui.ColumnInfo;
-import com.intellij.util.ui.SortableColumnModel;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.tree.TreeUtil;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
+import org.codinjutsu.tools.mongo.view.editor.MongoDatePickerCellEditor;
 import org.codinjutsu.tools.mongo.view.editor.MongoValueCellEditor;import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.codinjutsu.tools.mongo.view.renderer.MongoKeyCellRenderer;
 import org.codinjutsu.tools.mongo.view.renderer.MongoValueCellRenderer;
+import org.jdesktop.swingx.event.DateSelectionEvent;
+import org.jdesktop.swingx.event.DateSelectionListener;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.table.TableCellEditor;
@@ -39,6 +41,10 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class JsonTreeTableView extends TreeTable {
@@ -104,48 +110,67 @@ public class JsonTreeTableView extends TreeTable {
         TreePath treePath = getTree().getPathForRow(row);
         if (treePath == null) return super.getCellRenderer(row, column);
 
-        Object node = treePath.getLastPathComponent();
+        JsonTreeNode node = (JsonTreeNode) treePath.getLastPathComponent();
 
         TableCellRenderer renderer = this.columns[column].getRenderer(node);
         return renderer == null ? super.getCellRenderer(row, column) : renderer;
     }
 
-    private static class ReadOnlyValueColumnInfo extends ColumnInfo {
+    @Override
+    public TableCellEditor getCellEditor(int row, int column) {
+        TreePath treePath = getTree().getPathForRow(row);
+        if (treePath == null) return super.getCellEditor(row, column);
+
+        JsonTreeNode node = (JsonTreeNode) treePath.getLastPathComponent();
+        TableCellEditor editor = columns[column].getEditor(node);
+        return editor == null ? super.getCellEditor(row, column) : editor;
+    }
+
+    private static class ReadOnlyValueColumnInfo extends ColumnInfo<JsonTreeNode, MongoNodeDescriptor> {
         private final TableCellRenderer myRenderer = new MongoValueCellRenderer();
 
         public ReadOnlyValueColumnInfo() {
             super("Value");
         }
 
-        public Object valueOf(Object obj) {
-            JsonTreeNode node = (JsonTreeNode) obj;
-            return node.getDescriptor();
+        public MongoNodeDescriptor valueOf(JsonTreeNode treeNode) {
+            return treeNode.getDescriptor();
         }
 
         @Override
-        public TableCellRenderer getRenderer(Object o) {
+        public TableCellRenderer getRenderer(JsonTreeNode o) {
             return myRenderer;
         }
 
         @Nullable
         @Override
-        public boolean isCellEditable(Object o) {
+        public boolean isCellEditable(JsonTreeNode o) {
             return false;
         }
     }
 
-    private static class WritableColumnInfo extends ReadOnlyValueColumnInfo {
-        private final TableCellEditor myEditor = new MongoValueCellEditor();
+    private static class WritableColumnInfo extends ColumnInfo<JsonTreeNode, Object> {
+
+        private static final DateFormat DD_MM_YYYY = new SimpleDateFormat("dd/MM/yyyy");
+
+        private final TableCellRenderer myRenderer = new MongoValueCellRenderer();
+        private final TableCellEditor defaultEditor = new MongoValueCellEditor();
+
+
+        public WritableColumnInfo() {
+            super("Value");
+        }
 
         @Override
-        public boolean isCellEditable(Object o) {
-            JsonTreeNode treeNode = (JsonTreeNode) o;
+        public TableCellRenderer getRenderer(JsonTreeNode o) {
+            return myRenderer;
+        }
+
+
+        @Override
+        public boolean isCellEditable(JsonTreeNode treeNode) {
             Object value = treeNode.getDescriptor().getValue();
             if (value instanceof DBObject) {
-                return false;
-            }
-
-            if (value instanceof Date) {
                 return false;
             }
 
@@ -158,13 +183,38 @@ public class JsonTreeTableView extends TreeTable {
 
         @Nullable
         @Override
-        public TableCellEditor getEditor(Object o) {
-            return myEditor;
+        public TableCellEditor getEditor(final JsonTreeNode treeNode) {
+            Object value = treeNode.getDescriptor().getValue();
+            if (value instanceof Date) {
+                return buildDateCellEditor(treeNode);
+            }
+            return defaultEditor;
+        }
+
+        private static MongoDatePickerCellEditor buildDateCellEditor(final JsonTreeNode treeNode) {
+            final MongoDatePickerCellEditor dateEditor = new MongoDatePickerCellEditor();
+
+//  Note from dev: Quite ugly because when clicking on the button to open popup calendar, stopCellEdition is invoked.
+//                 From that point, impossible to set the selected data in the node description
+            dateEditor.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent actionEvent) {
+                    treeNode.getDescriptor().setValue(dateEditor.getCellEditorValue());
+                }
+            });
+            return dateEditor;
+        }
+
+        public Object valueOf(JsonTreeNode treeNode) {
+            return treeNode.getDescriptor().getValue();
+
         }
 
         @Override
-        public void setValue(Object o, Object value) {
-            System.out.println("node = " + o + " - value =" + String.valueOf(value));
+        public void setValue(JsonTreeNode treeNode, Object value) {
+            treeNode.getDescriptor().setValue(value);
         }
+
     }
+
 }

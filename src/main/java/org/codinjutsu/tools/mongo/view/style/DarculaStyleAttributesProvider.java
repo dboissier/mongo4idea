@@ -25,9 +25,9 @@ import java.awt.*;
 public class DarculaStyleAttributesProvider implements StyleAttributesProvider {
 
     private static final Color GREEN = new Color(165, 194, 97);
-    private static final Color ORANGE = new Color(204, 120, 50);
+    public static final Color ORANGE = new Color(204, 120, 50);
     private static final Color GRAY = new Color(128, 128, 128);
-    private static final Color BLUE = new Color(104, 151, 187);
+    public static final Color BLUE = new Color(104, 151, 187);
 
     private static final SimpleTextAttributes INDEX = new SimpleTextAttributes(Font.BOLD, Color.WHITE);
     private static final SimpleTextAttributes KEY_VALUE = new SimpleTextAttributes(Font.BOLD, ORANGE);
@@ -36,6 +36,7 @@ public class DarculaStyleAttributesProvider implements StyleAttributesProvider {
     private static final SimpleTextAttributes STRING_TEXT_ATTRIBUTE = new SimpleTextAttributes(Font.PLAIN, GREEN);
     private static final SimpleTextAttributes NULL_TEXT_ATTRIBUTE = new SimpleTextAttributes(Font.ITALIC, GRAY);
     private static final SimpleTextAttributes DBOBJECT_TEXT_ATTRIBUTE = new SimpleTextAttributes(Font.BOLD, GRAY);
+    private static final SimpleTextAttributes OBJECT_ID_TEXT_ATTRIBUTE = INTEGER_TEXT_ATTRIBUTE;
 
     @Override
     public SimpleTextAttributes getIndexAttribute() {
@@ -73,6 +74,11 @@ public class DarculaStyleAttributesProvider implements StyleAttributesProvider {
     }
 
     @Override
+    public SimpleTextAttributes getObjectIdAttribute() {
+        return OBJECT_ID_TEXT_ATTRIBUTE;
+    }
+
+    @Override
     public Icon getAddIcon() {
         return GuiUtils.loadIcon("add_dark.png");
     }
@@ -100,5 +106,10 @@ public class DarculaStyleAttributesProvider implements StyleAttributesProvider {
     @Override
     public Icon getRefreshIcon() {
         return GuiUtils.loadIcon("refresh_dark.png");
+    }
+
+    @Override
+    public Icon getEditIcon() {
+        return GuiUtils.loadIcon("edit_dark.png");
     }
 }

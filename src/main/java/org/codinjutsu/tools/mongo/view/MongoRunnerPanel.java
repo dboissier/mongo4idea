@@ -29,6 +29,7 @@ import com.intellij.util.ui.UIUtil;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSONParseException;
 import org.apache.commons.lang.StringUtils;
+import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
@@ -61,10 +62,18 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
 
         splitter.setFirstComponent(queryPanel);
 
-        resultPanel = createResultPanel(project, new UpdateCallback() {
+        resultPanel = createResultPanel(project, new MongoDocumentOperations() {
+
+            public DBObject getMongoDocument(ObjectId objectId) {
+                return mongoManager.findMongoDocument(configuration, mongoCollection, objectId);
+            }
 
             public void updateMongoDocument(DBObject mongoDocument) {
                 mongoManager.update(configuration, mongoCollection, mongoDocument);
+            }
+
+            public void deleteMongoDocument(DBObject mongoDocument) {
+                mongoManager.delete(configuration, mongoCollection, mongoDocument);
             }
         });
         splitter.setSecondComponent(resultPanel);
@@ -75,8 +84,8 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
         add(rootPanel);
     }
 
-    private MongoResultPanel createResultPanel(Project project, UpdateCallback updateCallback) {
-        return new MongoResultPanel(project, updateCallback);
+    private MongoResultPanel createResultPanel(Project project, MongoDocumentOperations mongoDocumentOperations) {
+        return new MongoResultPanel(project, mongoDocumentOperations);
     }
 
     public void installActions(MongoWindowManager.CloseAction closeAction) {
@@ -142,7 +151,11 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
         }
     }
 
-    interface UpdateCallback {
+    interface MongoDocumentOperations {
+        DBObject getMongoDocument(ObjectId objectId);
+
+        void deleteMongoDocument(DBObject mongoDocument);
+
         void updateMongoDocument(DBObject mongoDocument);
     }
 }

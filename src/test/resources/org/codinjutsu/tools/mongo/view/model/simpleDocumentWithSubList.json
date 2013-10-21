@@ -1,0 +1,15 @@
+{
+    "_id": {
+        "$oid": "50b8d63414f85401b9268b99"
+    },
+    "title": "XP by example",
+    "tags": [ "pair programming", "tdd", "agile"],
+    "innerList" : [
+        [1, 2, 3, 4],
+        [false , true],
+        [
+            { "tagName": "pouet"},
+            { "tagName": "paf"}
+        ]
+    ]
+}

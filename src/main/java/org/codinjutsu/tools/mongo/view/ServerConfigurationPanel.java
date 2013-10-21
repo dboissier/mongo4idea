@@ -16,6 +16,7 @@
 
 package org.codinjutsu.tools.mongo.view;
 
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.ui.IdeBorderFactory;
@@ -33,7 +34,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ServerConfigurationPanel {
+public class ServerConfigurationPanel implements Disposable {
 
     public static final Icon SUCCESS = GuiUtils.loadIcon("success.png");
     public static final Icon FAIL = GuiUtils.loadIcon("fail.png");
@@ -220,5 +221,10 @@ public class ServerConfigurationPanel {
         shellWorkingDirField.addBrowseFolderListener("Mongo shell working directory", "", null,
                 new FileChooserDescriptor(false, true, false, false, false, false));
         shellWorkingDirField.setName("shellWorkingDirField");
+    }
+
+    @Override
+    public void dispose() {
+
     }
 }
