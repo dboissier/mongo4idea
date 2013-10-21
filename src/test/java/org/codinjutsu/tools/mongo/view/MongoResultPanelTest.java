@@ -68,7 +68,7 @@ public class MongoResultPanelTest {
                     }
 
                     @Override
-                    public void deleteMongoDocument(DBObject mongoDocument) {
+                    public void deleteMongoDocument(ObjectId objectId) {
 
                     }
                 });

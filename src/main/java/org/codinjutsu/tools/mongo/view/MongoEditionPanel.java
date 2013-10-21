@@ -3,6 +3,7 @@ package org.codinjutsu.tools.mongo.view;
 import com.intellij.openapi.Disposable;
 import com.intellij.ui.components.JBScrollPane;
 import com.mongodb.DBObject;
+import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeModel;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
 
@@ -73,8 +74,13 @@ public class MongoEditionPanel extends JPanel implements Disposable {
         return JsonTreeModel.buildDBObject(rootNode);
     }
 
-    private DBObject getMongoDocument() {
+    private ObjectId getMongoDocument() {
         JsonTreeNode rootNode = (JsonTreeNode) editTableView.getTree().getModel().getRoot();
-        return (DBObject) rootNode.getDescriptor().getValue();
+
+        return (ObjectId) findObjectIdNodeDescriptor(rootNode).getDescriptor().getValue();
+    }
+
+    private JsonTreeNode findObjectIdNodeDescriptor(JsonTreeNode rootNode) {
+        return ((JsonTreeNode) rootNode.getChildAt(0));//TODO crappy
     }
 }

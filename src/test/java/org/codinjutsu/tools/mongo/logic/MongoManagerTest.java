@@ -20,6 +20,7 @@ import com.mongodb.*;
 import com.mongodb.util.JSON;
 import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
+import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.MongoAggregateOperator;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
@@ -76,7 +77,7 @@ public class MongoManagerTest {
         Assert.assertEquals(1, initialData.getMongoObjects().size());
         DBObject initialMongoDocument = initialData.getMongoObjects().get(0);
 
-        mongoManager.delete(serverConfiguration, mongoCollection, initialMongoDocument);
+        mongoManager.delete(serverConfiguration, mongoCollection, (ObjectId) initialMongoDocument.get("_id"));
 
         MongoCollectionResult deleteResult = mongoManager.loadCollectionValues(serverConfiguration, mongoCollection, mongoQueryOptions);
         List<DBObject> updatedMongoDocuments = deleteResult.getMongoObjects();

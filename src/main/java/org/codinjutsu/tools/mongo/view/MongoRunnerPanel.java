@@ -72,8 +72,8 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
                 mongoManager.update(configuration, mongoCollection, mongoDocument);
             }
 
-            public void deleteMongoDocument(DBObject mongoDocument) {
-                mongoManager.delete(configuration, mongoCollection, mongoDocument);
+            public void deleteMongoDocument(ObjectId objectId) {
+                mongoManager.delete(configuration, mongoCollection, objectId);
             }
         });
         splitter.setSecondComponent(resultPanel);
@@ -154,7 +154,7 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
     interface MongoDocumentOperations {
         DBObject getMongoDocument(ObjectId objectId);
 
-        void deleteMongoDocument(DBObject mongoDocument);
+        void deleteMongoDocument(ObjectId mongoDocument);
 
         void updateMongoDocument(DBObject mongoDocument);
     }
