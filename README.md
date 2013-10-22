@@ -1,22 +1,25 @@
 # Mongo Plugin for IntelliJ IDEA version 0.4.3
 
-## Version [0.5.0-Idea13-SNAPSHOT](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.5.0-SNAPSHOT-for-Idea13-distribution.zip?raw=true)
+## Version 0.5.0-SNAPSHOT
+
+* [for Idea 13 EAP and latest WebStorm 7](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.5.0-SNAPSHOT-for-Idea13-distribution.zip?raw=true)
+* [for old Idea 11 and other IDE](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.5.0-SNAPSHOT-distribution.zip?raw=true)
 
 [fix] Fatal Error with WebStorm 7 RC 131.130 (I had to compile with Idea 13 plateform, but without any changes, strange isn't it?)
+[add] **NEW** document can be edited (update value, save and delete document only)
 
-**WIP**: Edition mode in the result view
-* drop a collection
-* remove a document 
-* remove any key
-* update a key value
+### Last developer notes on the document edition
 
+Why could the document be edited directly in the tree result?
 
+After making some tries, many issues were found:
+* Sometimes, projection can be used in the query. Edition requires having the object **id** to send the updated value to the mongo server and have all Mongo object content.
+* When the user updates a value, it was sent directely to the server. It is not convenient and does not handle misstyping. The user would like to update a set of key value.
 
-## Last developer notes
-
-To detect if mongo server is compliant with aggregation framework, **db.version()** expression is sent to the server for evaluation. This information is used for fitting the UI of the query panel. In some case, even if authentication is successfull, this operation is not permitted.
-
-This instruction has been removed and now the user can switch to aggregation/find query with a button located on the toolbar of the query. It is more convenient and removes the issue mentionned above.
+So, I decided to make a specific GUI for it:
+* Easier to make and test
+* Component non coupled with the result tree.
+* The user has the full control on the update/save operations
 
 ## ChangeLog
 See [CHANGELOG.txt](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)
@@ -100,6 +103,18 @@ If you have an error during query execution, a feedback panel is displayed below
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-errorInExecutionCommand.png?raw=true)
 
 **Note**: If you use Ultimate Edition, JSON syntax highlighting is enabled.
+
+## **NEW** Document edition
+
+Any document can be edited by clicking the **object id**. A panel will be opened on the right.
+
+![Document Edition](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-documentEdition.png?raw=true)
+
+You can edit the value either by double-cliking or by typing F2 key.
+
+* Click on the **save** button to send the modification to the mongo server
+* Click on the **delete** button to deletee it
+
 
 ### Mongo shell integration
 
