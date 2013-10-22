@@ -2,11 +2,10 @@
 
 ## Version 0.5.0-SNAPSHOT
 
-* [for Idea 13 EAP and latest WebStorm 7](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.5.0-SNAPSHOT-for-Idea13-distribution.zip?raw=true)
-* [for old Idea 11 and other IDE](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.5.0-SNAPSHOT-distribution.zip?raw=true)
+[version for Idea 13 EAP and latest WebStorm 7](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.5.0-SNAPSHOT-for-Idea13-distribution.zip?raw=true), [version for old Idea 11 and other IDE](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.5.0-SNAPSHOT-distribution.zip?raw=true)
 
-[fix] Fatal Error with WebStorm 7 RC 131.130 (I had to compile with Idea 13 plateform, but without any changes, strange isn't it?)
-[add] **NEW** document can be edited (update value, save and delete document only)
+* [fix] Fatal Error with WebStorm 7 RC 131.130 (I had to compile with Idea 13 plateform, but without any changes, strange isn't it?)
+* [add] **NEW** document can be edited (update value, save and delete document only)
 
 ### Last developer notes on the document edition
 
