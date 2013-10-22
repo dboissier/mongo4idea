@@ -82,7 +82,7 @@ public class MongoResultPanelTest {
     public void displayTreeWithASimpleArray() throws Exception {
         mongoResultPanel.updateResultTableTree(createCollectionResults("simpleArray.json", "mycollec"));
 
-        frameFixture.table("resultTreeTable").cellReader(new MyJTableCellReader())
+        frameFixture.table("resultTreeTable").cellReader(new JsonTableCellReader())
                 .requireColumnCount(2)
                 .requireContents(new String[][]{
                         {"[0]", "\"toto\""},
@@ -96,7 +96,7 @@ public class MongoResultPanelTest {
     public void testDisplayTreeWithASimpleDocument() throws Exception {
         mongoResultPanel.updateResultTableTree(createCollectionResults("simpleDocument.json", "mycollec"));
 
-        frameFixture.table("resultTreeTable").cellReader(new MyJTableCellReader())
+        frameFixture.table("resultTreeTable").cellReader(new JsonTableCellReader())
                 .requireColumnCount(2)
                 .requireContents(new String[][]{
                         {"[0]", "{ \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"image\" :  null }"},
@@ -112,7 +112,7 @@ public class MongoResultPanelTest {
     public void testDisplayTreeWithAStructuredDocument() throws Exception {
         mongoResultPanel.updateResultTableTree(createCollectionResults("structuredDocument.json", "mycollec"));
         TreeUtil.expandAll(mongoResultPanel.resultTableView.getTree());
-        frameFixture.table("resultTreeTable").cellReader(new MyJTableCellReader())
+        frameFixture.table("resultTreeTable").cellReader(new JsonTableCellReader())
                 .requireColumnCount(2)
                 .requireContents(new String[][]{
                         {"[0]", "{ \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}"},
@@ -135,7 +135,7 @@ public class MongoResultPanelTest {
         mongoResultPanel.updateResultTableTree(createCollectionResults("arrayOfDocuments.json", "mycollec"));
 
         TreeUtil.expandAll(mongoResultPanel.resultTableView.getTree());
-        frameFixture.table("resultTreeTable").cellReader(new MyJTableCellReader())
+        frameFixture.table("resultTreeTable").cellReader(new JsonTableCellReader())
                 .requireContents(new String[][]{
 
                         {"[0]", "{ \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}"},
@@ -176,7 +176,7 @@ public class MongoResultPanelTest {
 
         JTableFixture resultTableFixture =
                 frameFixture.table("resultTreeTable")
-                        .cellReader(new MyJTableCellReader())
+                        .cellReader(new JsonTableCellReader())
                         .requireContents(new String[][]{
                                 {"[0]", "{ \"_id\" : \"50b8d63414f85401b9268b99\" , \"label\" : \"toto\" , \"visible\" : false , \"image\" :  null }"},
                                 {"\"_id\"", "\"50b8d63414f85401b9268b99\""},
@@ -187,7 +187,7 @@ public class MongoResultPanelTest {
 
         resultTableFixture.cell(resultTableFixture.cell("\"50b8d63414f85401b9268b99\"")).click();
 
-        frameFixture.table("editionTreeTable").cellReader(new MyJTableCellReader())
+        frameFixture.table("editionTreeTable").cellReader(new JsonTableCellReader())
                 .requireColumnCount(2)
                 .requireContents(new String[][]{
                         {"[0]", "{ \"_id\" : 50b8d63414f85401b9268b99 , \"label\" : \"toto\" , \"visible\" : false , \"image\" :  null }"},
@@ -220,7 +220,7 @@ public class MongoResultPanelTest {
 
         TreeUtil.expandAll(mongoResultPanel.resultTableView.getTree());
 
-        frameFixture.table("resultTreeTable").cellReader(new MyJTableCellReader())
+        frameFixture.table("resultTreeTable").cellReader(new JsonTableCellReader())
                 .requireContents(new String[][]{
                         {"[0]", "{ \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}"},
                         {"\"id\"", "0"},
@@ -262,7 +262,7 @@ public class MongoResultPanelTest {
         return mongoCollectionResult;
     }
 
-    public class MyJTableCellReader extends BasicJTableCellReader {
+    private static class JsonTableCellReader extends BasicJTableCellReader {
 
         @Override
         public String valueAt(JTable table, int row, int column) {
