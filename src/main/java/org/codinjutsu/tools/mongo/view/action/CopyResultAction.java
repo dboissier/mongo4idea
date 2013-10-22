@@ -24,6 +24,7 @@ import org.codinjutsu.tools.mongo.view.MongoResultPanel;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -37,7 +38,7 @@ public class CopyResultAction extends AnAction implements DumbAware {
         super("Copy", "Copy results to clipboard", COPY_ICON);
         this.mongoResultPanel = mongoResultPanel;
 
-        registerCustomShortcutSet(KeyEvent.VK_C, InputEvent.CTRL_MASK, mongoResultPanel);
+        registerCustomShortcutSet(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), mongoResultPanel);
     }
 
     @Override
