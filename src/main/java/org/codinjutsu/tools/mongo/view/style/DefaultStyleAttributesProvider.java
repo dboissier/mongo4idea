@@ -111,4 +111,9 @@ public class DefaultStyleAttributesProvider implements StyleAttributesProvider {
     public Icon getEditIcon() {
         return GuiUtils.loadIcon("edit.png");
     }
+
+    @Override
+    public Icon getClearAllIcon() {
+        return GuiUtils.loadIcon("clearAll.png");
+    }
 }

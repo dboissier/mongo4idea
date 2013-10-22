@@ -235,6 +235,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         DefaultActionGroup actionPopupGroup = new DefaultActionGroup("MongoExplorerPopupGroup", true);
         if (ApplicationManager.getApplication() != null) {
             actionPopupGroup.add(new RefreshServerAction(this));
+            actionPopupGroup.add(new DropCollectionAction(this));
         }
 
         PopupHandler.installPopupHandler(mongoTree, actionPopupGroup, "POPUP", ActionManager.getInstance());
@@ -310,7 +311,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         return null;
     }
 
-    public DefaultMutableTreeNode getSelectedCollectionNode() {
+    private DefaultMutableTreeNode getSelectedCollectionNode() {
         DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) mongoTree.getLastSelectedPathComponent();
         if (treeNode != null) {
             Object userObject = treeNode.getUserObject();
@@ -341,7 +342,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
     }
 
-    MongoCollection getSelectedCollectionValues() {
+    public MongoCollection getSelectedCollectionValues() {
         DefaultMutableTreeNode collectionNode = getSelectedCollectionNode();
         if (collectionNode == null) {
             return null;
@@ -354,6 +355,11 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         MongoWindowManager.getInstance(project).addResultContent(getConfiguration(), getSelectedCollectionValues());
         MongoWindowManager.getInstance(project).showToolWindow();
     }
+
+    public void dropCollection() {
+        mongoManager.dropCollection(getConfiguration(), getSelectedCollectionValues());
+    }
+
 
     private Tree createTree() {
 

@@ -112,4 +112,9 @@ public class DarculaStyleAttributesProvider implements StyleAttributesProvider {
     public Icon getEditIcon() {
         return GuiUtils.loadIcon("edit_dark.png");
     }
+
+    @Override
+    public Icon getClearAllIcon() {
+        return GuiUtils.loadIcon("clearAll_dark.png");
+    }
 }

@@ -19,22 +19,27 @@ package org.codinjutsu.tools.mongo.view.action;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
-import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
+import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 
-public class ViewCollectionValuesAction extends AnAction implements DumbAware {
+import javax.swing.*;
+
+public class DropCollectionAction extends AnAction implements DumbAware {
+
+    private static final Icon REMOVE_ICON = StyleAttributesUtils.getInstance().getClearAllIcon();
 
     private final MongoExplorerPanel mongoExplorerPanel;
 
-    public ViewCollectionValuesAction(MongoExplorerPanel mongoExplorerPanel) {
-        super("View collection content", "View collection content", GuiUtils.loadIcon("folder_magnify.png"));
+    public DropCollectionAction(MongoExplorerPanel mongoExplorerPanel) {
+        super("Drop collection", "Drop the selected collection", REMOVE_ICON);
         this.mongoExplorerPanel = mongoExplorerPanel;
     }
 
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
-        mongoExplorerPanel.loadSelectedCollectionValues();
+        mongoExplorerPanel.dropCollection();
     }
+
 
     @Override
     public void update(AnActionEvent event) {

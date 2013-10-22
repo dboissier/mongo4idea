@@ -51,4 +51,6 @@ public interface StyleAttributesProvider {
     Icon getRefreshIcon();
 
     Icon getEditIcon();
+
+    Icon getClearAllIcon();
 }

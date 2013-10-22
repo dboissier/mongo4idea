@@ -118,65 +118,6 @@ public class MongoManager {
         return mongoDatabase;
     }
 
-    public MongoCollectionResult loadCollectionValues(ServerConfiguration configuration, MongoCollection mongoCollection, MongoQueryOptions mongoQueryOptions) {
-        MongoClient mongo = null;
-        try {
-            String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration.getServerName(), configuration.getServerPort(), databaseName);
-
-            DB database = mongo.getDB(databaseName);
-
-            String username = configuration.getUsername();
-            String password = configuration.getPassword();
-            if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
-                database.authenticate(username, password.toCharArray());
-            }
-
-            DBCollection collection = database.getCollection(mongoCollection.getName());
-
-            MongoCollectionResult mongoCollectionResult = new MongoCollectionResult(mongoCollection.getName());
-            if (mongoQueryOptions.isAggregate()) {
-                return aggregate(mongoQueryOptions, mongoCollectionResult, collection);
-            }
-
-            return find(mongoQueryOptions, mongoCollectionResult, collection);
-
-        } catch (UnknownHostException ex) {
-            throw new ConfigurationException(ex);
-        } finally {
-            if (mongo != null) {
-                mongo.close();
-            }
-        }
-
-    }
-
-    public DBObject findMongoDocument(ServerConfiguration configuration, MongoCollection mongoCollection, ObjectId objectId) {
-        MongoClient mongo = null;
-        try {
-            String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration.getServerName(), configuration.getServerPort(), databaseName);
-
-            DB database = mongo.getDB(databaseName);
-
-            String username = configuration.getUsername();
-            String password = configuration.getPassword();
-            if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
-                database.authenticate(username, password.toCharArray());
-            }
-
-            DBCollection collection = database.getCollection(mongoCollection.getName());
-            return collection.findOne(new BasicDBObject("_id", objectId));
-
-        } catch (UnknownHostException ex) {
-            throw new ConfigurationException(ex);
-        } finally {
-            if (mongo != null) {
-                mongo.close();
-            }
-        }
-    }
-
     public void update(ServerConfiguration configuration, MongoCollection mongoCollection, DBObject mongoDocument) {
         MongoClient mongo = null;
         try {
@@ -227,7 +168,90 @@ public class MongoManager {
                 mongo.close();
             }
         }
+    }
 
+    public void dropCollection(ServerConfiguration configuration, MongoCollection mongoCollection) {
+        MongoClient mongo = null;
+        try {
+            String databaseName = mongoCollection.getDatabaseName();
+            mongo = createMongoClient(configuration.getServerName(), configuration.getServerPort(), databaseName);
+
+            DB database = mongo.getDB(databaseName);
+
+            String username = configuration.getUsername();
+            String password = configuration.getPassword();
+            if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
+                database.authenticate(username, password.toCharArray());
+            }
+
+            DBCollection collection = database.getCollection(mongoCollection.getName());
+
+            collection.drop();
+        } catch (UnknownHostException ex) {
+            throw new ConfigurationException(ex);
+        } finally {
+            if (mongo != null) {
+                mongo.close();
+            }
+        }
+    }
+
+    public MongoCollectionResult loadCollectionValues(ServerConfiguration configuration, MongoCollection mongoCollection, MongoQueryOptions mongoQueryOptions) {
+        MongoClient mongo = null;
+        try {
+            String databaseName = mongoCollection.getDatabaseName();
+            mongo = createMongoClient(configuration.getServerName(), configuration.getServerPort(), databaseName);
+
+            DB database = mongo.getDB(databaseName);
+
+            String username = configuration.getUsername();
+            String password = configuration.getPassword();
+            if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
+                database.authenticate(username, password.toCharArray());
+            }
+
+            DBCollection collection = database.getCollection(mongoCollection.getName());
+
+            MongoCollectionResult mongoCollectionResult = new MongoCollectionResult(mongoCollection.getName());
+            if (mongoQueryOptions.isAggregate()) {
+                return aggregate(mongoQueryOptions, mongoCollectionResult, collection);
+            }
+
+            return find(mongoQueryOptions, mongoCollectionResult, collection);
+
+        } catch (UnknownHostException ex) {
+            throw new ConfigurationException(ex);
+        } finally {
+            if (mongo != null) {
+                mongo.close();
+            }
+        }
+    }
+
+    public DBObject findMongoDocument(ServerConfiguration configuration, MongoCollection mongoCollection, ObjectId objectId) {
+        MongoClient mongo = null;
+        try {
+            String databaseName = mongoCollection.getDatabaseName();
+            mongo = createMongoClient(configuration.getServerName(), configuration.getServerPort(), databaseName);
+
+            DB database = mongo.getDB(databaseName);
+
+            String username = configuration.getUsername();
+            String password = configuration.getPassword();
+            if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
+                database.authenticate(username, password.toCharArray());
+            }
+
+            DBCollection collection = database.getCollection(mongoCollection.getName());
+            return collection.findOne(new BasicDBObject("_id", objectId));
+
+        } catch (UnknownHostException ex) {
+            throw new ConfigurationException(ex);
+        } finally {
+            if (mongo != null) {
+                mongo.close();
+            }
+        }
     }
 
     private MongoClient createMongoClient(String serverName, int serverPort, String userDatabase) throws UnknownHostException {
