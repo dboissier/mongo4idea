@@ -143,6 +143,13 @@
             <systemPath>${intellij.lib.path}/jdom.jar</systemPath>
             <version>${intellij.sdk.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>idea-swingx-core</artifactId>
+            <scope>system</scope>
+            <systemPath>${intellij.lib.path}/swingx-core-1.6.2.jar</systemPath>
+            <version>${intellij.sdk.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
