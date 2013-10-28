@@ -4,6 +4,18 @@
 
 [version for Idea 13 EAP and latest WebStorm 7](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.5.0-SNAPSHOT-for-Idea13-distribution.zip?raw=true), [version for old Idea 11 and other IDE](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.5.0-SNAPSHOT-distribution.zip?raw=true)
 
+Important notice: Some bugs were reported when installing the SNAPSHOT version of the plugin. Mainly some `ClassNotFoundDefException`. This could happen whenever you have a previous version of the plugin already installed in the IDE.
+To fix it, the steps should be as follow:
+[] Locate the IDE working directory. For WebStorm, it is `.WebStorm` and for Intellij, it is `.IntelliJIdea`
+[] In it, remove the snapshot and the stable versions from `<working_dir>/config/plugins`
+[] Download again the right version for your target IDE
+[] Deflate the archive in the same folder
+
+You should have one instance of the plugin: `<working_dir>/config/plugins/mongo4idea-0.5.0-SNAPSHOT`
+
+Restart your IDE and it should be ok :).
+
+
 * [fix] Fatal Error with WebStorm 7 RC 131.130 (I had to compile with Idea 13 plateform, but without any changes, strange isn't it?)
 * **NEW** [add] document can be edited (update value, save and delete document only)
 * **NEW** [add] collections can be cleared (right click on the collection in the mongo explorer)
