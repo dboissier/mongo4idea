@@ -26,6 +26,10 @@ public class MongoEditionPanel extends JPanel implements Disposable {
 
         add(mainPanel);
         editionTreePanel.setLayout(new BorderLayout());
+
+        saveButton.setName("saveButton");
+        cancelButton.setName("cancelButton");
+        deleteButton.setName("deleteButton");
     }
 
     public void updateEditionTree(DBObject mongoDocument) {

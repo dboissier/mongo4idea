@@ -21,10 +21,12 @@ import com.intellij.util.ui.tree.TreeUtil;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
+import org.fest.swing.data.TableCell;
 import org.fest.swing.driver.BasicJTableCellReader;
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiQuery;
@@ -35,6 +37,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -47,6 +52,9 @@ public class MongoResultPanelTest {
 
     private FrameFixture frameFixture;
 
+    @Mock
+    private MongoRunnerPanel.MongoDocumentOperations mongoDocumentOperations;
+
     @After
     public void tearDown() {
         frameFixture.cleanUp();
@@ -54,24 +62,11 @@ public class MongoResultPanelTest {
 
     @Before
     public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(MongoResultPanelTest.class);
+
         mongoResultPanel = GuiActionRunner.execute(new GuiQuery<MongoResultPanel>() {
             protected MongoResultPanel executeInEDT() {
-                return new MongoResultPanel(DummyProject.getInstance(), new MongoRunnerPanel.MongoDocumentOperations() {
-                    @Override
-                    public void updateMongoDocument(DBObject mongoDocument) {
-
-                    }
-
-                    @Override
-                    public DBObject getMongoDocument(ObjectId objectId) {
-                        return new BasicDBObject();
-                    }
-
-                    @Override
-                    public void deleteMongoDocument(ObjectId objectId) {
-
-                    }
-                });
+                return new MongoResultPanel(DummyProject.getInstance(), mongoDocumentOperations);
             }
         });
 
@@ -161,42 +156,6 @@ public class MongoResultPanelTest {
                         {"[1]", "false"},
                         {"[2]", "10"},
                 });
-    }
-
-    @Test
-    @Ignore
-    public void testEditMongoDocument() throws Exception {
-        MongoCollectionResult mongoCollectionResult = createCollectionResults("simpleDocumentForEdition.json", "mycollec");
-
-//        Hack to convert an id into an ObjectId
-//        DBObject document = mongoCollectionResult.getMongoObjects().get(0);
-//        document.put("_id", new ObjectId(String.valueOf(document.get("_id"))));
-
-        mongoResultPanel.updateResultTableTree(mongoCollectionResult);
-
-        JTableFixture resultTableFixture =
-                frameFixture.table("resultTreeTable")
-                        .cellReader(new JsonTableCellReader())
-                        .requireContents(new String[][]{
-                                {"[0]", "{ \"_id\" : \"50b8d63414f85401b9268b99\" , \"label\" : \"toto\" , \"visible\" : false , \"image\" :  null }"},
-                                {"\"_id\"", "\"50b8d63414f85401b9268b99\""},
-                                {"\"label\"", "\"toto\""},
-                                {"\"visible\"", "false"},
-                                {"\"image\"", "null"}
-                        });
-
-        resultTableFixture.cell(resultTableFixture.cell("\"50b8d63414f85401b9268b99\"")).click();
-
-        frameFixture.table("editionTreeTable").cellReader(new JsonTableCellReader())
-                .requireColumnCount(2)
-                .requireContents(new String[][]{
-                        {"[0]", "{ \"_id\" : 50b8d63414f85401b9268b99 , \"label\" : \"toto\" , \"visible\" : false , \"image\" :  null }"},
-                        {"\"_id\"", "50b8d63414f85401b9268b99"},
-                        {"\"label\"", "\"toto\""},
-                        {"\"visible\"", "false"},
-                        {"\"image\"", "null"}
-                });
-
     }
 
     @Test
