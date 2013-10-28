@@ -6,10 +6,10 @@
 
 Important notice: Some bugs were reported when installing the SNAPSHOT version of the plugin. Mainly some `ClassNotFoundDefException`. This could happen whenever you have a previous version of the plugin already installed in the IDE.
 To fix it, the steps should be as follow:
-[] Locate the IDE working directory. For WebStorm, it is `.WebStorm` and for Intellij, it is `.IntelliJIdea`
-[] In it, remove the snapshot and the stable versions from `<working_dir>/config/plugins`
-[] Download again the right version for your target IDE
-[] Deflate the archive in the same folder
+* Locate the IDE working directory. For WebStorm, it is `.WebStorm` and for Intellij, it is `.IntelliJIdea`
+* In it, remove the snapshot and the stable versions from `<working_dir>/config/plugins`
+* Download again the right version for your target IDE
+* Deflate the archive in the same folder
 
 You should have one instance of the plugin: `<working_dir>/config/plugins/mongo4idea-0.5.0-SNAPSHOT`
 
