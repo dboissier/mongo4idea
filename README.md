@@ -5,7 +5,8 @@
 [version for Idea 13 EAP and latest WebStorm 7](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.5.0-SNAPSHOT-for-Idea13-distribution.zip?raw=true), [version for old Idea 11 and other IDE](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.5.0-SNAPSHOT-distribution.zip?raw=true)
 
 * [fix] Fatal Error with WebStorm 7 RC 131.130 (I had to compile with Idea 13 plateform, but without any changes, strange isn't it?)
-* [add] **NEW** document can be edited (update value, save and delete document only)
+* **NEW** [add] document can be edited (update value, save and delete document only)
+* **NEW** [add] collections can be cleared (right click on the collection in the mongo explorer)
 
 ### Last developer notes on the document edition
 
@@ -60,6 +61,7 @@ When you open the Mongo explorer, you will see an panel:
 
 The tree displays for each server all databases with its collections. Just double-click on a collection and the results will be displayed in the Mongo Runner panel.
 If you double-click on another collection, a new tab will appears side of the previous.
+If you clear a collection by right clicking on it and select **Drop collection**
 
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-multipleTab.png?raw=true)
 
