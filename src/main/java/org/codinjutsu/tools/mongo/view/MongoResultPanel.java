@@ -81,20 +81,12 @@ public class MongoResultPanel extends JPanel implements Disposable {
     }
 
     private MongoEditionPanel createMongoEditionPanel() {
-        MongoEditionPanel panel = new MongoEditionPanel();
-
-        panel.init(mongoDocumentOperations, new ActionCallback() {
+        return new MongoEditionPanel().init(mongoDocumentOperations, new ActionCallback() {
             public void afterOperation() {
                 hideEditionPanel();
             }
         });
-        return panel;
     }
-
-    private void hideEditionPanel() {
-        splitter.setSecondComponent(null);
-    }
-
 
     public void updateResultTableTree(MongoCollectionResult mongoCollectionResult) {
         resultTableView = new JsonTreeTableView(JsonTreeModel.buildJsonTree(mongoCollectionResult), JsonTreeTableView.COLUMNS_FOR_READING);
@@ -114,6 +106,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
         resultTreePanel.add(new JBScrollPane(resultTableView));
         resultTreePanel.validate();
     }
+
 
     public void editSelectedMongoDocument() {
 
@@ -221,6 +214,10 @@ public class MongoResultPanel extends JPanel implements Disposable {
         }
 
         return userObject.toString();
+    }
+
+    private void hideEditionPanel() {
+        splitter.setSecondComponent(null);
     }
 
 

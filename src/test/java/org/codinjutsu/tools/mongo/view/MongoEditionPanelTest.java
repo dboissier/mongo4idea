@@ -40,10 +40,14 @@ public class MongoEditionPanelTest {
 
         mongoEditionPanel = GuiActionRunner.execute(new GuiQuery<MongoEditionPanel>() {
             protected MongoEditionPanel executeInEDT() {
-                MongoEditionPanel panel = new MongoEditionPanel();
-                panel.init(mongoDocumentOperations, actionCallback);
 
-                return panel;
+                MongoEditionPanel panel = new MongoEditionPanel() {
+                    @Override
+                    void buildPopupMenu() {
+
+                    }
+                };
+                return panel.init(mongoDocumentOperations, actionCallback);
             }
         });
 

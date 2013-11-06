@@ -53,4 +53,6 @@ public interface StyleAttributesProvider {
     Icon getEditIcon();
 
     Icon getClearAllIcon();
+
+    Icon getDeleteIcon();
 }
