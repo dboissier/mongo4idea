@@ -5,7 +5,7 @@
 [version for Idea 13 EAP and latest WebStorm 7](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.5.0-SNAPSHOT-for-Idea13-distribution.zip?raw=true), [version for old Idea 11 and other IDE](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.5.0-SNAPSHOT-distribution.zip?raw=true)
 
 * [fix] Fatal Error with WebStorm 7 RC 131.130 (I had to compile with Idea 13 plateform, but without any changes, strange isn't it?)
-* **NEW** [add] document can be edited (update value, save and delete document only)
+* **NEW** [add] document can be edited (update value, delete key, save and delete document only)
 * **NEW** [add] collections can be cleared (right click on the collection in the mongo explorer)
 
 ### Important notice
@@ -61,7 +61,7 @@ When you open the Mongo explorer, you will see an panel:
 * You can edit your mongo shell path with a test button
 * To add a server, click on the **[+]** button and a dialog will appear
 * Set a label for your server, this will be more convenient to distinguish each of them in the Mongo explorer
-* Set the server info as the example in the above screenshot*
+* Set the server info as the example in the above screenshot
 * If your access is restricted to a specific database, just type it in the corresponding field
 * Put your credentials if your server requires authentication
 * You can let the plugin connect to the server on the IDE startup by clicking on the corresponding checkbox
@@ -126,10 +126,10 @@ Any document can be edited by clicking the **object id**. A panel will be opened
 
 ![Document Edition](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-documentEdition.png?raw=true)
 
-You can edit the value either by double-cliking or by typing F2 key.
-
+You can edit the value either by double-clicking or by typing F2 key.
+You can delete a key by right-clicking on it and select **Delete Key**
 * Click on the **save** button to send the modification to the mongo server
-* Click on the **delete** button to deletee it
+* Click on the **delete** button to delete it
 
 
 ### Mongo shell integration
