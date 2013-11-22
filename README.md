@@ -120,9 +120,9 @@ If you have an error during query execution, a feedback panel is displayed below
 
 **Note**: If you use Ultimate Edition, JSON syntax highlighting is enabled.
 
-## **NEW** Document edition
+## [NEW] Document edition
 
-Any document can be edited by clicking the **object id**. A panel will be opened on the right.
+Any document can be edited by double-clicking the **object id**. A panel will be opened on the right.
 
 ![Document Edition](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-documentEdition.png?raw=true)
 
