@@ -9,20 +9,22 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.tree.TreeUtil;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
-import org.codinjutsu.tools.mongo.view.action.DropCollectionAction;
-import org.codinjutsu.tools.mongo.view.action.RefreshServerAction;
+import org.codinjutsu.tools.mongo.utils.MongoUtils;
 import org.codinjutsu.tools.mongo.view.action.edition.AddKeyAction;
 import org.codinjutsu.tools.mongo.view.action.edition.DeleteKeyAction;
-import org.codinjutsu.tools.mongo.view.action.edition.EditKeyAction;
+import org.codinjutsu.tools.mongo.view.model.JsonDataType;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeModel;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
-import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
+import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.util.LinkedList;
+import java.util.List;
 
 public class MongoEditionPanel extends JPanel implements Disposable {
     private JButton saveButton;
@@ -88,12 +90,34 @@ public class MongoEditionPanel extends JPanel implements Disposable {
     void buildPopupMenu() {
         DefaultActionGroup actionPopupGroup = new DefaultActionGroup("MongoEditorPopupGroup", true);
         if (ApplicationManager.getApplication() != null) {
-//            actionPopupGroup.add(new EditKeyAction(this));
+            actionPopupGroup.add(new AddKeyAction(this));
             actionPopupGroup.add(new DeleteKeyAction(this));
-//            actionPopupGroup.add(new AddKeyAction(this));
         }
 
         PopupHandler.installPopupHandler(editTableView, actionPopupGroup, "POPUP", ActionManager.getInstance());
+    }
+
+    //TODO
+    public boolean containsKey(String key) {
+        return false;
+    }
+
+    public void addKey(String key, JsonDataType jsonDataType, String value) {
+
+        List<TreeNode> node = new LinkedList<TreeNode>();
+        Object mongoObject = MongoUtils.parseValue(jsonDataType, value);
+        JsonTreeNode treeNode = new JsonTreeNode(MongoKeyValueDescriptor.createDescriptor(key, mongoObject));
+
+        if (mongoObject instanceof DBObject) {
+             JsonTreeModel.processDbObject(treeNode, (DBObject) mongoObject);
+        }
+
+        node.add(treeNode);
+
+        DefaultTreeModel treeModel = (DefaultTreeModel) editTableView.getTree().getModel();
+        DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) treeModel.getRoot();
+        TreeUtil.addChildrenTo(parentNode, node);
+        treeModel.reload(parentNode);
     }
 
     public void removeSelectedKey() {

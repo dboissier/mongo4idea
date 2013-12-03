@@ -14,7 +14,7 @@ public class EditMongoDocumentAction extends AnAction implements DumbAware {
     private final MongoResultPanel resultPanel;
 
     public EditMongoDocumentAction(MongoResultPanel resultPanel) {
-        super("Edit", "Edit mong document", EDIT_ICON);
+        super("Edit", "Edit mongo document", EDIT_ICON);
         this.resultPanel = resultPanel;
     }
 

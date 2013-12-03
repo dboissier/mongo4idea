@@ -23,8 +23,6 @@ import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.utils.StringUtils;
 
-import java.util.Date;
-
 public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
     private static final String STRING_SURROUNDED = "\"%s\"";
@@ -124,9 +122,19 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
         if (value instanceof String) {
             return new MongoKeyStringValueDescriptor(key, (String) value);
         } else if (value instanceof Boolean) {
-            return new MongoKeyValueDescriptor(key, value, TEXT_ATTRIBUTES_PROVIDER.getBooleanAttribute());
+            return new MongoKeyValueDescriptor(key, value, TEXT_ATTRIBUTES_PROVIDER.getBooleanAttribute()) {
+                @Override
+                public void setValue(Object value) {
+                    this.value = Boolean.valueOf((String) value);
+                }
+            };
         } else if (value instanceof Integer) {
-            return new MongoKeyValueDescriptor(key, value, TEXT_ATTRIBUTES_PROVIDER.getIntegerAttribute());
+            return new MongoKeyValueDescriptor(key, value, TEXT_ATTRIBUTES_PROVIDER.getNumberAttribute()) {
+                @Override
+                public void setValue(Object value) {
+                    this.value = Integer.valueOf((String) value);
+                }
+            };
         } else if (value instanceof ObjectId) {
             return new MongoKeyValueDescriptor(key, value, TEXT_ATTRIBUTES_PROVIDER.getObjectIdAttribute());
         } else if (value instanceof DBObject) {

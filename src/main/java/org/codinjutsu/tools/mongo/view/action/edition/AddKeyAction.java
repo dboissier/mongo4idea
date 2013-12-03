@@ -2,6 +2,7 @@ package org.codinjutsu.tools.mongo.view.action.edition;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import org.codinjutsu.tools.mongo.view.AddKeyDialog;
 import org.codinjutsu.tools.mongo.view.MongoEditionPanel;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 
@@ -20,6 +21,13 @@ public class AddKeyAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
-        //dialog menu with label and data type (string, boolean, numeric, dbobject, dblist)
+        AddKeyDialog dialog = AddKeyDialog.createDialog(mongoEditionPanel);
+        dialog.show();
+
+        if (!dialog.isOK()) {
+            return;
+        }
+
+        mongoEditionPanel.addKey(dialog.getKey(), dialog.getJsonDataType(), dialog.getKeyValue());
     }
 }

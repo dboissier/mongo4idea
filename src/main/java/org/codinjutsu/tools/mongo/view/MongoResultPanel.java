@@ -22,9 +22,11 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.ui.PopupHandler;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.treetable.TreeTableTree;
 import com.intellij.util.ui.tree.TreeUtil;
@@ -34,6 +36,9 @@ import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.CopyResultAction;
+import org.codinjutsu.tools.mongo.view.action.EditMongoDocumentAction;
+import org.codinjutsu.tools.mongo.view.action.edition.AddKeyAction;
+import org.codinjutsu.tools.mongo.view.action.edition.DeleteKeyAction;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeModel;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
@@ -101,10 +106,21 @@ public class MongoResultPanel extends JPanel implements Disposable {
             }
         });
 
+        buildPopupMenu();
+
         resultTreePanel.invalidate();
         resultTreePanel.removeAll();
         resultTreePanel.add(new JBScrollPane(resultTableView));
         resultTreePanel.validate();
+    }
+
+    void buildPopupMenu() {
+        DefaultActionGroup actionPopupGroup = new DefaultActionGroup("MongoResultPopupGroup", true);
+        if (ApplicationManager.getApplication() != null) {
+            actionPopupGroup.add(new EditMongoDocumentAction(this));
+        }
+
+        PopupHandler.installPopupHandler(resultTableView, actionPopupGroup, "POPUP", ActionManager.getInstance());
     }
 
 

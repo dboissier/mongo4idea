@@ -43,6 +43,6 @@ public class DropCollectionAction extends AnAction implements DumbAware {
 
     @Override
     public void update(AnActionEvent event) {
-        event.getPresentation().setEnabled(mongoExplorerPanel.getSelectedCollectionValues() != null);
+        event.getPresentation().setVisible(mongoExplorerPanel.getSelectedCollectionValues() != null);
     }
 }

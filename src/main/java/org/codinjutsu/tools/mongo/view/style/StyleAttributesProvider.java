@@ -26,7 +26,7 @@ public interface StyleAttributesProvider {
 
     SimpleTextAttributes getKeyValueAttribute();
 
-    SimpleTextAttributes getIntegerAttribute();
+    SimpleTextAttributes getNumberAttribute();
 
     SimpleTextAttributes getBooleanAttribute();
 

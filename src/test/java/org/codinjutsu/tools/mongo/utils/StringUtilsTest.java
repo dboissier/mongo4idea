@@ -16,10 +16,14 @@
 
 package org.codinjutsu.tools.mongo.utils;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class StringUtilsTest extends TestCase {
-    public void testAbbreviateInCenter() throws Exception {
+import static org.junit.Assert.assertEquals;
+
+public class StringUtilsTest {
+
+    @Test
+    public void abbreviateInCenter() throws Exception {
         String value = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
         assertEquals("abcdefghijklmnopq...ghijklmnopqrstuvwxyz", StringUtils.abbreviateInCenter(value, 40));
 

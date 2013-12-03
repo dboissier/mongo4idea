@@ -48,7 +48,7 @@ public class DefaultStyleAttributesProvider implements StyleAttributesProvider {
     }
 
     @Override
-    public SimpleTextAttributes getIntegerAttribute() {
+    public SimpleTextAttributes getNumberAttribute() {
         return INTEGER_TEXT_ATTRIBUTE;
     }
 

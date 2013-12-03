@@ -62,7 +62,7 @@ public class JsonTreeModel extends DefaultTreeModel {
         return rootNode;
     }
 
-    private static void processDbObject(JsonTreeNode parentNode, DBObject mongoObject) {
+    public static void processDbObject(JsonTreeNode parentNode, DBObject mongoObject) {
         if (mongoObject instanceof BasicDBList) {
             BasicDBList mongoObjectList = (BasicDBList) mongoObject;
             for (int i = 0; i < mongoObjectList.size(); i++) {

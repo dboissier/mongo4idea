@@ -31,12 +31,12 @@ public class DarculaStyleAttributesProvider implements StyleAttributesProvider {
 
     private static final SimpleTextAttributes INDEX = new SimpleTextAttributes(Font.BOLD, Color.WHITE);
     private static final SimpleTextAttributes KEY_VALUE = new SimpleTextAttributes(Font.BOLD, ORANGE);
-    private static final SimpleTextAttributes INTEGER_TEXT_ATTRIBUTE = new SimpleTextAttributes(Font.PLAIN, BLUE);
-    private static final SimpleTextAttributes BOOLEAN_TEXT_ATTRIBUTE = INTEGER_TEXT_ATTRIBUTE;
+    private static final SimpleTextAttributes NUMBER_TEXT_ATTRIBUTE = new SimpleTextAttributes(Font.PLAIN, BLUE);
+    private static final SimpleTextAttributes BOOLEAN_TEXT_ATTRIBUTE = NUMBER_TEXT_ATTRIBUTE;
     private static final SimpleTextAttributes STRING_TEXT_ATTRIBUTE = new SimpleTextAttributes(Font.PLAIN, GREEN);
     private static final SimpleTextAttributes NULL_TEXT_ATTRIBUTE = new SimpleTextAttributes(Font.ITALIC, GRAY);
     private static final SimpleTextAttributes DBOBJECT_TEXT_ATTRIBUTE = new SimpleTextAttributes(Font.BOLD, GRAY);
-    private static final SimpleTextAttributes OBJECT_ID_TEXT_ATTRIBUTE = INTEGER_TEXT_ATTRIBUTE;
+    private static final SimpleTextAttributes OBJECT_ID_TEXT_ATTRIBUTE = NUMBER_TEXT_ATTRIBUTE;
 
     @Override
     public SimpleTextAttributes getIndexAttribute() {
@@ -49,8 +49,8 @@ public class DarculaStyleAttributesProvider implements StyleAttributesProvider {
     }
 
     @Override
-    public SimpleTextAttributes getIntegerAttribute() {
-        return INTEGER_TEXT_ATTRIBUTE;
+    public SimpleTextAttributes getNumberAttribute() {
+        return NUMBER_TEXT_ATTRIBUTE;
     }
 
     @Override

@@ -25,7 +25,7 @@ import org.codinjutsu.tools.mongo.utils.StringUtils;
 public class MongoValueDescriptor implements MongoNodeDescriptor {
 
     private final int index;
-    private Object value;
+    protected Object value;
     private final SimpleTextAttributes valueTextAttributes;
 
     private MongoValueDescriptor(int index, Object value, SimpleTextAttributes valueTextAttributes) {
@@ -114,9 +114,19 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
         if (value instanceof String) {
             return new MongoStringValueDescriptor(index, (String) value);
         } else if (value instanceof Boolean) {
-            return new MongoValueDescriptor(index, value, TEXT_ATTRIBUTES_PROVIDER.getBooleanAttribute());
-        } else if (value instanceof Integer) {
-            return new MongoValueDescriptor(index, value, TEXT_ATTRIBUTES_PROVIDER.getIndexAttribute());
+            return new MongoValueDescriptor(index, value, TEXT_ATTRIBUTES_PROVIDER.getBooleanAttribute()) {
+                @Override
+                public void setValue(Object value) {
+                    this.value = Boolean.parseBoolean((String) value);
+                }
+            };
+        } else if (value instanceof Number) {
+            return new MongoValueDescriptor(index, value, TEXT_ATTRIBUTES_PROVIDER.getNumberAttribute()) {
+                @Override
+                public void setValue(Object value) {
+                    this.value = Integer.parseInt((String)value);
+                }
+            };
         } else if (value instanceof DBObject) {
             return new MongoValueDescriptor(index, value, TEXT_ATTRIBUTES_PROVIDER.getDBObjectAttribute());
         } else {

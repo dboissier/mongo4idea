@@ -21,6 +21,8 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.CapturingProcessHandler;
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.openapi.vfs.CharsetToolkit;
+import com.mongodb.util.JSON;
+import org.codinjutsu.tools.mongo.view.model.JsonDataType;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
@@ -40,5 +42,33 @@ public class MongoUtils {
         CapturingProcessHandler handler = new CapturingProcessHandler(commandLine.createProcess(), CharsetToolkit.getDefaultSystemCharset());
         ProcessOutput result = handler.runProcess(15 * 1000);
         return result.getExitCode() == 0;
+    }
+
+    public static Object parseValue(JsonDataType jsonDataType, String value) {
+        if (JsonDataType.NULL.equals(jsonDataType)) {
+            return null;
+        }
+
+        if (JsonDataType.STRING.equals(jsonDataType)) {
+            return value;
+        }
+
+        if (JsonDataType.BOOLEAN.equals(jsonDataType)) {
+            return Boolean.parseBoolean(value);
+        }
+
+        if (JsonDataType.NUMBER.equals(jsonDataType)) {
+            Double doubleValue = Double.parseDouble(value);
+            if (Math.ceil(doubleValue) == doubleValue) {
+                return Integer.parseInt(value);
+            }
+            return doubleValue;
+        }
+
+        if (JsonDataType.OBJECT.equals(jsonDataType)) {
+            return JSON.parse(value);
+        }
+
+        throw new IllegalArgumentException("Unsupported datatype: " + jsonDataType);
     }
 }

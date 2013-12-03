@@ -19,10 +19,13 @@ package org.codinjutsu.tools.mongo.utils;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.ui.NumberDocument;
 
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 public class GuiUtils {
 

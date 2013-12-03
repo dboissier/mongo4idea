@@ -39,7 +39,7 @@ public class JsonTreeModelTest {
 //      Simulate updating from the treeNode
         JsonTreeNode innerDocNode = (JsonTreeNode) treeNode.getChildAt(4);
         JsonTreeNode soldOutNode = (JsonTreeNode) innerDocNode.getChildAt(2);
-        soldOutNode.getDescriptor().setValue(Boolean.FALSE);
+        soldOutNode.getDescriptor().setValue("false");
 
         DBObject dbObject = JsonTreeModel.buildDBObject(treeNode);
 
