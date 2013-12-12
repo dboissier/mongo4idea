@@ -11,18 +11,16 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.*;
 
-public class AddKeyDialog extends AbstractAddDialog {
+public class AddValueDialog extends AbstractAddDialog {
 
 
-    private JTextField nameTextfield;
     private ComboBox typeCombobox;
     private JPanel valuePanel;
     private JPanel mainPanel;
 
-    public AddKeyDialog(MongoEditionPanel mongoEditionPanel) {
+    public AddValueDialog(MongoEditionPanel mongoEditionPanel) {
         super(mongoEditionPanel);
         valuePanel.setLayout(new BorderLayout());
-        nameTextfield.setName("keyName");
         typeCombobox.setName("valueType");
     }
 
@@ -32,8 +30,8 @@ public class AddKeyDialog extends AbstractAddDialog {
         return mainPanel;
     }
 
-    public static AddKeyDialog createDialog(MongoEditionPanel parentPanel) {
-        AddKeyDialog dialog = new AddKeyDialog(parentPanel);
+    public static AddValueDialog createDialog(MongoEditionPanel parentPanel) {
+        AddValueDialog dialog = new AddValueDialog(parentPanel);
         dialog.init();
         dialog.setTitle("Add A Key");
         dialog.setSize(400, 300);
@@ -51,14 +49,6 @@ public class AddKeyDialog extends AbstractAddDialog {
     @Nullable
     @Override
     protected ValidationInfo doValidate() {
-        String keyName = getKey();
-        if (StringUtils.isBlank(keyName)) {
-            return new ValidationInfo("Key name is not set");
-        }
-
-        if (mongoEditionPanel.containsKey(keyName)) {
-            return new ValidationInfo(String.format("Key '%s' is already used", keyName));
-        }
 
         JsonDataType dataType = getJsonDataType();
         if (JsonDataType.NULL.equals(dataType)) {
@@ -81,12 +71,9 @@ public class AddKeyDialog extends AbstractAddDialog {
         return null;
     }
 
-    public String getKey() {
-        return nameTextfield.getText();
-    }
-
     @Override
     public String getValue() {
         return currentEditor.getValue();
     }
+
 }

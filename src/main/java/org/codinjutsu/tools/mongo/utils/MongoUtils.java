@@ -69,6 +69,10 @@ public class MongoUtils {
             return JSON.parse(value);
         }
 
-        throw new IllegalArgumentException("Unsupported datatype: " + jsonDataType);
+        if (JsonDataType.ARRAY.equals(jsonDataType)) {
+            return JSON.parse(value);
+        }
+
+        throw new IllegalStateException("Unknown datatype: " + jsonDataType);
     }
 }

@@ -5,6 +5,7 @@ import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
+import org.codinjutsu.tools.mongo.view.model.JsonDataType;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.fest.swing.data.TableCell;
 import org.fest.swing.driver.BasicJTableCellReader;
@@ -17,7 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.swing.*;
-import java.awt.*;
+import java.io.IOException;
 
 public class MongoEditionPanelTest {
 
@@ -51,11 +52,7 @@ public class MongoEditionPanelTest {
             }
         });
 
-        DBObject mongoDocument = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("model/simpleDocument.json")));
-
-        mongoDocument.put("_id", new ObjectId(String.valueOf(mongoDocument.get("_id"))));
-
-        mongoEditionPanel.updateEditionTree(mongoDocument);
+        mongoEditionPanel.updateEditionTree(buildDocument("simpleDocument.json"));
 
         frameFixture = Containers.showInFrame(mongoEditionPanel);
     }
@@ -88,6 +85,63 @@ public class MongoEditionPanelTest {
         Assert.assertEquals("call afterOperation", actionCallback.logString);
     }
 
+    @Test
+    public void addKeyWithSomeValue() throws Exception {
+        JTableFixture editionTreeTable = frameFixture.table("editionTreeTable").cellReader(new JsonTableCellReader());
+
+
+        editionTreeTable.selectCell(TableCell.row(1).column(1));
+        mongoEditionPanel.addKey("stringKey", JsonDataType.STRING, "pouet");
+
+        editionTreeTable.selectCell(TableCell.row(1).column(1));
+        mongoEditionPanel.addKey("numberKey", JsonDataType.STRING, "1.1");
+
+        editionTreeTable.requireContents(new String[][]{
+                {"\"_id\"", "50b8d63414f85401b9268b99"},
+                {"\"label\"", "toto"},
+                {"\"visible\"", "false"},
+                {"\"image\"", "null"},
+                {"\"stringKey\"", "pouet"},
+                {"\"numberKey\"", "1.1"},
+        });
+    }
+
+    @Test
+    public void addValueInAList() throws Exception {
+
+        mongoEditionPanel.updateEditionTree(buildDocument("simpleDocumentWithSubList.json"));
+        JTableFixture editionTreeTable = frameFixture.table("editionTreeTable").cellReader(new JsonTableCellReader());
+
+        editionTreeTable.requireContents(new String[][] {
+        {"\"_id\"", "50b8d63414f85401b9268b99"},
+        {"\"title\"", "XP by example"},
+        {"\"tags\"", "[ \"pair programming\" , \"tdd\" , \"agile\"]"},
+        {"[0]", "pair programming"},
+        {"[1]", "tdd"},
+        {"[2]", "agile"},
+        {"\"innerList\"", "[ [ 1 , 2 , 3 , 4] , [ false , true] , [ { \"tagName\" : \"pouet\"} , { \"tagName\" : \"paf\"}]]"},
+        {"[0]", "[ 1 , 2 , 3 , 4]"},
+        {"[1]", "[ false , true]"},
+        {"[2]", "[ { \"tagName\" : \"pouet\"} , { \"tagName\" : \"paf\"}]"}});
+
+        editionTreeTable.selectCell(TableCell.row(3).column(1));
+        mongoEditionPanel.addValue(JsonDataType.STRING, "refactor");
+
+        editionTreeTable.requireContents(new String[][] {
+                {"\"_id\"", "50b8d63414f85401b9268b99"},
+                {"\"title\"", "XP by example"},
+                {"\"tags\"", "[ \"pair programming\" , \"tdd\" , \"agile\"]"},
+                {"[0]", "pair programming"},
+                {"[1]", "tdd"},
+                {"[2]", "agile"},
+                {"[3]", "refactor"},
+                {"\"innerList\"", "[ [ 1 , 2 , 3 , 4] , [ false , true] , [ { \"tagName\" : \"pouet\"} , { \"tagName\" : \"paf\"}]]"},
+                {"[0]", "[ 1 , 2 , 3 , 4]"},
+                {"[1]", "[ false , true]"},
+                {"[2]", "[ { \"tagName\" : \"pouet\"} , { \"tagName\" : \"paf\"}]"}});
+
+    }
+
     private static class JsonTableCellReader extends BasicJTableCellReader {
 
         @Override
@@ -100,6 +154,15 @@ public class MongoEditionPanelTest {
                 return value == null ? "null" : value.toString();
             }
         }
+
+    }
+
+
+    private DBObject buildDocument(String jsonFile) throws IOException {
+        DBObject mongoDocument = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("model/" + jsonFile)));
+
+        mongoDocument.put("_id", new ObjectId(String.valueOf(mongoDocument.get("_id"))));
+        return mongoDocument;
     }
 
     private static class MyMongoDocumentOperations implements MongoRunnerPanel.MongoDocumentOperations {
