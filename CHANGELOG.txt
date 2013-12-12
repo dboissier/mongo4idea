@@ -1,3 +1,6 @@
+Version 0.5.0
+    * [add] Document can be edited
+
 Version 0.4.3
     * [add] Enable aggregation query button
     * [fix] #46 In some case db.version() evaluation is not permitted on the database (depending on the security)
