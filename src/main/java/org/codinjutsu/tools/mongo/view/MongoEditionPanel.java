@@ -44,7 +44,7 @@ public class MongoEditionPanel extends JPanel implements Disposable {
     public MongoEditionPanel() {
         super(new BorderLayout());
 
-        mainPanel.setBorder(IdeBorderFactory.createTitledBorder("Edition", false));
+        mainPanel.setBorder(IdeBorderFactory.createTitledBorder("Edition", true));
         add(mainPanel);
         editionTreePanel.setLayout(new BorderLayout());
 

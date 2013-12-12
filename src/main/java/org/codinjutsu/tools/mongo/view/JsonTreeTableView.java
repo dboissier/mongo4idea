@@ -36,6 +36,7 @@ import org.jdesktop.swingx.event.DateSelectionEvent;
 import org.jdesktop.swingx.event.DateSelectionListener;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -88,12 +89,6 @@ public class JsonTreeTableView extends TreeTable {
         setTreeCellRenderer(new MongoKeyCellRenderer());
 
         TreeUtil.expand(tree, 2);
-
-        int maxWidth = tree.getPreferredScrollableViewportSize().width + 10;
-        final TableColumn keyColumn = getColumnModel().getColumn(0);
-        keyColumn.setMinWidth(maxWidth);
-        keyColumn.setMaxWidth(maxWidth);
-        keyColumn.setPreferredWidth(maxWidth);
 
         new TreeTableSpeedSearch(this, new Convertor<TreePath, String>() {
             @Override
