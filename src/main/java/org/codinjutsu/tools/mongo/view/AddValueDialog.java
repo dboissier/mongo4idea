@@ -33,8 +33,7 @@ public class AddValueDialog extends AbstractAddDialog {
     public static AddValueDialog createDialog(MongoEditionPanel parentPanel) {
         AddValueDialog dialog = new AddValueDialog(parentPanel);
         dialog.init();
-        dialog.setTitle("Add A Key");
-        dialog.setSize(400, 300);
+        dialog.setTitle("Add A Value");
 
         return dialog;
     }

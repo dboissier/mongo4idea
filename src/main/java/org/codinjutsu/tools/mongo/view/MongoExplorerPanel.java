@@ -366,7 +366,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         Tree tree = new Tree() {
 
             private final JLabel myLabel = new JLabel(
-                    String.format("<html><center>No Mongo server available<br><br>You may use <img src=\"%s\"> to add or fix configuration</center></html>", pluginSettingsUrl)
+                    String.format("<html><center>No Mongo server available<br><br>You may use <img src=\"%s\"> to add configuration</center></html>", pluginSettingsUrl)
             );
 
             @Override

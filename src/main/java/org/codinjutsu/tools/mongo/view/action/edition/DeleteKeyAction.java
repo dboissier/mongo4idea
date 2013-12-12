@@ -14,7 +14,7 @@ public class DeleteKeyAction extends AnAction {
     private final MongoEditionPanel mongoEditionPanel;
 
     public DeleteKeyAction(MongoEditionPanel mongoEditionPanel) {
-        super("Delete key", "Delete the selected key", DELETE_ICON);
+        super("Delete this", "Delete the selected node", DELETE_ICON);
         this.mongoEditionPanel = mongoEditionPanel;
     }
 

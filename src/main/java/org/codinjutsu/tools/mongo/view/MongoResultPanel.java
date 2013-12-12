@@ -24,8 +24,10 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.PopupHandler;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.treetable.TreeTableTree;
@@ -37,8 +39,6 @@ import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.CopyResultAction;
 import org.codinjutsu.tools.mongo.view.action.EditMongoDocumentAction;
-import org.codinjutsu.tools.mongo.view.action.edition.AddKeyAction;
-import org.codinjutsu.tools.mongo.view.action.edition.DeleteKeyAction;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeModel;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
@@ -54,6 +54,7 @@ import java.util.List;
 
 public class MongoResultPanel extends JPanel implements Disposable {
 
+    private final Project project;
     private final MongoRunnerPanel.MongoDocumentOperations mongoDocumentOperations;
     private JPanel resultToolbar;
     private JPanel mainPanel;
@@ -66,6 +67,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
 
     public MongoResultPanel(Project project, MongoRunnerPanel.MongoDocumentOperations mongoDocumentOperations) {
+        this.project = project;
         this.mongoDocumentOperations = mongoDocumentOperations;
         setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
@@ -87,8 +89,23 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
     private MongoEditionPanel createMongoEditionPanel() {
         return new MongoEditionPanel().init(mongoDocumentOperations, new ActionCallback() {
-            public void afterOperation() {
+            public void onOperationSuccess(String message) {
                 hideEditionPanel();
+                showNotification(MessageType.INFO, message);
+            }
+
+            @Override
+            public void onOperationFailure(Exception exception) {
+                showNotification(MessageType.ERROR, exception.getMessage());
+            }
+        });
+    }
+
+    private void showNotification(final MessageType info, final String message) {
+        GuiUtils.runInSwingThread(new Runnable() {
+            @Override
+            public void run() {
+                ToolWindowManager.getInstance(project).notifyByBalloon(MongoWindowManager.MONGO_RUNNER, info, message);
             }
         });
     }
@@ -254,6 +271,9 @@ public class MongoResultPanel extends JPanel implements Disposable {
     }
 
     public interface ActionCallback {
-        void afterOperation();
+
+        void onOperationSuccess(String message);
+
+        void onOperationFailure(Exception exception);
     }
 }

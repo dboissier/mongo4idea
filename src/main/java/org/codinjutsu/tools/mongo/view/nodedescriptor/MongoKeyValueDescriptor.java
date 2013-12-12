@@ -119,9 +119,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
             return new MongoKeyNullValueDescriptor(key);
         }
 
-        if (value instanceof String) {
-            return new MongoKeyStringValueDescriptor(key, (String) value);
-        } else if (value instanceof Boolean) {
+        if (value instanceof Boolean) {
             return new MongoKeyValueDescriptor(key, value, TEXT_ATTRIBUTES_PROVIDER.getBooleanAttribute()) {
                 @Override
                 public void setValue(Object value) {
@@ -135,6 +133,15 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
                     this.value = Integer.valueOf((String) value);
                 }
             };
+        } else if (value instanceof Double) {
+            return new MongoKeyValueDescriptor(key, value, TEXT_ATTRIBUTES_PROVIDER.getNumberAttribute()) {
+                @Override
+                public void setValue(Object value) {
+                    this.value = Double.valueOf((String) value);
+                }
+            };
+        } else if (value instanceof String) {
+            return new MongoKeyStringValueDescriptor(key, (String) value);
         } else if (value instanceof ObjectId) {
             return new MongoKeyValueDescriptor(key, value, TEXT_ATTRIBUTES_PROVIDER.getObjectIdAttribute());
         } else if (value instanceof DBObject) {

@@ -53,4 +53,13 @@ public class GuiUtils {
     public static boolean isUnderDarcula() {
         return UIManager.getLookAndFeel().getName().contains("Darcula");
     }
+
+
+    public static void runInSwingThread(Runnable runnable) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            runnable.run();
+        } else {
+            SwingUtilities.invokeLater(runnable);
+        }
+    }
 }

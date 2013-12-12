@@ -8,7 +8,6 @@ import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.PopupHandler;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.tree.TreeUtil;
-import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
@@ -59,23 +58,31 @@ public class MongoEditionPanel extends JPanel implements Disposable {
         cancelButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                actionCallback.afterOperation();
+                actionCallback.onOperationSuccess("Modification canceled...");
             }
         });
 
         saveButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                mongoDocumentOperations.updateMongoDocument(buildMongoDocument());
-                actionCallback.afterOperation();
+                try {
+                    mongoDocumentOperations.updateMongoDocument(buildMongoDocument());
+                    actionCallback.onOperationSuccess("Document saved...");
+                } catch (Exception exception) {
+                    actionCallback.onOperationFailure(exception);
+                }
             }
         });
 
         deleteButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                mongoDocumentOperations.deleteMongoDocument(getMongoDocument());
-                actionCallback.afterOperation();
+                try {
+                    mongoDocumentOperations.deleteMongoDocument(getMongoDocument());
+                    actionCallback.onOperationSuccess("Document deleted...");
+                } catch (Exception exception) {
+                    actionCallback.onOperationFailure(exception);
+                }
             }
         });
 

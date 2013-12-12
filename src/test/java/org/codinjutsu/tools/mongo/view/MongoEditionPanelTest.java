@@ -82,7 +82,7 @@ public class MongoEditionPanelTest {
         Assert.assertEquals("{ \"_id\" : { \"$oid\" : \"50b8d63414f85401b9268b99\"} , \"label\" : \"Hello\" , \"visible\" : false , \"image\" :  null }",
                 mongoDocumentOperations.getUpdatedMongoDocument().toString());
 
-        Assert.assertEquals("call afterOperation", actionCallback.logString);
+        Assert.assertEquals("call onOperationSuccess", actionCallback.logString);
     }
 
     @Test
@@ -194,8 +194,13 @@ public class MongoEditionPanelTest {
         String logString ="";
 
         @Override
-        public void afterOperation() {
-            logString = "call afterOperation";
+        public void onOperationSuccess(String message) {
+            logString = "call onOperationSuccess";
+        }
+
+        @Override
+        public void onOperationFailure(Exception exception) {
+            logString = "call onOperationFailure";
         }
     }
 }

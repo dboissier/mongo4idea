@@ -36,7 +36,6 @@ public class AddKeyDialog extends AbstractAddDialog {
         AddKeyDialog dialog = new AddKeyDialog(parentPanel);
         dialog.init();
         dialog.setTitle("Add A Key");
-        dialog.setSize(400, 300);
 
         return dialog;
     }
@@ -44,7 +43,6 @@ public class AddKeyDialog extends AbstractAddDialog {
     @Override
     protected void init() {
         super.init();
-
         initCombo(typeCombobox, valuePanel);
     }
 
