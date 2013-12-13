@@ -1,42 +1,7 @@
-# Mongo Plugin for IntelliJ IDEA version 0.4.3
-
-## Version 0.5.0-SNAPSHOT
-
-[version for Idea 13 EAP and latest WebStorm 7](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.5.0-SNAPSHOT-for-Idea13-distribution.zip?raw=true), [version for old Idea 11 and other IDE](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.5.0-SNAPSHOT-distribution.zip?raw=true)
-
-* [fix] Fatal Error with WebStorm 7 RC 131.130 (I had to compile with Idea 13 plateform, but without any changes, strange isn't it?)
-* **NEW** [add] document can be edited (update value, delete key, add (key, value) or value), save and delete document)
-* **NEW** [add] collections can be cleared (right click on the collection in the mongo explorer)
-
-### Important notice
-
-Some bugs were reported when installing the SNAPSHOT version of the plugin. Mainly some `ClassNotFoundDefException`. This could happen whenever you have a previous version of the plugin already installed in the IDE.
-To fix it, the steps should be as follow:
-* Locate the IDE working directory. For WebStorm, it is `.WebStorm` and for Intellij, it is `.IntelliJIdea`
-* In it, remove the snapshot and the stable versions from `<working_dir>/config/plugins`
-* Download again the right version for your target IDE
-* Deflate the archive in the same folder
-* You should have one instance of the plugin: `<working_dir>/config/plugins/mongo4idea-0.5.0-SNAPSHOT`
-
-Restart your IDE and it should be ok :).
-
-### Last developer notes on the document edition
-
-Why could the document be edited directly in the tree result?
-
-After making some tries, many issues were found:
-* Sometimes, projection can be used in the query. Edition requires having the object **id** to send the updated value to the mongo server and have all Mongo object content.
-* When the user updates a value, it was sent directely to the server. It is not convenient and does not handle misstyping. The user would like to update a set of key value.
-
-So, I decided to make a specific GUI for it:
-* Easier to make and test
-* Component non coupled with the result tree.
-* The user has the full control on the update/save operations
+# Mongo Plugin for IntelliJ IDEA version 0.5.0
 
 
-### ChangeLog of the stable 0.4.3
-
-see [CHANGELOG.txt](https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.4.3/CHANGELOG.txt)
+see [CHANGELOG.txt](https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.5.0/CHANGELOG.txt)
 
 
 ## Description
@@ -122,14 +87,18 @@ If you have an error during query execution, a feedback panel is displayed below
 
 ## [NEW] Document edition
 
-Any document can be edited by double-clicking the **object id**. A panel will be opened on the right.
+Any document can be edited by double-clicking on the **object id** (or by right-clicking). A panel will be opened on the right.
 
 ![Document Edition](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-documentEdition.png?raw=true)
 
 You can edit the value either by double-clicking or by typing F2 key.
-You can delete a key by right-clicking on it and select **Delete Key**
+You can delete a key by right-clicking on it and select **Delete this**
 * Click on the **save** button to send the modification to the mongo server
 * Click on the **delete** button to delete it
+You can add a key or value (depending on the structure of your document) by right-clicking on it and select **Add a Key** (or **Add a Value**). A dialog will appear.
+![Add Key Dialog](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-addKeyDialog.png?raw=true)
+
+Set the key name, type and value and then validate your form.
 
 
 ### Mongo shell integration
@@ -140,6 +109,7 @@ If you set the mongo client path (e.g. /usr/bin/mongo), you can run the console 
 
 
 ## Thanks
+
 I would like to thank:
 * MongoDB team
 * Mongo Java Driver team
@@ -149,3 +119,31 @@ I would like to thank:
 * Neko team, my first beta testers ;)
 * All users of this plugin who sent me valuable suggestions.
 * My wife and my daughter who support me to have fun in software development and also remind me my husband/father duty ;).
+
+
+### Last Developer notes
+
+
+#### Why could the document be edited directly in the tree result?
+
+After making some tries, many issues were found:
+* Sometimes, projection can be used in the query. Edition requires having the object **id** to send the updated value to the mongo server and have all Mongo object content.
+* When the user updates a value, it was sent directely to the server. It is not convenient and does not handle misstyping. The user would like to update a set of key value.
+
+So, I decided to make a specific GUI for it:
+* Easier to make and test
+* Component non coupled with the result tree.
+* The user has the full control on the update/save operations
+
+
+### The plugin does not work. I have `ClassNotFoundDefException`
+
+Some bugs were reported when installing the SNAPSHOT version of the plugin. Mainly some `ClassNotFoundDefException`. This could happen whenever you have a previous version of the plugin already installed in the IDE.
+To fix it, the steps should be as follow:
+* Locate the IDE working directory. For WebStorm, it is `.WebStorm` and for Intellij, it is `.IntelliJIdea`
+* In it, remove the snapshot and the stable versions from `<working_dir>/config/plugins`
+* Download again the right version for your target IDE
+* Deflate the archive in the same folder
+* You should have one instance of the plugin: `<working_dir>/config/plugins/mongo4idea-0.X.Y-SNAPSHOT`
+
+Restart your IDE and it should be ok :).

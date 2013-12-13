@@ -1,5 +1,8 @@
 Version 0.5.0
-    * [add] Document can be edited
+    * [fix] #57 Fatal Error with new releases of Jebrains products(Webstorm 7, Idea 13, etc.) due to some API changes
+    * [fix] #48 Key column is not resizable
+    * [add] Document can be edited (right click on the object id of the document)
+    * [add] Collections can be cleared (right click on the collection in the mongo explorer)
 
 Version 0.4.3
     * [add] Enable aggregation query button
