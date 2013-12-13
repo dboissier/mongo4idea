@@ -28,24 +28,19 @@ import com.intellij.util.ui.tree.TreeUtil;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.view.editor.MongoDatePickerCellEditor;
-import org.codinjutsu.tools.mongo.view.editor.MongoValueCellEditor;import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
+import org.codinjutsu.tools.mongo.view.editor.MongoValueCellEditor;
+import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.codinjutsu.tools.mongo.view.renderer.MongoKeyCellRenderer;
 import org.codinjutsu.tools.mongo.view.renderer.MongoValueCellRenderer;
-import org.jdesktop.swingx.event.DateSelectionEvent;
-import org.jdesktop.swingx.event.DateSelectionListener;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class JsonTreeTableView extends TreeTable {
@@ -145,8 +140,6 @@ public class JsonTreeTableView extends TreeTable {
     }
 
     private static class WritableColumnInfo extends ColumnInfo<JsonTreeNode, Object> {
-
-        private static final DateFormat DD_MM_YYYY = new SimpleDateFormat("dd/MM/yyyy");
 
         private final TableCellRenderer myRenderer = new MongoValueCellRenderer();
         private final TableCellEditor defaultEditor = new MongoValueCellEditor();
