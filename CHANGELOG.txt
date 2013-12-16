@@ -1,3 +1,9 @@
+Version 0.5.2
+    * [fix] API error wehen opening the Add Dialog
+
+Version 0.5.1
+    * [fix] #57 Fatal Error with new releases of Jebrains products(Webstorm 7, Idea 13, etc.) due to some API changes
+
 Version 0.5.0
     * [fix] #57 Fatal Error with new releases of Jebrains products(Webstorm 7, Idea 13, etc.) due to some API changes
     * [fix] #48 Key column is not resizable

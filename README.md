@@ -4,6 +4,10 @@
 see [CHANGELOG.txt](https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.5.0/CHANGELOG.txt)
 
 
+## SNAPSHOT
+
+[0.5.2-SNAPSHOT for Webstorm 7.0](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.5.2-SNAPSHOT-for-Webstorm7.zip?raw=true)
+
 ## Description
 This plugin integrates MongoDB Servers with database/collections tree,  Query Runner and Shell console.
 
