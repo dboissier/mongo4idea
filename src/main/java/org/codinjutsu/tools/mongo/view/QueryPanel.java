@@ -32,6 +32,7 @@ import com.intellij.openapi.editor.ex.util.LexerEditorHighlighter;
 import com.intellij.openapi.editor.highlighter.EditorHighlighter;
 import com.intellij.openapi.fileTypes.PlainTextSyntaxHighlighterFactory;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.components.panels.NonOpaquePanel;
 import com.intellij.util.Alarm;
 import com.mongodb.util.JSONParseException;
@@ -89,6 +90,8 @@ public class QueryPanel extends JPanel implements Disposable {
         filterPanel = new FilterPanel(editor);
         queryContainerPanel.add(FIND_PANEL, filterPanel);
         myUpdateAlarm.setActivationComponent(editor.getComponent());
+
+        Disposer.register(project, this);
     }
 
     public void toggleToFind() {

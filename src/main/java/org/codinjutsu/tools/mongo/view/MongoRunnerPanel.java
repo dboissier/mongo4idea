@@ -120,7 +120,6 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
 
     @Override
     public void dispose() {
-        queryPanel.dispose();
         resultPanel.dispose();
     }
 
