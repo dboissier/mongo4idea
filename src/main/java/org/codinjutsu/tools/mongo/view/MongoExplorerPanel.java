@@ -220,9 +220,10 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
 
         DefaultActionGroup actionGroup = new DefaultActionGroup("MongoExplorerGroup", false);
+        ViewCollectionValuesAction viewCollectionValuesAction = new ViewCollectionValuesAction(this);
         if (ApplicationManager.getApplication() != null) {
             actionGroup.add(new RefreshAllServerAction(this));
-            actionGroup.add(new ViewCollectionValuesAction(this));
+            actionGroup.add(viewCollectionValuesAction);
             actionGroup.add(expandAllAction);
             actionGroup.add(collapseAllAction);
             actionGroup.add(new MongoConsoleAction(this));
@@ -235,6 +236,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         DefaultActionGroup actionPopupGroup = new DefaultActionGroup("MongoExplorerPopupGroup", true);
         if (ApplicationManager.getApplication() != null) {
             actionPopupGroup.add(new RefreshServerAction(this));
+            actionPopupGroup.add(viewCollectionValuesAction);
             actionPopupGroup.add(new DropCollectionAction(this));
         }
 
