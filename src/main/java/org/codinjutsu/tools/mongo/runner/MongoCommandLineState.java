@@ -25,6 +25,10 @@ import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.process.ProcessTerminatedListener;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.apache.commons.lang.StringUtils;
+import org.codinjutsu.tools.mongo.ServerConfiguration;
+import org.codinjutsu.tools.mongo.model.MongoDatabase;
+import org.codinjutsu.tools.mongo.utils.MongoUtils;
 import org.jetbrains.annotations.NotNull;
 
 class MongoCommandLineState extends CommandLineState {
@@ -46,12 +50,23 @@ class MongoCommandLineState extends CommandLineState {
     }
 
     private GeneralCommandLine generateCommandLine() {
-        String exePath = "/usr/bin/mongo"; //TODO need to make it configurable
-
         final GeneralCommandLine commandLine = new GeneralCommandLine();
+
+        String exePath = mongoRunConfiguration.getMongoShell();
+        commandLine.setExePath(exePath);
+
+        ServerConfiguration serverConfiguration = mongoRunConfiguration.getServerConfiguration();
+        MongoDatabase database = mongoRunConfiguration.getDatabase();
+        commandLine.addParameter(MongoUtils.buildMongoUrl(serverConfiguration, database));
+
         VirtualFile scriptPath = mongoRunConfiguration.getScriptPath();
         commandLine.addParameter(scriptPath.getPath());
-        commandLine.setExePath(exePath);
+
+
+        String shellWorkingDir = mongoRunConfiguration.getShellWorkingDir();
+        if (StringUtils.isNotEmpty(shellWorkingDir)) {
+            commandLine.setWorkDirectory(shellWorkingDir);
+        }
         System.out.println("commandLinePath = " + commandLine.getCommandLineString());
         return commandLine;
     }

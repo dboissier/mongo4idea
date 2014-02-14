@@ -30,10 +30,9 @@ import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
+import org.codinjutsu.tools.mongo.utils.MongoUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import javax.swing.tree.DefaultMutableTreeNode;
 
 
 public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoConsoleView> {
@@ -70,7 +69,7 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
         final GeneralCommandLine commandLine = new GeneralCommandLine();
         commandLine.setExePath(shellPath);
 
-        commandLine.addParameter(String.format("%s:%s/%s", serverConfiguration.getServerName(), serverConfiguration.getServerPort(), database == null ? "test" : database.getName()));
+        commandLine.addParameter(MongoUtils.buildMongoUrl(serverConfiguration, database));
 
         String shellWorkingDir = serverConfiguration.getShellWorkingDir();
         if (StringUtils.isNotBlank(shellWorkingDir)) {

@@ -16,49 +16,59 @@
 
 package org.codinjutsu.tools.mongo.runner;
 
+import com.google.common.collect.Lists;
 import com.intellij.execution.CantRunException;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
-import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.execution.configurations.RunProfileState;
-import com.intellij.execution.configurations.RuntimeConfiguration;
+import com.intellij.execution.configurations.*;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.components.PathMacroManager;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.options.SettingsEditor;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.JDOMExternalizer;
 import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
+import org.codinjutsu.tools.mongo.model.MongoDatabase;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-class MongoRunConfiguration extends RuntimeConfiguration {
+import java.util.Collection;
 
+class MongoRunConfiguration extends ModuleBasedConfiguration<RunConfigurationModule> {
+
+    private final String mongoShell;
     private String scriptPath;
     private String shellParameters;
-    private boolean overwriteDefaultParameters;
-    private String host;
-    private int port;
-    private String username;
-    private String password;
+    private ServerConfiguration serverConfiguration;
+    private MongoDatabase database;
+    private String shellWorkingDir;
 
 
-    MongoRunConfiguration(Project project, ConfigurationFactory factory) {
-        super("Mongo Script", project, factory);
+    MongoRunConfiguration(RunConfigurationModule runConfigurationModule, ConfigurationFactory factory) {
+        super("Mongo Script", runConfigurationModule, factory);
+
+        mongoShell = MongoConfiguration.getInstance(getProject()).getShellPath();
     }
 
     @Override
     public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
-        return new MongoRunConfigurationEditor();
+        return new MongoRunConfigurationEditor(getProject());
     }
 
+
+    @Override
+    public Collection<Module> getValidModules() {
+        Module[] allModules = ModuleManager.getInstance(getProject()).getModules();
+        return Lists.newArrayList(allModules);
+    }
 
     @Override
     public void readExternal(Element element) throws InvalidDataException {
@@ -66,13 +76,7 @@ class MongoRunConfiguration extends RuntimeConfiguration {
         super.readExternal(element);
         scriptPath = JDOMExternalizer.readString(element, "path");
         shellParameters = JDOMExternalizer.readString(element, "shellParams");
-        overwriteDefaultParameters = JDOMExternalizer.readBoolean(element, "overwriteDefault");
-        if (overwriteDefaultParameters) {
-            host = JDOMExternalizer.readString(element, "host");
-            port = JDOMExternalizer.readInteger(element, "port", ServerConfiguration.DEFAULT_PORT);
-            username = JDOMExternalizer.readString(element, "username");
-            password = JDOMExternalizer.readString(element, "password");
-        }
+//        serverConfiguration = JDOMExternalizer.readBoolean(element, "serverConfiguration");
     }
 
     @Override
@@ -80,14 +84,14 @@ class MongoRunConfiguration extends RuntimeConfiguration {
         super.writeExternal(element);
         JDOMExternalizer.write(element, "path", scriptPath);
         JDOMExternalizer.write(element, "shellParams", shellParameters);
-        JDOMExternalizer.write(element, "overwriteDefault", overwriteDefaultParameters);
-        if (overwriteDefaultParameters) {
-            JDOMExternalizer.write(element, "host", host);
-            JDOMExternalizer.write(element, "port", port);
-            JDOMExternalizer.write(element, "username", username);
-            JDOMExternalizer.write(element, "password", password);
-        }
+//        JDOMExternalizer.write(element, "serverConfiguration", serverConfiguration);
+
         PathMacroManager.getInstance(getProject()).collapsePathsRecursively(element);
+    }
+
+    @Override
+    protected ModuleBasedConfiguration createInstance() {
+        return null;
     }
 
     @Nullable
@@ -112,44 +116,12 @@ class MongoRunConfiguration extends RuntimeConfiguration {
         this.scriptPath = scriptPath;
     }
 
-    public boolean isOverwriteDefaultParameters() {
-        return overwriteDefaultParameters;
+    public ServerConfiguration getServerConfiguration() {
+        return serverConfiguration;
     }
 
-    public void setOverwriteDefaultParameters(boolean overwriteDefaultParameters) {
-        this.overwriteDefaultParameters = overwriteDefaultParameters;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    public void setServerConfiguration(ServerConfiguration serverConfiguration) {
+        this.serverConfiguration = serverConfiguration;
     }
 
     public String getShellParameters() {
@@ -158,5 +130,25 @@ class MongoRunConfiguration extends RuntimeConfiguration {
 
     public void setShellParameters(String shellParameters) {
         this.shellParameters = shellParameters;
+    }
+
+    public String getMongoShell() {
+        return mongoShell;
+    }
+
+    public MongoDatabase getDatabase() {
+        return null;
+    }
+
+    public void setDatabase(MongoDatabase database) {
+        this.database = database;
+    }
+
+    public String getShellWorkingDir() {
+        return shellWorkingDir;
+    }
+
+    public void setShellWorkingDir(String shellWorkingDir) {
+        this.shellWorkingDir = shellWorkingDir;
     }
 }

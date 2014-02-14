@@ -22,6 +22,8 @@ import com.intellij.execution.process.CapturingProcessHandler;
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.openapi.vfs.CharsetToolkit;
 import com.mongodb.util.JSON;
+import org.codinjutsu.tools.mongo.ServerConfiguration;
+import org.codinjutsu.tools.mongo.model.MongoDatabase;
 import org.codinjutsu.tools.mongo.view.model.JsonDataType;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -74,5 +76,9 @@ public class MongoUtils {
         }
 
         throw new IllegalStateException("Unknown datatype: " + jsonDataType);
+    }
+
+    public static String buildMongoUrl(ServerConfiguration serverConfiguration, MongoDatabase database) {
+        return String.format("%s:%s/%s", serverConfiguration.getServerName(), serverConfiguration.getServerPort(), database == null ? "test" : database.getName());
     }
 }

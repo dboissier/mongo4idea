@@ -16,10 +16,7 @@
 
 package org.codinjutsu.tools.mongo.runner;
 
-import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.ConfigurationType;
-import com.intellij.execution.configurations.ConfigurationTypeUtil;
-import com.intellij.execution.configurations.RunConfiguration;
+import com.intellij.execution.configurations.*;
 import com.intellij.openapi.project.Project;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.jetbrains.annotations.NonNls;
@@ -66,7 +63,7 @@ public class MongoRunConfigurationType implements ConfigurationType {
         }
 
         public RunConfiguration createTemplateConfiguration(Project project) {
-            return new MongoRunConfiguration(project, this);
+            return new MongoRunConfiguration(new RunConfigurationModule(project), this);
         }
 
     }

@@ -29,8 +29,13 @@
         <projectService serviceInterface="org.codinjutsu.tools.mongo.view.MongoWindowManager" serviceImplementation="org.codinjutsu.tools.mongo.view.MongoWindowManager"/>
         <projectService serviceInterface="org.codinjutsu.tools.mongo.logic.MongoManager" serviceImplementation="org.codinjutsu.tools.mongo.logic.MongoManager"/>
         <projectConfigurable instance="org.codinjutsu.tools.mongo.view.MongoConfigurable" id="preferences.mongoOptions"/>
-        <!--<configurationType implementation="org.codinjutsu.tools.mongo.runner.MongoRunConfigurationType"/>-->
+        <configurationType implementation="org.codinjutsu.tools.mongo.runner.MongoRunConfigurationType"/>
+        <configurationProducer implementation="org.codinjutsu.tools.mongo.runner.MongoScriptRunConfigurationProducer"/>
     </extensions>
+
+    <extensionPoints>
+        <extensionPoint name="configurationProducer" interface="com.intellij.execution.junit.RuntimeConfigurationProducer"/>
+    </extensionPoints>
 
     <project-components>
         <component>
