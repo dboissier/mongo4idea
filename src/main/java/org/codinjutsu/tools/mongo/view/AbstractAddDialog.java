@@ -74,6 +74,7 @@ public abstract class AbstractAddDialog extends DialogWrapper {
                 JsonDataType selectedType = (JsonDataType) combobox.getSelectedItem();
                 currentDataType = selectedType;
                 currentEditor = UI_COMPONENT_BY_JSON_DATATYPE.get(selectedType);
+                currentEditor.reset();
 
                 parentPanel.invalidate();
                 parentPanel.removeAll();
@@ -96,6 +97,8 @@ public abstract class AbstractAddDialog extends DialogWrapper {
         String getValue();
 
         T getComponent();
+
+        void reset();
     }
 
     protected static class StringFieldWrapper implements TextFieldWrapper {
@@ -113,6 +116,11 @@ public abstract class AbstractAddDialog extends DialogWrapper {
 
         public JTextField getComponent() {
             return component;
+        }
+
+        @Override
+        public void reset() {
+            component.setText("");
         }
     }
 
@@ -132,6 +140,11 @@ public abstract class AbstractAddDialog extends DialogWrapper {
         public JBCheckBox getComponent() {
             return component;
         }
+
+        @Override
+        public void reset() {
+            component.setSelected(false);
+        }
     }
 
     protected static class NullFieldWrapper implements TextFieldWrapper {
@@ -147,6 +160,10 @@ public abstract class AbstractAddDialog extends DialogWrapper {
             return component.getText();
         }
 
+        @Override
+        public void reset() {
+
+        }
 
         public JLabel getComponent() {
             return component;
