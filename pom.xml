@@ -15,7 +15,7 @@
         <intellij.sdk.name>117.963</intellij.sdk.name>
         <intellij.sdk.version>11.1.4</intellij.sdk.version>
 
-        <intellij.lib.path>/home/dboissier/applications/idea-IU-117.117/lib</intellij.lib.path>
+        <intellij.lib.path>/home/david/dev/lib/intellij-sdk/idea-IC-117.1056/lib</intellij.lib.path>
 
         <release.dir>file:////home/dboissier/incubator/distribution/maven/m2/inhouse</release.dir>
         <snapshot.dir>file:///home/dboissier/incubator/distribution/maven/m2/inhouse-snapshot</snapshot.dir>
@@ -64,27 +64,27 @@
         </dependency>
         <dependency>
             <groupId>com.intellij</groupId>
-            <artifactId>idea-openapi</artifactId>
+            <artifactId>openapi</artifactId>
             <version>${intellij.sdk.version}</version>
         </dependency>
         <dependency>
             <groupId>com.intellij</groupId>
-            <artifactId>idea-util</artifactId>
+            <artifactId>util</artifactId>
             <version>${intellij.sdk.version}</version>
         </dependency>
         <dependency>
             <groupId>com.intellij</groupId>
-            <artifactId>idea-idea</artifactId>
+            <artifactId>idea</artifactId>
             <version>${intellij.sdk.version}</version>
         </dependency>
         <dependency>
             <groupId>com.intellij</groupId>
-            <artifactId>idea-extensions</artifactId>
+            <artifactId>extensions</artifactId>
             <version>${intellij.sdk.version}</version>
         </dependency>
         <dependency>
             <groupId>com.intellij</groupId>
-            <artifactId>idea-resources</artifactId>
+            <artifactId>resources</artifactId>
             <version>${intellij.sdk.version}</version>
             <scope>runtime</scope>
         </dependency>
