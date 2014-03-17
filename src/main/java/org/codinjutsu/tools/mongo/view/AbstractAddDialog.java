@@ -27,6 +27,7 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -39,7 +40,7 @@ public abstract class AbstractAddDialog extends DialogWrapper {
 
         UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.STRING, new StringFieldWrapper());
         UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.BOOLEAN, new BooleanFieldWrapper());
-        UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.NUMBER, new NumberFieldWrapper());
+        UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.NUMBER, new StringFieldWrapper());
         UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.NULL, new NullFieldWrapper());
         UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.OBJECT, new StringFieldWrapper());
         UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.ARRAY, new StringFieldWrapper());
@@ -129,25 +130,6 @@ public abstract class AbstractAddDialog extends DialogWrapper {
         }
 
         public JBCheckBox getComponent() {
-            return component;
-        }
-    }
-
-    protected static class NumberFieldWrapper implements TextFieldWrapper {
-
-        private final JFormattedTextField component;
-
-        protected NumberFieldWrapper() {
-            component = new JFormattedTextField(DecimalFormat.getNumberInstance(Locale.ENGLISH));
-        }
-
-        @Override
-        public String getValue() {
-            return component.getText();
-        }
-
-
-        public JTextField getComponent() {
             return component;
         }
     }
