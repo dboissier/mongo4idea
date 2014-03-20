@@ -27,10 +27,7 @@ import org.codinjutsu.tools.mongo.model.*;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class MongoManager {
 
@@ -41,14 +38,14 @@ public class MongoManager {
     }
 
     public void connect(ServerConfiguration configuration) {
-        connect(configuration.getServerHost(), configuration.getUsername(), configuration.getPassword(), configuration.getUserDatabase());
+        connect(configuration.getServerUrls(), configuration.getUsername(), configuration.getPassword(), configuration.getUserDatabase());
     }
 
-    public void connect(String serverHost, String username, String password, String userDatabase) {
+    public void connect(List<String> serverUrls, String username, String password, String userDatabase) {
 
         MongoClient mongo = null;
         try {
-            mongo = createMongoClient(serverHost, userDatabase);
+            mongo = createMongoClient(serverUrls, userDatabase);
 
             DB databaseForTesting;
             if (StringUtils.isNotEmpty(userDatabase)) {
@@ -65,7 +62,7 @@ public class MongoManager {
             throw new ConfigurationException(ex);
         } catch (MongoException ex) {
             LOG.error("Error when accessing Mongo server", ex);
-            throw new ConfigurationException(ex);
+            throw new ConfigurationException(ex.getMessage());
         } finally {
             if (mongo != null) {
                 mongo.close();
@@ -78,7 +75,7 @@ public class MongoManager {
         try {
             String userDatabase = mongoServer.getConfiguration().getUserDatabase();
 
-            mongo = createMongoClient(mongoServer.getServerHost(), userDatabase);
+            mongo = createMongoClient(mongoServer.getServerUrls(), userDatabase);
 
             String username = mongoServer.getUsername();
             String password = mongoServer.getPassword();
@@ -122,7 +119,7 @@ public class MongoManager {
         MongoClient mongo = null;
         try {
             String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration.getServerHost(), databaseName);
+            mongo = createMongoClient(configuration.getServerUrls(), databaseName);
 
             DB database = mongo.getDB(databaseName);
 
@@ -148,7 +145,7 @@ public class MongoManager {
         MongoClient mongo = null;
         try {
             String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration.getServerHost(), databaseName);
+            mongo = createMongoClient(configuration.getServerUrls(), databaseName);
 
             DB database = mongo.getDB(databaseName);
 
@@ -174,7 +171,7 @@ public class MongoManager {
         MongoClient mongo = null;
         try {
             String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration.getServerHost(), databaseName);
+            mongo = createMongoClient(configuration.getServerUrls(), databaseName);
 
             DB database = mongo.getDB(databaseName);
 
@@ -200,7 +197,7 @@ public class MongoManager {
         MongoClient mongo = null;
         try {
             String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration.getServerHost(), databaseName);
+            mongo = createMongoClient(configuration.getServerUrls(), databaseName);
 
             DB database = mongo.getDB(databaseName);
 
@@ -232,7 +229,7 @@ public class MongoManager {
         MongoClient mongo = null;
         try {
             String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration.getServerHost(), databaseName);
+            mongo = createMongoClient(configuration.getServerUrls(), databaseName);
 
             DB database = mongo.getDB(databaseName);
 
@@ -254,15 +251,30 @@ public class MongoManager {
         }
     }
 
-    private MongoClient createMongoClient(String serverHost, String userDatabase) throws UnknownHostException {
+    private MongoClient createMongoClient(List<String> serverUrls, String userDatabase) throws UnknownHostException {
         String textURI;
-        if (StringUtils.isEmpty(userDatabase)) {
-            textURI = String.format("mongodb://%s/", serverHost);
-        } else {
-            textURI = String.format("mongodb://%s/%s", serverHost, userDatabase);
+
+        if (serverUrls.isEmpty()) {
+            throw new ConfigurationException("server host is not set");
         }
-        MongoClientURI mongoClientURI = new MongoClientURI(textURI);
-        return new MongoClient(mongoClientURI);
+
+        if (serverUrls.size() == 1) {
+            String serverUrl = serverUrls.get(0);
+            if (StringUtils.isEmpty(userDatabase)) {
+                textURI = String.format("mongodb://%s/", serverUrl);
+            } else {
+                textURI = String.format("mongodb://%s/%s", serverUrl, userDatabase);
+            }
+            MongoClientURI mongoClientURI = new MongoClientURI(textURI);
+            return new MongoClient(mongoClientURI);
+        } else {
+            List<ServerAddress> serverAddresses = new LinkedList<ServerAddress>();
+            for (String serverUrl : serverUrls) {
+                String[] host_port = serverUrl.split(":");
+                serverAddresses.add(new ServerAddress(host_port[0], Integer.valueOf(host_port[1])));
+            }
+            return new MongoClient(serverAddresses);
+        }
     }
 
     private MongoCollectionResult aggregate(MongoQueryOptions mongoQueryOptions, MongoCollectionResult mongoCollectionResult, DBCollection collection) {

@@ -30,6 +30,7 @@ import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,7 +42,7 @@ public class ServerConfigurationPanel implements Disposable {
 
     private JPanel rootPanel;
 
-    private JTextField serverHostField;
+    private JTextField serverUrlsField;
     private JTextField usernameField;
     private JPasswordField passwordField;
 
@@ -64,7 +65,8 @@ public class ServerConfigurationPanel implements Disposable {
         mongoShellOptionsPanel.setBorder(IdeBorderFactory.createTitledBorder("Mongo shell options", true));
 
         shellArgumentsLineField.setDialogCaption("Mongo arguments");
-        serverHostField.setName("serverHostField");
+        serverUrlsField.setName("serverUrlsField");
+        serverUrlsField.setToolTipText("format: host:port1,host:port2,...");
         usernameField.setName("usernameField");
         passwordField.setName("passwordField");
         feedbackLabel.setName("feedbackLabel");
@@ -84,7 +86,7 @@ public class ServerConfigurationPanel implements Disposable {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    mongoManager.connect(getServerHost(), getUsername(), getPassword(), getUserDatabase());
+                    mongoManager.connect(getServerUrls(), getUsername(), getPassword(), getUserDatabase());
 
                     feedbackLabel.setIcon(SUCCESS);
                     feedbackLabel.setText("");
@@ -120,7 +122,7 @@ public class ServerConfigurationPanel implements Disposable {
 
     public void applyConfigurationData(ServerConfiguration configuration) {
         configuration.setLabel(getLabel());
-        configuration.setServerHost(getServerHost());
+        configuration.setServerUrls(getServerUrls());
         configuration.setUsername(getUsername());
         configuration.setPassword(getPassword());
         configuration.setCollectionsToIgnore(getCollectionsToIgnore());
@@ -138,10 +140,10 @@ public class ServerConfigurationPanel implements Disposable {
         return null;
     }
 
-    private String getServerHost() {
-        String serverHost = serverHostField.getText();
-        if (StringUtils.isNotBlank(serverHost)) {
-            return serverHost;
+    private List<String> getServerUrls() {
+        String serverUrls = serverUrlsField.getText();
+        if (StringUtils.isNotBlank(serverUrls)) {
+            return Arrays.asList(StringUtils.split(StringUtils.remove(serverUrls, " "), ","));
         }
         return null;
     }
@@ -194,7 +196,7 @@ public class ServerConfigurationPanel implements Disposable {
 
     public void loadConfigurationData(ServerConfiguration configuration) {
         labelField.setText(configuration.getLabel());
-        serverHostField.setText(configuration.getServerHost());
+        serverUrlsField.setText(StringUtils.join(configuration.getServerUrls(), ","));
         usernameField.setText(configuration.getUsername());
         passwordField.setText(configuration.getPassword());
         collectionsToIgnoreField.setText(StringUtils.join(configuration.getCollectionsToIgnore(), ","));

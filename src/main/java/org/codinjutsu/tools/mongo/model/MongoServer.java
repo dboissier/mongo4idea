@@ -36,8 +36,8 @@ public class MongoServer {
         this.configuration = configuration;
     }
 
-    public String getServerHost() {
-        return configuration.getServerHost();
+    public List<String> getServerUrls() {
+        return configuration.getServerUrls();
     }
 
     public String getUsername() {

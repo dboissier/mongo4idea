@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 public class MongoManagerTest {
@@ -111,7 +112,7 @@ public class MongoManagerTest {
 
         mongoManager = new MongoManager();
         serverConfiguration = new ServerConfiguration();
-        serverConfiguration.setServerHost("localhost:33333");
+        serverConfiguration.setServerUrls(Arrays.asList("localhost:33333"));
     }
 
     private static void fillCollectionWithJsonData(DBCollection collection, String jsonResource) throws IOException {

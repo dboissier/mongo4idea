@@ -43,7 +43,7 @@ class MongoTreeRenderer extends DefaultTreeCellRenderer {
         if (userObject instanceof MongoServer) {
             MongoServer mongoServer = (MongoServer) userObject;
             String label = mongoServer.getLabel();
-            String host = mongoServer.getServerHost();
+            String host = StringUtils.join(mongoServer.getServerUrls(), ",");
             super.getTreeCellRendererComponent(mongoTree, StringUtils.isBlank(label) ? host : label, isSelected, isExpanded, isLeaf, row, focus);
 
             if (MongoServer.Status.OK.equals(mongoServer.getStatus())) {

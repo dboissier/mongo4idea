@@ -27,6 +27,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.Arrays;
+
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public class ServerConfigurationPanelTest {
@@ -54,9 +57,9 @@ public class ServerConfigurationPanelTest {
     }
 
     @Test
-    public void validateForm() throws Exception {
+    public void validateFormWithOneServerUrl() throws Exception {
 
-        frameFixture.textBox("serverHostField").setText("localhost:25");
+        frameFixture.textBox("serverUrlsField").setText("localhost:25");
         frameFixture.textBox("usernameField").setText("john");
         frameFixture.textBox("passwordField").setText("johnpassword");
 
@@ -64,41 +67,63 @@ public class ServerConfigurationPanelTest {
 
         configurationPanel.applyConfigurationData(configuration);
 
-        assertEquals("localhost:25", configuration.getServerHost());
+        assertEquals(Arrays.asList("localhost:25"), configuration.getServerUrls());
         assertEquals("john", configuration.getUsername());
         assertEquals("johnpassword", configuration.getPassword());
     }
 
     @Test
-    public void loadForm() throws Exception {
+    public void loadFormWithOneServerUrl() throws Exception {
         ServerConfiguration configuration = new ServerConfiguration();
-        configuration.setServerHost("localhost:25");
+        configuration.setServerUrls(Arrays.asList("localhost:25"));
         configuration.setUsername("john");
         configuration.setPassword("johnpassword");
 
         configurationPanel.loadConfigurationData(configuration);
 
-        frameFixture.textBox("serverHostField").requireText("localhost:25");
+        frameFixture.textBox("serverUrlsField").requireText("localhost:25");
         frameFixture.textBox("usernameField").requireText("john");
         frameFixture.textBox("passwordField").requireText("johnpassword");
     }
 
     @Test
+    public void validateFormWithReplicatSet() throws Exception {
+
+        frameFixture.textBox("serverUrlsField").setText(" localhost:25, localhost:26 ");
+
+        ServerConfiguration configuration = new ServerConfiguration();
+
+        configurationPanel.applyConfigurationData(configuration);
+
+        assertEquals(Arrays.asList("localhost:25", "localhost:26"), configuration.getServerUrls());
+    }
+
+    @Test
+    public void loadFormWithReplicatSet() throws Exception {
+        ServerConfiguration configuration = new ServerConfiguration();
+        configuration.setServerUrls(Arrays.asList("localhost:25", "localhost:26"));
+
+        configurationPanel.loadConfigurationData(configuration);
+
+        frameFixture.textBox("serverUrlsField").requireText("localhost:25,localhost:26");
+    }
+
+    @Test
     public void connectionWithSuccess() {
         ServerConfiguration configuration = new ServerConfiguration();
-        configuration.setServerHost("localhost:27017");
+        configuration.setServerUrls(Arrays.asList("localhost:27017"));
 
         configurationPanel.loadConfigurationData(configuration);
 
         frameFixture.button("testConnection").click();
 
-        Mockito.verify(mongoManager, Mockito.times(1)).connect("localhost:27017", null, null, null);
+        Mockito.verify(mongoManager, Mockito.times(1)).connect(Arrays.asList("localhost:27017"), null, null, null);
     }
 
     @Test
     public void connectionWithFailure() {
         ServerConfiguration configuration = new ServerConfiguration();
-        configuration.setServerHost("myserver:25");
+        configuration.setServerUrls(Arrays.asList("myserver:25"));
 
         configurationPanel.loadConfigurationData(configuration);
 
@@ -106,6 +131,6 @@ public class ServerConfigurationPanelTest {
         frameFixture.label("feedbackLabel")
                 .requireText("java.net.UnknownHostException: myserver");
 
-        Mockito.verify(mongoManager, Mockito.times(1)).connect("myserver:25", null, null, null);
+        Mockito.verify(mongoManager, Mockito.times(1)).connect(Arrays.asList("myserver:25"), null, null, null);
     }
 }

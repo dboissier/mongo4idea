@@ -17,7 +17,10 @@
 package org.codinjutsu.tools.mongo;
 
 import com.mongodb.DBPort;
+import org.apache.commons.lang.StringUtils;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,7 +32,7 @@ public class ServerConfiguration implements Cloneable {
 
     private String label;
 
-    private String serverHost;
+    private List<String> serverUrls = Collections.emptyList();
 
     private String username;
     private String password;
@@ -43,12 +46,12 @@ public class ServerConfiguration implements Cloneable {
     private String shellWorkingDir;
 
 
-    public String getServerHost() {
-        return serverHost;
+    public List<String> getServerUrls() {
+        return serverUrls;
     }
 
-    public void setServerHost(String serverHost) {
-        this.serverHost = serverHost;
+    public void setServerUrls(List<String> serverUrls) {
+        this.serverUrls = serverUrls;
     }
 
     public String getUsername() {
@@ -116,12 +119,12 @@ public class ServerConfiguration implements Cloneable {
     }
 
     public String getUrl() {
-        return serverHost;
+        return StringUtils.join(serverUrls,",");
     }
 
     public static ServerConfiguration byDefault() {
         ServerConfiguration serverConfiguration = new ServerConfiguration();
-        serverConfiguration.setServerHost(String.format("%s:%s", DEFAULT_URL, DEFAULT_PORT));
+        serverConfiguration.setServerUrls(Arrays.asList(String.format("%s:%s", DEFAULT_URL, DEFAULT_PORT)));
         return serverConfiguration;
     }
 
@@ -145,7 +148,7 @@ public class ServerConfiguration implements Cloneable {
             return false;
         if (label != null ? !label.equals(that.label) : that.label != null) return false;
         if (password != null ? !password.equals(that.password) : that.password != null) return false;
-        if (serverHost != null ? !serverHost.equals(that.serverHost) : that.serverHost != null) return false;
+        if (serverUrls != null ? !serverUrls.equals(that.serverUrls) : that.serverUrls != null) return false;
         if (shellArgumentsLine != null ? !shellArgumentsLine.equals(that.shellArgumentsLine) : that.shellArgumentsLine != null)
             return false;
         if (shellWorkingDir != null ? !shellWorkingDir.equals(that.shellWorkingDir) : that.shellWorkingDir != null)
@@ -159,7 +162,7 @@ public class ServerConfiguration implements Cloneable {
     @Override
     public int hashCode() {
         int result = label != null ? label.hashCode() : 0;
-        result = 31 * result + (serverHost != null ? serverHost.hashCode() : 0);
+        result = 31 * result + (serverUrls != null ? serverUrls.hashCode() : 0);
         result = 31 * result + (username != null ? username.hashCode() : 0);
         result = 31 * result + (password != null ? password.hashCode() : 0);
         result = 31 * result + (connectOnIdeStartup ? 1 : 0);
