@@ -51,7 +51,7 @@ public class MongoManager {
             if (StringUtils.isNotEmpty(userDatabase)) {
                 databaseForTesting = mongo.getDB(userDatabase);
             } else {
-                databaseForTesting = mongo.getDB("admin");
+                databaseForTesting = mongo.getDB("test");
             }
 
             databaseForTesting.getLastError();
