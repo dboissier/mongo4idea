@@ -54,6 +54,8 @@ public class MongoManager {
                 databaseForTesting = mongo.getDB("admin");
             }
 
+            databaseForTesting.getLastError();
+
             if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
                 databaseForTesting.authenticate(username, password.toCharArray());
             }
