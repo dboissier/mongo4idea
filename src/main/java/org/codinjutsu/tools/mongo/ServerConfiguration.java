@@ -29,8 +29,7 @@ public class ServerConfiguration implements Cloneable {
 
     private String label;
 
-    private String serverName;
-    private int serverPort;
+    private String serverHost;
 
     private String username;
     private String password;
@@ -44,20 +43,12 @@ public class ServerConfiguration implements Cloneable {
     private String shellWorkingDir;
 
 
-    public String getServerName() {
-        return serverName;
+    public String getServerHost() {
+        return serverHost;
     }
 
-    public void setServerName(String serverName) {
-        this.serverName = serverName;
-    }
-
-    public int getServerPort() {
-        return serverPort;
-    }
-
-    public void setServerPort(int serverPort) {
-        this.serverPort = serverPort;
+    public void setServerHost(String serverHost) {
+        this.serverHost = serverHost;
     }
 
     public String getUsername() {
@@ -125,13 +116,12 @@ public class ServerConfiguration implements Cloneable {
     }
 
     public String getUrl() {
-        return String.format("%s/%s", serverName, serverPort);
+        return serverHost;
     }
 
     public static ServerConfiguration byDefault() {
         ServerConfiguration serverConfiguration = new ServerConfiguration();
-        serverConfiguration.setServerName(DEFAULT_URL);
-        serverConfiguration.setServerPort(DEFAULT_PORT);
+        serverConfiguration.setServerHost(String.format("%s:%s", DEFAULT_URL, DEFAULT_PORT));
         return serverConfiguration;
     }
 
@@ -151,12 +141,11 @@ public class ServerConfiguration implements Cloneable {
         ServerConfiguration that = (ServerConfiguration) o;
 
         if (connectOnIdeStartup != that.connectOnIdeStartup) return false;
-        if (serverPort != that.serverPort) return false;
         if (collectionsToIgnore != null ? !collectionsToIgnore.equals(that.collectionsToIgnore) : that.collectionsToIgnore != null)
             return false;
         if (label != null ? !label.equals(that.label) : that.label != null) return false;
         if (password != null ? !password.equals(that.password) : that.password != null) return false;
-        if (serverName != null ? !serverName.equals(that.serverName) : that.serverName != null) return false;
+        if (serverHost != null ? !serverHost.equals(that.serverHost) : that.serverHost != null) return false;
         if (shellArgumentsLine != null ? !shellArgumentsLine.equals(that.shellArgumentsLine) : that.shellArgumentsLine != null)
             return false;
         if (shellWorkingDir != null ? !shellWorkingDir.equals(that.shellWorkingDir) : that.shellWorkingDir != null)
@@ -170,8 +159,7 @@ public class ServerConfiguration implements Cloneable {
     @Override
     public int hashCode() {
         int result = label != null ? label.hashCode() : 0;
-        result = 31 * result + (serverName != null ? serverName.hashCode() : 0);
-        result = 31 * result + serverPort;
+        result = 31 * result + (serverHost != null ? serverHost.hashCode() : 0);
         result = 31 * result + (username != null ? username.hashCode() : 0);
         result = 31 * result + (password != null ? password.hashCode() : 0);
         result = 31 * result + (connectOnIdeStartup ? 1 : 0);

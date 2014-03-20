@@ -83,7 +83,7 @@ class MongoServerTableModel extends AbstractTableModel implements ItemRemovable 
                 break;
             }
             case 1: {
-                //do nothing url is computed from serverName and serverPort
+                //do nothing url = serverHost
                 break;
             }
             case 2: {

@@ -16,7 +16,6 @@
 
 package org.codinjutsu.tools.mongo.model;
 
-import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 
 import java.util.LinkedList;
@@ -37,12 +36,8 @@ public class MongoServer {
         this.configuration = configuration;
     }
 
-    public String getServerName() {
-        return configuration.getServerName();
-    }
-
-    public int getServerPort() {
-        return configuration.getServerPort();
+    public String getServerHost() {
+        return configuration.getServerHost();
     }
 
     public String getUsername() {
@@ -75,17 +70,6 @@ public class MongoServer {
 
     public void setStatus(Status status) {
         this.status = status;
-    }
-
-    public static boolean isCompliantWithPipelineOperations(String serverVersion) {
-
-        if (StringUtils.isBlank(serverVersion)) {
-            return false;
-        }
-
-        String[] versionNumbers = StringUtils.split(serverVersion, ".");
-
-        return Integer.parseInt(versionNumbers[0]) >= 2 && Integer.parseInt(versionNumbers[1]) >= 2;
     }
 
     public ServerConfiguration getConfiguration() {

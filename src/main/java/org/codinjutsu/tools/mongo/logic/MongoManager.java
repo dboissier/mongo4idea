@@ -41,14 +41,14 @@ public class MongoManager {
     }
 
     public void connect(ServerConfiguration configuration) {
-        connect(configuration.getServerName(), configuration.getServerPort(), configuration.getUsername(), configuration.getPassword(), configuration.getUserDatabase());
+        connect(configuration.getServerHost(), configuration.getUsername(), configuration.getPassword(), configuration.getUserDatabase());
     }
 
-    public void connect(String serverName, int serverPort, String username, String password, String userDatabase) {
+    public void connect(String serverHost, String username, String password, String userDatabase) {
 
         MongoClient mongo = null;
         try {
-            mongo = createMongoClient(serverName, serverPort, userDatabase);
+            mongo = createMongoClient(serverHost, userDatabase);
 
             DB databaseForTesting;
             if (StringUtils.isNotEmpty(userDatabase)) {
@@ -78,7 +78,7 @@ public class MongoManager {
         try {
             String userDatabase = mongoServer.getConfiguration().getUserDatabase();
 
-            mongo = createMongoClient(mongoServer.getServerName(), mongoServer.getServerPort(), userDatabase);
+            mongo = createMongoClient(mongoServer.getServerHost(), userDatabase);
 
             String username = mongoServer.getUsername();
             String password = mongoServer.getPassword();
@@ -122,7 +122,7 @@ public class MongoManager {
         MongoClient mongo = null;
         try {
             String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration.getServerName(), configuration.getServerPort(), databaseName);
+            mongo = createMongoClient(configuration.getServerHost(), databaseName);
 
             DB database = mongo.getDB(databaseName);
 
@@ -148,7 +148,7 @@ public class MongoManager {
         MongoClient mongo = null;
         try {
             String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration.getServerName(), configuration.getServerPort(), databaseName);
+            mongo = createMongoClient(configuration.getServerHost(), databaseName);
 
             DB database = mongo.getDB(databaseName);
 
@@ -174,7 +174,7 @@ public class MongoManager {
         MongoClient mongo = null;
         try {
             String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration.getServerName(), configuration.getServerPort(), databaseName);
+            mongo = createMongoClient(configuration.getServerHost(), databaseName);
 
             DB database = mongo.getDB(databaseName);
 
@@ -200,7 +200,7 @@ public class MongoManager {
         MongoClient mongo = null;
         try {
             String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration.getServerName(), configuration.getServerPort(), databaseName);
+            mongo = createMongoClient(configuration.getServerHost(), databaseName);
 
             DB database = mongo.getDB(databaseName);
 
@@ -232,7 +232,7 @@ public class MongoManager {
         MongoClient mongo = null;
         try {
             String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration.getServerName(), configuration.getServerPort(), databaseName);
+            mongo = createMongoClient(configuration.getServerHost(), databaseName);
 
             DB database = mongo.getDB(databaseName);
 
@@ -254,12 +254,12 @@ public class MongoManager {
         }
     }
 
-    private MongoClient createMongoClient(String serverName, int serverPort, String userDatabase) throws UnknownHostException {
+    private MongoClient createMongoClient(String serverHost, String userDatabase) throws UnknownHostException {
         String textURI;
         if (StringUtils.isEmpty(userDatabase)) {
-            textURI = String.format("mongodb://%s:%s/", serverName, serverPort);
+            textURI = String.format("mongodb://%s/", serverHost);
         } else {
-            textURI = String.format("mongodb://%s:%s/%s", serverName, serverPort, userDatabase);
+            textURI = String.format("mongodb://%s/%s", serverHost, userDatabase);
         }
         MongoClientURI mongoClientURI = new MongoClientURI(textURI);
         return new MongoClient(mongoClientURI);

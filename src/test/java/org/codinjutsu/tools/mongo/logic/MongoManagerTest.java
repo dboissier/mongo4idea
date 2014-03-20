@@ -111,8 +111,7 @@ public class MongoManagerTest {
 
         mongoManager = new MongoManager();
         serverConfiguration = new ServerConfiguration();
-        serverConfiguration.setServerName("localhost");
-        serverConfiguration.setServerPort(33333);
+        serverConfiguration.setServerHost("localhost:33333");
     }
 
     private static void fillCollectionWithJsonData(DBCollection collection, String jsonResource) throws IOException {

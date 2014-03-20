@@ -41,8 +41,7 @@ public class ServerConfigurationPanel implements Disposable {
 
     private JPanel rootPanel;
 
-    private JTextField serverNameField;
-    private JTextField serverPortField;
+    private JTextField serverHostField;
     private JTextField usernameField;
     private JPasswordField passwordField;
 
@@ -65,8 +64,7 @@ public class ServerConfigurationPanel implements Disposable {
         mongoShellOptionsPanel.setBorder(IdeBorderFactory.createTitledBorder("Mongo shell options", true));
 
         shellArgumentsLineField.setDialogCaption("Mongo arguments");
-        serverNameField.setName("serverNameField");
-        serverPortField.setName("serverPortField");
+        serverHostField.setName("serverHostField");
         usernameField.setName("usernameField");
         passwordField.setName("passwordField");
         feedbackLabel.setName("feedbackLabel");
@@ -86,7 +84,7 @@ public class ServerConfigurationPanel implements Disposable {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    mongoManager.connect(getServerName(), getServerPort(), getUsername(), getPassword(), getUserDatabase());
+                    mongoManager.connect(getServerHost(), getUsername(), getPassword(), getUserDatabase());
 
                     feedbackLabel.setIcon(SUCCESS);
                     feedbackLabel.setText("");
@@ -122,8 +120,7 @@ public class ServerConfigurationPanel implements Disposable {
 
     public void applyConfigurationData(ServerConfiguration configuration) {
         configuration.setLabel(getLabel());
-        configuration.setServerName(getServerName());
-        configuration.setServerPort(getServerPort());
+        configuration.setServerHost(getServerHost());
         configuration.setUsername(getUsername());
         configuration.setPassword(getPassword());
         configuration.setCollectionsToIgnore(getCollectionsToIgnore());
@@ -141,10 +138,10 @@ public class ServerConfigurationPanel implements Disposable {
         return null;
     }
 
-    private String getServerName() {
-        String serverName = serverNameField.getText();
-        if (StringUtils.isNotBlank(serverName)) {
-            return serverName;
+    private String getServerHost() {
+        String serverHost = serverHostField.getText();
+        if (StringUtils.isNotBlank(serverHost)) {
+            return serverHost;
         }
         return null;
     }
@@ -155,14 +152,6 @@ public class ServerConfigurationPanel implements Disposable {
             return userDatabase;
         }
         return null;
-    }
-
-    private int getServerPort() {
-        String serverPort = serverPortField.getText();
-        if (StringUtils.isNotBlank(serverPort)) {
-            return Integer.valueOf(serverPort);
-        }
-        return 0;
     }
 
     private String getUsername() {
@@ -205,8 +194,7 @@ public class ServerConfigurationPanel implements Disposable {
 
     public void loadConfigurationData(ServerConfiguration configuration) {
         labelField.setText(configuration.getLabel());
-        serverNameField.setText(configuration.getServerName());
-        serverPortField.setText(Integer.toString(configuration.getServerPort()));
+        serverHostField.setText(configuration.getServerHost());
         usernameField.setText(configuration.getUsername());
         passwordField.setText(configuration.getPassword());
         collectionsToIgnoreField.setText(StringUtils.join(configuration.getCollectionsToIgnore(), ","));

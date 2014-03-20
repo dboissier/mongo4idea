@@ -56,8 +56,7 @@ public class ServerConfigurationPanelTest {
     @Test
     public void validateForm() throws Exception {
 
-        frameFixture.textBox("serverNameField").setText("localhost");
-        frameFixture.textBox("serverPortField").setText("25");
+        frameFixture.textBox("serverHostField").setText("localhost:25");
         frameFixture.textBox("usernameField").setText("john");
         frameFixture.textBox("passwordField").setText("johnpassword");
 
@@ -65,8 +64,7 @@ public class ServerConfigurationPanelTest {
 
         configurationPanel.applyConfigurationData(configuration);
 
-        assertEquals("localhost", configuration.getServerName());
-        assertEquals(25, configuration.getServerPort());
+        assertEquals("localhost:25", configuration.getServerHost());
         assertEquals("john", configuration.getUsername());
         assertEquals("johnpassword", configuration.getPassword());
     }
@@ -74,15 +72,13 @@ public class ServerConfigurationPanelTest {
     @Test
     public void loadForm() throws Exception {
         ServerConfiguration configuration = new ServerConfiguration();
-        configuration.setServerName("localhost");
-        configuration.setServerPort(25);
+        configuration.setServerHost("localhost:25");
         configuration.setUsername("john");
         configuration.setPassword("johnpassword");
 
         configurationPanel.loadConfigurationData(configuration);
 
-        frameFixture.textBox("serverNameField").requireText("localhost");
-        frameFixture.textBox("serverPortField").requireText("25");
+        frameFixture.textBox("serverHostField").requireText("localhost:25");
         frameFixture.textBox("usernameField").requireText("john");
         frameFixture.textBox("passwordField").requireText("johnpassword");
     }
@@ -90,21 +86,19 @@ public class ServerConfigurationPanelTest {
     @Test
     public void connectionWithSuccess() {
         ServerConfiguration configuration = new ServerConfiguration();
-        configuration.setServerName("localhost");
-        configuration.setServerPort(27017);
+        configuration.setServerHost("localhost:27017");
 
         configurationPanel.loadConfigurationData(configuration);
 
         frameFixture.button("testConnection").click();
 
-        Mockito.verify(mongoManager, Mockito.times(1)).connect("localhost", 27017, null, null, null);
+        Mockito.verify(mongoManager, Mockito.times(1)).connect("localhost:27017", null, null, null);
     }
 
     @Test
     public void connectionWithFailure() {
         ServerConfiguration configuration = new ServerConfiguration();
-        configuration.setServerName("myserver");
-        configuration.setServerPort(25);
+        configuration.setServerHost("myserver:25");
 
         configurationPanel.loadConfigurationData(configuration);
 
@@ -112,6 +106,6 @@ public class ServerConfigurationPanelTest {
         frameFixture.label("feedbackLabel")
                 .requireText("java.net.UnknownHostException: myserver");
 
-        Mockito.verify(mongoManager, Mockito.times(1)).connect("myserver", 25, null, null, null);
+        Mockito.verify(mongoManager, Mockito.times(1)).connect("myserver:25", null, null, null);
     }
 }
