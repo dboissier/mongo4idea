@@ -17,6 +17,7 @@
 package org.codinjutsu.tools.mongo.view;
 
 import org.codinjutsu.tools.mongo.ServerConfiguration;
+import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiQuery;
@@ -24,7 +25,9 @@ import org.fest.swing.fixture.Containers;
 import org.fest.swing.fixture.FrameFixture;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
@@ -33,6 +36,9 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public class ServerConfigurationPanelTest {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     private ServerConfigurationPanel configurationPanel;
     private MongoManager mongoManager;
@@ -85,6 +91,49 @@ public class ServerConfigurationPanelTest {
         frameFixture.textBox("usernameField").requireText("john");
         frameFixture.textBox("passwordField").requireText("johnpassword");
     }
+
+    @Test
+    public void validateFormWithMissingMongoUrlShouldThrowAConfigurationException() {
+        thrown.expect(ConfigurationException.class);
+        thrown.expectMessage("URL(s) should be set");
+
+        frameFixture.textBox("serverUrlsField").setText(null);
+
+        configurationPanel.applyConfigurationData(new ServerConfiguration());
+    }
+
+    @Test
+    public void validateFormWithEmptyMongoUrlShouldThrowAConfigurationException() {
+        thrown.expect(ConfigurationException.class);
+        thrown.expectMessage("URL(s) should be set");
+
+        frameFixture.textBox("serverUrlsField").setText("");
+
+        configurationPanel.applyConfigurationData(new ServerConfiguration());
+    }
+
+    @Test
+    public void validateFormWithBadMongoUrlShouldThrowAConfigurationException() {
+        thrown.expect(ConfigurationException.class);
+        thrown.expectMessage("URL 'host' format is incorrect. It should be 'host:port'");
+
+        frameFixture.textBox("serverUrlsField").setText("host");
+
+        configurationPanel.applyConfigurationData(new ServerConfiguration());
+    }
+
+
+    @Test
+    public void validateFormWithBadMongoPortShouldThrowAConfigurationException() {
+        thrown.expect(ConfigurationException.class);
+        thrown.expectMessage("Port in the URL 'host:port' is incorrect. It should be a number");
+
+        frameFixture.textBox("serverUrlsField").setText("host:port");
+
+        configurationPanel.applyConfigurationData(new ServerConfiguration());
+    }
+
+
 
     @Test
     public void validateFormWithReplicatSet() throws Exception {

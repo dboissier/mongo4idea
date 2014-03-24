@@ -66,7 +66,6 @@ public class ServerConfigurationPanel implements Disposable {
 
         shellArgumentsLineField.setDialogCaption("Mongo arguments");
         serverUrlsField.setName("serverUrlsField");
-        serverUrlsField.setToolTipText("format: host:port1,host:port2,...");
         usernameField.setName("usernameField");
         passwordField.setName("passwordField");
         feedbackLabel.setName("feedbackLabel");
@@ -86,17 +85,37 @@ public class ServerConfigurationPanel implements Disposable {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
+                    validateUrls();
                     mongoManager.connect(getServerUrls(), getUsername(), getPassword(), getUserDatabase());
 
                     feedbackLabel.setIcon(SUCCESS);
-                    feedbackLabel.setText("");
+                    feedbackLabel.setText("Connection successfull");
                 } catch (ConfigurationException ex) {
-                    feedbackLabel.setIcon(FAIL);
-                    feedbackLabel.setText(ex.getMessage());
+                    setErrorMessage(ex.getMessage());
                 }
 
             }
         });
+
+    }
+
+    private void validateUrls() {
+        List<String> serverUrls = getServerUrls();
+        if (serverUrls == null) {
+            throw new ConfigurationException("URL(s) should be set");
+        }
+        for (String serverUrl : serverUrls) {
+            String[] host_port = serverUrl.split(":");
+            if (host_port.length < 2) {
+                throw new ConfigurationException(String.format("URL '%s' format is incorrect. It should be 'host:port'", serverUrl));
+            }
+
+            try {
+                Integer.valueOf(host_port[1]);
+            } catch (NumberFormatException e) {
+                throw new ConfigurationException(String.format("Port in the URL '%s' is incorrect. It should be a number", serverUrl));
+            }
+        }
 
     }
 
@@ -121,6 +140,8 @@ public class ServerConfigurationPanel implements Disposable {
 
 
     public void applyConfigurationData(ServerConfiguration configuration) {
+        validateUrls();
+
         configuration.setLabel(getLabel());
         configuration.setServerUrls(getServerUrls());
         configuration.setUsername(getUsername());
@@ -143,7 +164,7 @@ public class ServerConfigurationPanel implements Disposable {
     private List<String> getServerUrls() {
         String serverUrls = serverUrlsField.getText();
         if (StringUtils.isNotBlank(serverUrls)) {
-            return Arrays.asList(StringUtils.split(StringUtils.remove(serverUrls, " "), ","));
+            return Arrays.asList(StringUtils.split(StringUtils.deleteWhitespace(serverUrls), ","));
         }
         return null;
     }
@@ -216,5 +237,10 @@ public class ServerConfigurationPanel implements Disposable {
     @Override
     public void dispose() {
 
+    }
+
+    public void setErrorMessage(String message) {
+        feedbackLabel.setIcon(FAIL);
+        feedbackLabel.setText(message);
     }
 }
