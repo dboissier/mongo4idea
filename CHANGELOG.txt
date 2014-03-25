@@ -1,5 +1,10 @@
+Version 0.6.0
+    * [fix] #69 Cannot edit number value
+    * [fix] #54 #58 Test Connection Button does not properly work
+    * [add] #61 Replica Set support
+
 Version 0.5.2
-    * [fix] API error wehen opening the Add Dialog
+    * [fix] API error when opening the Add Dialog
 
 Version 0.5.1
     * [fix] #57 Fatal Error with new releases of Jebrains products(Webstorm 7, Idea 13, etc.) due to some API changes
