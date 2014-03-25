@@ -79,6 +79,6 @@ public class MongoUtils {
     }
 
     public static String buildMongoUrl(ServerConfiguration serverConfiguration, MongoDatabase database) {
-        return String.format("%s/%s", serverConfiguration.getServerUrls(), database == null ? "test" : database.getName());
+        return String.format("%s/%s", serverConfiguration.getServerUrls().get(0), database == null ? "test" : database.getName());
     }
 }
