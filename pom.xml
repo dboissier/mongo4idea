@@ -4,7 +4,7 @@
 
     <groupId>org.codinjutsu.tools.mongo</groupId>
     <artifactId>mongo4idea</artifactId>
-    <version>0.5.2-SNAPSHOT</version>
+    <version>0.6.0-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -12,10 +12,10 @@
         <maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>
 
-        <intellij.sdk.name>117.963</intellij.sdk.name>
-        <intellij.sdk.version>11.1.4</intellij.sdk.version>
+        <intellij.sdk.name>113.72</intellij.sdk.name>
+        <intellij.sdk.version>12.0.4</intellij.sdk.version>
 
-        <intellij.lib.path>/home/david/dev/lib/intellij-sdk/idea-IC-117.1056/lib</intellij.lib.path>
+        <intellij.lib.path>/home/dboissier/applications/idea-IC-123.72/lib</intellij.lib.path>
 
         <release.dir>file:////home/dboissier/incubator/distribution/maven/m2/inhouse</release.dir>
         <snapshot.dir>file:///home/dboissier/incubator/distribution/maven/m2/inhouse-snapshot</snapshot.dir>
