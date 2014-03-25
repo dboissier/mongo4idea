@@ -118,8 +118,8 @@ public class ServerConfiguration implements Cloneable {
         this.shellWorkingDir = shellWorkingDir;
     }
 
-    public String getUrl() {
-        return StringUtils.join(serverUrls,",");
+    public String getUrlsInSingleString() {
+        return StringUtils.join(serverUrls, ",");
     }
 
     public static ServerConfiguration byDefault() {
@@ -134,6 +134,10 @@ public class ServerConfiguration implements Cloneable {
         } catch (CloneNotSupportedException e) {
             return null;
         }
+    }
+
+    public boolean isSingleServer() {
+        return serverUrls.size() == 1;
     }
 
     @Override

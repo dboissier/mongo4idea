@@ -64,7 +64,7 @@ class MongoServerTableModel extends AbstractTableModel implements ItemRemovable 
                 return configuration.getLabel();
             }
             case 1: { // "URL" column
-                return configuration.getUrl();
+                return configuration.getUrlsInSingleString();
             }
             case 2: { // "Autoconnect" column
                 return configuration.isConnectOnIdeStartup();

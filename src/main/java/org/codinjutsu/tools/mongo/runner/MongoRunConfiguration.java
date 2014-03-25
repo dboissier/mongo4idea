@@ -16,7 +16,6 @@
 
 package org.codinjutsu.tools.mongo.runner;
 
-import com.google.common.collect.Lists;
 import com.intellij.execution.CantRunException;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
@@ -40,6 +39,7 @@ import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 class MongoRunConfiguration extends ModuleBasedConfiguration<RunConfigurationModule> {
@@ -67,7 +67,7 @@ class MongoRunConfiguration extends ModuleBasedConfiguration<RunConfigurationMod
     @Override
     public Collection<Module> getValidModules() {
         Module[] allModules = ModuleManager.getInstance(getProject()).getModules();
-        return Lists.newArrayList(allModules);
+        return Arrays.asList(allModules);
     }
 
     @Override
