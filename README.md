@@ -6,7 +6,11 @@ see [CHANGELOG.txt](https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.5.
 
 ## SNAPSHOT
 
-[0.5.2-SNAPSHOT for Webstorm 7.0](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.5.2-SNAPSHOT-for-Webstorm7.zip?raw=true)
+* [0.6.0-SNAPSHOT for Intellij 12 and below](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.6.0-SNAPSHOT.zip?raw=true)
+* [0.6.1-SNAPSHOT for Intellij 13 (Webstorm 7) and above](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.6.1-SNAPSHOT.zip?raw=true)
+
+
+Current [changelog](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)
 
 ## Description
 This plugin integrates MongoDB Servers with database/collections tree,  Query Runner and Shell console.
