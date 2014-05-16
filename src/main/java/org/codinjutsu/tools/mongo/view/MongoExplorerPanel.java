@@ -38,6 +38,8 @@ import org.codinjutsu.tools.mongo.model.MongoDatabase;
 import org.codinjutsu.tools.mongo.model.MongoServer;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.*;
+import org.codinjutsu.tools.mongo.view.editor.MongoFileSystem;
+import org.codinjutsu.tools.mongo.view.editor.MongoObjectFile;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -354,8 +356,9 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
     }
 
     public void loadSelectedCollectionValues() {
-        MongoWindowManager.getInstance(project).addResultContent(getConfiguration(), getSelectedCollectionValues());
-        MongoWindowManager.getInstance(project).showToolWindow();
+//        MongoWindowManager.getInstance(project).addResultContent(getConfiguration(), getSelectedCollectionValues());
+//        MongoWindowManager.getInstance(project).showToolWindow();
+        MongoFileSystem.getInstance().openEditor(new MongoObjectFile(project, getConfiguration(), getSelectedCollectionValues()));
     }
 
     public void dropCollection() {

@@ -55,4 +55,6 @@ public interface StyleAttributesProvider {
     Icon getClearAllIcon();
 
     Icon getDeleteIcon();
+
+    Icon getFindIcon();
 }

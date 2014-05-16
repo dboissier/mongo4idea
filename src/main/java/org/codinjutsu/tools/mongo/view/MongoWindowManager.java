@@ -44,10 +44,6 @@ public class MongoWindowManager {
 
     private static final String MONGO_EXPLORER = "Mongo Explorer";
 
-    private final Key<Boolean> MONGO_CONTENT_KEY = Key.create("MongoResultManager.MONGO_CONTENT_KEY");
-
-
-    private final ToolWindow mongoResultWindow;
     private final Project project;
     private final MongoManager mongoManager;
     private final MongoExplorerPanel mongoExplorerPanel;
@@ -61,12 +57,6 @@ public class MongoWindowManager {
         this.mongoManager = MongoManager.getInstance(project);
 
         ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
-        mongoResultWindow = toolWindowManager.registerToolWindow(MONGO_RUNNER, true, ToolWindowAnchor.BOTTOM);
-        mongoResultWindow.setToHideOnEmptyContent(true);
-        mongoResultWindow.setIcon(MONGO_ICON);
-
-        new ContentManagerWatcher(mongoResultWindow, mongoResultWindow.getContentManager());
-
         mongoExplorerPanel = new MongoExplorerPanel(project, mongoManager);
         mongoExplorerPanel.installActions();
         Content mongoExplorer = ContentFactory.SERVICE.getInstance().createContent(mongoExplorerPanel, null, false);
@@ -76,72 +66,12 @@ public class MongoWindowManager {
         toolMongoExplorerWindow.setIcon(MONGO_ICON);
     }
 
-    public void showToolWindow() {
-        mongoResultWindow.show(null);
-        if (!mongoResultWindow.isActive()) {
-            mongoResultWindow.activate(null);
-        }
-    }
-
-    public void addResultContent(final ServerConfiguration configuration, final MongoCollection mongoCollection) {
-
-        final MongoRunnerPanel mongoRunnerPanel = getOrCreate(configuration, mongoCollection);
-
-        ApplicationManager.getApplication().invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                mongoRunnerPanel.showResults();
-            }
-        });
-    }
-
-    private MongoRunnerPanel getOrCreate(final ServerConfiguration configuration, final MongoCollection mongoCollection) {
-
-        String tabName = String.format("%s/%s/%s", configuration.getLabel(), mongoCollection.getDatabaseName(), mongoCollection.getName());
-        Content content = mongoResultWindow.getContentManager().findContent(tabName);
-        if (content == null) {
-            final MongoRunnerPanel mongoRunnerPanel = new MongoRunnerPanel(project, mongoManager, configuration, mongoCollection);
-            Content mongoResultContent = ContentFactory.SERVICE.getInstance().createContent(mongoRunnerPanel, tabName, false);
-
-            mongoRunnerPanel.installActions(new CloseAction(project, mongoResultContent));
-            mongoResultContent.putUserData(MONGO_CONTENT_KEY, Boolean.TRUE);  //TODO necessary ??
-
-            mongoResultWindow.getContentManager().addContent(mongoResultContent);
-            mongoResultWindow.getContentManager().setSelectedContent(mongoResultContent);
-
-            return mongoRunnerPanel;
-
-        } else {
-            mongoResultWindow.getContentManager().setSelectedContent(content);
-            return (MongoRunnerPanel) content.getComponent();
-        }
-    }
-
     public void unregisterMyself() {
         ToolWindowManager.getInstance(project).unregisterToolWindow(MONGO_RUNNER);
         ToolWindowManager.getInstance(project).unregisterToolWindow(MONGO_EXPLORER);
     }
 
-    void closeContent(Content content) {
-        mongoResultWindow.getContentManager().removeContent(content, true);
-    }
-
     public void apply() {
         mongoExplorerPanel.reloadAllServerConfigurations(true);
-    }
-
-    static class CloseAction extends CloseTabToolbarAction {
-        private final Project project;
-        private final Content content;
-
-        private CloseAction(Project project, Content content) {
-            this.project = project;
-            this.content = content;
-        }
-
-        @Override
-        public void actionPerformed(AnActionEvent e) {
-            MongoWindowManager.getInstance(project).closeContent(content);
-        }
     }
 }

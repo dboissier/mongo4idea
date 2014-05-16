@@ -82,7 +82,7 @@ public class QueryPanel extends JPanel implements Disposable {
 
         withAggregation = true;
         aggregationPanel = new JPanel();
-        aggregationPanel.setLayout(new BoxLayout(aggregationPanel, BoxLayout.Y_AXIS));
+        aggregationPanel.setLayout(new BoxLayout(aggregationPanel, BoxLayout.X_AXIS));
         addOperatorPanel(MongoAggregateOperator.MATCH);
         queryContainerPanel.add(AGGREGATION_PANEL, aggregationPanel);
 
@@ -207,7 +207,7 @@ public class QueryPanel extends JPanel implements Disposable {
         return withAggregation;
     }
 
-    public void installActions(MongoRunnerPanel mongoRunnerPanel, MongoWindowManager.CloseAction closeAction) {
+    public void installActions(MongoRunnerPanel mongoRunnerPanel) {
         DefaultActionGroup actionQueryGroup = new DefaultActionGroup("MongoQueryGroup", true);
         if (ApplicationManager.getApplication() != null) {
             actionQueryGroup.add(new ExecuteQuery(mongoRunnerPanel));
@@ -215,9 +215,10 @@ public class QueryPanel extends JPanel implements Disposable {
             actionQueryGroup.addSeparator();
             actionQueryGroup.add(new AddOperatorPanelAction(this));
             actionQueryGroup.add(new CopyQueryAction(this));
-            actionQueryGroup.add(closeAction);
+            actionQueryGroup.addSeparator();
+            actionQueryGroup.add(new CloseFindEditorAction(mongoRunnerPanel));
         }
-        GuiUtils.installActionGroupInToolBar(actionQueryGroup, toolBarPanel, ActionManager.getInstance(), "MongoQueryGroupActions", false);
+        GuiUtils.installActionGroupInToolBar(actionQueryGroup, toolBarPanel, ActionManager.getInstance(), "MongoQueryGroupActions", true);
     }
 
 

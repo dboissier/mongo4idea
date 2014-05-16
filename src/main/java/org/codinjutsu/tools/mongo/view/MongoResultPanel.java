@@ -39,6 +39,7 @@ import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.CopyResultAction;
 import org.codinjutsu.tools.mongo.view.action.EditMongoDocumentAction;
+import org.codinjutsu.tools.mongo.view.action.OpenFindAction;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeModel;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
@@ -105,7 +106,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
         GuiUtils.runInSwingThread(new Runnable() {
             @Override
             public void run() {
-                ToolWindowManager.getInstance(project).notifyByBalloon(MongoWindowManager.MONGO_RUNNER, info, message);
+//                ToolWindowManager.getInstance(project).notifyByBalloon(MongoWindowManager.MONGO_RUNNER, info, message);
             }
         });
     }
@@ -182,8 +183,9 @@ public class MongoResultPanel extends JPanel implements Disposable {
         return value instanceof ObjectId;
     }
 
-    public void installActions() {
+    public void installActions(MongoRunnerPanel mongoRunnerPanel) {
         DefaultActionGroup actionResultGroup = new DefaultActionGroup("MongoResultGroup", true);
+        actionResultGroup.add(new OpenFindAction(mongoRunnerPanel));
         actionResultGroup.add(new CopyResultAction(this));
 
         final TreeExpander treeExpander = new TreeExpander() {
@@ -249,10 +251,10 @@ public class MongoResultPanel extends JPanel implements Disposable {
         return userObject.toString();
     }
 
+
     private void hideEditionPanel() {
         splitter.setSecondComponent(null);
     }
-
 
     private String stringifyResult(DefaultMutableTreeNode selectedResultNode) {
         List<Object> stringifiedObjects = new LinkedList<Object>();

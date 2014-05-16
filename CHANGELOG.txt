@@ -1,4 +1,5 @@
 Version 0.6.0
+    * [update] Results are displayed in a standard editor tab (like any file)
     * [fix] #69 Cannot edit number value
     * [fix] #54 #58 Test Connection Button does not properly work
     * [add] #61 Replica Set support

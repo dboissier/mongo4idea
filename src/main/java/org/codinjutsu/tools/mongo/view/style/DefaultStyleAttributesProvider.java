@@ -121,4 +121,9 @@ public class DefaultStyleAttributesProvider implements StyleAttributesProvider {
     public Icon getDeleteIcon() {
         return GuiUtils.loadIcon("delete.png");
     }
+
+    @Override
+    public Icon getFindIcon() {
+        return GuiUtils.loadIcon("find.png");
+    }
 }

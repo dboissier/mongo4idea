@@ -60,7 +60,7 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
         queryPanel = new QueryPanel(project);
         queryPanel.setCallback(new ErrorQueryCallback());
 
-        splitter.setFirstComponent(queryPanel);
+        splitter.setOrientation(true);
 
         resultPanel = createResultPanel(project, new MongoDocumentOperations() {
 
@@ -78,8 +78,6 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
         });
         splitter.setSecondComponent(resultPanel);
 
-        splitter.setProportion(0.30f);
-
         setLayout(new BorderLayout());
         add(rootPanel);
     }
@@ -88,9 +86,9 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
         return new MongoResultPanel(project, mongoDocumentOperations);
     }
 
-    public void installActions(MongoWindowManager.CloseAction closeAction) {
-        queryPanel.installActions(this, closeAction);
-        resultPanel.installActions();
+    public void installActions() {
+        queryPanel.installActions(this);
+        resultPanel.installActions(this);
     }
 
 
@@ -121,6 +119,18 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
     @Override
     public void dispose() {
         resultPanel.dispose();
+    }
+
+    public MongoResultPanel getResultPanel() {
+        return resultPanel;
+    }
+
+    public void openFindEditor() {
+        splitter.setFirstComponent(queryPanel);
+    }
+
+    public void closeFindEditor() {
+        splitter.setFirstComponent(null);
     }
 
     private static class ErrorQueryCallback implements QueryPanel.QueryCallback {
