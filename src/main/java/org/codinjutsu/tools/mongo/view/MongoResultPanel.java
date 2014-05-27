@@ -73,7 +73,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
         setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
 
-        splitter = new Splitter(false, 0.6f);
+        splitter = new Splitter(true, 0.6f);
 
         resultTreePanel = new JPanel(new BorderLayout());
 
