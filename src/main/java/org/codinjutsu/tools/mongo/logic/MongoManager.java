@@ -227,7 +227,7 @@ public class MongoManager {
         }
     }
 
-    public DBObject findMongoDocument(ServerConfiguration configuration, MongoCollection mongoCollection, ObjectId objectId) {
+    public DBObject findMongoDocument(ServerConfiguration configuration, MongoCollection mongoCollection, Object _id) {
         MongoClient mongo = null;
         try {
             String databaseName = mongoCollection.getDatabaseName();
@@ -242,7 +242,7 @@ public class MongoManager {
             }
 
             DBCollection collection = database.getCollection(mongoCollection.getName());
-            return collection.findOne(new BasicDBObject("_id", objectId));
+            return collection.findOne(new BasicDBObject("_id", _id));
 
         } catch (UnknownHostException ex) {
             throw new ConfigurationException(ex);

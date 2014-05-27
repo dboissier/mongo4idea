@@ -191,7 +191,7 @@ public class MongoEditionPanelTest {
         }
 
         @Override
-        public DBObject getMongoDocument(ObjectId objectId) {
+        public DBObject getMongoDocument(Object _id) {
             return new BasicDBObject();
         }
 

@@ -64,8 +64,8 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
 
         resultPanel = createResultPanel(project, new MongoDocumentOperations() {
 
-            public DBObject getMongoDocument(ObjectId objectId) {
-                return mongoManager.findMongoDocument(configuration, mongoCollection, objectId);
+            public DBObject getMongoDocument(Object _id) {
+                return mongoManager.findMongoDocument(configuration, mongoCollection, _id);
             }
 
             public void updateMongoDocument(DBObject mongoDocument) {
@@ -161,7 +161,7 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
     }
 
     interface MongoDocumentOperations {
-        DBObject getMongoDocument(ObjectId objectId);
+        DBObject getMongoDocument(Object _id);
 
         void deleteMongoDocument(ObjectId mongoDocument);
 

@@ -27,8 +27,8 @@ import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.tree.TreeUtil;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
-import org.codinjutsu.tools.mongo.view.editor.MongoDatePickerCellEditor;
-import org.codinjutsu.tools.mongo.view.editor.MongoValueCellEditor;
+import org.codinjutsu.tools.mongo.view.table.MongoDatePickerCellEditor;
+import org.codinjutsu.tools.mongo.view.table.MongoValueCellEditor;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.codinjutsu.tools.mongo.view.renderer.MongoKeyCellRenderer;
@@ -202,7 +202,5 @@ public class JsonTreeTableView extends TreeTable {
         public void setValue(JsonTreeNode treeNode, Object value) {
             treeNode.getDescriptor().setValue(value);
         }
-
     }
-
 }

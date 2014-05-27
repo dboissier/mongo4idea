@@ -27,7 +27,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.Disposer;
-import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.PopupHandler;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.treetable.TreeTableTree;
@@ -42,6 +41,7 @@ import org.codinjutsu.tools.mongo.view.action.EditMongoDocumentAction;
 import org.codinjutsu.tools.mongo.view.action.OpenFindAction;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeModel;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
+import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoResultDescriptor;
 
@@ -118,7 +118,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
         resultTableView.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
-                if (mouseEvent.getClickCount() == 2 && MongoResultPanel.this.isSelectedNodeObjectId()) {
+                if (mouseEvent.getClickCount() == 2 && MongoResultPanel.this.isSelectedNodeId()) {
                     MongoResultPanel.this.editSelectedMongoDocument();
                 }
             }
@@ -163,24 +163,30 @@ public class MongoResultPanel extends JPanel implements Disposable {
         }
 
         MongoNodeDescriptor descriptor = treeNode.getDescriptor();
-        Object value = descriptor.getValue();
-        if (value instanceof ObjectId) {
-            return mongoDocumentOperations.getMongoDocument((ObjectId) value);
+        if (descriptor instanceof MongoKeyValueDescriptor) {
+            MongoKeyValueDescriptor keyValueDescriptor = (MongoKeyValueDescriptor) descriptor;
+            if (StringUtils.equals(keyValueDescriptor.getKey(), "_id")) {
+                return mongoDocumentOperations.getMongoDocument(keyValueDescriptor.getValue());
+            }
         }
 
         return null;
     }
 
-    public boolean isSelectedNodeObjectId() {
+    public boolean isSelectedNodeId() {
         TreeTableTree tree = resultTableView.getTree();
         JsonTreeNode treeNode = (JsonTreeNode) tree.getLastSelectedPathComponent();
         if (treeNode == null) {
             return false;
         }
 
-        Object value = treeNode.getDescriptor().getValue();
+        MongoNodeDescriptor descriptor = treeNode.getDescriptor();
+        if (descriptor instanceof MongoKeyValueDescriptor) {
+            MongoKeyValueDescriptor keyValueDescriptor = (MongoKeyValueDescriptor) descriptor;
+            return StringUtils.equals(keyValueDescriptor.getKey(), "_id");
+        }
 
-        return value instanceof ObjectId;
+        return false;
     }
 
     public void installActions(MongoRunnerPanel mongoRunnerPanel) {

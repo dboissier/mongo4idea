@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.view.editor;
+package org.codinjutsu.tools.mongo.view.table;
 
 import org.codinjutsu.tools.mongo.view.style.DarculaStyleAttributesProvider;
 import org.jdesktop.swingx.JXMonthView;
-import org.jdesktop.swingx.event.DateSelectionListener;
 import org.jdesktop.swingx.table.DatePickerCellEditor;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.text.DateFormat;
 
 public class MongoDatePickerCellEditor extends DatePickerCellEditor {
 
