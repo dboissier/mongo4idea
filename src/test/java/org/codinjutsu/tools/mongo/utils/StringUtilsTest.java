@@ -28,4 +28,11 @@ public class StringUtilsTest {
         assertEquals("abcdefghijklmnopq...ghijklmnopqrstuvwxyz", StringUtils.abbreviateInCenter(value, 40));
 
     }
+
+    @Test
+    public void parseNumber() throws Exception {
+        assertEquals(1, StringUtils.parseNumber("1"));
+        assertEquals(1.000000000001d, StringUtils.parseNumber("1.000000000001"));
+        assertEquals(1000000000000000L, StringUtils.parseNumber("1000000000000000"));
+    }
 }

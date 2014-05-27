@@ -29,4 +29,20 @@ public class StringUtils {
                 ELLIPSIS,
                 stringToAbbreviate.substring(stringLength - halfLength, stringLength));
     }
+
+    public static Number parseNumber(String number) {
+        try {
+            return Integer.parseInt(number);
+
+        } catch(NumberFormatException ex) {
+            ; //UGLY :(
+        }
+        try {
+            return Long.parseLong(number);
+
+        } catch(NumberFormatException ex) {
+            ; //UGLY :(
+        }
+        return Double.parseDouble(number);
+    }
 }

@@ -35,8 +35,7 @@ public class MongoUtilsTest {
         assertEquals(Boolean.FALSE, MongoUtils.parseValue(JsonDataType.BOOLEAN, "false"));
 
         assertEquals(1.1d, MongoUtils.parseValue(JsonDataType.NUMBER, "1.1"));
-        assertEquals(1, MongoUtils.parseValue(JsonDataType.NUMBER, "1"));
-
+        assertEquals(1000000000000000000L, MongoUtils.parseValue(JsonDataType.NUMBER, "1000000000000000000"));
 
         assertEquals(new BasicDBObject("key", "val"), MongoUtils.parseValue(JsonDataType.OBJECT, "{ 'key': 'val'}"));
 

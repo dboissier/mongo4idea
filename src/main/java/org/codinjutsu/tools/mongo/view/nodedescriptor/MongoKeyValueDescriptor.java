@@ -140,6 +140,13 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
                     this.value = Double.valueOf((String) value);
                 }
             };
+        } else if (value instanceof Long) {
+            return new MongoKeyValueDescriptor(key, value, TEXT_ATTRIBUTES_PROVIDER.getNumberAttribute()) {
+                @Override
+                public void setValue(Object value) {
+                    this.value = Long.valueOf((String) value);
+                }
+            };
         } else if (value instanceof String) {
             return new MongoKeyStringValueDescriptor(key, (String) value);
         } else if (value instanceof ObjectId) {

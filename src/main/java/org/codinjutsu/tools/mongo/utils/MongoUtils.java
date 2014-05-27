@@ -60,11 +60,7 @@ public class MongoUtils {
         }
 
         if (JsonDataType.NUMBER.equals(jsonDataType)) {
-            Double doubleValue = Double.parseDouble(value);
-            if (Math.ceil(doubleValue) == doubleValue) {
-                return Integer.parseInt(value);
-            }
-            return doubleValue;
+            return StringUtils.parseNumber(value);
         }
 
         if (JsonDataType.OBJECT.equals(jsonDataType)) {
