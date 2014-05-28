@@ -94,7 +94,7 @@ public class MongoEditionPanel extends JPanel implements Disposable {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    mongoDocumentOperations.deleteMongoDocument(getMongoDocument());
+                    mongoDocumentOperations.deleteMongoDocument(getDocumentId());
                     actionCallback.onOperationSuccess("Document deleted...");
                 } catch (Exception exception) {
                     actionCallback.onOperationFailure(exception);
@@ -222,10 +222,10 @@ public class MongoEditionPanel extends JPanel implements Disposable {
         editTableView = null;
     }
 
-    private ObjectId getMongoDocument() {
+    private Object getDocumentId() {
         JsonTreeNode rootNode = (JsonTreeNode) editTableView.getTree().getModel().getRoot();
 
-        return (ObjectId) findObjectIdNodeDescriptor(rootNode).getDescriptor().getValue();
+        return findObjectIdNodeDescriptor(rootNode).getDescriptor().getValue();
     }
 
     private JsonTreeNode findObjectIdNodeDescriptor(JsonTreeNode rootNode) {

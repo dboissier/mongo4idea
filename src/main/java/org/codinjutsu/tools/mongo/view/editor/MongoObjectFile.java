@@ -53,7 +53,7 @@ public class MongoObjectFile extends VirtualFile {
 
     @NotNull
     public FileType getFileType() {
-        return UnknownFileType.INSTANCE;
+        return MongoFakeFileType.INSTANCE;
     }
 
     @NotNull

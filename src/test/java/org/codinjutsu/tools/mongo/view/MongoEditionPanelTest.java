@@ -196,7 +196,7 @@ public class MongoEditionPanelTest {
         }
 
         @Override
-        public void deleteMongoDocument(ObjectId objectId) {
+        public void deleteMongoDocument(Object objectId) {
 
         }
 

@@ -61,6 +61,7 @@ public class MongoPanel extends JPanel implements Disposable {
         queryPanel.setCallback(new ErrorQueryCallback());
 
         splitter.setOrientation(true);
+        splitter.setProportion(0.2f);
 
         resultPanel = createResultPanel(project, new MongoDocumentOperations() {
 
@@ -72,7 +73,7 @@ public class MongoPanel extends JPanel implements Disposable {
                 mongoManager.update(configuration, mongoCollection, mongoDocument);
             }
 
-            public void deleteMongoDocument(ObjectId objectId) {
+            public void deleteMongoDocument(Object objectId) {
                 mongoManager.delete(configuration, mongoCollection, objectId);
             }
         });
@@ -133,6 +134,10 @@ public class MongoPanel extends JPanel implements Disposable {
         splitter.setFirstComponent(null);
     }
 
+    public QueryPanel getQueryPanel() {
+        return queryPanel;
+    }
+
     private static class ErrorQueryCallback implements QueryPanel.QueryCallback {
 
         private static final Font COURIER_FONT = new Font("Courier", Font.PLAIN, UIUtil.getLabelFont().getSize());
@@ -163,7 +168,7 @@ public class MongoPanel extends JPanel implements Disposable {
     interface MongoDocumentOperations {
         DBObject getMongoDocument(Object _id);
 
-        void deleteMongoDocument(ObjectId mongoDocument);
+        void deleteMongoDocument(Object mongoDocument);
 
         void updateMongoDocument(DBObject mongoDocument);
     }

@@ -143,7 +143,7 @@ public class MongoManager {
         }
     }
 
-    public void delete(ServerConfiguration configuration, MongoCollection mongoCollection, ObjectId objectId) {
+    public void delete(ServerConfiguration configuration, MongoCollection mongoCollection, Object _id) {
         MongoClient mongo = null;
         try {
             String databaseName = mongoCollection.getDatabaseName();
@@ -159,7 +159,7 @@ public class MongoManager {
 
             DBCollection collection = database.getCollection(mongoCollection.getName());
 
-            collection.remove(new BasicDBObject("_id", objectId));
+            collection.remove(new BasicDBObject("_id", _id));
         } catch (UnknownHostException ex) {
             throw new ConfigurationException(ex);
         } finally {

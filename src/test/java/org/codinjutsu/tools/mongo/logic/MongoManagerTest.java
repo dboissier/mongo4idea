@@ -78,7 +78,7 @@ public class MongoManagerTest {
         Assert.assertEquals(1, initialData.getMongoObjects().size());
         DBObject initialMongoDocument = initialData.getMongoObjects().get(0);
 
-        mongoManager.delete(serverConfiguration, mongoCollection, (ObjectId) initialMongoDocument.get("_id"));
+        mongoManager.delete(serverConfiguration, mongoCollection, initialMongoDocument.get("_id"));
 
         MongoCollectionResult deleteResult = mongoManager.loadCollectionValues(serverConfiguration, mongoCollection, mongoQueryOptions);
         List<DBObject> updatedMongoDocuments = deleteResult.getMongoObjects();
