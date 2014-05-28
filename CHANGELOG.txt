@@ -1,5 +1,7 @@
 Version 0.6.0
     * [update] Results are displayed in a standard editor tab (like any file)
+    * [fix] #77 Long are incorrectly displayed when editing a document
+    * [fix] #78 Cannot edit documents that have custom _id
     * [fix] #69 Cannot edit number value
     * [fix] #54 #58 Test Connection Button does not properly work
     * [add] #61 Replica Set support
