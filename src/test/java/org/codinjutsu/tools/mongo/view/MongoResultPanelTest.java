@@ -18,27 +18,20 @@ package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.openapi.command.impl.DummyProject;
 import com.intellij.util.ui.tree.TreeUtil;
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
-import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
-import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
-import org.fest.swing.data.TableCell;
 import org.fest.swing.driver.BasicJTableCellReader;
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiQuery;
 import org.fest.swing.fixture.Containers;
 import org.fest.swing.fixture.FrameFixture;
-import org.fest.swing.fixture.JTableFixture;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import javax.swing.*;
@@ -53,7 +46,7 @@ public class MongoResultPanelTest {
     private FrameFixture frameFixture;
 
     @Mock
-    private MongoRunnerPanel.MongoDocumentOperations mongoDocumentOperations;
+    private MongoPanel.MongoDocumentOperations mongoDocumentOperations;
 
     @After
     public void tearDown() {

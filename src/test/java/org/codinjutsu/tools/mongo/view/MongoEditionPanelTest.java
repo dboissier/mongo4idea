@@ -181,7 +181,7 @@ public class MongoEditionPanelTest {
         return mongoDocument;
     }
 
-    private static class MyMongoDocumentOperations implements MongoRunnerPanel.MongoDocumentOperations {
+    private static class MyMongoDocumentOperations implements MongoPanel.MongoDocumentOperations {
 
         private DBObject mongoDocument = null;
 

@@ -33,7 +33,6 @@ import com.intellij.ui.treeStructure.treetable.TreeTableTree;
 import com.intellij.util.ui.tree.TreeUtil;
 import com.mongodb.DBObject;
 import org.apache.commons.lang.StringUtils;
-import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.CopyResultAction;
@@ -56,7 +55,7 @@ import java.util.List;
 public class MongoResultPanel extends JPanel implements Disposable {
 
     private final Project project;
-    private final MongoRunnerPanel.MongoDocumentOperations mongoDocumentOperations;
+    private final MongoPanel.MongoDocumentOperations mongoDocumentOperations;
     private JPanel resultToolbar;
     private JPanel mainPanel;
     private JPanel containerPanel;
@@ -67,7 +66,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
     JsonTreeTableView resultTableView;
 
 
-    public MongoResultPanel(Project project, MongoRunnerPanel.MongoDocumentOperations mongoDocumentOperations) {
+    public MongoResultPanel(Project project, MongoPanel.MongoDocumentOperations mongoDocumentOperations) {
         this.project = project;
         this.mongoDocumentOperations = mongoDocumentOperations;
         setLayout(new BorderLayout());
@@ -189,9 +188,9 @@ public class MongoResultPanel extends JPanel implements Disposable {
         return false;
     }
 
-    public void installActions(MongoRunnerPanel mongoRunnerPanel) {
+    public void installActions(MongoPanel mongoPanel) {
         DefaultActionGroup actionResultGroup = new DefaultActionGroup("MongoResultGroup", true);
-        actionResultGroup.add(new OpenFindAction(mongoRunnerPanel));
+        actionResultGroup.add(new OpenFindAction(mongoPanel));
         actionResultGroup.add(new CopyResultAction(this));
 
         final TreeExpander treeExpander = new TreeExpander() {

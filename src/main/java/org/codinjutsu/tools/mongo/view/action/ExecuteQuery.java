@@ -18,29 +18,29 @@ package org.codinjutsu.tools.mongo.view.action;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import org.codinjutsu.tools.mongo.view.MongoRunnerPanel;
+import org.codinjutsu.tools.mongo.view.MongoPanel;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 public class ExecuteQuery extends AnAction {
-    private final MongoRunnerPanel mongoRunnerPanel;
+    private final MongoPanel mongoPanel;
 
-    public ExecuteQuery(MongoRunnerPanel mongoRunnerPanel) {
+    public ExecuteQuery(MongoPanel mongoPanel) {
         super("Execute query", "Execute query with options", StyleAttributesUtils.getInstance().getExecuteIcon());
-        this.mongoRunnerPanel = mongoRunnerPanel;
+        this.mongoPanel = mongoPanel;
 
-        registerCustomShortcutSet(KeyEvent.VK_ENTER, InputEvent.CTRL_MASK, mongoRunnerPanel);
+        registerCustomShortcutSet(KeyEvent.VK_ENTER, InputEvent.CTRL_MASK, mongoPanel);
     }
 
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
-        mongoRunnerPanel.executeQuery();
+        mongoPanel.executeQuery();
     }
 
     @Override
     public void update(AnActionEvent event) {
-        event.getPresentation().setEnabled(mongoRunnerPanel.getMongoCollection() != null);
+        event.getPresentation().setEnabled(mongoPanel.getMongoCollection() != null);
     }
 }

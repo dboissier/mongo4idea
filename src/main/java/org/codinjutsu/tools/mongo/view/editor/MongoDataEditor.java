@@ -26,7 +26,7 @@ import com.intellij.openapi.fileEditor.FileEditorStateLevel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.UserDataHolderBase;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
-import org.codinjutsu.tools.mongo.view.MongoRunnerPanel;
+import org.codinjutsu.tools.mongo.view.MongoPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,11 +36,11 @@ import java.beans.PropertyChangeListener;
 public class MongoDataEditor extends UserDataHolderBase implements FileEditor {
 
 
-    private MongoRunnerPanel panel;
+    private MongoPanel panel;
     private boolean disposed;
 
     public MongoDataEditor(Project project, MongoManager mongoManager, MongoObjectFile mongoObjectFile) {
-        panel = new MongoRunnerPanel(project, mongoManager, mongoObjectFile.getConfiguration(), mongoObjectFile.getCollection());
+        panel = new MongoPanel(project, mongoManager, mongoObjectFile.getConfiguration(), mongoObjectFile.getCollection());
         panel.installActions();
         ApplicationManager.getApplication().invokeLater(new Runnable() {
             @Override

@@ -38,7 +38,7 @@ import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import javax.swing.*;
 import java.awt.*;
 
-public class MongoRunnerPanel extends JPanel implements Disposable {
+public class MongoPanel extends JPanel implements Disposable {
 
     private JPanel rootPanel;
     private Splitter splitter;
@@ -50,7 +50,7 @@ public class MongoRunnerPanel extends JPanel implements Disposable {
     private final ServerConfiguration configuration;
     private final MongoCollection mongoCollection;
 
-    public MongoRunnerPanel(Project project, final MongoManager mongoManager, final ServerConfiguration configuration, final MongoCollection mongoCollection) {
+    public MongoPanel(Project project, final MongoManager mongoManager, final ServerConfiguration configuration, final MongoCollection mongoCollection) {
         this.mongoManager = mongoManager;
         this.mongoCollection = mongoCollection;
         this.configuration = configuration;

@@ -69,7 +69,7 @@ public class MongoEditionPanel extends JPanel implements Disposable {
         deleteButton.setName("deleteButton");
     }
 
-    public MongoEditionPanel init(final MongoRunnerPanel.MongoDocumentOperations mongoDocumentOperations, final MongoResultPanel.ActionCallback actionCallback) {
+    public MongoEditionPanel init(final MongoPanel.MongoDocumentOperations mongoDocumentOperations, final MongoResultPanel.ActionCallback actionCallback) {
 
         cancelButton.addActionListener(new AbstractAction() {
             @Override

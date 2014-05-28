@@ -207,16 +207,16 @@ public class QueryPanel extends JPanel implements Disposable {
         return withAggregation;
     }
 
-    public void installActions(MongoRunnerPanel mongoRunnerPanel) {
+    public void installActions(MongoPanel mongoPanel) {
         DefaultActionGroup actionQueryGroup = new DefaultActionGroup("MongoQueryGroup", true);
         if (ApplicationManager.getApplication() != null) {
-            actionQueryGroup.add(new ExecuteQuery(mongoRunnerPanel));
+            actionQueryGroup.add(new ExecuteQuery(mongoPanel));
             actionQueryGroup.add(new EnableAggregateAction(this));
             actionQueryGroup.addSeparator();
             actionQueryGroup.add(new AddOperatorPanelAction(this));
             actionQueryGroup.add(new CopyQueryAction(this));
             actionQueryGroup.addSeparator();
-            actionQueryGroup.add(new CloseFindEditorAction(mongoRunnerPanel));
+            actionQueryGroup.add(new CloseFindEditorAction(mongoPanel));
         }
         GuiUtils.installActionGroupInToolBar(actionQueryGroup, toolBarPanel, ActionManager.getInstance(), "MongoQueryGroupActions", true);
     }
