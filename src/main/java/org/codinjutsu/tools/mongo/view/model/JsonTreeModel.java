@@ -21,14 +21,12 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
-import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoResultDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoValueDescriptor;
 
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import java.util.Enumeration;
-import java.util.LinkedList;
 import java.util.List;
 
 public class JsonTreeModel extends DefaultTreeModel {
@@ -57,7 +55,7 @@ public class JsonTreeModel extends DefaultTreeModel {
     }
 
     public static TreeNode buildJsonTree(DBObject mongoObject) {
-        JsonTreeNode rootNode = new JsonTreeNode(new MongoResultDescriptor(mongoObject));//TODO crappy
+        JsonTreeNode rootNode = new JsonTreeNode(new MongoResultDescriptor());//TODO crappy
         processDbObject(rootNode, mongoObject);
         return rootNode;
     }

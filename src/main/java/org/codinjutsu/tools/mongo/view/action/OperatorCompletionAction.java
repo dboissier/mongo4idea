@@ -26,27 +26,38 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.ui.popup.PopupChooserBuilder;
 import com.intellij.ui.components.JBList;
 import com.mongodb.QueryOperators;
+import org.codinjutsu.tools.mongo.model.MongoAggregateOperator;
 
 import java.awt.event.KeyEvent;
+import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public class OperatorCompletionAction extends AnAction implements Disposable {
 
-    private static final JBList QUERY_OPERATOR_LIST = new JBList(Arrays.asList(
-            QueryOperators.GT,
-            QueryOperators.GTE,
-            QueryOperators.LT,
-            QueryOperators.LTE,
-            QueryOperators.NE,
-            QueryOperators.IN,
-            QueryOperators.NIN,
-            QueryOperators.MOD,
-            QueryOperators.ALL,
-            QueryOperators.SIZE,
-            QueryOperators.EXISTS,
-            QueryOperators.WHERE,
-            QueryOperators.NEAR
-    ));
+
+    private static final JBList QUERY_OPERATOR_LIST;
+
+
+    static {
+        List<String> operator = new LinkedList<String>();
+        for (MongoAggregateOperator aggregateOperator : MongoAggregateOperator.values()) {
+            operator.add(aggregateOperator.getLabel());
+        }
+
+        for (Field field : QueryOperators.class.getFields()) {
+            try {
+                operator.add((String) QueryOperators.class.getDeclaredField(field.getName()).get(String.class));
+            } catch (IllegalAccessException e) {
+
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+
+        QUERY_OPERATOR_LIST = new JBList(operator);
+    }
 
     private final Editor editor;
 

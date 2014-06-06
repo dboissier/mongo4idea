@@ -34,6 +34,7 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ServerConfigurationPanelTest {
 
@@ -177,8 +178,7 @@ public class ServerConfigurationPanelTest {
         configurationPanel.loadConfigurationData(configuration);
 
         frameFixture.button("testConnection").click();
-        frameFixture.label("feedbackLabel")
-                .requireText("java.net.UnknownHostException: myserver");
+        assertTrue(frameFixture.label("feedbackLabel").text().contains("Timed out while waiting to connect after"));
 
         Mockito.verify(mongoManager, Mockito.times(1)).connect(Arrays.asList("myserver:25"), null, null, null);
     }

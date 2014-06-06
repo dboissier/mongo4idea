@@ -16,12 +16,12 @@
 
 package org.codinjutsu.tools.mongo.model;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -40,31 +40,19 @@ public class MongoQueryOptions {
         return !operations.isEmpty();
     }
 
-
-    public void addQuery(MongoAggregateOperator operator, String query) {
-        if (!StringUtils.isBlank(query)) {
-            operations.add(
-                    new BasicDBObject(
-                            operator.getLabel(),
-                            operator.getOperatorValueConverter().convert(query)
-                    )
-            );
+    public void setQueries(String queries) {
+        BasicDBList queryObjects = (BasicDBList) JSON.parse(queries);
+        for (Object obj: queryObjects) {
+            addQuery((BasicDBObject) obj);
         }
     }
 
-    public DBObject getFirstOperation() {
-        if (isAggregate()) {
-            return operations.get(0);
-        }
-        return null;
+    public void addQuery(BasicDBObject query) {
+        operations.add(query);
     }
 
-    public List<DBObject> getOperationsExceptTheFirst() {
-        if (operations.size() > 1) {
-            return operations.subList(1, operations.size());
-        }
-
-        return Collections.emptyList();
+    public List<DBObject> getOperations() {
+        return operations;
     }
 
     public void setFilter(String query) {
@@ -77,9 +65,6 @@ public class MongoQueryOptions {
         return filter;
     }
 
-    public List<DBObject> getAllOperations() {
-        return operations;
-    }
 
     public int getResultLimit() {
         return resultLimit;

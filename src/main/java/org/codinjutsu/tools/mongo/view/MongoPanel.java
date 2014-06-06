@@ -18,18 +18,8 @@ package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.MessageType;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
-import com.intellij.openapi.ui.popup.Balloon;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.ui.awt.RelativePoint;
-import com.intellij.ui.components.panels.NonOpaquePanel;
-import com.intellij.util.ui.UIUtil;
 import com.mongodb.DBObject;
-import com.mongodb.util.JSONParseException;
-import org.apache.commons.lang.StringUtils;
-import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
@@ -58,7 +48,6 @@ public class MongoPanel extends JPanel implements Disposable {
         errorPanel.setLayout(new BorderLayout());
 
         queryPanel = new QueryPanel(project);
-        queryPanel.setCallback(new ErrorQueryCallback());
 
         splitter.setOrientation(true);
         splitter.setProportion(0.2f);
@@ -105,7 +94,7 @@ public class MongoPanel extends JPanel implements Disposable {
     public void executeQuery() {
         try {
             errorPanel.setVisible(false);
-
+            validateQuery();
             MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(configuration, mongoCollection, queryPanel.getQueryOptions());
             resultPanel.updateResultTableTree(mongoCollectionResult);
         } catch (Exception ex) {
@@ -115,6 +104,11 @@ public class MongoPanel extends JPanel implements Disposable {
             errorPanel.validate();
             errorPanel.setVisible(true);
         }
+    }
+
+    private void validateQuery() {
+        queryPanel.validateQuery();
+
     }
 
     @Override
@@ -132,37 +126,6 @@ public class MongoPanel extends JPanel implements Disposable {
 
     public void closeFindEditor() {
         splitter.setFirstComponent(null);
-    }
-
-    public QueryPanel getQueryPanel() {
-        return queryPanel;
-    }
-
-    private static class ErrorQueryCallback implements QueryPanel.QueryCallback {
-
-        private static final Font COURIER_FONT = new Font("Courier", Font.PLAIN, UIUtil.getLabelFont().getSize());
-
-        @Override
-        public void notifyOnErrorForOperator(JComponent editorComponent, Exception ex) {
-
-            String message;
-            if (ex instanceof JSONParseException) {
-                message = StringUtils.removeStart(ex.getMessage(), "\n");
-            } else {
-                message = String.format("%s: %s", ex.getClass().getSimpleName(), ex.getMessage());
-            }
-            NonOpaquePanel nonOpaquePanel = new NonOpaquePanel();
-            JTextPane textPane = Messages.configureMessagePaneUi(new JTextPane(), message);
-            textPane.setFont(COURIER_FONT);
-            textPane.setBackground(MessageType.ERROR.getPopupBackground());
-            nonOpaquePanel.add(textPane, BorderLayout.CENTER);
-            nonOpaquePanel.add(new JLabel(MessageType.ERROR.getDefaultIcon()), BorderLayout.WEST);
-
-            Balloon balloon = JBPopupFactory.getInstance().createBalloonBuilder(nonOpaquePanel)
-                    .setFillColor(MessageType.ERROR.getPopupBackground())
-                    .createBalloon();
-            balloon.show(new RelativePoint(editorComponent, new Point(0, 0)), Balloon.Position.above);
-        }
     }
 
     interface MongoDocumentOperations {

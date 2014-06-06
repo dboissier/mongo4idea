@@ -20,9 +20,7 @@ import com.mongodb.*;
 import com.mongodb.util.JSON;
 import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
-import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
-import org.codinjutsu.tools.mongo.model.MongoAggregateOperator;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
@@ -51,7 +49,7 @@ public class MongoManagerTest {
     @Test
     public void updateMongoDocument() throws Exception {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
-        mongoQueryOptions.addQuery(MongoAggregateOperator.MATCH, "{ 'label': 'tete', }");
+        mongoQueryOptions.addQuery((BasicDBObject) JSON.parse("{'$match': {'label': 'tete'}}"));
         MongoCollection mongoCollection = new MongoCollection("dummyCollection", "test");
         MongoCollectionResult initialData = mongoManager.loadCollectionValues(serverConfiguration, mongoCollection, mongoQueryOptions);
         Assert.assertEquals(1, initialData.getMongoObjects().size());
@@ -72,7 +70,7 @@ public class MongoManagerTest {
     @Test
     public void deleteMongoDocument() throws Exception {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
-        mongoQueryOptions.addQuery(MongoAggregateOperator.MATCH, "{ 'label': 'tete', }");
+        mongoQueryOptions.addQuery((BasicDBObject) JSON.parse("{'$match': {'label': 'tete'}}"));
         MongoCollection mongoCollection = new MongoCollection("dummyCollection", "test");
         MongoCollectionResult initialData = mongoManager.loadCollectionValues(serverConfiguration, mongoCollection, mongoQueryOptions);
         Assert.assertEquals(1, initialData.getMongoObjects().size());
@@ -89,9 +87,9 @@ public class MongoManagerTest {
     @Test
     public void loadCollectionsWithMatchOperator() throws Exception {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
-        mongoQueryOptions.addQuery(MongoAggregateOperator.MATCH, "{ 'price': 15}");
-        mongoQueryOptions.addQuery(MongoAggregateOperator.PROJECT, "{ 'label': 1, 'price': 1}");
-        mongoQueryOptions.addQuery(MongoAggregateOperator.GROUP, "{ '_id': '$label', 'total': {'$sum': '$price'}}");
+        mongoQueryOptions.addQuery((BasicDBObject) JSON.parse("{'$match': {'price': 15}}"));
+        mongoQueryOptions.addQuery((BasicDBObject) JSON.parse("{'$project': {'label': 1, 'price': 1}}"));
+        mongoQueryOptions.addQuery((BasicDBObject) JSON.parse("{'$group': {'_id': '$label', 'total': {'$sum': '$price'}}}"));
         MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(serverConfiguration, new MongoCollection("dummyCollection", "test"), mongoQueryOptions);
         Assert.assertNotNull(mongoCollectionResult);
 
@@ -103,7 +101,7 @@ public class MongoManagerTest {
     }
     @Before
     public void setUp() throws Exception {
-        Mongo mongo = new Mongo("localhost", 33333);
+        MongoClient mongo = new MongoClient("localhost", 33333);
         DB db = mongo.getDB("test");
 
         DBCollection dummyCollection = db.getCollection("dummyCollection");

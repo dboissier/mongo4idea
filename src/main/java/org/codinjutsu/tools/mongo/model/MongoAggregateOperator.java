@@ -18,34 +18,27 @@ package org.codinjutsu.tools.mongo.model;
 
 public enum MongoAggregateOperator {
 
-    MATCH("$match", OperatorValueConverter.jSONValueConverter),
-    PROJECT("$project", OperatorValueConverter.jSONValueConverter),
-    GROUP("$group", OperatorValueConverter.jSONValueConverter),
-    SORT("$sort", OperatorValueConverter.jSONValueConverter),
-    LIMIT("$limit", OperatorValueConverter.integerValueConverter),
-    SKIP("$skip", OperatorValueConverter.integerValueConverter),
-    UNWIND("$unwind", OperatorValueConverter.stringValueConverter);
+    MATCH("$match"),
+    PROJECT("$project"),
+    GROUP("$group"),
+    SORT("$sort"),
+    LIMIT("$limit"),
+    SKIP("$skip"),
+    UNWIND("$unwind");
 
     private final String operator;
-    private final OperatorValueConverter operatorValueConverter;
 
-    private MongoAggregateOperator(String operator, OperatorValueConverter operatorValueConverter) {
+    private MongoAggregateOperator(String operator) {
         this.operator = operator;
-        this.operatorValueConverter = operatorValueConverter;
     }
 
     public String getLabel() {
         return operator;
     }
 
-    public OperatorValueConverter getOperatorValueConverter() {
-        return operatorValueConverter;
-    }
 
     @Override
     public String toString() {
         return name().toLowerCase();
     }
-
-
 }

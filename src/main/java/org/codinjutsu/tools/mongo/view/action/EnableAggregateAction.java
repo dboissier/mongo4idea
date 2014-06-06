@@ -29,7 +29,7 @@ public class EnableAggregateAction extends ToggleAction {
 
     private final QueryPanel queryPanel;
 
-    private boolean enableAggregation = true;
+    private boolean enableAggregation = false;
 
     public EnableAggregateAction(final QueryPanel queryPanel) {
         super("Enable aggregation", "toggle find/aggregation", AGGREGATION_ICON);

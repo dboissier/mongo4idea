@@ -280,8 +280,7 @@ public class MongoManager {
     }
 
     private MongoCollectionResult aggregate(MongoQueryOptions mongoQueryOptions, MongoCollectionResult mongoCollectionResult, DBCollection collection) {
-        List<DBObject> otherOperations = mongoQueryOptions.getOperationsExceptTheFirst();
-        AggregationOutput aggregate = collection.aggregate(mongoQueryOptions.getFirstOperation(), otherOperations.toArray(new DBObject[otherOperations.size()]));
+        AggregationOutput aggregate = collection.aggregate(mongoQueryOptions.getOperations());
         int index = 0;
         Iterator<DBObject> iterator = aggregate.results().iterator();
         while (iterator.hasNext() && index < mongoQueryOptions.getResultLimit()) {
@@ -313,7 +312,7 @@ public class MongoManager {
 
         DB adminDb = mongo.getDB("admin");
 
-        CommandResult res = adminDb.command(cmd, mongo.getOptions());
+        CommandResult res = adminDb.command(cmd, ReadPreference.primaryPreferred());
         try {
             res.throwOnError();
         } catch (MongoException e) {
@@ -322,7 +321,7 @@ public class MongoManager {
                 if (!authenticate) {
                     throw new ConfigurationException("Invalid credentials");
                 }
-                res = adminDb.command(cmd, mongo.getOptions());
+                res = adminDb.command(cmd, ReadPreference.primaryPreferred());
             }
         }
 
