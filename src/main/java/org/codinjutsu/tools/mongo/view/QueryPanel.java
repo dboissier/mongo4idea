@@ -61,6 +61,7 @@ public class QueryPanel extends JPanel implements Disposable {
     private JPanel toolBarPanel;
     private JPanel mainPanel;
     private JPanel queryContainerPanel;
+    private JPanel errorPanel;
     private final Project project;
     private boolean agregationEnabled = false;
     private OperatorCompletionAction operatorCompletionAction;
@@ -68,7 +69,7 @@ public class QueryPanel extends JPanel implements Disposable {
     public QueryPanel(Project project) {
         this.project = project;
 
-
+        errorPanel.setLayout(new BorderLayout());
         toolBarPanel.setLayout(new BorderLayout());
         setLayout(new BorderLayout());
         add(mainPanel);
@@ -195,6 +196,10 @@ public class QueryPanel extends JPanel implements Disposable {
         this.agregationEnabled = false;
     }
 
+    public JPanel getErrorPanel() {
+        return errorPanel;
+    }
+
     public void validateQuery() {
         if (isAgregationEnabled()) {
             try {
@@ -240,7 +245,6 @@ public class QueryPanel extends JPanel implements Disposable {
         }
 
         public void notifyOnErrorForOperator(Exception ex) {
-
             String message;
             if (ex instanceof JSONParseException) {
                 message = StringUtils.removeStart(ex.getMessage(), "\n");
@@ -254,10 +258,10 @@ public class QueryPanel extends JPanel implements Disposable {
             nonOpaquePanel.add(textPane, BorderLayout.CENTER);
             nonOpaquePanel.add(new JLabel(MessageType.ERROR.getDefaultIcon()), BorderLayout.WEST);
 
-            Balloon balloon = JBPopupFactory.getInstance().createBalloonBuilder(nonOpaquePanel)
+            JBPopupFactory.getInstance().createBalloonBuilder(nonOpaquePanel)
                     .setFillColor(MessageType.ERROR.getPopupBackground())
-                    .createBalloon();
-            balloon.show(new RelativePoint(this.editor.getComponent(), new Point(0, 0)), Balloon.Position.above);
+                    .createBalloon()
+                    .show(new RelativePoint(this.editor.getComponent(), new Point(0, 0)), Balloon.Position.above);
         }
     }
 }

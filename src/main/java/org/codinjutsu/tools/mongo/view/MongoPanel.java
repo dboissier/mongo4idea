@@ -32,7 +32,6 @@ public class MongoPanel extends JPanel implements Disposable {
 
     private JPanel rootPanel;
     private Splitter splitter;
-    private JPanel errorPanel;
     private final MongoResultPanel resultPanel;
     private final QueryPanel queryPanel;
 
@@ -44,8 +43,6 @@ public class MongoPanel extends JPanel implements Disposable {
         this.mongoManager = mongoManager;
         this.mongoCollection = mongoCollection;
         this.configuration = configuration;
-
-        errorPanel.setLayout(new BorderLayout());
 
         queryPanel = new QueryPanel(project);
 
@@ -93,16 +90,16 @@ public class MongoPanel extends JPanel implements Disposable {
 
     public void executeQuery() {
         try {
-            errorPanel.setVisible(false);
+            queryPanel.getErrorPanel().setVisible(false);
             validateQuery();
             MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(configuration, mongoCollection, queryPanel.getQueryOptions());
             resultPanel.updateResultTableTree(mongoCollectionResult);
         } catch (Exception ex) {
-            errorPanel.invalidate();
-            errorPanel.removeAll();
-            errorPanel.add(new ErrorPanel(ex), BorderLayout.CENTER);
-            errorPanel.validate();
-            errorPanel.setVisible(true);
+            queryPanel.getErrorPanel().invalidate();
+            queryPanel.getErrorPanel().removeAll();
+            queryPanel.getErrorPanel().add(new ErrorPanel(ex), BorderLayout.CENTER);
+            queryPanel.getErrorPanel().validate();
+            queryPanel.getErrorPanel().setVisible(true);
         }
     }
 
