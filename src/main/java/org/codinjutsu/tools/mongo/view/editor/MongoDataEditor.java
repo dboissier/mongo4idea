@@ -41,7 +41,6 @@ public class MongoDataEditor extends UserDataHolderBase implements FileEditor {
 
     public MongoDataEditor(Project project, MongoManager mongoManager, MongoObjectFile mongoObjectFile) {
         panel = new MongoPanel(project, mongoManager, mongoObjectFile.getConfiguration(), mongoObjectFile.getCollection());
-        panel.installActions();
         ApplicationManager.getApplication().invokeLater(new Runnable() {
             @Override
             public void run() {

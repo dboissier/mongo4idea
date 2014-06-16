@@ -19,18 +19,14 @@ package org.codinjutsu.tools.mongo.utils;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.ui.NumberDocument;
 
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 public class GuiUtils {
 
     private static final String ICON_FOLDER = "/icons/";
-    public static final Color ERROR_COLOR = new Color(255, 220, 220);
 
     public static Icon loadIcon(String iconFilename) {
         return IconLoader.findIcon(ICON_FOLDER + iconFilename);
@@ -45,8 +41,7 @@ public class GuiUtils {
             return;
         }
 
-        JComponent actionToolbar = ActionManager.getInstance()
-                .createActionToolbar(toolbarName, actionGroup, horizontal).getComponent();
+        JComponent actionToolbar = ActionManager.getInstance().createActionToolbar(toolbarName, actionGroup, horizontal).getComponent();
         toolBarPanel.add(actionToolbar, BorderLayout.CENTER);
     }
 

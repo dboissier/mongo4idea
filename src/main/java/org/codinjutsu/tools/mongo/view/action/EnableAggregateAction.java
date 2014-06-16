@@ -18,22 +18,22 @@ package org.codinjutsu.tools.mongo.view.action;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
+import com.intellij.openapi.actionSystem.ex.CheckboxAction;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
-import org.codinjutsu.tools.mongo.view.QueryPanel;
+import org.codinjutsu.tools.mongo.view.MongoPanel;
 
 import javax.swing.*;
 
-public class EnableAggregateAction extends ToggleAction {
+public class EnableAggregateAction extends CheckboxAction {
 
-    private static final Icon AGGREGATION_ICON = GuiUtils.loadIcon("table_multiple.png");
 
-    private final QueryPanel queryPanel;
+    private final MongoPanel mongoPanel;
 
     private boolean enableAggregation = false;
 
-    public EnableAggregateAction(final QueryPanel queryPanel) {
-        super("Enable aggregation", "toggle find/aggregation", AGGREGATION_ICON);
-        this.queryPanel = queryPanel;
+    public EnableAggregateAction(final MongoPanel mongoPanel) {
+        super("Aggregation");
+        this.mongoPanel = mongoPanel;
     }
 
 
@@ -46,9 +46,14 @@ public class EnableAggregateAction extends ToggleAction {
     public void setSelected(AnActionEvent anActionEvent, boolean enableAggregation) {
         this.enableAggregation = enableAggregation;
         if (enableAggregation) {
-            queryPanel.toggleToAggregation();
+            mongoPanel.getQueryPanel().toggleToAggregation();
         } else {
-            queryPanel.toggleToFind();
+            mongoPanel.getQueryPanel().toggleToFind();
         }
+    }
+
+    @Override
+    public void update(AnActionEvent event) {
+        event.getPresentation().setVisible(mongoPanel.isFindEditorOpened());
     }
 }

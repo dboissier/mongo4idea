@@ -16,14 +16,23 @@
 
 package org.codinjutsu.tools.mongo.view;
 
+import com.intellij.ide.CommonActionsManager;
+import com.intellij.ide.TreeExpander;
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
+import com.intellij.openapi.util.Disposer;
 import com.mongodb.DBObject;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
+import org.codinjutsu.tools.mongo.utils.GuiUtils;
+import org.codinjutsu.tools.mongo.view.action.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,6 +41,7 @@ public class MongoPanel extends JPanel implements Disposable {
 
     private JPanel rootPanel;
     private Splitter splitter;
+    private JPanel toolBar;
     private final MongoResultPanel resultPanel;
     private final QueryPanel queryPanel;
 
@@ -47,7 +57,8 @@ public class MongoPanel extends JPanel implements Disposable {
         queryPanel = new QueryPanel(project);
 
         splitter.setOrientation(true);
-        splitter.setProportion(0.2f);
+        splitter.setProportion(0.1f);
+        toolBar.setLayout(new BorderLayout());
 
         resultPanel = createResultPanel(project, new MongoDocumentOperations() {
 
@@ -67,17 +78,73 @@ public class MongoPanel extends JPanel implements Disposable {
 
         setLayout(new BorderLayout());
         add(rootPanel);
+
+        installResultPanelActions();
+        installQueryPanelActions();
     }
 
     private MongoResultPanel createResultPanel(Project project, MongoDocumentOperations mongoDocumentOperations) {
         return new MongoResultPanel(project, mongoDocumentOperations);
     }
 
-    public void installActions() {
-        queryPanel.installActions(this);
-        resultPanel.installActions(this);
+
+    public void installResultPanelActions() {
+        DefaultActionGroup actionResultGroup = new DefaultActionGroup("MongoResultGroup", true);
+        if (ApplicationManager.getApplication() != null) {
+            actionResultGroup.add(new ExecuteQuery(this));
+            actionResultGroup.add(new OpenFindAction(this));
+            actionResultGroup.add(new CopyResultAction(resultPanel));
+        }
+        final TreeExpander treeExpander = new TreeExpander() {
+            @Override
+            public void expandAll() {
+                resultPanel.expandAll();
+            }
+
+            @Override
+            public boolean canExpand() {
+                return true;
+            }
+
+            @Override
+            public void collapseAll() {
+                resultPanel.collapseAll();
+            }
+
+            @Override
+            public boolean canCollapse() {
+                return true;
+            }
+        };
+
+        CommonActionsManager actionsManager = CommonActionsManager.getInstance();
+
+        final AnAction expandAllAction = actionsManager.createExpandAllAction(treeExpander, resultPanel);
+        final AnAction collapseAllAction = actionsManager.createCollapseAllAction(treeExpander, resultPanel);
+
+        Disposer.register(this, new Disposable() {
+            @Override
+            public void dispose() {
+                collapseAllAction.unregisterCustomShortcutSet(resultPanel);
+                expandAllAction.unregisterCustomShortcutSet(resultPanel);
+            }
+        });
+
+        actionResultGroup.add(expandAllAction);
+        actionResultGroup.add(collapseAllAction);
+
+        GuiUtils.installActionGroupInToolBar(actionResultGroup, resultPanel.getToolbar(), ActionManager.getInstance(), "MongoGroupActions", false);
     }
 
+    public void installQueryPanelActions() {
+        DefaultActionGroup actionResultGroup = new DefaultActionGroup("MongoResultGroup", true);
+        if (ApplicationManager.getApplication() != null) {
+            actionResultGroup.add(new EnableAggregateAction(this));
+            actionResultGroup.add(new CloseFindEditorAction(this));
+        }
+
+        GuiUtils.installActionGroupInToolBar(actionResultGroup, queryPanel.getToolbar(), ActionManager.getInstance(), "MongoResultGroupActions", true);
+    }
 
     public MongoCollection getMongoCollection() {
         return mongoCollection;
@@ -119,10 +186,28 @@ public class MongoPanel extends JPanel implements Disposable {
 
     public void openFindEditor() {
         splitter.setFirstComponent(queryPanel);
+        GuiUtils.runInSwingThread(new Runnable() {
+            @Override
+            public void run() {
+                focusOnEditor();
+            }
+        });
     }
 
     public void closeFindEditor() {
         splitter.setFirstComponent(null);
+    }
+
+    public void focusOnEditor() {
+        queryPanel.requestFocusOnEditor();
+    }
+
+    public boolean isFindEditorOpened() {
+        return splitter.getFirstComponent() == queryPanel;
+    }
+
+    public QueryPanel getQueryPanel() {
+        return queryPanel;
     }
 
     interface MongoDocumentOperations {

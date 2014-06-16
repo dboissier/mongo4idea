@@ -18,9 +18,6 @@ package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.lang.Language;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
@@ -37,15 +34,18 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.ui.awt.RelativePoint;
+import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.panels.NonOpaquePanel;
 import com.intellij.util.Alarm;
 import com.intellij.util.ui.UIUtil;
 import com.mongodb.util.JSONParseException;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
-import org.codinjutsu.tools.mongo.utils.GuiUtils;
-import org.codinjutsu.tools.mongo.view.action.*;
+import org.codinjutsu.tools.mongo.view.action.CloseFindEditorAction;
+import org.codinjutsu.tools.mongo.view.action.EnableAggregateAction;
+import org.codinjutsu.tools.mongo.view.action.OperatorCompletionAction;
 
 import javax.swing.*;
 import java.awt.*;
@@ -57,28 +57,27 @@ public class QueryPanel extends JPanel implements Disposable {
 
     private final Alarm myUpdateAlarm = new Alarm(Alarm.ThreadToUse.SWING_THREAD);
 
-    private FilterPanel filterPanel;
-    private JPanel toolBarPanel;
     private JPanel mainPanel;
     private JPanel queryContainerPanel;
     private JPanel errorPanel;
     private final Project project;
     private boolean agregationEnabled = false;
     private OperatorCompletionAction operatorCompletionAction;
+    private final Editor editor;
+    private JPanel toolbar;
 
     public QueryPanel(Project project) {
         this.project = project;
 
+        toolbar.setLayout(new BorderLayout());
         errorPanel.setLayout(new BorderLayout());
-        toolBarPanel.setLayout(new BorderLayout());
         setLayout(new BorderLayout());
         add(mainPanel);
 
-        Editor editor = createEditor();
-        filterPanel = new FilterPanel(editor);
+        editor = createEditor();
 
         queryContainerPanel.setLayout(new BorderLayout());
-        queryContainerPanel.add(filterPanel);
+        queryContainerPanel.add(editor.getComponent(), BorderLayout.CENTER);
 
 
         myUpdateAlarm.setActivationComponent(editor.getComponent());
@@ -86,6 +85,41 @@ public class QueryPanel extends JPanel implements Disposable {
         Disposer.register(project, this);
     }
 
+    public String getQuery() {
+        return StringUtils.trim(editor.getDocument().getText());
+    }
+
+    public String getQueries() {
+        return String.format("[%s]", getQuery());
+    }
+
+    public void notifyOnErrorForOperator(Exception ex) {
+        String message;
+        if (ex instanceof JSONParseException) {
+            message = StringUtils.removeStart(ex.getMessage(), "\n");
+        } else {
+            message = String.format("%s: %s", ex.getClass().getSimpleName(), ex.getMessage());
+        }
+        NonOpaquePanel nonOpaquePanel = new NonOpaquePanel();
+        JTextPane textPane = Messages.configureMessagePaneUi(new JTextPane(), message);
+        textPane.setFont(COURIER_FONT);
+        textPane.setBackground(MessageType.ERROR.getPopupBackground());
+        nonOpaquePanel.add(textPane, BorderLayout.CENTER);
+        nonOpaquePanel.add(new JLabel(MessageType.ERROR.getDefaultIcon()), BorderLayout.WEST);
+
+        JBPopupFactory.getInstance().createBalloonBuilder(nonOpaquePanel)
+                .setFillColor(MessageType.ERROR.getPopupBackground())
+                .createBalloon()
+                .show(new RelativePoint(this.editor.getComponent(), new Point(0, 0)), Balloon.Position.above);
+    }
+
+    public void requestFocusOnEditor() {// Code from requestFocus of EditorImpl
+        final IdeFocusManager focusManager = IdeFocusManager.getInstance(this.project);
+        JComponent editorContentComponent = editor.getContentComponent();
+        if (focusManager.getFocusOwner() != editorContentComponent) {
+            focusManager.requestFocus(editorContentComponent, true);
+        }
+    }
 
     private Editor createEditor() {
         EditorFactory editorFactory = EditorFactory.getInstance();
@@ -134,19 +168,19 @@ public class QueryPanel extends JPanel implements Disposable {
         if (isAgregationEnabled()) {
 
             try {
-                mongoQueryOptions.setQueries(filterPanel.getQueries());
+                mongoQueryOptions.setQueries(getQueries());
             } catch (JSONParseException ex) {
-                filterPanel.notifyOnErrorForOperator(ex);
+                notifyOnErrorForOperator(ex);
                 throw ex;
             } catch (NumberFormatException ex) {
-                filterPanel.notifyOnErrorForOperator(ex);
+                notifyOnErrorForOperator(ex);
                 throw ex;
             }
         } else {
             try {
-                mongoQueryOptions.setFilter(filterPanel.getQuery());
+                mongoQueryOptions.setFilter(getQuery());
             } catch (JSONParseException ex) {
-                filterPanel.notifyOnErrorForOperator(ex);
+                notifyOnErrorForOperator(ex);
             }
         }
 
@@ -166,22 +200,8 @@ public class QueryPanel extends JPanel implements Disposable {
             operatorCompletionAction.dispose();
         }
 
-        if (filterPanel != null) {
-            filterPanel.dispose();
-        }
+        EditorFactory.getInstance().releaseEditor(editor);
     }
-
-    public void installActions(MongoPanel mongoPanel) {
-        DefaultActionGroup actionQueryGroup = new DefaultActionGroup("MongoQueryGroup", true);
-        if (ApplicationManager.getApplication() != null) {
-            actionQueryGroup.add(new ExecuteQuery(mongoPanel));
-            actionQueryGroup.add(new EnableAggregateAction(this));
-            actionQueryGroup.add(new CopyQueryAction(this));
-            actionQueryGroup.add(new CloseFindEditorAction(mongoPanel));
-        }
-        GuiUtils.installActionGroupInToolBar(actionQueryGroup, toolBarPanel, ActionManager.getInstance(), "MongoQueryGroupActions", true);
-    }
-
 
     public String getQueryStringifiedValue() {
         return getQueryOptions().getFilter().toString();
@@ -203,65 +223,25 @@ public class QueryPanel extends JPanel implements Disposable {
     public void validateQuery() {
         if (isAgregationEnabled()) {
             try {
-                filterPanel.getQueries();
+                getQueries();
             } catch (JSONParseException ex) {
-                filterPanel.notifyOnErrorForOperator(ex);
+                notifyOnErrorForOperator(ex);
             } catch (NumberFormatException ex) {
-                filterPanel.notifyOnErrorForOperator(ex);
+                notifyOnErrorForOperator(ex);
             }
         } else {
             try {
-                filterPanel.getQuery();
+                getQuery();
             } catch (JSONParseException ex) {
-                filterPanel.notifyOnErrorForOperator(ex);
+                notifyOnErrorForOperator(ex);
             } catch (NumberFormatException ex) {
-                filterPanel.notifyOnErrorForOperator(ex);
+                notifyOnErrorForOperator(ex);
             }
         }
 
     }
 
-
-    private static class FilterPanel extends JPanel implements Disposable {
-        private final Editor editor;
-
-        private FilterPanel(Editor editor) {
-            this.editor = editor;
-            setLayout(new BorderLayout());
-            add(editor.getComponent(), BorderLayout.CENTER);
-        }
-
-        public String getQuery() {
-            return StringUtils.trim(editor.getDocument().getText());
-        }
-
-        @Override
-        public void dispose() {
-            EditorFactory.getInstance().releaseEditor(editor);
-        }
-
-        public String getQueries() {
-            return String.format("[%s]", getQuery());
-        }
-
-        public void notifyOnErrorForOperator(Exception ex) {
-            String message;
-            if (ex instanceof JSONParseException) {
-                message = StringUtils.removeStart(ex.getMessage(), "\n");
-            } else {
-                message = String.format("%s: %s", ex.getClass().getSimpleName(), ex.getMessage());
-            }
-            NonOpaquePanel nonOpaquePanel = new NonOpaquePanel();
-            JTextPane textPane = Messages.configureMessagePaneUi(new JTextPane(), message);
-            textPane.setFont(COURIER_FONT);
-            textPane.setBackground(MessageType.ERROR.getPopupBackground());
-            nonOpaquePanel.add(textPane, BorderLayout.CENTER);
-            nonOpaquePanel.add(new JLabel(MessageType.ERROR.getDefaultIcon()), BorderLayout.WEST);
-
-            JBPopupFactory.getInstance().createBalloonBuilder(nonOpaquePanel)
-                    .setFillColor(MessageType.ERROR.getPopupBackground())
-                    .createBalloon()
-                    .show(new RelativePoint(this.editor.getComponent(), new Point(0, 0)), Balloon.Position.above);
-        }
+    public JPanel getToolbar() {
+        return toolbar;
     }
 }

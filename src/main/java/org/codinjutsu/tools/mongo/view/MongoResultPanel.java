@@ -16,11 +16,8 @@
 
 package org.codinjutsu.tools.mongo.view;
 
-import com.intellij.ide.CommonActionsManager;
-import com.intellij.ide.TreeExpander;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
@@ -35,9 +32,7 @@ import com.mongodb.DBObject;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
-import org.codinjutsu.tools.mongo.view.action.CopyResultAction;
 import org.codinjutsu.tools.mongo.view.action.EditMongoDocumentAction;
-import org.codinjutsu.tools.mongo.view.action.OpenFindAction;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeModel;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
@@ -56,9 +51,9 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
     private final Project project;
     private final MongoPanel.MongoDocumentOperations mongoDocumentOperations;
-    private JPanel resultToolbar;
     private JPanel mainPanel;
     private JPanel containerPanel;
+    private JPanel toolbar;
     private Splitter splitter;
     private JPanel resultTreePanel;
     private MongoEditionPanel mongoEditionPanel;
@@ -69,6 +64,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
     public MongoResultPanel(Project project, MongoPanel.MongoDocumentOperations mongoDocumentOperations) {
         this.project = project;
         this.mongoDocumentOperations = mongoDocumentOperations;
+        toolbar.setLayout(new BorderLayout());
         setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
 
@@ -83,7 +79,6 @@ public class MongoResultPanel extends JPanel implements Disposable {
         containerPanel.setLayout(new BorderLayout());
         containerPanel.add(splitter);
 
-        resultToolbar.setLayout(new BorderLayout());
         Disposer.register(project, this);
     }
 
@@ -188,57 +183,12 @@ public class MongoResultPanel extends JPanel implements Disposable {
         return false;
     }
 
-    public void installActions(MongoPanel mongoPanel) {
-        DefaultActionGroup actionResultGroup = new DefaultActionGroup("MongoResultGroup", true);
-        actionResultGroup.add(new OpenFindAction(mongoPanel));
-        actionResultGroup.add(new CopyResultAction(this));
 
-        final TreeExpander treeExpander = new TreeExpander() {
-            @Override
-            public void expandAll() {
-                MongoResultPanel.this.expandAll();
-            }
-
-            @Override
-            public boolean canExpand() {
-                return true;
-            }
-
-            @Override
-            public void collapseAll() {
-                MongoResultPanel.this.collapseAll();
-            }
-
-            @Override
-            public boolean canCollapse() {
-                return true;
-            }
-        };
-
-        CommonActionsManager actionsManager = CommonActionsManager.getInstance();
-
-        final AnAction expandAllAction = actionsManager.createExpandAllAction(treeExpander, mainPanel);
-        final AnAction collapseAllAction = actionsManager.createCollapseAllAction(treeExpander, mainPanel);
-
-        Disposer.register(this, new Disposable() {
-            @Override
-            public void dispose() {
-                collapseAllAction.unregisterCustomShortcutSet(mainPanel);
-                expandAllAction.unregisterCustomShortcutSet(mainPanel);
-            }
-        });
-
-        actionResultGroup.add(expandAllAction);
-        actionResultGroup.add(collapseAllAction);
-
-        GuiUtils.installActionGroupInToolBar(actionResultGroup, resultToolbar, ActionManager.getInstance(), "MongoQueryGroupActions", false);
-    }
-
-    private void expandAll() {
+    void expandAll() {
         TreeUtil.expandAll(resultTableView.getTree());
     }
 
-    private void collapseAll() {
+    void collapseAll() {
         TreeTableTree tree = resultTableView.getTree();
         TreeUtil.collapseAll(tree, 1);
     }
@@ -275,6 +225,10 @@ public class MongoResultPanel extends JPanel implements Disposable {
     public void dispose() {
         resultTableView = null;
         mongoEditionPanel.dispose();
+    }
+
+    public JPanel getToolbar() {
+        return toolbar;
     }
 
     public interface ActionCallback {
