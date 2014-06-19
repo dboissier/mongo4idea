@@ -21,7 +21,6 @@ import com.intellij.openapi.project.Project;
 import com.mongodb.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.*;
 

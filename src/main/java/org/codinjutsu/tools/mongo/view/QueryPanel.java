@@ -36,15 +36,12 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.ui.awt.RelativePoint;
-import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.panels.NonOpaquePanel;
 import com.intellij.util.Alarm;
 import com.intellij.util.ui.UIUtil;
 import com.mongodb.util.JSONParseException;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
-import org.codinjutsu.tools.mongo.view.action.CloseFindEditorAction;
-import org.codinjutsu.tools.mongo.view.action.EnableAggregateAction;
 import org.codinjutsu.tools.mongo.view.action.OperatorCompletionAction;
 
 import javax.swing.*;
@@ -93,7 +90,7 @@ public class QueryPanel extends JPanel implements Disposable {
         return String.format("[%s]", getQuery());
     }
 
-    public void notifyOnErrorForOperator(Exception ex) {
+    private void notifyOnErrorForOperator(Exception ex) {
         String message;
         if (ex instanceof JSONParseException) {
             message = StringUtils.removeStart(ex.getMessage(), "\n");

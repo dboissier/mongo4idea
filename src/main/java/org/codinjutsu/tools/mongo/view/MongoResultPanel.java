@@ -23,8 +23,11 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.Splitter;
+import com.intellij.openapi.ui.popup.Balloon;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.PopupHandler;
+import com.intellij.ui.awt.RelativePoint;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.treetable.TreeTableTree;
 import com.intellij.util.ui.tree.TreeUtil;
@@ -100,7 +103,10 @@ public class MongoResultPanel extends JPanel implements Disposable {
         GuiUtils.runInSwingThread(new Runnable() {
             @Override
             public void run() {
-//                ToolWindowManager.getInstance(project).notifyByBalloon(MongoWindowManager.MONGO_RUNNER, info, message);
+                JBPopupFactory.getInstance().createBalloonBuilder(new JLabel(message))
+                        .setFillColor(info.getPopupBackground())
+                        .createBalloon()
+                        .show(new RelativePoint(MongoResultPanel.this.resultTreePanel, new Point(0, 0)), Balloon.Position.above);
             }
         });
     }
