@@ -2,7 +2,6 @@ package org.codinjutsu.tools.mongo.view.action;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.ToggleAction;
 import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.view.MongoPanel;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;

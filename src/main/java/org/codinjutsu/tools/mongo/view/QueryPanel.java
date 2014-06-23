@@ -35,6 +35,7 @@ import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.wm.IdeFocusManager;
+import com.intellij.ui.NumberDocument;
 import com.intellij.ui.awt.RelativePoint;
 import com.intellij.ui.components.panels.NonOpaquePanel;
 import com.intellij.util.Alarm;
@@ -53,10 +54,11 @@ public class QueryPanel extends JPanel implements Disposable {
 
 
     private final Alarm myUpdateAlarm = new Alarm(Alarm.ThreadToUse.SWING_THREAD);
+    private final JTextField rowLimitField;
+    private final JPanel rowLimitPanel;
 
     private JPanel mainPanel;
     private JPanel queryContainerPanel;
-    private JPanel errorPanel;
     private final Project project;
     private boolean agregationEnabled = false;
     private OperatorCompletionAction operatorCompletionAction;
@@ -67,7 +69,14 @@ public class QueryPanel extends JPanel implements Disposable {
         this.project = project;
 
         toolbar.setLayout(new BorderLayout());
-        errorPanel.setLayout(new BorderLayout());
+
+        rowLimitField = new JTextField("");
+        rowLimitField.setColumns(5);
+        rowLimitField.setDocument(new NumberDocument());
+        rowLimitPanel = new NonOpaquePanel();
+        rowLimitPanel.add(new JLabel("Row limit:"), BorderLayout.WEST);
+        rowLimitPanel.add(rowLimitField, BorderLayout.CENTER);
+
         setLayout(new BorderLayout());
         add(mainPanel);
 
@@ -181,6 +190,9 @@ public class QueryPanel extends JPanel implements Disposable {
             }
         }
 
+        if (StringUtils.isNotBlank(rowLimitField.getText())) {
+            mongoQueryOptions.setResultLimit(Integer.parseInt(rowLimitField.getText()));
+        }
 
         return mongoQueryOptions;
     }
@@ -213,10 +225,6 @@ public class QueryPanel extends JPanel implements Disposable {
         this.agregationEnabled = false;
     }
 
-    public JPanel getErrorPanel() {
-        return errorPanel;
-    }
-
     public void validateQuery() {
         if (isAgregationEnabled()) {
             try {
@@ -240,5 +248,9 @@ public class QueryPanel extends JPanel implements Disposable {
 
     public JPanel getToolbar() {
         return toolbar;
+    }
+
+    public JPanel getRowLimitPanel() {
+        return rowLimitPanel;
     }
 }

@@ -26,10 +26,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 public abstract class AbstractAddDialog extends DialogWrapper {

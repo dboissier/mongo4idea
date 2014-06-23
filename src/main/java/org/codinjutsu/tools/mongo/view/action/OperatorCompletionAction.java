@@ -30,7 +30,6 @@ import org.codinjutsu.tools.mongo.model.MongoAggregateOperator;
 
 import java.awt.event.KeyEvent;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 

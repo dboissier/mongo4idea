@@ -17,7 +17,6 @@
 package org.codinjutsu.tools.mongo.view.editor;
 
 import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.fileTypes.UnknownFileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileSystem;

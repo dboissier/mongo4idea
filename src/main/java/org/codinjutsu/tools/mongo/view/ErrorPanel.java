@@ -20,7 +20,6 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.HoverHyperlinkLabel;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBLabel;
-import org.codinjutsu.tools.mongo.utils.GuiUtils;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;

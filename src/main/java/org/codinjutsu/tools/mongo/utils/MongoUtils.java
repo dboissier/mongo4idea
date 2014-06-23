@@ -71,7 +71,7 @@ public class MongoUtils {
             return JSON.parse(value);
         }
 
-        throw new IllegalStateException("Unknown datatype: " + jsonDataType);
+        throw new IllegalStateException(String.format("Datatype '%s' is unknown or not supported.", jsonDataType));
     }
 
     public static String buildMongoUrl(ServerConfiguration serverConfiguration, MongoDatabase database) {

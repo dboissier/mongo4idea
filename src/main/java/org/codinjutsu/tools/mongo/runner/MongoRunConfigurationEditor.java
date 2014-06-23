@@ -29,13 +29,9 @@ import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
-import org.codinjutsu.tools.mongo.view.model.JsonDataType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.List;
 
 public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfiguration> {

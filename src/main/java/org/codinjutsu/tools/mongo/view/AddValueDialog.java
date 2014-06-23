@@ -18,9 +18,8 @@ package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.ValidationInfo;
-import com.mongodb.util.JSON;
-import com.mongodb.util.JSONParseException;
 import org.apache.commons.lang.StringUtils;
+import org.codinjutsu.tools.mongo.utils.MongoUtils;
 import org.codinjutsu.tools.mongo.view.model.JsonDataType;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,6 +37,7 @@ public class AddValueDialog extends AbstractAddDialog {
         super(mongoEditionPanel);
         valuePanel.setLayout(new BorderLayout());
         typeCombobox.setName("valueType");
+        typeCombobox.requestFocus();
     }
 
     @Nullable
@@ -50,7 +50,6 @@ public class AddValueDialog extends AbstractAddDialog {
         AddValueDialog dialog = new AddValueDialog(parentPanel);
         dialog.init();
         dialog.setTitle("Add A Value");
-
         return dialog;
     }
 
@@ -71,16 +70,14 @@ public class AddValueDialog extends AbstractAddDialog {
         }
 
         String value = getValue();
-        if (JsonDataType.NUMBER.equals(dataType) && StringUtils.isEmpty(value)) {
-            return new ValidationInfo("Key value is not set");
+        if (StringUtils.isEmpty(value)) {
+            return new ValidationInfo("Value is not set");
         }
 
-        if (JsonDataType.OBJECT.equals(dataType)) {
-            try {
-                JSON.parse(value);
-            } catch (JSONParseException e) {
-                return new ValidationInfo("Invalid JSON object");
-            }
+        try {
+            MongoUtils.parseValue(dataType, value);
+        } catch (Exception ex) {
+            return new ValidationInfo(ex.getMessage());
         }
 
         return null;
@@ -91,4 +88,9 @@ public class AddValueDialog extends AbstractAddDialog {
         return currentEditor.getValue();
     }
 
+    @Nullable
+    @Override
+    public JComponent getPreferredFocusedComponent() {
+        return typeCombobox;
+    }
 }

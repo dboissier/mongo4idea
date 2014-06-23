@@ -42,6 +42,7 @@ public class MongoPanel extends JPanel implements Disposable {
     private JPanel rootPanel;
     private Splitter splitter;
     private JPanel toolBar;
+    private JPanel errorPanel;
     private final MongoResultPanel resultPanel;
     private final QueryPanel queryPanel;
 
@@ -53,6 +54,8 @@ public class MongoPanel extends JPanel implements Disposable {
         this.mongoManager = mongoManager;
         this.mongoCollection = mongoCollection;
         this.configuration = configuration;
+
+        errorPanel.setLayout(new BorderLayout());
 
         queryPanel = new QueryPanel(project);
 
@@ -137,13 +140,16 @@ public class MongoPanel extends JPanel implements Disposable {
     }
 
     public void installQueryPanelActions() {
+        JPanel queryPanelToolbar = queryPanel.getToolbar();
+        queryPanelToolbar.add(queryPanel.getRowLimitPanel(), BorderLayout.WEST);
+
         DefaultActionGroup actionResultGroup = new DefaultActionGroup("MongoResultGroup", true);
         if (ApplicationManager.getApplication() != null) {
             actionResultGroup.add(new EnableAggregateAction(this));
             actionResultGroup.add(new CloseFindEditorAction(this));
         }
 
-        GuiUtils.installActionGroupInToolBar(actionResultGroup, queryPanel.getToolbar(), ActionManager.getInstance(), "MongoResultGroupActions", true);
+        GuiUtils.installActionGroupInToolBar(actionResultGroup, queryPanelToolbar, ActionManager.getInstance(), "MongoResultGroupActions", true);
     }
 
     public MongoCollection getMongoCollection() {
@@ -157,16 +163,16 @@ public class MongoPanel extends JPanel implements Disposable {
 
     public void executeQuery() {
         try {
-            queryPanel.getErrorPanel().setVisible(false);
+            errorPanel.setVisible(false);
             validateQuery();
             MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(configuration, mongoCollection, queryPanel.getQueryOptions());
             resultPanel.updateResultTableTree(mongoCollectionResult);
         } catch (Exception ex) {
-            queryPanel.getErrorPanel().invalidate();
-            queryPanel.getErrorPanel().removeAll();
-            queryPanel.getErrorPanel().add(new ErrorPanel(ex), BorderLayout.CENTER);
-            queryPanel.getErrorPanel().validate();
-            queryPanel.getErrorPanel().setVisible(true);
+            errorPanel.invalidate();
+            errorPanel.removeAll();
+            errorPanel.add(new ErrorPanel(ex), BorderLayout.CENTER);
+            errorPanel.validate();
+            errorPanel.setVisible(true);
         }
     }
 

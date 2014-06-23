@@ -17,12 +17,8 @@
 package org.codinjutsu.tools.mongo.view.action;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.ToggleAction;
 import com.intellij.openapi.actionSystem.ex.CheckboxAction;
-import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.MongoPanel;
-
-import javax.swing.*;
 
 public class EnableAggregateAction extends CheckboxAction {
 

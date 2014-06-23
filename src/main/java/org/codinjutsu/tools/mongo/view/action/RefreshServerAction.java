@@ -20,9 +20,6 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
-import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
-
-import javax.swing.*;
 
 public class RefreshServerAction extends AnAction implements DumbAware {
 

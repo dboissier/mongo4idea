@@ -26,7 +26,6 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.tree.TreeUtil;
 import com.mongodb.DBObject;
 import org.apache.commons.lang.StringUtils;
-import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.utils.MongoUtils;
 import org.codinjutsu.tools.mongo.view.action.edition.AddKeyAction;
 import org.codinjutsu.tools.mongo.view.action.edition.AddValueAction;
