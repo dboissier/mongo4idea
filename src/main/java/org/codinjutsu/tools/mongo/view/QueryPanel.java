@@ -52,18 +52,18 @@ public class QueryPanel extends JPanel implements Disposable {
 
     private static final Font COURIER_FONT = new Font("Courier", Font.PLAIN, UIUtil.getLabelFont().getSize());
 
-
     private final Alarm myUpdateAlarm = new Alarm(Alarm.ThreadToUse.SWING_THREAD);
-    private final JTextField rowLimitField;
-    private final JPanel rowLimitPanel;
+    private final Project project;
 
     private JPanel mainPanel;
     private JPanel queryContainerPanel;
-    private final Project project;
+    private final JPanel rowLimitPanel;
+    private final JTextField rowLimitField;
+    private JPanel toolbar;
+
     private boolean agregationEnabled = false;
     private OperatorCompletionAction operatorCompletionAction;
     private final Editor editor;
-    private JPanel toolbar;
 
     public QueryPanel(Project project) {
         this.project = project;
@@ -75,7 +75,7 @@ public class QueryPanel extends JPanel implements Disposable {
         rowLimitField.setDocument(new NumberDocument());
         rowLimitPanel = new NonOpaquePanel();
         rowLimitPanel.add(new JLabel("Row limit:"), BorderLayout.WEST);
-        rowLimitPanel.add(rowLimitField, BorderLayout.CENTER);
+        rowLimitPanel.add(rowLimitField);
 
         setLayout(new BorderLayout());
         add(mainPanel);

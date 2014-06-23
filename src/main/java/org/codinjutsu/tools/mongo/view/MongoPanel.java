@@ -20,6 +20,7 @@ import com.intellij.ide.CommonActionsManager;
 import com.intellij.ide.TreeExpander;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
@@ -143,13 +144,19 @@ public class MongoPanel extends JPanel implements Disposable {
         JPanel queryPanelToolbar = queryPanel.getToolbar();
         queryPanelToolbar.add(queryPanel.getRowLimitPanel(), BorderLayout.WEST);
 
-        DefaultActionGroup actionResultGroup = new DefaultActionGroup("MongoResultGroup", true);
+        DefaultActionGroup actionQueryGroup = new DefaultActionGroup("MongoResultGroup", true);
         if (ApplicationManager.getApplication() != null) {
-            actionResultGroup.add(new EnableAggregateAction(this));
-            actionResultGroup.add(new CloseFindEditorAction(this));
+            actionQueryGroup.add(new EnableAggregateAction(this));
+            actionQueryGroup.add(new CloseFindEditorAction(this));
         }
 
-        GuiUtils.installActionGroupInToolBar(actionResultGroup, queryPanelToolbar, ActionManager.getInstance(), "MongoResultGroupActions", true);
+        ActionToolbar actionToolBar = ActionManager.getInstance().createActionToolbar("MongoQueryGroupActions", actionQueryGroup, true);
+        actionToolBar.setLayoutPolicy(ActionToolbar.AUTO_LAYOUT_POLICY);
+        JComponent actionToolBarComponent = actionToolBar.getComponent();
+        actionToolBarComponent.setBorder(null);
+        actionToolBarComponent.setOpaque(false);
+
+        queryPanelToolbar.add(actionToolBarComponent, BorderLayout.CENTER);
     }
 
     public MongoCollection getMongoCollection() {

@@ -17,18 +17,26 @@
 package org.codinjutsu.tools.mongo.view.action;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.ex.CheckboxAction;
+import com.intellij.openapi.actionSystem.ToggleAction;
+import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.MongoPanel;
 
-public class EnableAggregateAction extends CheckboxAction {
+import javax.swing.*;
 
+public class EnableAggregateAction extends ToggleAction {
+
+    private static final String ENABLE_FIND_MODE = "Enable Find Mode";
+    private static final String ENABLE_AGGREGATION_MODE = "Enable Aggregation Mode";
+    private static final Icon AGGREGATION_ICON = GuiUtils.loadIcon("table_multiple.png");
+    private static final String QUERY_FIND_SAMPLE = "ex: {'name': 'foo'}";
+    private static final String QUERY_AGGREGATION_SAMPLE = "ex: [{'$match': {'name': 'foo'}, {'$project': {'address': 1}}]";
 
     private final MongoPanel mongoPanel;
 
     private boolean enableAggregation = false;
 
     public EnableAggregateAction(final MongoPanel mongoPanel) {
-        super("Aggregation");
+        super(ENABLE_AGGREGATION_MODE, QUERY_FIND_SAMPLE, AGGREGATION_ICON);
         this.mongoPanel = mongoPanel;
     }
 
@@ -39,7 +47,7 @@ public class EnableAggregateAction extends CheckboxAction {
     }
 
     @Override
-    public void setSelected(AnActionEvent anActionEvent, boolean enableAggregation) {
+    public void setSelected(AnActionEvent event, boolean enableAggregation) {
         this.enableAggregation = enableAggregation;
         if (enableAggregation) {
             mongoPanel.getQueryPanel().toggleToAggregation();
@@ -49,7 +57,8 @@ public class EnableAggregateAction extends CheckboxAction {
     }
 
     @Override
-    public void update(AnActionEvent event) {
-        event.getPresentation().setVisible(mongoPanel.isFindEditorOpened());
+    public void update(AnActionEvent e) {
+        e.getPresentation().setText(isSelected(e) ? ENABLE_FIND_MODE : ENABLE_AGGREGATION_MODE);
+        e.getPresentation().setDescription(isSelected(e) ? QUERY_AGGREGATION_SAMPLE : QUERY_FIND_SAMPLE);
     }
 }
