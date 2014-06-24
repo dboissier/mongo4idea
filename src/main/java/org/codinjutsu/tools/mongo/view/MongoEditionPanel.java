@@ -59,7 +59,6 @@ public class MongoEditionPanel extends JPanel implements Disposable {
     public MongoEditionPanel() {
         super(new BorderLayout());
 
-        mainPanel.setBorder(IdeBorderFactory.createTitledBorder("Edition", true));
         add(mainPanel);
         editionTreePanel.setLayout(new BorderLayout());
 
@@ -105,6 +104,12 @@ public class MongoEditionPanel extends JPanel implements Disposable {
     }
 
     public void updateEditionTree(DBObject mongoDocument) {
+        String panelTitle = "New document";
+        if (mongoDocument != null) {
+            panelTitle = "Edition";
+        }
+
+        mainPanel.setBorder(IdeBorderFactory.createTitledBorder(panelTitle, true));
         editTableView = new JsonTreeTableView(JsonTreeModel.buildJsonTree(mongoDocument), JsonTreeTableView.COLUMNS_FOR_WRITING);
         editTableView.setName("editionTreeTable");
 
@@ -129,6 +134,10 @@ public class MongoEditionPanel extends JPanel implements Disposable {
 
     public boolean containsKey(String key) {
         JsonTreeNode parentNode = getParentNode();
+        if (parentNode == null) {
+            return false;
+        }
+
         Enumeration children = parentNode.children();
         while(children.hasMoreElements()) {
             JsonTreeNode childNode = (JsonTreeNode) children.nextElement();
@@ -183,7 +192,11 @@ public class MongoEditionPanel extends JPanel implements Disposable {
     }
 
     private JsonTreeNode getParentNode() {
-        return (JsonTreeNode) ((JsonTreeNode) editTableView.getTree().getLastSelectedPathComponent()).getParent();
+        JsonTreeNode lastPathComponent = (JsonTreeNode) editTableView.getTree().getLastSelectedPathComponent();
+        if (lastPathComponent == null) {
+            return null;
+        }
+        return (JsonTreeNode) lastPathComponent.getParent();
     }
 
     public boolean canAddKey() {

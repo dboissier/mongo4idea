@@ -49,6 +49,6 @@ public class AddKeyAction extends AnAction {
 
     @Override
     public void update(AnActionEvent event) {
-        event.getPresentation().setVisible(mongoEditionPanel.canAddKey());
+//        event.getPresentation().setVisible(mongoEditionPanel.canAddKey());
     }
 }

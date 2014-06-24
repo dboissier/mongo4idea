@@ -23,25 +23,21 @@ import org.codinjutsu.tools.mongo.view.MongoResultPanel;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
 
-public class EditMongoDocumentAction extends AnAction implements DumbAware {
+public class AddMongoDocumentAction extends AnAction implements DumbAware {
 
-    private static final Icon EDIT_ICON = StyleAttributesUtils.getInstance().getEditIcon();
+    private static final Icon ADD_ICON = StyleAttributesUtils.getInstance().getAddIcon();
     private final MongoResultPanel resultPanel;
 
-    public EditMongoDocumentAction(MongoResultPanel resultPanel) {
-        super("Edit", "Edit mongo document", EDIT_ICON);
+    public AddMongoDocumentAction(MongoResultPanel resultPanel) {
+        super("Add", "Add mongo document", ADD_ICON);
+        registerCustomShortcutSet(KeyEvent.VK_INSERT, KeyEvent.ALT_MASK, resultPanel);
         this.resultPanel = resultPanel;
     }
 
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
-        resultPanel.editSelectedMongoDocument();
-    }
-
-    @Override
-    public void update(AnActionEvent event) {
-        super.update(event);
-        event.getPresentation().setEnabled(resultPanel.isSelectedNodeId());
+        resultPanel.addMongoDocument();
     }
 }

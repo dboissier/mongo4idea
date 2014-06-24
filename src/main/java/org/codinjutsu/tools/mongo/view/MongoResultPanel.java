@@ -35,6 +35,7 @@ import com.mongodb.DBObject;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
+import org.codinjutsu.tools.mongo.view.action.AddMongoDocumentAction;
 import org.codinjutsu.tools.mongo.view.action.EditMongoDocumentAction;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeModel;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
@@ -135,6 +136,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
     void buildPopupMenu() {
         DefaultActionGroup actionPopupGroup = new DefaultActionGroup("MongoResultPopupGroup", true);
         if (ApplicationManager.getApplication() != null) {
+            actionPopupGroup.add(new AddMongoDocumentAction(this));
             actionPopupGroup.add(new EditMongoDocumentAction(this));
         }
 
@@ -155,6 +157,12 @@ public class MongoResultPanel extends JPanel implements Disposable {
         splitter.setSecondComponent(mongoEditionPanel);
     }
 
+
+    public void addMongoDocument() {
+        mongoEditionPanel.updateEditionTree(null);
+        splitter.setSecondComponent(mongoEditionPanel);
+    }
+
     private DBObject getSelectedMongoDocument() {
         TreeTableTree tree = resultTableView.getTree();
         JsonTreeNode treeNode = (JsonTreeNode) tree.getLastSelectedPathComponent();
@@ -172,6 +180,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
         return null;
     }
+
 
     public boolean isSelectedNodeId() {
         TreeTableTree tree = resultTableView.getTree();
@@ -236,6 +245,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
     public JPanel getToolbar() {
         return toolbar;
     }
+
 
     public interface ActionCallback {
 
