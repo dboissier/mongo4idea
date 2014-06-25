@@ -7,8 +7,7 @@ see [CHANGELOG.txt](https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.5.
 ## SNAPSHOT
 
 * [0.6.0-SNAPSHOT for Intellij 12 and below](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.6.0-SNAPSHOT.zip?raw=true)
-* [0.6.1-SNAPSHOT for Intellij 13 (Webstorm 7) and above](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.6.1-SNAPSHOT.zip?raw=true)
-
+* [0.6.0-SNAPSHOT for Intellij 13 (Webstorm 7) and above](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.6.0-SNAPSHOT.zip?raw=true)
 
 Current [changelog](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)
 
@@ -47,39 +46,34 @@ When you open the Mongo explorer, you will see an panel:
 
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-explorerWithDB.png?raw=true)
 
-The tree displays for each server all databases with its collections. Just double-click on a collection and the results will be displayed in the Mongo Runner panel.
+The tree displays for each server all databases with its collections. Just double-click on a collection and the results will be displayed as same as a file tab).
 If you double-click on another collection, a new tab will appears side of the previous.
 If you clear a collection by right clicking on it and select **Drop collection**
 
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-multipleTab.png?raw=true)
 
-### Mongo Runner
-The panel is divided into 2 parts.
+### **[NEW]** Mongo collection tab view
 
-* Right part displays the results of the query in a tree (max. 300 records).
-
-![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-findAll.png?raw=true)
+The panel shows all documents of the collections (max 300 records).
 
 You can copy the result and paste in a text editor.
 
-* Left part allows to specify a query (in json format).
+#### Querying
 
-![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-findWithFilter.png?raw=true)
+If you want to run a *find* query, click on the Magnify icon or type **CTRL+F** shortcut.
 
-When you type **CTRL+SPACE** key shortcut a popup is displayed in which you can select query operator.
+The query panel will appear on the top.
+Type your find query in JSON format (e.g.: `{ 'name': 'foo'}`)
+If you want to run some aggregate queries, type your pipeline as following:
+```
+{'$operator1': {...}},
+{'$operator2': {...}}
+```
+When you type **CTRL+SPACE** key shortcut a popup is displayed in which you can select a query operator.
 
-![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-operatorPopup.png?raw=true)
+Additionally, you can set a row limit.
 
-Either you click on the run query button or else type **CTRL+ENTER** shortcut to run the query
-
-If your server version is at least 2.2, you can use the aggregation framework. You can add a pipeline operation by clicking on the [+] button.
-You can also copy/paste the query you wrote.
-
-![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-aggregation.png?raw=true)
-
-**NEW** By default, Aggregation query is enable. you can switch to find query by clicking on the tooggle button:
-
-![Switch to Find/Aggregation Query](https://raw.github.com/dboissier/mongo4idea/master/doc/mongo4idea-switchFindAggregationQuery.png)
+When you are done, click on the Run button (or type **CTRL+ENTER** shortcut) to see the query results
 
 If you have an error during query execution, a feedback panel is displayed below:
 
@@ -93,7 +87,7 @@ If you have an error during query execution, a feedback panel is displayed below
 
 **Note**: If you use Ultimate Edition, JSON syntax highlighting is enabled.
 
-## [NEW] Document edition
+## Document edition
 
 Any document can be edited by double-clicking on the **object id** (or by right-clicking). A panel will be opened on the right.
 
@@ -108,6 +102,7 @@ You can add a key or value (depending on the structure of your document) by righ
 
 Set the key name, type and value and then validate your form.
 
+**[NEW]** You can also edit a document from scratch by right-clicking in the result view and select *Add* (or by typing **ALT+INSERT** shortcut)
 
 ### Mongo shell integration
 
@@ -126,7 +121,7 @@ I would like to thank:
 * [Jean Baptiste Potonnier](https://github.com/JJeeb) for the suggestion to create this plugin
 * Neko team, my first beta testers ;)
 * All users of this plugin who sent me valuable suggestions.
-* My wife and my daughter who support me to have fun in software development and also remind me my husband/father duty ;).
+* My wife and my daughters who support me to have fun in software development and also remind me my husband/father duty ;).
 
 
 ### Last Developer notes
