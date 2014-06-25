@@ -22,6 +22,7 @@ import org.codinjutsu.tools.mongo.view.MongoEditionPanel;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
 
 public class DeleteKeyAction extends AnAction {
 
@@ -31,6 +32,7 @@ public class DeleteKeyAction extends AnAction {
 
     public DeleteKeyAction(MongoEditionPanel mongoEditionPanel) {
         super("Delete this", "Delete the selected node", DELETE_ICON);
+        registerCustomShortcutSet(KeyEvent.VK_DELETE, KeyEvent.ALT_MASK, mongoEditionPanel);
         this.mongoEditionPanel = mongoEditionPanel;
     }
 

@@ -23,6 +23,7 @@ import org.codinjutsu.tools.mongo.view.MongoEditionPanel;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
 
 public class AddKeyAction extends AnAction {
 
@@ -32,6 +33,7 @@ public class AddKeyAction extends AnAction {
 
     public AddKeyAction(MongoEditionPanel mongoEditionPanel) {
         super("Add a key", "Add a key", ADD_ICON);
+        registerCustomShortcutSet(KeyEvent.VK_INSERT, KeyEvent.ALT_MASK, mongoEditionPanel);
         this.mongoEditionPanel = mongoEditionPanel;
     }
 
