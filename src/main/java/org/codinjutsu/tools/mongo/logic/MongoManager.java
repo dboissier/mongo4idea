@@ -31,6 +31,7 @@ import java.util.*;
 public class MongoManager {
 
     private static final Logger LOG = Logger.getLogger(MongoManager.class);
+    private List<MongoServer> mongoServers = new LinkedList<MongoServer>();
 
     public static MongoManager getInstance(Project project) {
         return ServiceManager.getService(project, MongoManager.class);
@@ -71,30 +72,63 @@ public class MongoManager {
         }
     }
 
-    public MongoServer loadDatabaseCollections(MongoServer mongoServer) {
-        MongoClient mongo = null;
+    public List<MongoServer> loadServers(List<ServerConfiguration> serverConfigurations, boolean loadOnStartup) {
+        if (loadOnStartup) {
+            mongoServers.clear();
+        }
+
+        if (!mongoServers.isEmpty()) {
+            return mongoServers;
+        }
+
+        for (ServerConfiguration serverConfiguration : serverConfigurations) {
+            MongoServer mongoServer = new MongoServer(serverConfiguration);
+            mongoServers.add(mongoServer);
+
+            if (loadOnStartup && !mongoServer.getConfiguration().isConnectOnIdeStartup()) {
+                continue;
+            }
+            loadServer(mongoServer);
+
+        }
+        return mongoServers;
+    }
+
+    public void loadServer(MongoServer mongoServer) {
         try {
-            String userDatabase = mongoServer.getConfiguration().getUserDatabase();
+            List<MongoDatabase> mongoDatabases = loadDatabaseCollections(mongoServer.getConfiguration());
+            mongoServer.setDatabases(mongoDatabases);
+            mongoServer.setStatus(MongoServer.Status.OK);
+        } catch (ConfigurationException e) {
+            mongoServer.setStatus(MongoServer.Status.ERROR);
+        }
+    }
 
-            mongo = createMongoClient(mongoServer.getServerUrls(), userDatabase);
+    public List<MongoDatabase> loadDatabaseCollections(ServerConfiguration serverConfiguration) {
+        MongoClient mongo = null;
+        List<MongoDatabase> mongoDatabases = new LinkedList<MongoDatabase>();
+        try {
+            String userDatabase = serverConfiguration.getUserDatabase();
 
-            String username = mongoServer.getUsername();
-            String password = mongoServer.getPassword();
+            mongo = createMongoClient(serverConfiguration.getServerUrls(), userDatabase);
+
+            String username = serverConfiguration.getUsername();
+            String password = serverConfiguration.getPassword();
             if (StringUtils.isNotEmpty(userDatabase)) {
                 DB database = mongo.getDB(userDatabase);
                 if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password) && !database.isAuthenticated()) {
                     database.authenticate(username, password.toCharArray());
                 }
-                mongoServer.addDatabase(createMongoDatabaseAndItsCollections(database));
+                mongoDatabases.add(createMongoDatabaseAndItsCollections(database));
             } else {
                 List<String> databaseNames = getDatabaseNames(mongo, username, password);
                 for (String databaseName : databaseNames) {
                     DB database = mongo.getDB(databaseName);
-                    mongoServer.addDatabase(createMongoDatabaseAndItsCollections(database));
+                    mongoDatabases.add(createMongoDatabaseAndItsCollections(database));
                 }
             }
 
-            return mongoServer;
+            return mongoDatabases;
         } catch (Exception ex) {
             LOG.error("Error when collecting Mongo databases", ex);
             throw new ConfigurationException(ex);

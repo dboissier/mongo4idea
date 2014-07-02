@@ -4,6 +4,7 @@ Version 0.6.0
     * [fix] #78 Cannot edit documents that have custom _id
     * [fix] #69 Cannot edit number value
     * [fix] #54 #58 Test Connection Button does not properly work
+    * [add] #68 Ability to run a file
     * [add] #61 Replica Set support
 
 Version 0.5.2

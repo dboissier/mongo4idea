@@ -28,10 +28,15 @@ import com.intellij.ui.RawCommandLineEditor;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
+import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
+import org.codinjutsu.tools.mongo.model.MongoServer;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.LinkedList;
 import java.util.List;
 
 public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfiguration> {
@@ -40,29 +45,71 @@ public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfigur
 
     private JTextField scriptPathField;
     private ComboBox serverConfigurationCombobox;
-    private JTextField databaseField;
+    private ComboBox databaseCombobox;
     private JPanel mongoShellOptionsPanel;
     private RawCommandLineEditor shellParametersField;
     private TextFieldWithBrowseButton shellWorkingDirField;
 
 
     public MongoRunConfigurationEditor(Project project) {
-        List<ServerConfiguration> serverConfigurationList = MongoConfiguration.getInstance(project).getServerConfigurations();
-        ServerConfiguration[] serverConfigurations = serverConfigurationList.toArray(new ServerConfiguration[serverConfigurationList.size()]);
+        MongoServer[] mongoServers = getAvailableMongoServers(project);
 
-        serverConfigurationCombobox.setModel(new DefaultComboBoxModel(serverConfigurations));
+        serverConfigurationCombobox.setModel(new DefaultComboBoxModel(mongoServers));
 
         serverConfigurationCombobox.setRenderer(new ColoredListCellRenderer() {
             @Override
             protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
-                ServerConfiguration serverConfiguration = (ServerConfiguration) value;
+                MongoServer serverConfiguration = (MongoServer) value;
                 append(serverConfiguration.getLabel());
             }
         });
 
+
+        databaseCombobox.setRenderer(new ColoredListCellRenderer() {
+            @Override
+            protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
+                MongoDatabase mongoDatabase = (MongoDatabase) value;
+                if (value == null) {
+                    return;
+                }
+                append(mongoDatabase.getName());
+            }
+        });
+
+
+        serverConfigurationCombobox.addItemListener(new ItemListener() {
+
+            @Override
+            public void itemStateChanged(ItemEvent itemEvent) {
+                MongoServer selectedServer = (MongoServer) serverConfigurationCombobox.getSelectedItem();
+                if (selectedServer == null) {
+                    return;
+                }
+                databaseCombobox.removeAllItems();
+                for (MongoDatabase mongoDatabase: selectedServer.getDatabases()) {
+                    databaseCombobox.addItem(mongoDatabase);
+                }
+            }
+        });
+
+        serverConfigurationCombobox.setSelectedIndex(-1);
+        serverConfigurationCombobox.setSelectedIndex(0);
+
+
         mongoShellOptionsPanel.setBorder(IdeBorderFactory.createTitledBorder("Mongo shell options", true));
 
         shellParametersField.setDialogCaption("Mongo arguments");
+    }
+
+    private MongoServer[] getAvailableMongoServers(Project project) {
+        List<MongoServer> mongoServers = MongoManager.getInstance(project).loadServers(MongoConfiguration.getInstance(project).getServerConfigurations(), false);
+        List<MongoServer> availableMongoServers = new LinkedList<MongoServer>();
+        for (MongoServer mongoServer : mongoServers) {
+            if (mongoServer.hasDatabases()) {
+                availableMongoServers.add(mongoServer);
+            }
+        }
+        return availableMongoServers.toArray(new MongoServer[availableMongoServers.size()]);
     }
 
     @Override
@@ -76,7 +123,7 @@ public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfigur
     protected void applyEditorTo(MongoRunConfiguration configuration) throws ConfigurationException {
         configuration.setScriptPath(getScriptPath());
         configuration.setServerConfiguration(getSelectedConfiguration());
-        configuration.setDatabase(getDatabase());
+        configuration.setDatabase(getSelectedDatabase());
         configuration.setShellParameters(getShellParameters());
         configuration.setShellWorkingDir(getShellWorkingDir());
     }
@@ -90,11 +137,11 @@ public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfigur
     }
 
     private ServerConfiguration getSelectedConfiguration() {
-        return (ServerConfiguration) serverConfigurationCombobox.getSelectedItem();
+        return ((MongoServer) serverConfigurationCombobox.getSelectedItem()).getConfiguration();
     }
 
-    public MongoDatabase getDatabase() {
-        return new MongoDatabase(databaseField.getText());
+    public MongoDatabase getSelectedDatabase() {
+        return (MongoDatabase) databaseCombobox.getSelectedItem();
     }
 
     private String getShellWorkingDir() {

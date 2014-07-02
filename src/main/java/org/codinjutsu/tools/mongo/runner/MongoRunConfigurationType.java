@@ -65,6 +65,5 @@ public class MongoRunConfigurationType implements ConfigurationType {
         public RunConfiguration createTemplateConfiguration(Project project) {
             return new MongoRunConfiguration(new RunConfigurationModule(project), this);
         }
-
     }
 }

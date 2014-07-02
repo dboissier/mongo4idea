@@ -90,8 +90,8 @@ class MongoRunConfiguration extends ModuleBasedConfiguration<RunConfigurationMod
     }
 
     @Override
-    protected ModuleBasedConfiguration createInstance() {
-        return null;
+    protected MongoRunConfiguration createInstance() {
+        return new MongoRunConfiguration(getConfigurationModule(), getFactory());
     }
 
     @Nullable
@@ -105,6 +105,25 @@ class MongoRunConfiguration extends ModuleBasedConfiguration<RunConfigurationMod
         final MongoCommandLineState state = new MongoCommandLineState(this, env);
         state.setConsoleBuilder(TextConsoleBuilderFactory.getInstance().createBuilder(getProject()));
         return state;
+    }
+
+    @Override
+    public void checkConfiguration() throws RuntimeConfigurationException {
+        if (mongoShell == null) {
+            throw new RuntimeConfigurationError("Mongo shell path is not set.");
+        }
+
+        if (scriptPath == null) {
+            throw new RuntimeConfigurationError("Script path is not set.");
+        }
+
+        if (serverConfiguration == null) {
+            throw new RuntimeConfigurationError("Server is not set.");
+        }
+
+        if (database == null) {
+            throw new RuntimeConfigurationError("Database is not set.");
+        }
     }
 
     public VirtualFile getScriptPath() {
@@ -137,7 +156,7 @@ class MongoRunConfiguration extends ModuleBasedConfiguration<RunConfigurationMod
     }
 
     public MongoDatabase getDatabase() {
-        return null;
+        return this.database;
     }
 
     public void setDatabase(MongoDatabase database) {

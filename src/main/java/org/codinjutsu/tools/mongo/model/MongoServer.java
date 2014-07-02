@@ -27,7 +27,7 @@ public class MongoServer {
         OK, ERROR
     }
 
-    private final List<MongoDatabase> databases = new LinkedList<MongoDatabase>();
+    private List<MongoDatabase> databases = new LinkedList<MongoDatabase>();
     private final ServerConfiguration configuration;
 
     private Status status = Status.OK;
@@ -40,20 +40,12 @@ public class MongoServer {
         return configuration.getServerUrls();
     }
 
-    public String getUsername() {
-        return configuration.getUsername();
-    }
-
-    public String getPassword() {
-        return configuration.getPassword();
-    }
-
     public String getLabel() {
         return configuration.getLabel();
     }
 
-    public void addDatabase(MongoDatabase mongoDatabase) {
-        databases.add(mongoDatabase);
+    public void setDatabases(List<MongoDatabase> databases) {
+        this.databases = databases;
     }
 
     public boolean hasDatabases() {
@@ -74,9 +66,5 @@ public class MongoServer {
 
     public ServerConfiguration getConfiguration() {
         return configuration;
-    }
-
-    public void clearAllDatabases() {
-        databases.clear();
     }
 }
