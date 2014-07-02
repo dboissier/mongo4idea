@@ -50,8 +50,6 @@ The tree displays for each server all databases with its collections. Just doubl
 If you double-click on another collection, a new tab will appears side of the previous.
 If you clear a collection by right clicking on it and select **Drop collection**
 
-![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-multipleTab.png?raw=true)
-
 ### **[NEW]** Mongo collection tab view
 
 The panel shows all documents of the collections (max 300 records).
@@ -79,26 +77,27 @@ If you have an error during query execution, a feedback panel is displayed below
 
 * In case of bad JSON syntax
 
-![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-errorInExecution.png?raw=true)
+TODO
 
 * In case of general error
 
-![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-errorInExecutionCommand.png?raw=true)
+TODO
 
 **Note**: If you use Ultimate Edition, JSON syntax highlighting is enabled.
 
 ## Document edition
 
-Any document can be edited by double-clicking on the **object id** (or by right-clicking). A panel will be opened on the right.
+Any document can be edited by double-clicking on the **object id** (or by right-clicking). A panel will be opened on the bottom.
 
-![Document Edition](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-documentEdition.png?raw=true)
+TODO
 
 You can edit the value either by double-clicking or by typing F2 key.
 You can delete a key by right-clicking on it and select **Delete this**
 * Click on the **save** button to send the modification to the mongo server
 * Click on the **delete** button to delete it
 You can add a key or value (depending on the structure of your document) by right-clicking on it and select **Add a Key** (or **Add a Value**). A dialog will appear.
-![Add Key Dialog](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-addKeyDialog.png?raw=true)
+
+TODO
 
 Set the key name, type and value and then validate your form.
 
