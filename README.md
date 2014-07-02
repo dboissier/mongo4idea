@@ -7,7 +7,7 @@ see [CHANGELOG.txt](https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.5.
 ## SNAPSHOT
 
 * [0.6.0-SNAPSHOT for Intellij 12 and below](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.6.0-SNAPSHOT.zip?raw=true)
-* [0.6.0-SNAPSHOT for Intellij 13 (Webstorm 7) and above](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.6.0-SNAPSHOT.zip?raw=true)
+* [0.6.0-SNAPSHOT for Intellij 13 (Webstorm 7) and above](https://github.com/dboissier/mongo4idea/blob/master/snapshot/mongo4idea-0.6.1-SNAPSHOT.zip?raw=true)
 
 Current [changelog](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)
 
