@@ -41,13 +41,14 @@ When you open the Mongo explorer, you will see an panel:
 
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-explorerWithDB.png?raw=true)
 
-The tree displays for each server all databases with its collections. Just double-click on a collection and the results will be displayed as same as a file tab).
+The tree displays for each server all databases with its collections. Just double-click on a collection and the results will be displayed as same as a file tab.
 If you double-click on another collection, a new tab will appears side of the previous.
+
 If you clear a collection by right clicking on it and select **Drop collection**
 
 ### **[NEW]** Mongo collection tab view
 
-The panel shows all documents of the collections (max 300 records).
+The panel shows all documents of the collections (max 300 records by default).
 
 ![Collection view](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-collectionTabView.png?raw=true)
 
