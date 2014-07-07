@@ -192,15 +192,19 @@ public class MongoEditionPanel extends JPanel implements Disposable {
     }
 
     private JsonTreeNode getParentNode() {
-        JsonTreeNode lastPathComponent = (JsonTreeNode) editTableView.getTree().getLastSelectedPathComponent();
+        JsonTreeNode lastPathComponent = getSelectedNode();
         if (lastPathComponent == null) {
             return null;
         }
         return (JsonTreeNode) lastPathComponent.getParent();
     }
 
+    public JsonTreeNode getSelectedNode() {
+        return (JsonTreeNode) editTableView.getTree().getLastSelectedPathComponent();
+    }
+
     public boolean canAddKey() {
-        JsonTreeNode selectedNode = (JsonTreeNode) editTableView.getTree().getLastSelectedPathComponent();
+        JsonTreeNode selectedNode = getSelectedNode();
         if (selectedNode == null) {
             return false;
         }
@@ -208,7 +212,7 @@ public class MongoEditionPanel extends JPanel implements Disposable {
     }
 
     public boolean canAddValue() {
-        JsonTreeNode selectedNode = (JsonTreeNode) editTableView.getTree().getLastSelectedPathComponent();
+        JsonTreeNode selectedNode = getSelectedNode();
         if (selectedNode == null) {
             return false;
         }
@@ -216,7 +220,7 @@ public class MongoEditionPanel extends JPanel implements Disposable {
     }
 
     public void removeSelectedKey() {
-        JsonTreeNode selectedNode = (JsonTreeNode) editTableView.getTree().getLastSelectedPathComponent();
+        JsonTreeNode selectedNode = getSelectedNode();
         if (selectedNode == null) {
             return;
         }

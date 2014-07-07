@@ -40,4 +40,9 @@ public class DeleteKeyAction extends AnAction {
     public void actionPerformed(AnActionEvent anActionEvent) {
         mongoEditionPanel.removeSelectedKey();
     }
+
+    @Override
+    public void update(AnActionEvent event) {
+        event.getPresentation().setVisible(mongoEditionPanel.getSelectedNode() != null);
+    }
 }

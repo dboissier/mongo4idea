@@ -142,7 +142,6 @@ public class MongoPanel extends JPanel implements Disposable {
 
     public void installQueryPanelActions() {
         JPanel queryPanelToolbar = queryPanel.getToolbar();
-        queryPanelToolbar.add(queryPanel.getRowLimitPanel(), BorderLayout.WEST);
 
         DefaultActionGroup actionQueryGroup = new DefaultActionGroup("MongoResultGroup", true);
         if (ApplicationManager.getApplication() != null) {

@@ -75,7 +75,10 @@ public class QueryPanel extends JPanel implements Disposable {
         rowLimitField.setDocument(new NumberDocument());
         rowLimitPanel = new NonOpaquePanel();
         rowLimitPanel.add(new JLabel("Row limit:"), BorderLayout.WEST);
-        rowLimitPanel.add(rowLimitField);
+        rowLimitPanel.add(rowLimitField, BorderLayout.CENTER);
+        rowLimitPanel.add(Box.createHorizontalStrut(5), BorderLayout.EAST);
+
+        toolbar.add(rowLimitPanel, BorderLayout.WEST);
 
         setLayout(new BorderLayout());
         add(mainPanel);
@@ -248,9 +251,5 @@ public class QueryPanel extends JPanel implements Disposable {
 
     public JPanel getToolbar() {
         return toolbar;
-    }
-
-    public JPanel getRowLimitPanel() {
-        return rowLimitPanel;
     }
 }
