@@ -54,6 +54,8 @@ If you clear a collection by right clicking on it and select **Drop collection**
 
 The panel shows all documents of the collections (max 300 records).
 
+![Collection view](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-collectionTabView.png?raw=true)
+
 You can copy the result and paste in a text editor.
 
 #### Querying
@@ -61,27 +63,24 @@ You can copy the result and paste in a text editor.
 If you want to run a *find* query, click on the Magnify icon or type **CTRL+F** shortcut.
 
 The query panel will appear on the top.
+
 Type your find query in JSON format (e.g.: `{ 'name': 'foo'}`)
+
+![Simple query view](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-queryFind.png?raw=true)
+
 If you want to run some aggregate queries, type your pipeline as following:
 ```
 {'$operator1': {...}},
 {'$operator2': {...}}
 ```
+
+![Aggregate query view](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-queryAggregate.png?raw=true)
+
 When you type **CTRL+SPACE** key shortcut a popup is displayed in which you can select a query operator.
 
 Additionally, you can set a row limit.
 
-When you are done, click on the Run button (or type **CTRL+ENTER** shortcut) to see the query results
-
-If you have an error during query execution, a feedback panel is displayed below:
-
-* In case of bad JSON syntax
-
-TODO
-
-* In case of general error
-
-TODO
+When you are done, click on the Run button (or type **CTRL+ENTER** shortcut) to see the query results.
 
 **Note**: If you use Ultimate Edition, JSON syntax highlighting is enabled.
 
@@ -89,7 +88,7 @@ TODO
 
 Any document can be edited by double-clicking on the **object id** (or by right-clicking). A panel will be opened on the bottom.
 
-TODO
+![Document edition](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-documentEdition.png?raw=true)
 
 You can edit the value either by double-clicking or by typing F2 key.
 You can delete a key by right-clicking on it and select **Delete this**
@@ -97,7 +96,7 @@ You can delete a key by right-clicking on it and select **Delete this**
 * Click on the **delete** button to delete it
 You can add a key or value (depending on the structure of your document) by right-clicking on it and select **Add a Key** (or **Add a Value**). A dialog will appear.
 
-TODO
+![Document edition](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-addKeyDialog.png?raw=true)
 
 Set the key name, type and value and then validate your form.
 
@@ -108,6 +107,14 @@ Set the key name, type and value and then validate your form.
 If you set the mongo client path (e.g. /usr/bin/mongo), you can run the console by clicking the menu item **Tools -> Mongo Shell**.
 
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-shell.png?raw=true)
+
+### **[NEW]** Run a file
+
+If you need to run a javascript file on your mongo server, just type CTRL+ALT+F10 (or right-clik in your file and select Run *myscript.js* file)
+
+![Document edition](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-runAFile.png?raw=true)
+
+Select your server and your database then click on the run button.
 
 
 ## Thanks
