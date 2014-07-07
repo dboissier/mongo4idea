@@ -13,6 +13,8 @@ This plugin was built with JDK 1.6 and ideaIC-12.1.4 version (Idea 11 is not sup
 ## How to install it?
 Download this plugin from your IDE (Mongo Plugin)
 
+**Warning** : configurations will be broken, especially server url. You will have to set it again.
+
 ## Configuration steps
 
 When you open the Mongo explorer, you will see an panel:
