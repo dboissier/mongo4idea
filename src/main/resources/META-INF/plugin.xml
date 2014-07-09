@@ -17,11 +17,12 @@
 <idea-plugin version="2">
     <name>Mongo Plugin</name>
     <description>Mongo integration for Intellij</description>
-    <version>0.6.0</version>
+    <version>0.6.1</version>
     <vendor email="david.boissier [at] gmail [dot] com" url="http://codinjutsu.blogspot.com">David Boissier</vendor>
 
-    <idea-version since-build="120.100" until-build="129.99999"/>
+    <!--<idea-version since-build="120.100" until-build="129.99999"/>-->
     <!--<idea-version since-build="131.130"/>-->
+    <idea-version since-build="135.0"/>
 
     <depends>com.intellij.modules.lang</depends>
 
@@ -68,7 +69,7 @@
 
 
     <change-notes><![CDATA[
-<a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.6.0/README.md">Changelog</a>
-<a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.6.0/CHANGELOG.txt">Changelog</a>
+<a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.6.1/README.md">Changelog</a>
+<a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.6.1/CHANGELOG.txt">Changelog</a>
 ]]> </change-notes>
 </idea-plugin>
