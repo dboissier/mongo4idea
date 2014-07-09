@@ -1,3 +1,6 @@
+Version 0.6.1
+    * [fix] javascript file detection for executing script
+
 Version 0.6.0
     * [update] Results are displayed in a standard editor tab (like any file)
     * [fix] #77 Long are incorrectly displayed when editing a document
