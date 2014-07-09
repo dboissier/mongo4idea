@@ -1,6 +1,6 @@
-# Mongo Plugin for IntelliJ IDEA version 0.6.0
+# Mongo Plugin for IntelliJ IDEA version 0.6.1
 
-see [CHANGELOG.txt](https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.6.0/CHANGELOG.txt)
+see [CHANGELOG.txt](https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.6.1/CHANGELOG.txt)
 
 Current [changelog](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)
 
