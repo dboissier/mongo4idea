@@ -48,7 +48,7 @@ public class MongoScriptRunConfigurationProducer extends RuntimeConfigurationPro
     @Override
     protected RunnerAndConfigurationSettings createConfigurationByElement(Location location, ConfigurationContext configurationContext) {
         sourceFile = location.getPsiElement().getContainingFile();
-        if (sourceFile != null && "JavaScript files".equals(sourceFile.getFileType().getName())) {
+        if (sourceFile != null && sourceFile.getFileType().getName().contains("JavaScript files")) {
             Project project = sourceFile.getProject();
 
             VirtualFile file = sourceFile.getVirtualFile();
