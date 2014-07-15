@@ -67,7 +67,6 @@ class MongoCommandLineState extends CommandLineState {
         if (StringUtils.isNotEmpty(shellWorkingDir)) {
             commandLine.setWorkDirectory(shellWorkingDir);
         }
-        System.out.println("commandLinePath = " + commandLine.getCommandLineString());
         return commandLine;
     }
 }

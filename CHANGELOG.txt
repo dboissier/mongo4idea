@@ -1,3 +1,9 @@
+Version 0.6.2
+    * [fix] javascript file detection for executing script in Idea 13.1 UI
+    * [fix] #81 additionnal argument is not well supported in the console
+    * [add] #82 reload resulset after document deletion or modification
+    * [upd] adapt authentication code after migration of mongo-java-driver to version 2.12.2
+
 Version 0.6.1
     * [fix] javascript file detection for executing script
 

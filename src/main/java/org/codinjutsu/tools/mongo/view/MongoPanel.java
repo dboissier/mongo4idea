@@ -72,10 +72,12 @@ public class MongoPanel extends JPanel implements Disposable {
 
             public void updateMongoDocument(DBObject mongoDocument) {
                 mongoManager.update(configuration, mongoCollection, mongoDocument);
+                executeQuery();
             }
 
             public void deleteMongoDocument(Object objectId) {
                 mongoManager.delete(configuration, mongoCollection, objectId);
+                executeQuery();
             }
         });
         splitter.setSecondComponent(resultPanel);

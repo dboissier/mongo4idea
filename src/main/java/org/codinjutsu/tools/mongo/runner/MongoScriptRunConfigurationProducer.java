@@ -20,8 +20,6 @@ import com.intellij.execution.Location;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.actions.ConfigurationContext;
 import com.intellij.execution.junit.RuntimeConfigurationProducer;
-import com.intellij.lang.Language;
-import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
@@ -48,7 +46,7 @@ public class MongoScriptRunConfigurationProducer extends RuntimeConfigurationPro
     @Override
     protected RunnerAndConfigurationSettings createConfigurationByElement(Location location, ConfigurationContext configurationContext) {
         sourceFile = location.getPsiElement().getContainingFile();
-        if (sourceFile != null && sourceFile.getFileType().getName().contains("JavaScript files")) {
+        if (sourceFile != null && sourceFile.getFileType().getName().contains("JavaScript")) {
             Project project = sourceFile.getProject();
 
             VirtualFile file = sourceFile.getVirtualFile();
@@ -74,14 +72,6 @@ public class MongoScriptRunConfigurationProducer extends RuntimeConfigurationPro
         return null;
     }
 
-
-    public FileType getJavascriptFileType() {
-        Language language = Language.findLanguageByID("javascript");
-        if (language == null) {
-            language = Language.ANY;
-        }
-        return language.getAssociatedFileType();
-    }
 
     @Override
     public int compareTo(Object o) {

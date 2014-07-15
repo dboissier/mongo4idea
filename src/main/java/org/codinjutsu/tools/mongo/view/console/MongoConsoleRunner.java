@@ -90,7 +90,7 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
 
         String shellArgumentsLine = serverConfiguration.getShellArgumentsLine();
         if (StringUtils.isNotBlank(shellArgumentsLine)) {
-            commandLine.addParameter(shellArgumentsLine);
+            commandLine.addParameters(shellArgumentsLine.split(" "));
         }
 
         return commandLine.createProcess();

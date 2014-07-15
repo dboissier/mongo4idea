@@ -45,7 +45,7 @@ public class MongoManager {
 
         MongoClient mongo = null;
         try {
-            mongo = createMongoClient(serverUrls, userDatabase);
+            mongo = createMongoClient(serverUrls, username, password, userDatabase);
 
             DB databaseForTesting;
             if (StringUtils.isNotEmpty(userDatabase)) {
@@ -55,10 +55,6 @@ public class MongoManager {
             }
 
             databaseForTesting.getLastError();
-
-            if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
-                databaseForTesting.authenticate(username, password.toCharArray());
-            }
 
         } catch (IOException ex) {
             throw new ConfigurationException(ex);
@@ -110,18 +106,13 @@ public class MongoManager {
         try {
             String userDatabase = serverConfiguration.getUserDatabase();
 
-            mongo = createMongoClient(serverConfiguration.getServerUrls(), userDatabase);
+            mongo = createMongoClient(serverConfiguration.getServerUrls(), serverConfiguration.getUsername(), serverConfiguration.getPassword(), userDatabase);
 
-            String username = serverConfiguration.getUsername();
-            String password = serverConfiguration.getPassword();
             if (StringUtils.isNotEmpty(userDatabase)) {
                 DB database = mongo.getDB(userDatabase);
-                if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password) && !database.isAuthenticated()) {
-                    database.authenticate(username, password.toCharArray());
-                }
                 mongoDatabases.add(createMongoDatabaseAndItsCollections(database));
             } else {
-                List<String> databaseNames = getDatabaseNames(mongo, username, password);
+                List<String> databaseNames = getDatabaseNames(mongo);
                 for (String databaseName : databaseNames) {
                     DB database = mongo.getDB(databaseName);
                     mongoDatabases.add(createMongoDatabaseAndItsCollections(database));
@@ -154,16 +145,9 @@ public class MongoManager {
         MongoClient mongo = null;
         try {
             String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration.getServerUrls(), databaseName);
+            mongo = createMongoClient(configuration.getServerUrls(), configuration.getUsername(), configuration.getPassword(), databaseName);
 
             DB database = mongo.getDB(databaseName);
-
-            String username = configuration.getUsername();
-            String password = configuration.getPassword();
-            if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
-                database.authenticate(username, password.toCharArray());
-            }
-
             DBCollection collection = database.getCollection(mongoCollection.getName());
 
             collection.save(mongoDocument);
@@ -180,16 +164,9 @@ public class MongoManager {
         MongoClient mongo = null;
         try {
             String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration.getServerUrls(), databaseName);
+            mongo = createMongoClient(configuration.getServerUrls(), configuration.getUsername(), configuration.getPassword(), databaseName);
 
             DB database = mongo.getDB(databaseName);
-
-            String username = configuration.getUsername();
-            String password = configuration.getPassword();
-            if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
-                database.authenticate(username, password.toCharArray());
-            }
-
             DBCollection collection = database.getCollection(mongoCollection.getName());
 
             collection.remove(new BasicDBObject("_id", _id));
@@ -206,16 +183,9 @@ public class MongoManager {
         MongoClient mongo = null;
         try {
             String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration.getServerUrls(), databaseName);
+            mongo = createMongoClient(configuration.getServerUrls(), configuration.getUsername(), configuration.getPassword(), databaseName);
 
             DB database = mongo.getDB(databaseName);
-
-            String username = configuration.getUsername();
-            String password = configuration.getPassword();
-            if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
-                database.authenticate(username, password.toCharArray());
-            }
-
             DBCollection collection = database.getCollection(mongoCollection.getName());
 
             collection.drop();
@@ -232,16 +202,9 @@ public class MongoManager {
         MongoClient mongo = null;
         try {
             String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration.getServerUrls(), databaseName);
+            mongo = createMongoClient(configuration.getServerUrls(), configuration.getUsername(), configuration.getPassword(), databaseName);
 
             DB database = mongo.getDB(databaseName);
-
-            String username = configuration.getUsername();
-            String password = configuration.getPassword();
-            if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
-                database.authenticate(username, password.toCharArray());
-            }
-
             DBCollection collection = database.getCollection(mongoCollection.getName());
 
             MongoCollectionResult mongoCollectionResult = new MongoCollectionResult(mongoCollection.getName());
@@ -264,16 +227,9 @@ public class MongoManager {
         MongoClient mongo = null;
         try {
             String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration.getServerUrls(), databaseName);
+            mongo = createMongoClient(configuration.getServerUrls(), configuration.getUsername(), configuration.getPassword(), databaseName);
 
             DB database = mongo.getDB(databaseName);
-
-            String username = configuration.getUsername();
-            String password = configuration.getPassword();
-            if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
-                database.authenticate(username, password.toCharArray());
-            }
-
             DBCollection collection = database.getCollection(mongoCollection.getName());
             return collection.findOne(new BasicDBObject("_id", _id));
 
@@ -286,21 +242,15 @@ public class MongoManager {
         }
     }
 
-    private MongoClient createMongoClient(List<String> serverUrls, String userDatabase) throws UnknownHostException {
-        String textURI;
-
+    private MongoClient createMongoClient(List<String> serverUrls, String username, String password, String userDatabase) throws UnknownHostException {
         if (serverUrls.isEmpty()) {
             throw new ConfigurationException("server host is not set");
         }
 
         if (serverUrls.size() == 1) {
+
             String serverUrl = serverUrls.get(0);
-            if (StringUtils.isEmpty(userDatabase)) {
-                textURI = String.format("mongodb://%s/", serverUrl);
-            } else {
-                textURI = String.format("mongodb://%s/%s", serverUrl, userDatabase);
-            }
-            MongoClientURI mongoClientURI = new MongoClientURI(textURI);
+            MongoClientURI mongoClientURI = new MongoClientURI(buildMongoURI(serverUrl, username, password, userDatabase));
             return new MongoClient(mongoClientURI);
         } else {
             List<ServerAddress> serverAddresses = new LinkedList<ServerAddress>();
@@ -308,8 +258,24 @@ public class MongoManager {
                 String[] host_port = serverUrl.split(":");
                 serverAddresses.add(new ServerAddress(host_port[0], Integer.valueOf(host_port[1])));
             }
+            if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
+                MongoCredential credential = MongoCredential.createMongoCRCredential(username, null, password.toCharArray());
+                return new MongoClient(serverAddresses, Arrays.asList(credential));
+            }
             return new MongoClient(serverAddresses);
         }
+    }
+
+    private String buildMongoURI(String serverUrl, String username, String password, String userDatabase) {
+        StringBuilder uri = new StringBuilder("mongodb://");
+        if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
+            uri.append(String.format("%s:%s@", username, password));
+        }
+        uri.append(serverUrl).append("/");
+        if (StringUtils.isNotEmpty(userDatabase)) {
+            uri.append(userDatabase);
+        }
+        return uri.toString();
     }
 
     private MongoCollectionResult aggregate(MongoQueryOptions mongoQueryOptions, MongoCollectionResult mongoCollectionResult, DBCollection collection) {
@@ -338,7 +304,7 @@ public class MongoManager {
     }
 
     //Note : Hack of MongoClient#getDatabaseNames to retry with provided credentials
-    List<String> getDatabaseNames(MongoClient mongo, String username, String password) {
+    List<String> getDatabaseNames(MongoClient mongo) {
 
         BasicDBObject cmd = new BasicDBObject();
         cmd.put("listDatabases", 1);
@@ -349,13 +315,7 @@ public class MongoManager {
         try {
             res.throwOnError();
         } catch (MongoException e) {
-            if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
-                boolean authenticate = adminDb.authenticate(username, password.toCharArray());
-                if (!authenticate) {
-                    throw new ConfigurationException("Invalid credentials");
-                }
-                res = adminDb.command(cmd, ReadPreference.primaryPreferred());
-            }
+            throw new ConfigurationException("Invalid credentials");
         }
 
         res.throwOnError();
