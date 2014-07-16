@@ -16,6 +16,7 @@
 
 package org.codinjutsu.tools.mongo.view;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
@@ -65,6 +66,11 @@ public class MongoWindowManager {
     }
 
     public void apply() {
-        mongoExplorerPanel.reloadAllServerConfigurations(true);
+        ApplicationManager.getApplication().invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                mongoExplorerPanel.reloadAllServerConfigurations(true);
+            }
+        });
     }
 }

@@ -37,10 +37,6 @@ public class MongoManager {
         return ServiceManager.getService(project, MongoManager.class);
     }
 
-    public void connect(ServerConfiguration configuration) {
-        connect(configuration.getServerUrls(), configuration.getUsername(), configuration.getPassword(), configuration.getUserDatabase());
-    }
-
     public void connect(List<String> serverUrls, String username, String password, String userDatabase) {
 
         MongoClient mongo = null;
@@ -57,10 +53,10 @@ public class MongoManager {
             databaseForTesting.getLastError();
 
         } catch (IOException ex) {
-            throw new ConfigurationException(ex);
+            throw new MongoConnectionException(ex);
         } catch (MongoException ex) {
             LOG.error("Error when accessing Mongo server", ex);
-            throw new ConfigurationException(ex.getMessage());
+            throw new MongoConnectionException(ex.getMessage());
         } finally {
             if (mongo != null) {
                 mongo.close();

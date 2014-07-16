@@ -17,17 +17,21 @@
 package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.RawCommandLineEditor;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
+import org.codinjutsu.tools.mongo.logic.MongoConnectionException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
@@ -35,7 +39,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ServerConfigurationPanel implements Disposable {
+public class ServerConfigurationPanel extends JPanel implements Disposable {
 
     public static final Icon SUCCESS = GuiUtils.loadIcon("success.png");
     public static final Icon FAIL = GuiUtils.loadIcon("fail.png");
@@ -61,6 +65,8 @@ public class ServerConfigurationPanel implements Disposable {
 
 
     public ServerConfigurationPanel(MongoManager mongoManager) {
+        setLayout(new BorderLayout());
+        add(rootPanel, BorderLayout.CENTER);
         this.mongoManager = mongoManager;
         mongoShellOptionsPanel.setBorder(IdeBorderFactory.createTitledBorder("Mongo shell options", true));
 
@@ -86,14 +92,28 @@ public class ServerConfigurationPanel implements Disposable {
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
                     validateUrls();
-                    mongoManager.connect(getServerUrls(), getUsername(), getPassword(), getUserDatabase());
+                    testConnectionButton.setEnabled(false);
+                    testConnectionButton.setText("Connecting...");
+                    testConnectionButton.repaint();
+                    ApplicationManager.getApplication().invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                mongoManager.connect(getServerUrls(), getUsername(), getPassword(), getUserDatabase());
 
-                    feedbackLabel.setIcon(SUCCESS);
-                    feedbackLabel.setText("Connection successfull");
+                                feedbackLabel.setIcon(SUCCESS);
+                                feedbackLabel.setText("Connection successfull");
+                            } catch (MongoConnectionException ex) {
+                                setErrorMessage(ex.getMessage());
+                            } finally {
+                                testConnectionButton.setEnabled(true);
+                                testConnectionButton.setText("Test connection");
+                            }
+                        }
+                    });
                 } catch (ConfigurationException ex) {
                     setErrorMessage(ex.getMessage());
                 }
-
             }
         });
 

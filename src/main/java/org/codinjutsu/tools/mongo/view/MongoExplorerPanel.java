@@ -83,7 +83,12 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
         toolBarPanel.setLayout(new BorderLayout());
 
-        reloadAllServerConfigurations(true);
+        ApplicationManager.getApplication().invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                reloadAllServerConfigurations(true);
+            }
+        });
     }
 
     public void reloadSelectedServerConfiguration() {

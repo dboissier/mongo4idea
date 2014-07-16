@@ -32,9 +32,7 @@ import org.mockito.Mockito;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class ServerConfigurationPanelTest {
 
@@ -46,11 +44,6 @@ public class ServerConfigurationPanelTest {
 
     private FrameFixture frameFixture;
 
-    @After
-    public void tearDown() {
-        frameFixture.cleanUp();
-    }
-
     @Before
     public void setUp() throws Exception {
         mongoManager = Mockito.spy(new MongoManager());
@@ -60,7 +53,12 @@ public class ServerConfigurationPanelTest {
             }
         });
 
-        frameFixture = Containers.showInFrame(configurationPanel.getRootPanel());
+        frameFixture = Containers.showInFrame(configurationPanel);
+    }
+
+    @After
+    public void tearDown() {
+        frameFixture.cleanUp();
     }
 
     @Test
@@ -135,7 +133,6 @@ public class ServerConfigurationPanelTest {
     }
 
 
-
     @Test
     public void validateFormWithReplicatSet() throws Exception {
 
@@ -156,30 +153,5 @@ public class ServerConfigurationPanelTest {
         configurationPanel.loadConfigurationData(configuration);
 
         frameFixture.textBox("serverUrlsField").requireText("localhost:25,localhost:26");
-    }
-
-    @Test
-    public void connectionWithSuccess() {
-        ServerConfiguration configuration = new ServerConfiguration();
-        configuration.setServerUrls(Arrays.asList("localhost:27017"));
-
-        configurationPanel.loadConfigurationData(configuration);
-
-        frameFixture.button("testConnection").click();
-
-        Mockito.verify(mongoManager, Mockito.times(1)).connect(Arrays.asList("localhost:27017"), null, null, null);
-    }
-
-    @Test
-    public void connectionWithFailure() {
-        ServerConfiguration configuration = new ServerConfiguration();
-        configuration.setServerUrls(Arrays.asList("myserver:25"));
-
-        configurationPanel.loadConfigurationData(configuration);
-
-        frameFixture.button("testConnection").click();
-        assertTrue(frameFixture.label("feedbackLabel").text().contains("Timed out while waiting to connect after"));
-
-        Mockito.verify(mongoManager, Mockito.times(1)).connect(Arrays.asList("myserver:25"), null, null, null);
     }
 }

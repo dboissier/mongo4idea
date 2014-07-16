@@ -44,7 +44,7 @@ class ConfigurationDialog extends DialogWrapper {
     protected JComponent createCenterPanel() {
         serverConfigurationPanel = new ServerConfigurationPanel(mongoManager);
         serverConfigurationPanel.loadConfigurationData(configuration);
-        return serverConfigurationPanel.getRootPanel();
+        return serverConfigurationPanel;
     }
 
 
