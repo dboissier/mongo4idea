@@ -228,6 +228,20 @@ public class MongoManager {
         }
     }
 
+    public void dropDatabase(ServerConfiguration configuration, MongoDatabase selectedDatabase) {
+        MongoClient mongo = null;
+        try {
+            mongo = createMongoClient(configuration.getServerUrls(), selectedDatabase.getName());
+            mongo.dropDatabase(selectedDatabase.getName());
+        } catch (UnknownHostException ex) {
+            throw new ConfigurationException(ex);
+        } finally {
+            if (mongo != null) {
+                mongo.close();
+            }
+        }
+    }
+
     public MongoCollectionResult loadCollectionValues(ServerConfiguration configuration, MongoCollection mongoCollection, MongoQueryOptions mongoQueryOptions) {
         MongoClient mongo = null;
         try {
