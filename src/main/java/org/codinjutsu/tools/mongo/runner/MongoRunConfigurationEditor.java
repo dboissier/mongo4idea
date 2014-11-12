@@ -52,7 +52,17 @@ public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfigur
 
 
     public MongoRunConfigurationEditor(Project project) {
+        mongoShellOptionsPanel.setBorder(IdeBorderFactory.createTitledBorder("Mongo shell options", true));
+
+        shellParametersField.setDialogCaption("Mongo arguments");
+
         MongoServer[] mongoServers = getAvailableMongoServers(project);
+
+        if (mongoServers.length == 0) {
+            serverConfigurationCombobox.setEnabled(false);
+            databaseCombobox.setEnabled(false);
+            return;
+        }
 
         serverConfigurationCombobox.setModel(new DefaultComboBoxModel(mongoServers));
 
@@ -94,11 +104,6 @@ public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfigur
 
         serverConfigurationCombobox.setSelectedIndex(-1);
         serverConfigurationCombobox.setSelectedIndex(0);
-
-
-        mongoShellOptionsPanel.setBorder(IdeBorderFactory.createTitledBorder("Mongo shell options", true));
-
-        shellParametersField.setDialogCaption("Mongo arguments");
     }
 
     private MongoServer[] getAvailableMongoServers(Project project) {
@@ -137,7 +142,8 @@ public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfigur
     }
 
     private ServerConfiguration getSelectedConfiguration() {
-        return ((MongoServer) serverConfigurationCombobox.getSelectedItem()).getConfiguration();
+        MongoServer selectedServer = (MongoServer) serverConfigurationCombobox.getSelectedItem();
+        return selectedServer == null ? null : selectedServer.getConfiguration();
     }
 
     public MongoDatabase getSelectedDatabase() {
