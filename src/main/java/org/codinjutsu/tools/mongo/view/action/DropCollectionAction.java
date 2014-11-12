@@ -37,12 +37,16 @@ public class DropCollectionAction extends AnAction implements DumbAware {
 
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
-        mongoExplorerPanel.dropCollection();
+        int result = JOptionPane.showConfirmDialog (null, String.format("Do you REALLY want to drop the '%s' collection", mongoExplorerPanel.getSelectedCollection().getName()),"Warning",JOptionPane.YES_NO_OPTION);
+
+        if(result == JOptionPane.YES_OPTION){
+            mongoExplorerPanel.dropCollection();
+        }
     }
 
 
     @Override
     public void update(AnActionEvent event) {
-        event.getPresentation().setVisible(mongoExplorerPanel.getSelectedCollectionValues() != null);
+        event.getPresentation().setVisible(mongoExplorerPanel.getSelectedCollection() != null);
     }
 }

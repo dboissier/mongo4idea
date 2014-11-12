@@ -297,9 +297,9 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) mongoTree.getLastSelectedPathComponent();
         if (treeNode != null) {
             Object userObject = treeNode.getUserObject();
-            if (userObject instanceof MongoCollection) {
-                return (DefaultMutableTreeNode) treeNode.getParent();
-            }
+//            if (userObject instanceof MongoCollection) {
+//                return (DefaultMutableTreeNode) treeNode.getParent();
+//            }
 
             if (userObject instanceof MongoDatabase) {
                 return treeNode;
@@ -340,7 +340,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
     }
 
-    public MongoCollection getSelectedCollectionValues() {
+    public MongoCollection getSelectedCollection() {
         DefaultMutableTreeNode collectionNode = getSelectedCollectionNode();
         if (collectionNode == null) {
             return null;
@@ -350,15 +350,17 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
     }
 
     public void loadSelectedCollectionValues() {
-        MongoFileSystem.getInstance().openEditor(new MongoObjectFile(project, getConfiguration(), getSelectedCollectionValues()));
+        MongoFileSystem.getInstance().openEditor(new MongoObjectFile(project, getConfiguration(), getSelectedCollection()));
     }
 
     public void dropCollection() {
-        mongoManager.dropCollection(getConfiguration(), getSelectedCollectionValues());
+        mongoManager.dropCollection(getConfiguration(), getSelectedCollection());
+        reloadSelectedServerConfiguration();
     }
 
     public void dropDatabase() {
         mongoManager.dropDatabase(getConfiguration(),getSelectedDatabase());
+        reloadSelectedServerConfiguration();
     }
 
     private Tree createTree() {
