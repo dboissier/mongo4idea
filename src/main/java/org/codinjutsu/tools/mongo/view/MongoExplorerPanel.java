@@ -231,6 +231,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
             actionPopupGroup.add(new RefreshServerAction(this));
             actionPopupGroup.add(viewCollectionValuesAction);
             actionPopupGroup.add(new DropCollectionAction(this));
+            actionPopupGroup.add(new DropDatabaseAction(this));
         }
 
         PopupHandler.installPopupHandler(mongoTree, actionPopupGroup, "POPUP", ActionManager.getInstance());
@@ -354,6 +355,9 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         mongoManager.dropCollection(getConfiguration(), getSelectedCollectionValues());
     }
 
+    public void dropDatabase() {
+        mongoManager.dropDatabase(getConfiguration(),getSelectedDatabase());
+    }
 
     private Tree createTree() {
 
