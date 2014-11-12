@@ -105,11 +105,11 @@ public class MongoManager {
 
             mongo = createMongoClient(configuration);
 
-            if (StringUtils.isNotEmpty(userDatabase)) {
+            if (StringUtils.isNotEmpty(userDatabase) && configuration.isUserDatabaseAsMySingleDatabase()) {
                 DB database = mongo.getDB(userDatabase);
                 mongoDatabases.add(createMongoDatabaseAndItsCollections(database));
             } else {
-                List<String> databaseNames = getDatabaseNames(mongo);
+                List<String> databaseNames = mongo.getDatabaseNames();
                 for (String databaseName : databaseNames) {
                     DB database = mongo.getDB(databaseName);
                     mongoDatabases.add(createMongoDatabaseAndItsCollections(database));
@@ -248,35 +248,16 @@ public class MongoManager {
             throw new ConfigurationException("server host is not set");
         }
 
-        if (serverUrls.size() == 1) {
-
-            String serverUrl = serverUrls.get(0);
-            MongoClientURI mongoClientURI = new MongoClientURI(buildMongoURI(serverUrl, username, password, userDatabase));
-            return new MongoClient(mongoClientURI);
-        } else {
-            List<ServerAddress> serverAddresses = new LinkedList<ServerAddress>();
-            for (String serverUrl : serverUrls) {
-                String[] host_port = serverUrl.split(":");
-                serverAddresses.add(new ServerAddress(host_port[0], Integer.valueOf(host_port[1])));
-            }
-            if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
-                MongoCredential credential = MongoCredential.createMongoCRCredential(username, userDatabase, password.toCharArray());
-                return new MongoClient(serverAddresses, Arrays.asList(credential));
-            }
-            return new MongoClient(serverAddresses);
+        List<ServerAddress> serverAddresses = new LinkedList<ServerAddress>();
+        for (String serverUrl : serverUrls) {
+            String[] host_port = serverUrl.split(":");
+            serverAddresses.add(new ServerAddress(host_port[0], Integer.valueOf(host_port[1])));
         }
-    }
-
-    private String buildMongoURI(String serverUrl, String username, String password, String userDatabase) {
-        StringBuilder uri = new StringBuilder("mongodb://");
         if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
-            uri.append(String.format("%s:%s@", username, password));
+            MongoCredential credential = MongoCredential.createMongoCRCredential(username, userDatabase, password.toCharArray());
+            return new MongoClient(serverAddresses, Arrays.asList(credential));
         }
-        uri.append(serverUrl).append("/");
-        if (StringUtils.isNotEmpty(userDatabase)) {
-            uri.append(userDatabase);
-        }
-        return uri.toString();
+        return new MongoClient(serverAddresses);
     }
 
     private MongoCollectionResult aggregate(MongoQueryOptions mongoQueryOptions, MongoCollectionResult mongoCollectionResult, DBCollection collection) {

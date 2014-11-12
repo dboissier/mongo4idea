@@ -34,10 +34,10 @@ public class ServerConfiguration implements Cloneable {
 
     private String username;
     private String password;
+    private String userDatabase;
+    private boolean userDatabaseAsMySingleDatabase;
 
     private boolean connectOnIdeStartup = false;
-
-    private String userDatabase;
     private List<String> collectionsToIgnore = new LinkedList<String>();
 
     private String shellArgumentsLine;
@@ -82,6 +82,14 @@ public class ServerConfiguration implements Cloneable {
 
     public String getUserDatabase() {
         return userDatabase;
+    }
+
+    public boolean isUserDatabaseAsMySingleDatabase() {
+        return userDatabaseAsMySingleDatabase;
+    }
+
+    public void setUserDatabaseAsMySingleDatabase(boolean userDatabaseAsMySingleDatabase) {
+        this.userDatabaseAsMySingleDatabase = userDatabaseAsMySingleDatabase;
     }
 
     public void setCollectionsToIgnore(List<String> collectionsToIgnore) {
@@ -146,10 +154,12 @@ public class ServerConfiguration implements Cloneable {
         ServerConfiguration that = (ServerConfiguration) o;
 
         if (connectOnIdeStartup != that.connectOnIdeStartup) return false;
-        if (!collectionsToIgnore.equals(that.collectionsToIgnore)) return false;
+        if (userDatabaseAsMySingleDatabase != that.userDatabaseAsMySingleDatabase) return false;
+        if (collectionsToIgnore != null ? !collectionsToIgnore.equals(that.collectionsToIgnore) : that.collectionsToIgnore != null)
+            return false;
         if (label != null ? !label.equals(that.label) : that.label != null) return false;
         if (password != null ? !password.equals(that.password) : that.password != null) return false;
-        if (!serverUrls.equals(that.serverUrls)) return false;
+        if (serverUrls != null ? !serverUrls.equals(that.serverUrls) : that.serverUrls != null) return false;
         if (shellArgumentsLine != null ? !shellArgumentsLine.equals(that.shellArgumentsLine) : that.shellArgumentsLine != null)
             return false;
         if (shellWorkingDir != null ? !shellWorkingDir.equals(that.shellWorkingDir) : that.shellWorkingDir != null)
@@ -163,12 +173,13 @@ public class ServerConfiguration implements Cloneable {
     @Override
     public int hashCode() {
         int result = label != null ? label.hashCode() : 0;
-        result = 31 * result + serverUrls.hashCode();
+        result = 31 * result + (serverUrls != null ? serverUrls.hashCode() : 0);
         result = 31 * result + (username != null ? username.hashCode() : 0);
         result = 31 * result + (password != null ? password.hashCode() : 0);
-        result = 31 * result + (connectOnIdeStartup ? 1 : 0);
         result = 31 * result + (userDatabase != null ? userDatabase.hashCode() : 0);
-        result = 31 * result + collectionsToIgnore.hashCode();
+        result = 31 * result + (userDatabaseAsMySingleDatabase ? 1 : 0);
+        result = 31 * result + (connectOnIdeStartup ? 1 : 0);
+        result = 31 * result + (collectionsToIgnore != null ? collectionsToIgnore.hashCode() : 0);
         result = 31 * result + (shellArgumentsLine != null ? shellArgumentsLine.hashCode() : 0);
         result = 31 * result + (shellWorkingDir != null ? shellWorkingDir.hashCode() : 0);
         return result;

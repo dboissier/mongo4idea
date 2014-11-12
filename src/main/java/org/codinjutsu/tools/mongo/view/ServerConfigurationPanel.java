@@ -59,6 +59,7 @@ public class ServerConfigurationPanel extends JPanel implements Disposable {
     private JCheckBox autoConnectCheckBox;
     private JTextField databaseField;
     private TextFieldWithBrowseButton shellWorkingDirField;
+    private JCheckBox userDatabaseAsMySingleDatabaseField;
 
     private final MongoManager mongoManager;
 
@@ -166,8 +167,9 @@ public class ServerConfigurationPanel extends JPanel implements Disposable {
         configuration.setServerUrls(getServerUrls());
         configuration.setUsername(getUsername());
         configuration.setPassword(getPassword());
-        configuration.setCollectionsToIgnore(getCollectionsToIgnore());
         configuration.setUserDatabase(getUserDatabase());
+        configuration.setUserDatabaseAsMySingleDatabase(isUserDatabaseAsMySingleDatabase());
+        configuration.setCollectionsToIgnore(getCollectionsToIgnore());
         configuration.setShellArgumentsLine(getShellArgumentsLine());
         configuration.setShellWorkingDir(getShellWorkingDir());
         configuration.setConnectOnIdeStartup(isAutoConnect());
@@ -189,14 +191,6 @@ public class ServerConfigurationPanel extends JPanel implements Disposable {
         return null;
     }
 
-    private String getUserDatabase() {
-        String userDatabase = databaseField.getText();
-        if (StringUtils.isNotBlank(userDatabase)) {
-            return userDatabase;
-        }
-        return null;
-    }
-
     private String getUsername() {
         String username = usernameField.getText();
         if (StringUtils.isNotBlank(username)) {
@@ -211,6 +205,18 @@ public class ServerConfigurationPanel extends JPanel implements Disposable {
             return String.valueOf(password);
         }
         return null;
+    }
+
+    private String getUserDatabase() {
+        String userDatabase = databaseField.getText();
+        if (StringUtils.isNotBlank(userDatabase)) {
+            return userDatabase;
+        }
+        return null;
+    }
+
+    private boolean isUserDatabaseAsMySingleDatabase() {
+        return userDatabaseAsMySingleDatabaseField.isSelected();
     }
 
     private String getShellArgumentsLine() {
@@ -240,8 +246,9 @@ public class ServerConfigurationPanel extends JPanel implements Disposable {
         serverUrlsField.setText(StringUtils.join(configuration.getServerUrls(), ","));
         usernameField.setText(configuration.getUsername());
         passwordField.setText(configuration.getPassword());
-        collectionsToIgnoreField.setText(StringUtils.join(configuration.getCollectionsToIgnore(), ","));
         databaseField.setText(configuration.getUserDatabase());
+        userDatabaseAsMySingleDatabaseField.setSelected(configuration.isUserDatabaseAsMySingleDatabase());
+        collectionsToIgnoreField.setText(StringUtils.join(configuration.getCollectionsToIgnore(), ","));
         shellArgumentsLineField.setText(configuration.getShellArgumentsLine());
         shellWorkingDirField.setText(configuration.getShellWorkingDir());
         autoConnectCheckBox.setSelected(configuration.isConnectOnIdeStartup());
