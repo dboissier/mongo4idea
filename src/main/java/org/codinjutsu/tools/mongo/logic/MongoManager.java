@@ -253,27 +253,6 @@ public class MongoManager {
         }
     }
 
-    private MongoClient createMongoClient(ServerConfiguration configuration) throws UnknownHostException {
-        List<String> serverUrls = configuration.getServerUrls();
-        String username = configuration.getUsername();
-        String password = configuration.getPassword();
-        String userDatabase = configuration.getUserDatabase();
-        if (serverUrls.isEmpty()) {
-            throw new ConfigurationException("server host is not set");
-        }
-
-        List<ServerAddress> serverAddresses = new LinkedList<ServerAddress>();
-        for (String serverUrl : serverUrls) {
-            String[] host_port = serverUrl.split(":");
-            serverAddresses.add(new ServerAddress(host_port[0], Integer.valueOf(host_port[1])));
-        }
-        if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
-            MongoCredential credential = MongoCredential.createMongoCRCredential(username, userDatabase, password.toCharArray());
-            return new MongoClient(serverAddresses, Arrays.asList(credential));
-        }
-        return new MongoClient(serverAddresses);
-    }
-
     private MongoCollectionResult aggregate(MongoQueryOptions mongoQueryOptions, MongoCollectionResult mongoCollectionResult, DBCollection collection) {
         AggregationOutput aggregate = collection.aggregate(mongoQueryOptions.getOperations());
         int index = 0;
@@ -299,30 +278,24 @@ public class MongoManager {
         return mongoCollectionResult;
     }
 
-    //Note : Hack of MongoClient#getDatabaseNames to retry with provided credentials
-    List<String> getDatabaseNames(MongoClient mongo) {
-
-        BasicDBObject cmd = new BasicDBObject();
-        cmd.put("listDatabases", 1);
-
-        DB adminDb = mongo.getDB("admin");
-
-        CommandResult res = adminDb.command(cmd, ReadPreference.primaryPreferred());
-        try {
-            res.throwOnError();
-        } catch (MongoException e) {
-            throw new ConfigurationException("Invalid credentials");
+    private MongoClient createMongoClient(ServerConfiguration configuration) throws UnknownHostException {
+        List<String> serverUrls = configuration.getServerUrls();
+        String username = configuration.getUsername();
+        String password = configuration.getPassword();
+        String userDatabase = configuration.getUserDatabase();
+        if (serverUrls.isEmpty()) {
+            throw new ConfigurationException("server host is not set");
         }
 
-        res.throwOnError();
-
-        List l = (List) res.get("databases");
-
-        List<String> list = new ArrayList<String>();
-
-        for (Object o : l) {
-            list.add(((BasicDBObject) o).getString("name"));
+        List<ServerAddress> serverAddresses = new LinkedList<ServerAddress>();
+        for (String serverUrl : serverUrls) {
+            String[] host_port = serverUrl.split(":");
+            serverAddresses.add(new ServerAddress(host_port[0], Integer.valueOf(host_port[1])));
         }
-        return list;
+        if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
+            MongoCredential credential = MongoCredential.createMongoCRCredential(username, userDatabase, password.toCharArray());
+            return new MongoClient(serverAddresses, Arrays.asList(credential));
+        }
+        return new MongoClient(serverAddresses);
     }
 }
