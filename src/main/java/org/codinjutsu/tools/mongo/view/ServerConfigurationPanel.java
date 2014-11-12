@@ -20,7 +20,6 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
-import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.RawCommandLineEditor;
 import org.apache.commons.lang.StringUtils;
@@ -99,7 +98,12 @@ public class ServerConfigurationPanel extends JPanel implements Disposable {
                         @Override
                         public void run() {
                             try {
-                                mongoManager.connect(getServerUrls(), getUsername(), getPassword(), getUserDatabase());
+                                ServerConfiguration configuration = ServerConfiguration.byDefault();
+                                configuration.setServerUrls(getServerUrls());
+                                configuration.setUsername(getUsername());
+                                configuration.setPassword(getPassword());
+                                configuration.setUserDatabase(getUserDatabase());
+                                mongoManager.connect(configuration);
 
                                 feedbackLabel.setIcon(SUCCESS);
                                 feedbackLabel.setText("Connection successfull");
@@ -137,10 +141,6 @@ public class ServerConfigurationPanel extends JPanel implements Disposable {
             }
         }
 
-    }
-
-    public JPanel getRootPanel() {
-        return rootPanel;
     }
 
 
@@ -256,7 +256,6 @@ public class ServerConfigurationPanel extends JPanel implements Disposable {
 
     @Override
     public void dispose() {
-
     }
 
     public void setErrorMessage(String message) {

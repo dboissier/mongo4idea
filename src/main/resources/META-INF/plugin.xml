@@ -20,9 +20,9 @@
     <version>0.6.2</version>
     <vendor email="david.boissier [at] gmail [dot] com" url="http://codinjutsu.blogspot.com">David Boissier</vendor>
 
-    <idea-version since-build="120.100" until-build="129.99999"/>
+    <!--<idea-version since-build="120.100" until-build="129.99999"/>-->
     <!--<idea-version since-build="131.130" until-build="133.99999"/>-->
-    <!--<idea-version since-build="135.0"/>-->
+    <idea-version since-build="135.0"/>
 
     <depends>com.intellij.modules.lang</depends>
 

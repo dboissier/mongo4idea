@@ -37,11 +37,12 @@ public class MongoManager {
         return ServiceManager.getService(project, MongoManager.class);
     }
 
-    public void connect(List<String> serverUrls, String username, String password, String userDatabase) {
+    public void connect(ServerConfiguration configuration) {
 
         MongoClient mongo = null;
         try {
-            mongo = createMongoClient(serverUrls, username, password, userDatabase);
+            String userDatabase = configuration.getUserDatabase();
+            mongo = createMongoClient(configuration);
 
             DB databaseForTesting;
             if (StringUtils.isNotEmpty(userDatabase)) {
@@ -96,13 +97,13 @@ public class MongoManager {
         }
     }
 
-    public List<MongoDatabase> loadDatabaseCollections(ServerConfiguration serverConfiguration) {
+    public List<MongoDatabase> loadDatabaseCollections(ServerConfiguration configuration) {
         MongoClient mongo = null;
         List<MongoDatabase> mongoDatabases = new LinkedList<MongoDatabase>();
         try {
-            String userDatabase = serverConfiguration.getUserDatabase();
+            String userDatabase = configuration.getUserDatabase();
 
-            mongo = createMongoClient(serverConfiguration.getServerUrls(), serverConfiguration.getUsername(), serverConfiguration.getPassword(), userDatabase);
+            mongo = createMongoClient(configuration);
 
             if (StringUtils.isNotEmpty(userDatabase)) {
                 DB database = mongo.getDB(userDatabase);
@@ -141,7 +142,7 @@ public class MongoManager {
         MongoClient mongo = null;
         try {
             String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration.getServerUrls(), configuration.getUsername(), configuration.getPassword(), databaseName);
+            mongo = createMongoClient(configuration);
 
             DB database = mongo.getDB(databaseName);
             DBCollection collection = database.getCollection(mongoCollection.getName());
@@ -160,7 +161,7 @@ public class MongoManager {
         MongoClient mongo = null;
         try {
             String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration.getServerUrls(), configuration.getUsername(), configuration.getPassword(), databaseName);
+            mongo = createMongoClient(configuration);
 
             DB database = mongo.getDB(databaseName);
             DBCollection collection = database.getCollection(mongoCollection.getName());
@@ -179,7 +180,7 @@ public class MongoManager {
         MongoClient mongo = null;
         try {
             String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration.getServerUrls(), configuration.getUsername(), configuration.getPassword(), databaseName);
+            mongo = createMongoClient(configuration);
 
             DB database = mongo.getDB(databaseName);
             DBCollection collection = database.getCollection(mongoCollection.getName());
@@ -198,7 +199,7 @@ public class MongoManager {
         MongoClient mongo = null;
         try {
             String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration.getServerUrls(), configuration.getUsername(), configuration.getPassword(), databaseName);
+            mongo = createMongoClient(configuration);
 
             DB database = mongo.getDB(databaseName);
             DBCollection collection = database.getCollection(mongoCollection.getName());
@@ -223,7 +224,7 @@ public class MongoManager {
         MongoClient mongo = null;
         try {
             String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration.getServerUrls(), configuration.getUsername(), configuration.getPassword(), databaseName);
+            mongo = createMongoClient(configuration);
 
             DB database = mongo.getDB(databaseName);
             DBCollection collection = database.getCollection(mongoCollection.getName());
@@ -238,7 +239,11 @@ public class MongoManager {
         }
     }
 
-    private MongoClient createMongoClient(List<String> serverUrls, String username, String password, String userDatabase) throws UnknownHostException {
+    private MongoClient createMongoClient(ServerConfiguration configuration) throws UnknownHostException {
+        List<String> serverUrls = configuration.getServerUrls();
+        String username = configuration.getUsername();
+        String password = configuration.getPassword();
+        String userDatabase = configuration.getUserDatabase();
         if (serverUrls.isEmpty()) {
             throw new ConfigurationException("server host is not set");
         }
@@ -255,7 +260,7 @@ public class MongoManager {
                 serverAddresses.add(new ServerAddress(host_port[0], Integer.valueOf(host_port[1])));
             }
             if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
-                MongoCredential credential = MongoCredential.createMongoCRCredential(username, null, password.toCharArray());
+                MongoCredential credential = MongoCredential.createMongoCRCredential(username, userDatabase, password.toCharArray());
                 return new MongoClient(serverAddresses, Arrays.asList(credential));
             }
             return new MongoClient(serverAddresses);
