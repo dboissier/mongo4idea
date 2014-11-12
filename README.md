@@ -2,10 +2,12 @@
 
 see [CHANGELOG.txt](https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.6.1/CHANGELOG.txt)
 
+### 0.7.0-SNAPSHOT
+
 Current [changelog](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)
 
 ## Description
-This plugin integrates MongoDB Servers with database/collections tree,  Query Runner and Shell console.
+This plugin integrates MongoDB Servers with database/collections tree, Query Runner and Shell console.
 
 ## Plugin Compatibility
 This plugin was built with JDK 1.6 and ideaIC-12.1.4 version (Idea 11 is not supported anymore).
