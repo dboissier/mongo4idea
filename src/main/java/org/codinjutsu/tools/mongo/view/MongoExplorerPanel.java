@@ -248,7 +248,9 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                 }
 
                 if (mouseEvent.getClickCount() == 2) {
-
+                    if (treeNode.getUserObject() instanceof MongoServer && treeNode.getChildCount() == 0) {
+                        reloadSelectedServerConfiguration();
+                    }
                     if (treeNode.getUserObject() instanceof MongoCollection) {
                         loadSelectedCollectionValues();
                     }
