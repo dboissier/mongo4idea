@@ -60,6 +60,7 @@ public class ServerConfigurationPanel extends JPanel implements Disposable {
     private JTextField databaseField;
     private TextFieldWithBrowseButton shellWorkingDirField;
     private JCheckBox userDatabaseAsMySingleDatabaseField;
+    private JCheckBox sslConnectionField;
 
     private final MongoManager mongoManager;
 
@@ -76,6 +77,8 @@ public class ServerConfigurationPanel extends JPanel implements Disposable {
         passwordField.setName("passwordField");
         feedbackLabel.setName("feedbackLabel");
         labelField.setName("labelField");
+        userDatabaseAsMySingleDatabaseField.setName("userDatabaseAsMySingleDatabaseField");
+        sslConnectionField.setName("sslConnectionField");
         autoConnectCheckBox.setName("autoConnectField");
         databaseField.setName("databaseListField");
         databaseField.setToolTipText("If your access is restricted to a specific database, you can set it right here");
@@ -165,6 +168,7 @@ public class ServerConfigurationPanel extends JPanel implements Disposable {
 
         configuration.setLabel(getLabel());
         configuration.setServerUrls(getServerUrls());
+        configuration.setSslConnection(isSslConnection());
         configuration.setUsername(getUsername());
         configuration.setPassword(getPassword());
         configuration.setUserDatabase(getUserDatabase());
@@ -189,6 +193,10 @@ public class ServerConfigurationPanel extends JPanel implements Disposable {
             return Arrays.asList(StringUtils.split(StringUtils.deleteWhitespace(serverUrls), ","));
         }
         return null;
+    }
+
+    private boolean isSslConnection() {
+        return sslConnectionField.isSelected();
     }
 
     private String getUsername() {
@@ -247,6 +255,7 @@ public class ServerConfigurationPanel extends JPanel implements Disposable {
         usernameField.setText(configuration.getUsername());
         passwordField.setText(configuration.getPassword());
         databaseField.setText(configuration.getUserDatabase());
+        sslConnectionField.setSelected(configuration.isSslConnection());
         userDatabaseAsMySingleDatabaseField.setSelected(configuration.isUserDatabaseAsMySingleDatabase());
         collectionsToIgnoreField.setText(StringUtils.join(configuration.getCollectionsToIgnore(), ","));
         shellArgumentsLineField.setText(configuration.getShellArgumentsLine());

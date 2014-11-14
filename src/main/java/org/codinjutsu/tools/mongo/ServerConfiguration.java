@@ -42,6 +42,7 @@ public class ServerConfiguration implements Cloneable {
 
     private String shellArgumentsLine;
     private String shellWorkingDir;
+    private boolean sslConnection;
 
 
     public List<String> getServerUrls() {
@@ -50,6 +51,15 @@ public class ServerConfiguration implements Cloneable {
 
     public void setServerUrls(List<String> serverUrls) {
         this.serverUrls = serverUrls;
+    }
+
+
+    public boolean isSslConnection() {
+        return sslConnection;
+    }
+
+    public void setSslConnection(boolean sslConnection) {
+        this.sslConnection = sslConnection;
     }
 
     public String getUsername() {
@@ -62,14 +72,6 @@ public class ServerConfiguration implements Cloneable {
 
     public String getPassword() {
         return password;
-    }
-
-    public boolean isConnectOnIdeStartup() {
-        return connectOnIdeStartup;
-    }
-
-    public void setConnectOnIdeStartup(boolean connectOnIdeStartup) {
-        this.connectOnIdeStartup = connectOnIdeStartup;
     }
 
     public void setPassword(String password) {
@@ -90,6 +92,14 @@ public class ServerConfiguration implements Cloneable {
 
     public void setUserDatabaseAsMySingleDatabase(boolean userDatabaseAsMySingleDatabase) {
         this.userDatabaseAsMySingleDatabase = userDatabaseAsMySingleDatabase;
+    }
+
+    public boolean isConnectOnIdeStartup() {
+        return connectOnIdeStartup;
+    }
+
+    public void setConnectOnIdeStartup(boolean connectOnIdeStartup) {
+        this.connectOnIdeStartup = connectOnIdeStartup;
     }
 
     public void setCollectionsToIgnore(List<String> collectionsToIgnore) {

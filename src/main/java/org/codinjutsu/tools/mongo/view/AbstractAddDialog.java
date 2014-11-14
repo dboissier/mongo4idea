@@ -98,7 +98,7 @@ public abstract class AbstractAddDialog extends DialogWrapper {
         void reset();
     }
 
-    protected static class StringFieldWrapper implements TextFieldWrapper {
+    private static class StringFieldWrapper implements TextFieldWrapper {
 
         private final JTextField component;
 
@@ -121,7 +121,7 @@ public abstract class AbstractAddDialog extends DialogWrapper {
         }
     }
 
-    protected static class BooleanFieldWrapper implements TextFieldWrapper {
+    private static class BooleanFieldWrapper implements TextFieldWrapper {
 
         private final JBCheckBox component;
 
@@ -144,7 +144,7 @@ public abstract class AbstractAddDialog extends DialogWrapper {
         }
     }
 
-    protected static class NullFieldWrapper implements TextFieldWrapper {
+    private static class NullFieldWrapper implements TextFieldWrapper {
 
         private final JLabel component;
 

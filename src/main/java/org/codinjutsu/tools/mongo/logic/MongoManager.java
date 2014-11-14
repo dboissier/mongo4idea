@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.*;
 
+import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.*;
@@ -292,10 +293,16 @@ public class MongoManager {
             String[] host_port = serverUrl.split(":");
             serverAddresses.add(new ServerAddress(host_port[0], Integer.valueOf(host_port[1])));
         }
+
+        MongoClientOptions.Builder optionBuilder = MongoClientOptions.builder();
+        if (configuration.isSslConnection()) {
+            optionBuilder.socketFactory(SSLSocketFactory.getDefault());
+        }
+
         if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
             MongoCredential credential = MongoCredential.createMongoCRCredential(username, userDatabase, password.toCharArray());
-            return new MongoClient(serverAddresses, Arrays.asList(credential));
+            return new MongoClient(serverAddresses, Arrays.asList(credential), optionBuilder.build());
         }
-        return new MongoClient(serverAddresses);
+        return new MongoClient(serverAddresses, optionBuilder.build());
     }
 }

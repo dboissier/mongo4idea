@@ -17,7 +17,7 @@
 <idea-plugin version="2">
     <name>Mongo Plugin</name>
     <description>Mongo integration for Intellij</description>
-    <version>0.6.2</version>
+    <version>0.7.0</version>
     <vendor email="david.boissier [at] gmail [dot] com" url="http://codinjutsu.blogspot.com">David Boissier</vendor>
 
     <idea-version since-build="120.100" until-build="129.99999"/>
@@ -69,7 +69,7 @@
 
 
     <change-notes><![CDATA[
-<a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.6.2/README.md">README</a>
-<a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.6.2/CHANGELOG.txt">Changelog</a>
+<a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.7.0/README.md">README</a>
+<a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.7.0/CHANGELOG.txt">Changelog</a>
 ]]> </change-notes>
 </idea-plugin>

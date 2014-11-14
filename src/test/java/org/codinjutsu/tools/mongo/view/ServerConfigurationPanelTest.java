@@ -32,7 +32,8 @@ import org.mockito.Mockito;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 public class ServerConfigurationPanelTest {
 
@@ -68,13 +69,19 @@ public class ServerConfigurationPanelTest {
         frameFixture.textBox("usernameField").setText("john");
         frameFixture.textBox("passwordField").setText("johnpassword");
 
+        frameFixture.checkBox("userDatabaseAsMySingleDatabaseField").check();
+        frameFixture.checkBox("sslConnectionField").check();
+        frameFixture.checkBox("autoConnectField").check();
+
         ServerConfiguration configuration = new ServerConfiguration();
 
         configurationPanel.applyConfigurationData(configuration);
 
         assertEquals(Arrays.asList("localhost:25"), configuration.getServerUrls());
         assertEquals("john", configuration.getUsername());
-        assertEquals("johnpassword", configuration.getPassword());
+        assertTrue(configuration.isUserDatabaseAsMySingleDatabase());
+        assertTrue(configuration.isSslConnection());
+        assertTrue(configuration.isConnectOnIdeStartup());
     }
 
     @Test
