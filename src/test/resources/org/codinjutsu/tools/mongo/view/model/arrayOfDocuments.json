@@ -1,0 +1,26 @@
+[
+    {
+        "_id": "50b8d63414f85401b9268b99",
+        "label": "toto",
+        "visible": false,
+        "doc": {
+            "title": "hello",
+            "nbPages": 10,
+            "keyWord": [
+                "toto", true, 10
+            ]
+        }
+    },
+    {
+        "_id": "50b8d63414f85401b9268baa",
+        "label": "tata",
+        "visible": true,
+        "doc": {
+            "title": "ola",
+            "nbPages": 1,
+            "keyWord": [
+                "tutu", false, 10
+            ]
+        }
+    }
+]

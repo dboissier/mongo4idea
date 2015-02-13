@@ -99,6 +99,8 @@ public class MongoPanel extends JPanel implements Disposable {
         if (ApplicationManager.getApplication() != null) {
             actionResultGroup.add(new ExecuteQuery(this));
             actionResultGroup.add(new OpenFindAction(this));
+            actionResultGroup.add(new AddMongoDocumentAction(resultPanel));
+            actionResultGroup.add(new EditMongoDocumentAction(resultPanel));
             actionResultGroup.add(new CopyResultAction(resultPanel));
         }
         final TreeExpander treeExpander = new TreeExpander() {

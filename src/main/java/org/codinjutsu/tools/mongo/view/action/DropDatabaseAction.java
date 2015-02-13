@@ -24,7 +24,7 @@ public class DropDatabaseAction extends AnAction implements DumbAware {
 
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
-        int result = JOptionPane.showConfirmDialog (null, String.format("Do you REALLY want to drop the '%s' database", mongoExplorerPanel.getSelectedDatabase().getName()),"Warning",JOptionPane.YES_NO_OPTION);
+        int result = JOptionPane.showConfirmDialog (null, String.format("Do you REALLY want to drop the '%s' database?", mongoExplorerPanel.getSelectedDatabase().getName()),"Warning",JOptionPane.YES_NO_OPTION);
 
         if(result == JOptionPane.YES_OPTION){
             mongoExplorerPanel.dropDatabase();

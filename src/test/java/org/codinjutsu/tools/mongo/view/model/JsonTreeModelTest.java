@@ -16,12 +16,16 @@
 
 package org.codinjutsu.tools.mongo.view.model;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class JsonTreeModelTest {
 
@@ -39,7 +43,7 @@ public class JsonTreeModelTest {
 
         DBObject dbObject = JsonTreeModel.buildDBObject(treeNode);
 
-        Assert.assertEquals("{ \"_id\" : { \"$oid\" : \"50b8d63414f85401b9268b99\"} , \"label\" : \"tata\" , \"visible\" : false , \"image\" :  null }",
+        assertEquals("{ \"_id\" : { \"$oid\" : \"50b8d63414f85401b9268b99\"} , \"label\" : \"tata\" , \"visible\" : false , \"image\" :  null }",
                 dbObject.toString());
     }
 
@@ -59,7 +63,7 @@ public class JsonTreeModelTest {
 
         DBObject dbObject = JsonTreeModel.buildDBObject(treeNode);
 
-        Assert.assertEquals("{ \"_id\" : { \"$oid\" : \"50b8d63414f85401b9268b99\"} , \"label\" : \"toto\" , \"visible\" : false , \"image\" :  null  , \"innerdoc\" : { \"title\" : \"What?\" , \"numberOfPages\" : 52 , \"soldOut\" : false}}",
+        assertEquals("{ \"_id\" : { \"$oid\" : \"50b8d63414f85401b9268b99\"} , \"label\" : \"toto\" , \"visible\" : false , \"image\" :  null  , \"innerdoc\" : { \"title\" : \"What?\" , \"numberOfPages\" : 52 , \"soldOut\" : false}}",
                 dbObject.toString());
     }
 
@@ -77,7 +81,37 @@ public class JsonTreeModelTest {
 
         DBObject dbObject = JsonTreeModel.buildDBObject(treeNode);
 
-        Assert.assertEquals("{ \"_id\" : { \"$oid\" : \"50b8d63414f85401b9268b99\"} , \"title\" : \"XP by example\" , \"tags\" : [ \"pair programming\" , \"tdd\" , \"a gilles\"] , \"innerList\" : [ [ 1 , 2 , 3 , 4] , [ false , true] , [ { \"tagName\" : \"pouet\"} , { \"tagName\" : \"paf\"}]]}",
+        assertEquals("{ \"_id\" : { \"$oid\" : \"50b8d63414f85401b9268b99\"} , \"title\" : \"XP by example\" , \"tags\" : [ \"pair programming\" , \"tdd\" , \"a gilles\"] , \"innerList\" : [ [ 1 , 2 , 3 , 4] , [ false , true] , [ { \"tagName\" : \"pouet\"} , { \"tagName\" : \"paf\"}]]}",
                 dbObject.toString());
+    }
+
+    @Test
+    public void getObjectIdFromANode() throws Exception {
+        DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("simpleDocumentWithInnerNodes.json")));
+        jsonObject.put("_id", new ObjectId(String.valueOf(jsonObject.get("_id"))));
+
+        JsonTreeNode treeNode = (JsonTreeNode) JsonTreeModel.buildJsonTree(jsonObject);
+        JsonTreeNode objectIdNode = (JsonTreeNode) treeNode.getChildAt(0);
+        assertEquals("\"_id\"", objectIdNode.getDescriptor().getFormattedKey());
+
+        assertNull(JsonTreeModel.findObjectIdNode(treeNode));
+        assertEquals(objectIdNode, JsonTreeModel.findObjectIdNode((JsonTreeNode) treeNode.getChildAt(0)));
+//        assertEquals(objectIdNode, JsonTreeModel.findObjectIdNode((JsonTreeNode) treeNode.getChildAt(3)));
+
+    }
+
+    @Test
+    public void findDocumentFromANode() throws Exception {
+        BasicDBList dbList = (BasicDBList) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("arrayOfDocuments.json")));
+
+        DBObject first = (DBObject) dbList.get(0);
+        first.put("_id", new ObjectId(String.valueOf(first.get("_id"))));
+
+        DBObject second = (DBObject) dbList.get(1);
+        second.put("_id", new ObjectId(String.valueOf(second.get("_id"))));
+
+        JsonTreeNode treeNode = (JsonTreeNode) JsonTreeModel.buildJsonTree(dbList);
+
+        assertEquals(first, JsonTreeModel.findDocument((JsonTreeNode) treeNode.getChildAt(0)));
     }
 }
