@@ -19,10 +19,14 @@ package org.codinjutsu.tools.mongo.utils;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.util.IconLoader;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.net.URL;
+import java.util.Enumeration;
 
 public class GuiUtils {
 
@@ -49,12 +53,22 @@ public class GuiUtils {
         return UIManager.getLookAndFeel().getName().contains("Darcula");
     }
 
-
     public static void runInSwingThread(Runnable runnable) {
         if (SwingUtilities.isEventDispatchThread()) {
             runnable.run();
         } else {
             SwingUtilities.invokeLater(runnable);
+        }
+    }
+
+//    Copy from private method com.intellij.util.ui.tree.TreeUtils#expand need to expand specifically some node instead of the whole tree
+    public static void expand(@NotNull JTree tree, @NotNull TreePath path, int levels) {
+        if (levels == 0) return;
+        tree.expandPath(path);
+        TreeNode node = (TreeNode)path.getLastPathComponent();
+        Enumeration children = node.children();
+        while (children.hasMoreElements()) {
+            expand(tree, path.pathByAddingChild(children.nextElement()) , levels - 1);
         }
     }
 }

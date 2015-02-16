@@ -111,6 +111,7 @@ public class MongoManager {
                 mongoDatabases.add(createMongoDatabaseAndItsCollections(database));
             } else {
                 List<String> databaseNames = mongo.getDatabaseNames();
+                Collections.sort(databaseNames);
                 for (String databaseName : databaseNames) {
                     DB database = mongo.getDB(databaseName);
                     mongoDatabases.add(createMongoDatabaseAndItsCollections(database));
