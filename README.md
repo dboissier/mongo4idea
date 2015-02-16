@@ -2,9 +2,9 @@
 
 see [CHANGELOG.txt](https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.7.0/CHANGELOG.txt)
 
-### 0.7.1-SNAPSHOT
+### Important note
 
-Current [changelog](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)
+This release will be the last! As I announced in this [blog post](http://codinjutsu.blogspot.fr/2014/07/hi-all-mongo-plugin-seems-to-grow-in.html). I will work on **nosql4idea** plugin that will integrate Mongo and other Document Oriented Database such as CouchBase and Redis.
 
 ## Description
 This plugin integrates MongoDB Servers with database/collections tree, Query Runner and Shell console.
@@ -32,6 +32,7 @@ When you open the Mongo explorer, you will see an panel:
 * Set the server info as the example in the above screenshot
 * If your access is restricted to a specific database, just type it in the corresponding field
 * Put your credentials if your server requires authentication
+* You can also precise if your connection is SSL
 * You can let the plugin connect to the server on the IDE startup by clicking on the corresponding checkbox
 * If you want to hide some collections, you can put them in the **Collections to ignore** field.
 * You can click on the **Test Connection** button to check your server configuration
@@ -42,12 +43,15 @@ When you open the Mongo explorer, you will see an panel:
 
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-explorerWithDB.png?raw=true)
 
-The tree displays for each server all databases with its collections. Just double-click on a collection and the results will be displayed as same as a file tab.
+The tree displays for each server all databases with its collections.
+
+* To view the content of your server, just double-click on it.
+* To view the content of a collection, double-click on it and the results will be displayed as same as a file tab.
 If you double-click on another collection, a new tab will appears side of the previous.
 
-If you clear a collection by right clicking on it and select **Drop collection**
+If you want clear a collection or database by right clicking on it and select **Drop collection/database**. Be cautious with this operation, it should not be used in a production environment.
 
-### **[NEW]** Mongo collection tab view
+### Mongo collection tab view
 
 The panel shows all documents of the collections (max 300 records by default).
 
@@ -97,7 +101,7 @@ You can add a key or value (depending on the structure of your document) by righ
 
 Set the key name, type and value and then validate your form.
 
-**[NEW]** You can also edit a document from scratch by right-clicking in the result view and select *Add* (or by typing **ALT+INSERT** shortcut)
+You can also edit a document from scratch by right-clicking in the result view and select *Add* (or by typing **ALT+INSERT** shortcut)
 
 ### Mongo shell integration
 
@@ -105,7 +109,7 @@ If you set the mongo client path (e.g. /usr/bin/mongo), you can run the console 
 
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-shell.png?raw=true)
 
-### **[NEW]** Run a file
+### Run a file
 
 If you need to run a javascript file on your mongo server, just type CTRL+SHIFT+F10 (or right-clik in your file and select Run *myscript.js* file)
 
@@ -138,6 +142,7 @@ After making some tries, many issues were found:
 * When the user updates a value, it was sent directely to the server. It is not convenient and does not handle misstyping. The user would like to update a set of key value.
 
 So, I decided to make a specific GUI for it:
+
 * Easier to make and test
 * Component non coupled with the result tree.
 * The user has the full control on the update/save operations
@@ -147,6 +152,7 @@ So, I decided to make a specific GUI for it:
 
 Some bugs were reported when installing the SNAPSHOT version of the plugin. Mainly some `ClassNotFoundDefException`. This could happen whenever you have a previous version of the plugin already installed in the IDE.
 To fix it, the steps should be as follow:
+
 * Locate the IDE working directory. For WebStorm, it is `.WebStorm` and for Intellij, it is `.IntelliJIdea`
 * In it, remove the snapshot and the stable versions from `<working_dir>/config/plugins`
 * Download again the right version for your target IDE
