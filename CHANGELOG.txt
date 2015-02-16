@@ -1,8 +1,9 @@
 Version 0.7.0-SNAPSHOT
     * [fix] javascript file detection for executing script in Idea 13.1 UI
     * [fix] #81 Use User Database as authentication database
+    * [add] #90 SSL Support for mongo connection (not tested)
     * [add] #82 reload resulset after document deletion or modification
-    * [add] Drop database action (caution!)
+    * [add] Drop database and collection actions (caution!)
     * [upd] adapt authentication code after migration of mongo-java-driver to version 2.12.2
 
 Version 0.6.1
