@@ -61,7 +61,7 @@ public class MongoPanel extends JPanel implements Disposable {
         queryPanel = new QueryPanel(project);
 
         splitter.setOrientation(true);
-        splitter.setProportion(0.1f);
+        splitter.setProportion(0.2f);
         toolBar.setLayout(new BorderLayout());
 
         resultPanel = createResultPanel(project, new MongoDocumentOperations() {
@@ -149,7 +149,9 @@ public class MongoPanel extends JPanel implements Disposable {
 
         DefaultActionGroup actionQueryGroup = new DefaultActionGroup("MongoResultGroup", true);
         if (ApplicationManager.getApplication() != null) {
-            actionQueryGroup.add(new EnableAggregateAction(this));
+            actionQueryGroup.add(new EnableAggregateAction(queryPanel));
+            actionQueryGroup.add(new EnableQueryProjectionAction(queryPanel));
+            actionQueryGroup.add(new EnableQuerySortAction(queryPanel));
             actionQueryGroup.add(new CloseFindEditorAction(this));
         }
 

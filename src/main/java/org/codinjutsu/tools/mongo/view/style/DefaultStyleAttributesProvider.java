@@ -126,4 +126,19 @@ public class DefaultStyleAttributesProvider implements StyleAttributesProvider {
     public Icon getFindIcon() {
         return GuiUtils.loadIcon("find.png");
     }
+
+    @Override
+    public Icon getDataViewIcon() {
+        return GuiUtils.loadIcon("dataView.png");
+    }
+
+    @Override
+    public Icon getDataSchemaIcon() {
+        return GuiUtils.loadIcon("dataSchema.png");
+    }
+
+    @Override
+    public Icon getSortedIcon() {
+        return GuiUtils.loadIcon("sorted.png");
+    }
 }

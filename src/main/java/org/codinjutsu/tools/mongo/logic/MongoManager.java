@@ -306,4 +306,16 @@ public class MongoManager {
         }
         return new MongoClient(serverAddresses, optionBuilder.build());
     }
+
+    public static enum MongoQueryOperator {
+
+        FILTER("Filter"),
+        PROJECTION("Projection"),
+        SORT("Sort");
+        public final String label;
+
+        MongoQueryOperator(String label) {
+            this.label = label;
+        }
+    }
 }

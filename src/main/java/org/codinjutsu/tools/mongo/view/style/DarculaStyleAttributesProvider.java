@@ -127,4 +127,19 @@ public class DarculaStyleAttributesProvider implements StyleAttributesProvider {
     public Icon getFindIcon() {
         return GuiUtils.loadIcon("find_dark.png");
     }
+
+    @Override
+    public Icon getDataViewIcon() {
+        return GuiUtils.loadIcon("dataView_dark.png");
+    }
+
+    @Override
+    public Icon getDataSchemaIcon() {
+        return GuiUtils.loadIcon("dataSchema_dark.png");
+    }
+
+    @Override
+    public Icon getSortedIcon() {
+        return GuiUtils.loadIcon("sorted_dark.png");
+    }
 }

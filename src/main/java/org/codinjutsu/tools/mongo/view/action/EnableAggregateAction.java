@@ -19,7 +19,7 @@ package org.codinjutsu.tools.mongo.view.action;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
-import org.codinjutsu.tools.mongo.view.MongoPanel;
+import org.codinjutsu.tools.mongo.view.QueryPanel;
 
 import javax.swing.*;
 
@@ -31,13 +31,13 @@ public class EnableAggregateAction extends ToggleAction {
     private static final String QUERY_FIND_SAMPLE = "ex: {'name': 'foo'}";
     private static final String QUERY_AGGREGATION_SAMPLE = "ex: [{'$match': {'name': 'foo'}, {'$project': {'address': 1}}]";
 
-    private final MongoPanel mongoPanel;
+    private final QueryPanel queryPanel;
 
     private boolean enableAggregation = false;
 
-    public EnableAggregateAction(final MongoPanel mongoPanel) {
+    public EnableAggregateAction(final QueryPanel queryPanel) {
         super(ENABLE_AGGREGATION_MODE, QUERY_FIND_SAMPLE, AGGREGATION_ICON);
-        this.mongoPanel = mongoPanel;
+        this.queryPanel = queryPanel;
     }
 
 
@@ -50,9 +50,9 @@ public class EnableAggregateAction extends ToggleAction {
     public void setSelected(AnActionEvent event, boolean enableAggregation) {
         this.enableAggregation = enableAggregation;
         if (enableAggregation) {
-            mongoPanel.getQueryPanel().toggleToAggregation();
+            queryPanel.toggleToAggregation();
         } else {
-            mongoPanel.getQueryPanel().toggleToFind();
+            queryPanel.toggleToFind();
         }
     }
 

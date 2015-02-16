@@ -57,4 +57,10 @@ public interface StyleAttributesProvider {
     Icon getDeleteIcon();
 
     Icon getFindIcon();
+
+    Icon getDataViewIcon();
+
+    Icon getDataSchemaIcon();
+
+    Icon getSortedIcon();
 }
