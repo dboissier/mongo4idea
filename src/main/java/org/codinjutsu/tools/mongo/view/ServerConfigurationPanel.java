@@ -78,6 +78,7 @@ public class ServerConfigurationPanel extends JPanel implements Disposable {
         feedbackLabel.setName("feedbackLabel");
         labelField.setName("labelField");
         userDatabaseAsMySingleDatabaseField.setName("userDatabaseAsMySingleDatabaseField");
+        userDatabaseAsMySingleDatabaseField.setToolTipText("This should be checked when using a MongoLab single database for instance");
         sslConnectionField.setName("sslConnectionField");
         autoConnectCheckBox.setName("autoConnectField");
         databaseField.setName("databaseListField");
