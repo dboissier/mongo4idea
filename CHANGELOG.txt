@@ -1,4 +1,5 @@
 Version 0.7.0-SNAPSHOT
+    * [fix] #97 UnsupportedOperationException viewing collection
     * [fix] javascript file detection for executing script in Idea 13.1 UI
     * [fix] #81 Use User Database as authentication database
     * [add] Redesign query panel

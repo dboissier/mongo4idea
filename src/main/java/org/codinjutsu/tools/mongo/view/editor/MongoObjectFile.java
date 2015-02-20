@@ -20,6 +20,7 @@ import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileSystem;
+import com.intellij.util.LocalTimeCounter;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.jetbrains.annotations.NotNull;
@@ -31,6 +32,7 @@ import java.io.OutputStream;
 
 public class MongoObjectFile extends VirtualFile {
 
+    private final long myModStamp;
     private ServerConfiguration configuration;
     private MongoCollection collection;
     private Project project;
@@ -41,6 +43,7 @@ public class MongoObjectFile extends VirtualFile {
         this.configuration = configuration;
         this.collection = collection;
         this.name = String.format("%s/%s/%s", configuration.getLabel(), collection.getDatabaseName(), collection.getName());
+        this.myModStamp = LocalTimeCounter.currentTime();
 
     }
 
@@ -109,6 +112,11 @@ public class MongoObjectFile extends VirtualFile {
     @Override
     public OutputStream getOutputStream(Object requestor, long newModificationStamp, long newTimeStamp) throws IOException {
         throw new UnsupportedOperationException("MongoResultFile is read-only");
+    }
+
+    @Override
+    public long getModificationStamp() {
+        return myModStamp;
     }
 
     @NotNull
