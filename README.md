@@ -1,6 +1,8 @@
-# Mongo Plugin for IntelliJ IDEA version 0.7.0
+# Mongo Plugin for IntelliJ IDEA version 0.7.0-SNAPSHOT
 
-see [CHANGELOG.txt](https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.7.0/CHANGELOG.txt)
+*  work with Idea 13 only, Idea 14 compatibility is on the way...
+* [Current changelog](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)
+* [Current build](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.7.0-SNAPSHOT-distribution.zip)
 
 ### Important note
 
