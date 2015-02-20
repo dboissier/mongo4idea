@@ -40,8 +40,6 @@ public interface StyleAttributesProvider {
 
     Icon getAddIcon();
 
-    Icon getCloseIcon();
-
     Icon getCopyIcon();
 
     Icon getExecuteIcon();
@@ -58,9 +56,6 @@ public interface StyleAttributesProvider {
 
     Icon getFindIcon();
 
-    Icon getDataViewIcon();
-
     Icon getDataSchemaIcon();
 
-    Icon getSortedIcon();
 }

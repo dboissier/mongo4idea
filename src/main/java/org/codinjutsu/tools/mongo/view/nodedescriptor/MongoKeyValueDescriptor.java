@@ -23,10 +23,14 @@ import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.utils.StringUtils;
 
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
     private static final String STRING_SURROUNDED = "\"%s\"";
-    private static final String TO_STRING_TEMPLATE = "{ \"%s\" : %s}";
+    protected static final String TO_STRING_TEMPLATE = "\"%s\" : %s";
 
     protected final String key;
     protected Object value;
@@ -98,12 +102,13 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
     private static class MongoKeyStringValueDescriptor extends MongoKeyValueDescriptor {
 
-        private static final String TO_STRING_FOR_STRING_VALUE_TEMPLATE = "{ \"%s\" : \"%s\"}";
+        private static final String TO_STRING_FOR_STRING_VALUE_TEMPLATE = "\"%s\" : \"%s\"";
 
         private MongoKeyStringValueDescriptor(String key, String value) {
             super(key, value, TEXT_ATTRIBUTES_PROVIDER.getStringAttribute());
         }
 
+        @Override
         protected String getValueAndAbbreviateIfNecessary() {
             return String.format(STRING_SURROUNDED, value);
         }
@@ -111,6 +116,31 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
         @Override
         public String toString() {
             return String.format(TO_STRING_FOR_STRING_VALUE_TEMPLATE, key, value);
+        }
+    }
+
+    private static class MongoKeyDateValueDescriptor extends MongoKeyValueDescriptor {
+
+        private static final DateFormat DATE_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.getDefault());
+
+        private static final String TO_STRING_FOR_DATE_VALUE_TEMPLATE = "\"%s\" : \"%s\"";
+
+        private MongoKeyDateValueDescriptor(String key, Date value) {
+            super(key, value, TEXT_ATTRIBUTES_PROVIDER.getStringAttribute());
+        }
+
+        @Override
+        protected String getValueAndAbbreviateIfNecessary() {
+            return getFormattedDate();
+        }
+
+        @Override
+        public String toString() {
+            return String.format(TO_STRING_FOR_DATE_VALUE_TEMPLATE, key, getFormattedDate());
+        }
+
+        private String getFormattedDate() {
+            return DATE_FORMAT.format(value);
         }
     }
 
@@ -149,6 +179,8 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
             };
         } else if (value instanceof String) {
             return new MongoKeyStringValueDescriptor(key, (String) value);
+        } else if (value instanceof Date) {
+            return new MongoKeyDateValueDescriptor(key, (Date) value);
         } else if (value instanceof ObjectId) {
             return new MongoKeyValueDescriptor(key, value, TEXT_ATTRIBUTES_PROVIDER.getObjectIdAttribute());
         } else if (value instanceof DBObject) {

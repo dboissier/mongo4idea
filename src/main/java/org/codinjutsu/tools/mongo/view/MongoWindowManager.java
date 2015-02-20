@@ -39,7 +39,6 @@ public class MongoWindowManager {
     private static final String MONGO_EXPLORER = "Mongo Explorer";
 
     private final Project project;
-    private final MongoManager mongoManager;
     private final MongoExplorerPanel mongoExplorerPanel;
 
     public static MongoWindowManager getInstance(Project project) {
@@ -48,10 +47,9 @@ public class MongoWindowManager {
 
     public MongoWindowManager(Project project) {
         this.project = project;
-        this.mongoManager = MongoManager.getInstance(project);
 
         ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
-        mongoExplorerPanel = new MongoExplorerPanel(project, mongoManager);
+        mongoExplorerPanel = new MongoExplorerPanel(project, MongoManager.getInstance(project));
         mongoExplorerPanel.installActions();
         Content mongoExplorer = ContentFactory.SERVICE.getInstance().createContent(mongoExplorerPanel, null, false);
 

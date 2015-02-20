@@ -58,6 +58,7 @@ class MongoRunConfiguration extends ModuleBasedConfiguration<RunConfigurationMod
         mongoShell = MongoConfiguration.getInstance(getProject()).getShellPath();
     }
 
+    @NotNull
     @Override
     public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
         return new MongoRunConfigurationEditor(getProject());

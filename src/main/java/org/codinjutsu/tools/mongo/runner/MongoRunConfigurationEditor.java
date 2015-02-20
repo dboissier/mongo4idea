@@ -167,7 +167,7 @@ public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfigur
 
     @Override
     protected void disposeEditor() {
-        mainPanel = null;
+
     }
 
     private void createUIComponents() {

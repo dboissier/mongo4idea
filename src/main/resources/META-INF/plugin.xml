@@ -67,7 +67,9 @@
 
 
     <change-notes><![CDATA[
-<a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.7.0/README.md">README</a>
-<a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.7.0/CHANGELOG.txt">Changelog</a>
+<ul>
+<li><a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.7.0/README.md">README</a></li>
+<li><a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.7.0/CHANGELOG.txt">Changelog</a></li>
+</ul>
 ]]> </change-notes>
 </idea-plugin>

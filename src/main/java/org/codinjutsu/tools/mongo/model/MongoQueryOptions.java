@@ -16,7 +16,6 @@
 
 package org.codinjutsu.tools.mongo.model;
 
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
@@ -27,24 +26,19 @@ import java.util.List;
 
 public class MongoQueryOptions {
 
-    public static final int DEFAULT_RESULT_LIMIT = 300;
+    private static final int DEFAULT_RESULT_LIMIT = 300;
 
     private static final BasicDBObject EMPTY_FILTER = new BasicDBObject();
     private final List<DBObject> operations = new LinkedList<DBObject>();
 
     private DBObject filter = EMPTY_FILTER;
+    private DBObject projection = null;
+    private DBObject sort;
 
     private int resultLimit = DEFAULT_RESULT_LIMIT;
 
     public boolean isAggregate() {
         return !operations.isEmpty();
-    }
-
-    public void setQueries(String queries) {
-        BasicDBList queryObjects = (BasicDBList) JSON.parse(queries);
-        for (Object obj: queryObjects) {
-            addQuery((BasicDBObject) obj);
-        }
     }
 
     public void addQuery(BasicDBObject query) {
@@ -65,6 +59,26 @@ public class MongoQueryOptions {
         return filter;
     }
 
+    public void setProjection(String query) {
+        if (!StringUtils.isBlank(query)) {
+            projection = (DBObject) JSON.parse(query);
+        }
+    }
+
+    public DBObject getProjection() {
+        return projection;
+    }
+
+
+    public void setSort(String query) {
+        if (!StringUtils.isBlank(query)) {
+            sort = (DBObject) JSON.parse(query);
+        }
+    }
+
+    public DBObject getSort() {
+        return sort;
+    }
 
     public int getResultLimit() {
         return resultLimit;

@@ -21,7 +21,7 @@ import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public class JsonTreeNode extends DefaultMutableTreeNode {
-    private MongoNodeDescriptor nodeDescriptor;
+    private final MongoNodeDescriptor nodeDescriptor;
 
     public JsonTreeNode(MongoNodeDescriptor nodeDescriptor) {
         this.nodeDescriptor = nodeDescriptor;

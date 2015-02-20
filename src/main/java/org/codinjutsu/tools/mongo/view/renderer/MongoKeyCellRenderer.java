@@ -19,13 +19,14 @@ package org.codinjutsu.tools.mongo.view.renderer;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
 public class MongoKeyCellRenderer extends ColoredTreeCellRenderer {
 
     @Override
-    public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+    public void customizeCellRenderer(@NotNull JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
         MongoNodeDescriptor descriptor = ((JsonTreeNode) value).getDescriptor();
 
         descriptor.renderNode(this);

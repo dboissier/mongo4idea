@@ -18,7 +18,6 @@ package org.codinjutsu.tools.mongo.logic;
 
 import com.mongodb.*;
 import com.mongodb.util.JSON;
-import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
@@ -31,6 +30,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import static junit.framework.Assert.*;
+
 public class MongoManagerTest {
 
     private MongoManager mongoManager;
@@ -42,8 +43,33 @@ public class MongoManagerTest {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
         mongoQueryOptions.setResultLimit(3);
         MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(serverConfiguration, new MongoCollection("dummyCollection", "test"), mongoQueryOptions);
-        Assert.assertNotNull(mongoCollectionResult);
-        Assert.assertEquals(3, mongoCollectionResult.getMongoObjects().size());
+        assertNotNull(mongoCollectionResult);
+        assertEquals(3, mongoCollectionResult.getMongoObjects().size());
+    }
+
+    @Test
+    public void loadCollectionsWithFilterAndProjection() throws Exception {
+        MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
+        mongoQueryOptions.setFilter("{\"label\":\"tata\"}");
+        mongoQueryOptions.setProjection("{\"label\":1, \"_id\": 0}");
+        mongoQueryOptions.setResultLimit(3);
+        MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(serverConfiguration, new MongoCollection("dummyCollection", "test"), mongoQueryOptions);
+        assertNotNull(mongoCollectionResult);
+        assertEquals(2, mongoCollectionResult.getMongoObjects().size());
+        assertEquals("[{ \"label\" : \"tata\"}, { \"label\" : \"tata\"}]", mongoCollectionResult.getMongoObjects().toString());
+    }
+
+    @Test
+    public void loadCollectionsWithFilterAndProjectionAndSortByPrice() throws Exception {
+        MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
+        mongoQueryOptions.setFilter("{\"label\":\"tata\"}");
+        mongoQueryOptions.setProjection("{\"label\": 1, \"_id\": 0, \"price\": 1}");
+        mongoQueryOptions.setSort("{\"price\": 1}");
+        mongoQueryOptions.setResultLimit(3);
+        MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(serverConfiguration, new MongoCollection("dummyCollection", "test"), mongoQueryOptions);
+        assertNotNull(mongoCollectionResult);
+        assertEquals(2, mongoCollectionResult.getMongoObjects().size());
+        assertEquals("[{ \"label\" : \"tata\" , \"price\" : 10}, { \"label\" : \"tata\" , \"price\" : 15}]", mongoCollectionResult.getMongoObjects().toString());
     }
 
     @Test
@@ -52,7 +78,7 @@ public class MongoManagerTest {
         mongoQueryOptions.addQuery((BasicDBObject) JSON.parse("{'$match': {'label': 'tete'}}"));
         MongoCollection mongoCollection = new MongoCollection("dummyCollection", "test");
         MongoCollectionResult initialData = mongoManager.loadCollectionValues(serverConfiguration, mongoCollection, mongoQueryOptions);
-        Assert.assertEquals(1, initialData.getMongoObjects().size());
+        assertEquals(1, initialData.getMongoObjects().size());
         DBObject initialMongoDocument = initialData.getMongoObjects().get(0);
 
         initialMongoDocument.put("price", 25);
@@ -60,10 +86,10 @@ public class MongoManagerTest {
 
         MongoCollectionResult updatedResult = mongoManager.loadCollectionValues(serverConfiguration, mongoCollection, mongoQueryOptions);
         List<DBObject> updatedMongoDocuments = updatedResult.getMongoObjects();
-        Assert.assertEquals(1, updatedMongoDocuments.size());
+        assertEquals(1, updatedMongoDocuments.size());
         DBObject updatedMongoDocument = updatedMongoDocuments.get(0);
 
-        Assert.assertEquals(25, updatedMongoDocument.get("price"));
+        assertEquals(25, updatedMongoDocument.get("price"));
     }
 
 
@@ -73,14 +99,14 @@ public class MongoManagerTest {
         mongoQueryOptions.addQuery((BasicDBObject) JSON.parse("{'$match': {'label': 'tete'}}"));
         MongoCollection mongoCollection = new MongoCollection("dummyCollection", "test");
         MongoCollectionResult initialData = mongoManager.loadCollectionValues(serverConfiguration, mongoCollection, mongoQueryOptions);
-        Assert.assertEquals(1, initialData.getMongoObjects().size());
+        assertEquals(1, initialData.getMongoObjects().size());
         DBObject initialMongoDocument = initialData.getMongoObjects().get(0);
 
         mongoManager.delete(serverConfiguration, mongoCollection, initialMongoDocument.get("_id"));
 
         MongoCollectionResult deleteResult = mongoManager.loadCollectionValues(serverConfiguration, mongoCollection, mongoQueryOptions);
         List<DBObject> updatedMongoDocuments = deleteResult.getMongoObjects();
-        Assert.assertEquals(0, updatedMongoDocuments.size());
+        assertEquals(0, updatedMongoDocuments.size());
     }
 
 
@@ -91,14 +117,15 @@ public class MongoManagerTest {
         mongoQueryOptions.addQuery((BasicDBObject) JSON.parse("{'$project': {'label': 1, 'price': 1}}"));
         mongoQueryOptions.addQuery((BasicDBObject) JSON.parse("{'$group': {'_id': '$label', 'total': {'$sum': '$price'}}}"));
         MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(serverConfiguration, new MongoCollection("dummyCollection", "test"), mongoQueryOptions);
-        Assert.assertNotNull(mongoCollectionResult);
+        assertNotNull(mongoCollectionResult);
 
         List<DBObject> mongoObjects = mongoCollectionResult.getMongoObjects();
 
-        Assert.assertEquals(2, mongoObjects.size());
-        Assert.assertEquals("{ \"_id\" : \"tutu\" , \"total\" : 15}", mongoObjects.get(0).toString());
-        Assert.assertEquals("{ \"_id\" : \"tata\" , \"total\" : 30}", mongoObjects.get(1).toString());
+        assertEquals(2, mongoObjects.size());
+        assertEquals("{ \"_id\" : \"tutu\" , \"total\" : 15}", mongoObjects.get(0).toString());
+        assertEquals("{ \"_id\" : \"tata\" , \"total\" : 15}", mongoObjects.get(1).toString());
     }
+
     @Before
     public void setUp() throws Exception {
         MongoClient mongo = new MongoClient("localhost", 33333);

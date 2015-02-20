@@ -45,35 +45,30 @@ import com.mongodb.util.JSONParseException;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
 import org.codinjutsu.tools.mongo.view.action.OperatorCompletionAction;
-import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class QueryPanel extends JPanel implements Disposable {
 
     private static final Font COURIER_FONT = new Font("Courier", Font.PLAIN, UIUtil.getLabelFont().getSize());
 
+    private static final String FILTER_PANEL = "FilterPanel";
+    private static final String AGGREGATION_PANEL = "AggregationPanel";
+
     private final Alarm myUpdateAlarm = new Alarm(Alarm.ThreadToUse.SWING_THREAD);
+
     private final Project project;
 
     private JPanel mainPanel;
+    private final CardLayout queryCardLayout;
 
     private JPanel queryContainerPanel;
     private final JTextField rowLimitField;
     private JPanel toolbar;
-    private boolean agregationEnabled = false;
 
-    private OperatorCompletionAction operatorCompletionAction;
-    private final Editor filterEditor;
-    private final Editor projectionEditor;
-    private final Editor sortEditor;
-//
     private final OperatorPanel filterPanel;
-    private final OperatorPanel projectionPanel;
-    private final OperatorPanel sortPanel;
+    private final OperatorPanel aggregationPanel;
 
     public QueryPanel(Project project) {
         this.project = project;
@@ -95,76 +90,38 @@ public class QueryPanel extends JPanel implements Disposable {
         setLayout(new BorderLayout());
         add(mainPanel);
 
-        queryContainerPanel.setLayout(new BoxLayout(queryContainerPanel, BoxLayout.X_AXIS));
-        filterEditor = createEditor();
-        operatorCompletionAction = new OperatorCompletionAction(filterEditor);
-        filterPanel = new OperatorPanel(filterEditor, "Filter");
-        queryContainerPanel.add(filterPanel);
+        queryCardLayout = new CardLayout();
+        queryContainerPanel.setLayout(queryCardLayout);
 
-        projectionEditor = createEditor();
-        projectionPanel = new OperatorPanel(projectionEditor, "Projection");
-        queryContainerPanel.add(projectionPanel);
+        filterPanel = createFilterPanel();
+        queryContainerPanel.add(filterPanel, FILTER_PANEL);
 
-        sortEditor = createEditor();
-        sortPanel = new OperatorPanel(sortEditor, "Sort");
-        queryContainerPanel.add(sortPanel);
+        aggregationPanel = createAggregationPanel();
+        queryContainerPanel.add(aggregationPanel, AGGREGATION_PANEL);
 
-
-        myUpdateAlarm.setActivationComponent(filterEditor.getComponent());
-        myUpdateAlarm.setActivationComponent(projectionEditor.getComponent());
-        myUpdateAlarm.setActivationComponent(sortEditor.getComponent());
-
-        showHideProjection();
-        showHideSort();
+        toggleToFind();
 
         Disposer.register(project, this);
     }
 
-    public String getQuery() {
-        return StringUtils.trim(filterEditor.getDocument().getText());
+    private OperatorPanel createAggregationPanel() {
+        return new AggregatorPanel();
     }
 
-    public String getQueries() {
-        return String.format("[%s]", getQuery());
-    }
-
-    private void notifyOnErrorForOperator(Exception ex) {
-        String message;
-        if (ex instanceof JSONParseException) {
-            message = StringUtils.removeStart(ex.getMessage(), "\n");
-        } else {
-            message = String.format("%s: %s", ex.getClass().getSimpleName(), ex.getMessage());
-        }
-        NonOpaquePanel nonOpaquePanel = new NonOpaquePanel();
-        JTextPane textPane = Messages.configureMessagePaneUi(new JTextPane(), message);
-        textPane.setFont(COURIER_FONT);
-        textPane.setBackground(MessageType.ERROR.getPopupBackground());
-        nonOpaquePanel.add(textPane, BorderLayout.CENTER);
-        nonOpaquePanel.add(new JLabel(MessageType.ERROR.getDefaultIcon()), BorderLayout.WEST);
-
-        JBPopupFactory.getInstance().createBalloonBuilder(nonOpaquePanel)
-                .setFillColor(MessageType.ERROR.getPopupBackground())
-                .createBalloon()
-                .show(new RelativePoint(this.filterEditor.getComponent(), new Point(0, 0)), Balloon.Position.above);
+    private OperatorPanel createFilterPanel() {
+        return new FilterPanel();
     }
 
     public void requestFocusOnEditor() {// Code from requestFocus of EditorImpl
         final IdeFocusManager focusManager = IdeFocusManager.getInstance(this.project);
-        JComponent editorContentComponent = filterEditor.getContentComponent();
+        JComponent editorContentComponent = getCurrentOperatorPanel().getRequestFocusComponent();
         if (focusManager.getFocusOwner() != editorContentComponent) {
             focusManager.requestFocus(editorContentComponent, true);
         }
     }
 
-    private Editor createEditor() {
-        EditorFactory editorFactory = EditorFactory.getInstance();
-        Document editorDocument = editorFactory.createDocument("");
-        Editor editor = editorFactory.createEditor(editorDocument, project);
-        fillEditorSettings(editor.getSettings());
-        EditorEx editorEx = (EditorEx) editor;
-        attachHighlighter(editorEx);
-        operatorCompletionAction = new OperatorCompletionAction(editor);
-        return editor;
+    private OperatorPanel getCurrentOperatorPanel() {
+        return filterPanel.isVisible() ? filterPanel : aggregationPanel;
     }
 
 
@@ -197,108 +154,248 @@ public class QueryPanel extends JPanel implements Disposable {
     }
 
     public MongoQueryOptions getQueryOptions() {
-        MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
-
-        if (isAgregationEnabled()) {
-
-            try {
-                mongoQueryOptions.setQueries(getQueries());
-            } catch (JSONParseException ex) {
-                notifyOnErrorForOperator(ex);
-                throw ex;
-            } catch (NumberFormatException ex) {
-                notifyOnErrorForOperator(ex);
-                throw ex;
-            }
-        } else {
-            try {
-                mongoQueryOptions.setFilter(getQuery());
-            } catch (JSONParseException ex) {
-                notifyOnErrorForOperator(ex);
-            }
-        }
-
-        if (StringUtils.isNotBlank(rowLimitField.getText())) {
-            mongoQueryOptions.setResultLimit(Integer.parseInt(rowLimitField.getText()));
-        }
-
-        return mongoQueryOptions;
-    }
-
-    private boolean isAgregationEnabled() {
-        return agregationEnabled;
+        return getCurrentOperatorPanel().buildQueryOptions();
     }
 
     @Override
     public void dispose() {
         myUpdateAlarm.cancelAllRequests();
-
-        if (operatorCompletionAction != null) {
-            operatorCompletionAction.dispose();
-        }
-
         filterPanel.dispose();
-        projectionPanel.dispose();
-        sortPanel.dispose();
+        aggregationPanel.dispose();
     }
 
     public String getQueryStringifiedValue() {
-        return getQueryOptions().getFilter().toString();
+        return getCurrentOperatorPanel().getStringifiedQuery();
     }
 
 
     public void toggleToAggregation() {
-        this.agregationEnabled = true;
-        projectionPanel.setVisible(false);
-        sortPanel.setVisible(false);
+        queryCardLayout.show(queryContainerPanel, AGGREGATION_PANEL);
     }
 
     public void toggleToFind() {
-        this.agregationEnabled = false;
-        projectionPanel.setVisible(true);
-        sortPanel.setVisible(true);
-    }
-
-    public void showHideProjection() {
-        projectionPanel.setVisible(!projectionPanel.isVisible());
-    }
-
-
-    public void showHideSort() {
-        sortPanel.setVisible(!sortPanel.isVisible());
+        queryCardLayout.show(queryContainerPanel, FILTER_PANEL);
     }
 
     public void validateQuery() {
-        try {
-            JSON.parse(isAgregationEnabled() ? getQueries() : getQuery());
-        } catch (JSONParseException ex) {
-            notifyOnErrorForOperator(ex);
-        } catch (NumberFormatException ex) {
-            notifyOnErrorForOperator(ex);
-        }
+        getCurrentOperatorPanel().validateQuery();
     }
 
     public JPanel getToolbar() {
         return toolbar;
     }
 
-    public static class OperatorPanel extends JPanel implements Disposable {
-        private final Editor editor;
 
-        private OperatorPanel(Editor editor, String title) {
-            this.editor = editor;
+    private class AggregatorPanel extends OperatorPanel {
+
+        private final Editor editor;
+        private final OperatorCompletionAction operatorCompletionAction;
+
+        private AggregatorPanel() {
+            this.editor = createEditor();
 
             setLayout(new BorderLayout());
             NonOpaquePanel headPanel = new NonOpaquePanel();
-            JLabel operatorLabel = new JLabel(title);
+            JLabel operatorLabel = new JLabel("Aggregation");
             headPanel.add(operatorLabel, BorderLayout.WEST);
             add(headPanel, BorderLayout.NORTH);
             add(this.editor.getComponent(), BorderLayout.CENTER);
+
+            this.operatorCompletionAction = new OperatorCompletionAction(editor);
+
+
+            myUpdateAlarm.setActivationComponent(this.editor.getComponent());
+        }
+
+        @Override
+        public void validateQuery() {
+            try {
+                String query = getQuery();
+                if (StringUtils.isEmpty(query)) {
+                    return;
+                }
+                JSON.parse(query);
+            } catch (JSONParseException ex) {
+                notifyOnErrorForOperator(editor.getComponent(), ex);
+            } catch (NumberFormatException ex) {
+                notifyOnErrorForOperator(editor.getComponent(), ex);
+            }
+        }
+
+        private String getQuery() {
+            return String.format("[%s]", StringUtils.trim(this.editor.getDocument().getText()));
+        }
+
+        @Override
+        public MongoQueryOptions buildQueryOptions() {
+            MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
+            try {
+                mongoQueryOptions.setFilter(getQuery());
+            } catch (JSONParseException ex) {
+                notifyOnErrorForOperator(editor.getComponent(), ex);
+            }
+
+            if (StringUtils.isNotBlank(rowLimitField.getText())) {
+                mongoQueryOptions.setResultLimit(Integer.parseInt(rowLimitField.getText()));
+            }
+
+            return mongoQueryOptions;
+        }
+
+        @Override
+        public JComponent getRequestFocusComponent() {
+            return this.editor.getContentComponent();
+        }
+
+        @Override
+        public String getStringifiedQuery() {
+            return buildQueryOptions().getFilter().toString();
         }
 
         @Override
         public void dispose() {
-            EditorFactory.getInstance().releaseEditor(editor);
+            operatorCompletionAction.dispose();
+            EditorFactory.getInstance().releaseEditor(this.editor);
         }
+    }
+
+    private class FilterPanel extends OperatorPanel {
+
+        private final Editor selectEditor;
+        private final OperatorCompletionAction operatorCompletionAction;
+        private final Editor projectionEditor;
+        private final Editor sortEditor;
+
+        private FilterPanel() {
+            setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+
+            this.selectEditor = createEditor();
+            this.operatorCompletionAction = new OperatorCompletionAction(selectEditor);
+            add(createSubOperatorPanel("Filter", this.selectEditor));
+
+            this.projectionEditor = createEditor();
+            add(createSubOperatorPanel("Projection", this.projectionEditor));
+
+            this.sortEditor = createEditor();
+            add(createSubOperatorPanel("Sort", this.sortEditor));
+        }
+
+        @Override
+        public JComponent getRequestFocusComponent() {
+            return this.selectEditor.getContentComponent();
+        }
+
+        @Override
+        public void validateQuery() {
+            validateEditorQuery(selectEditor);
+            validateEditorQuery(projectionEditor);
+            validateEditorQuery(sortEditor);
+        }
+
+        @Override
+        public MongoQueryOptions buildQueryOptions() {
+            MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
+            try {
+                mongoQueryOptions.setFilter(getQueryFrom(selectEditor));
+                mongoQueryOptions.setProjection(getQueryFrom(projectionEditor));
+                mongoQueryOptions.setSort(getQueryFrom(sortEditor));
+            } catch (JSONParseException ex) {
+                notifyOnErrorForOperator(selectEditor.getComponent(), ex);
+            }
+
+            if (StringUtils.isNotBlank(rowLimitField.getText())) {
+                mongoQueryOptions.setResultLimit(Integer.parseInt(rowLimitField.getText()));
+            }
+
+            return mongoQueryOptions;
+        }
+
+        @Override
+        public String getStringifiedQuery() {
+            return "";
+        }
+
+        @Override
+        public void dispose() {
+            operatorCompletionAction.dispose();
+            EditorFactory.getInstance().releaseEditor(this.selectEditor);
+            EditorFactory.getInstance().releaseEditor(this.projectionEditor);
+            EditorFactory.getInstance().releaseEditor(this.sortEditor);
+        }
+
+        private void validateEditorQuery(Editor editor) {
+            try {
+                String query = getQueryFrom(editor);
+                if (StringUtils.isEmpty(query)) {
+                    return;
+                }
+                JSON.parse(query);
+            } catch (JSONParseException ex) {
+                notifyOnErrorForOperator(editor.getComponent(), ex);
+            } catch (NumberFormatException ex) {
+                notifyOnErrorForOperator(editor.getComponent(), ex);
+            }
+        }
+
+        private String getQueryFrom(Editor editor) {
+            return StringUtils.trim(editor.getDocument().getText());
+        }
+
+        private JPanel createSubOperatorPanel(String title, Editor subOperatorEditor) {
+            JPanel selectPanel = new JPanel();
+            selectPanel.setLayout(new BorderLayout());
+            NonOpaquePanel headPanel = new NonOpaquePanel();
+            JLabel operatorLabel = new JLabel(title);
+            headPanel.add(operatorLabel, BorderLayout.WEST);
+            selectPanel.add(headPanel, BorderLayout.NORTH);
+            selectPanel.add(subOperatorEditor.getComponent(), BorderLayout.CENTER);
+
+            myUpdateAlarm.setActivationComponent(subOperatorEditor.getComponent());
+
+            return selectPanel;
+        }
+    }
+
+    private abstract class OperatorPanel extends JPanel implements Disposable {
+
+        public abstract JComponent getRequestFocusComponent();
+
+        public abstract void validateQuery();
+
+        public abstract MongoQueryOptions buildQueryOptions();
+
+        public abstract String getStringifiedQuery();
+
+        void notifyOnErrorForOperator(JComponent component, Exception ex) {
+            String message;
+            if (ex instanceof JSONParseException) {
+                message = StringUtils.removeStart(ex.getMessage(), "\n");
+            } else {
+                message = String.format("%s: %s", ex.getClass().getSimpleName(), ex.getMessage());
+            }
+            NonOpaquePanel nonOpaquePanel = new NonOpaquePanel();
+            JTextPane textPane = Messages.configureMessagePaneUi(new JTextPane(), message);
+            textPane.setFont(COURIER_FONT);
+            textPane.setBackground(MessageType.ERROR.getPopupBackground());
+            nonOpaquePanel.add(textPane, BorderLayout.CENTER);
+            nonOpaquePanel.add(new JLabel(MessageType.ERROR.getDefaultIcon()), BorderLayout.WEST);
+
+            JBPopupFactory.getInstance().createBalloonBuilder(nonOpaquePanel)
+                    .setFillColor(MessageType.ERROR.getPopupBackground())
+                    .createBalloon()
+                    .show(new RelativePoint(component, new Point(0, 0)), Balloon.Position.above);
+        }
+
+        protected Editor createEditor() {
+            EditorFactory editorFactory = EditorFactory.getInstance();
+            Document editorDocument = editorFactory.createDocument("");
+            Editor editor = editorFactory.createEditor(editorDocument, project);
+            fillEditorSettings(editor.getSettings());
+            EditorEx editorEx = (EditorEx) editor;
+            attachHighlighter(editorEx);
+
+            return editor;
+        }
+
     }
 }

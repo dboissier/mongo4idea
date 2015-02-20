@@ -26,7 +26,7 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 
-public class ErrorPanel extends JPanel {
+class ErrorPanel extends JPanel {
 
     public ErrorPanel(final Exception ex) {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));

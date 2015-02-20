@@ -26,7 +26,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class MongoScriptRunConfigurationProducer extends RuntimeConfigurationProducer implements Cloneable {
@@ -70,7 +70,7 @@ public class MongoScriptRunConfigurationProducer extends RuntimeConfigurationPro
 
 
     @Override
-    public int compareTo(Object o) {
+    public int compareTo(@NotNull Object o) {
         return 0;
     }
 }

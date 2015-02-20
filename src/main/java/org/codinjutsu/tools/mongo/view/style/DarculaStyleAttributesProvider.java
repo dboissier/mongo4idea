@@ -16,6 +16,7 @@
 
 package org.codinjutsu.tools.mongo.view.style;
 
+import com.intellij.ui.JBColor;
 import com.intellij.ui.SimpleTextAttributes;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 
@@ -29,7 +30,7 @@ public class DarculaStyleAttributesProvider implements StyleAttributesProvider {
     private static final Color GRAY = new Color(128, 128, 128);
     public static final Color BLUE = new Color(104, 151, 187);
 
-    private static final SimpleTextAttributes INDEX = new SimpleTextAttributes(Font.BOLD, Color.WHITE);
+    private static final SimpleTextAttributes INDEX = new SimpleTextAttributes(Font.BOLD, JBColor.WHITE);
     private static final SimpleTextAttributes KEY_VALUE = new SimpleTextAttributes(Font.BOLD, ORANGE);
     private static final SimpleTextAttributes NUMBER_TEXT_ATTRIBUTE = new SimpleTextAttributes(Font.PLAIN, BLUE);
     private static final SimpleTextAttributes BOOLEAN_TEXT_ATTRIBUTE = NUMBER_TEXT_ATTRIBUTE;
@@ -84,11 +85,6 @@ public class DarculaStyleAttributesProvider implements StyleAttributesProvider {
     }
 
     @Override
-    public Icon getCloseIcon() {
-        return GuiUtils.loadIcon("close_dark.png");
-    }
-
-    @Override
     public Icon getCopyIcon() {
         return GuiUtils.loadIcon("copy_dark.png");
     }
@@ -129,17 +125,8 @@ public class DarculaStyleAttributesProvider implements StyleAttributesProvider {
     }
 
     @Override
-    public Icon getDataViewIcon() {
-        return GuiUtils.loadIcon("dataView_dark.png");
-    }
-
-    @Override
     public Icon getDataSchemaIcon() {
         return GuiUtils.loadIcon("dataSchema_dark.png");
     }
 
-    @Override
-    public Icon getSortedIcon() {
-        return GuiUtils.loadIcon("sorted_dark.png");
-    }
 }

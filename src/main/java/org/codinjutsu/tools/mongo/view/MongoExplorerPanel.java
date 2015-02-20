@@ -44,13 +44,11 @@ import org.codinjutsu.tools.mongo.view.editor.MongoObjectFile;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
-import java.util.Enumeration;
 import java.util.List;
 
 public class MongoExplorerPanel extends JPanel implements Disposable {
@@ -275,7 +273,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         mongoTree = null;
     }
 
-    public DefaultMutableTreeNode getSelectedServerNode() {
+    DefaultMutableTreeNode getSelectedServerNode() {
         DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) mongoTree.getLastSelectedPathComponent();
         if (treeNode != null) {
             Object userObject = treeNode.getUserObject();

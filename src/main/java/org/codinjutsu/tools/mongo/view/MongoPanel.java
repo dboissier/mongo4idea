@@ -94,7 +94,7 @@ public class MongoPanel extends JPanel implements Disposable {
     }
 
 
-    public void installResultPanelActions() {
+    void installResultPanelActions() {
         DefaultActionGroup actionResultGroup = new DefaultActionGroup("MongoResultGroup", true);
         if (ApplicationManager.getApplication() != null) {
             actionResultGroup.add(new ExecuteQuery(this));
@@ -144,14 +144,12 @@ public class MongoPanel extends JPanel implements Disposable {
         GuiUtils.installActionGroupInToolBar(actionResultGroup, resultPanel.getToolbar(), ActionManager.getInstance(), "MongoGroupActions", false);
     }
 
-    public void installQueryPanelActions() {
+    void installQueryPanelActions() {
         JPanel queryPanelToolbar = queryPanel.getToolbar();
 
         DefaultActionGroup actionQueryGroup = new DefaultActionGroup("MongoResultGroup", true);
         if (ApplicationManager.getApplication() != null) {
             actionQueryGroup.add(new EnableAggregateAction(queryPanel));
-            actionQueryGroup.add(new EnableQueryProjectionAction(queryPanel));
-            actionQueryGroup.add(new EnableQuerySortAction(queryPanel));
             actionQueryGroup.add(new CloseFindEditorAction(this));
         }
 
@@ -222,10 +220,6 @@ public class MongoPanel extends JPanel implements Disposable {
 
     public boolean isFindEditorOpened() {
         return splitter.getFirstComponent() == queryPanel;
-    }
-
-    public QueryPanel getQueryPanel() {
-        return queryPanel;
     }
 
     interface MongoDocumentOperations {

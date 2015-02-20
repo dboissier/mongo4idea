@@ -16,6 +16,7 @@
 
 package org.codinjutsu.tools.mongo.view.style;
 
+import com.intellij.ui.Gray;
 import com.intellij.ui.SimpleTextAttributes;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 
@@ -26,7 +27,7 @@ public class DefaultStyleAttributesProvider implements StyleAttributesProvider {
 
     private static final Color LIGNT_GREEN = new Color(0, 128, 0);
     private static final Color PURPLE = new Color(102, 14, 122);
-    private static final Color LIGHT_GRAY = new Color(128, 128, 128);
+    private static final Color LIGHT_GRAY = Gray._128;
 
     private static final SimpleTextAttributes INDEX = new SimpleTextAttributes(Font.BOLD, Color.BLACK);
     private static final SimpleTextAttributes KEY_VALUE = new SimpleTextAttributes(Font.BOLD, PURPLE);
@@ -83,11 +84,6 @@ public class DefaultStyleAttributesProvider implements StyleAttributesProvider {
     }
 
     @Override
-    public Icon getCloseIcon() {
-        return GuiUtils.loadIcon("close.png");
-    }
-
-    @Override
     public Icon getCopyIcon() {
         return GuiUtils.loadIcon("copy.png");
     }
@@ -128,17 +124,7 @@ public class DefaultStyleAttributesProvider implements StyleAttributesProvider {
     }
 
     @Override
-    public Icon getDataViewIcon() {
-        return GuiUtils.loadIcon("dataView.png");
-    }
-
-    @Override
     public Icon getDataSchemaIcon() {
         return GuiUtils.loadIcon("dataSchema.png");
-    }
-
-    @Override
-    public Icon getSortedIcon() {
-        return GuiUtils.loadIcon("sorted.png");
     }
 }

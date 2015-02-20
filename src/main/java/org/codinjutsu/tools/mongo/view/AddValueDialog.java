@@ -33,7 +33,7 @@ public class AddValueDialog extends AbstractAddDialog {
     private JPanel valuePanel;
     private JPanel mainPanel;
 
-    public AddValueDialog(MongoEditionPanel mongoEditionPanel) {
+    private AddValueDialog(MongoEditionPanel mongoEditionPanel) {
         super(mongoEditionPanel);
         valuePanel.setLayout(new BorderLayout());
         typeCombobox.setName("valueType");

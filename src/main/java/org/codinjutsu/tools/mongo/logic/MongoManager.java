@@ -32,7 +32,7 @@ import java.util.*;
 public class MongoManager {
 
     private static final Logger LOG = Logger.getLogger(MongoManager.class);
-    private List<MongoServer> mongoServers = new LinkedList<MongoServer>();
+    private final List<MongoServer> mongoServers = new LinkedList<MongoServer>();
 
     public static MongoManager getInstance(Project project) {
         return ServiceManager.getService(project, MongoManager.class);
@@ -98,7 +98,7 @@ public class MongoManager {
         }
     }
 
-    public List<MongoDatabase> loadDatabaseCollections(ServerConfiguration configuration) {
+    List<MongoDatabase> loadDatabaseCollections(ServerConfiguration configuration) {
         MongoClient mongo = null;
         List<MongoDatabase> mongoDatabases = new LinkedList<MongoDatabase>();
         try {
@@ -267,7 +267,20 @@ public class MongoManager {
 
     private MongoCollectionResult find(MongoQueryOptions mongoQueryOptions, MongoCollectionResult mongoCollectionResult, DBCollection collection) {
         DBObject filter = mongoQueryOptions.getFilter();
-        DBCursor cursor = collection.find(filter);
+        DBObject projection = mongoQueryOptions.getProjection();
+        DBObject sort = mongoQueryOptions.getSort();
+
+        DBCursor cursor;
+        if (projection == null) {
+            cursor = collection.find(filter);
+        } else {
+            cursor = collection.find(filter, projection);
+        }
+
+        if (sort != null) {
+            cursor = cursor.sort(sort);
+        }
+
         try {
             int index = 0;
             while (cursor.hasNext() && index < mongoQueryOptions.getResultLimit()) {

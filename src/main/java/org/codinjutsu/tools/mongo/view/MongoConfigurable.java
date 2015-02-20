@@ -77,11 +77,6 @@ public class MongoConfigurable extends BaseConfigurable {
     }
 
     @Nullable
-    public Icon getIcon() {
-        return null;
-    }
-
-    @Nullable
     @Override
     public String getHelpTopic() {
         return "preferences.mongoOptions";

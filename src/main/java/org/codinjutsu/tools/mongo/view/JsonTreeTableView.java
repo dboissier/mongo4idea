@@ -132,7 +132,6 @@ public class JsonTreeTableView extends TreeTable {
             return myRenderer;
         }
 
-        @Nullable
         @Override
         public boolean isCellEditable(JsonTreeNode o) {
             return false;

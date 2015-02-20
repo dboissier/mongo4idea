@@ -61,6 +61,7 @@ public class MongoObjectFile extends VirtualFile {
         return MongoFileSystem.getInstance();
     }
 
+    @NotNull
     @Override
     public String getPath() {
         return name;
@@ -107,7 +108,7 @@ public class MongoObjectFile extends VirtualFile {
     @NotNull
     @Override
     public OutputStream getOutputStream(Object requestor, long newModificationStamp, long newTimeStamp) throws IOException {
-        return null;
+        throw new UnsupportedOperationException("MongoResultFile is read-only");
     }
 
     @NotNull

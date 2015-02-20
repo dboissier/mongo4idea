@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AbstractAddDialog extends DialogWrapper {
-    protected static final Map<JsonDataType, TextFieldWrapper> UI_COMPONENT_BY_JSON_DATATYPE = new HashMap<JsonDataType, TextFieldWrapper>();
+    private static final Map<JsonDataType, TextFieldWrapper> UI_COMPONENT_BY_JSON_DATATYPE = new HashMap<JsonDataType, TextFieldWrapper>();
 
 
     static {
@@ -43,17 +43,17 @@ public abstract class AbstractAddDialog extends DialogWrapper {
         UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.ARRAY, new StringFieldWrapper());
     }
 
-    protected final MongoEditionPanel mongoEditionPanel;
-    protected JsonDataType currentDataType = null;
-    protected TextFieldWrapper currentEditor = null;
+    final MongoEditionPanel mongoEditionPanel;
+    private JsonDataType currentDataType = null;
+    TextFieldWrapper currentEditor = null;
 
 
-    public AbstractAddDialog(MongoEditionPanel mongoEditionPanel) {
+    AbstractAddDialog(MongoEditionPanel mongoEditionPanel) {
         super(mongoEditionPanel, true);
         this.mongoEditionPanel = mongoEditionPanel;
     }
 
-    protected void initCombo(final ComboBox combobox, final JPanel parentPanel) {
+    void initCombo(final ComboBox combobox, final JPanel parentPanel) {
         combobox.setModel(new DefaultComboBoxModel(JsonDataType.values()));
         combobox.setRenderer(new ColoredListCellRenderer() {
 
@@ -102,7 +102,7 @@ public abstract class AbstractAddDialog extends DialogWrapper {
 
         private final JTextField component;
 
-        protected StringFieldWrapper() {
+        StringFieldWrapper() {
             component = new JTextField();
         }
 
@@ -125,7 +125,7 @@ public abstract class AbstractAddDialog extends DialogWrapper {
 
         private final JBCheckBox component;
 
-        protected BooleanFieldWrapper() {
+        BooleanFieldWrapper() {
             component = new JBCheckBox();
         }
 
@@ -148,7 +148,7 @@ public abstract class AbstractAddDialog extends DialogWrapper {
 
         private final JLabel component;
 
-        protected NullFieldWrapper() {
+        NullFieldWrapper() {
             component = new JLabel("null");
         }
 

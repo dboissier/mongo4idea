@@ -25,9 +25,9 @@ import javax.swing.*;
 
 public class EnableAggregateAction extends ToggleAction {
 
-    private static final String ENABLE_FIND_MODE = "Enable Find Mode";
-    private static final String ENABLE_AGGREGATION_MODE = "Enable Aggregation Mode";
-    private static final Icon AGGREGATION_ICON = GuiUtils.loadIcon("table_multiple.png");
+    private static final String ENABLE_FIND_MODE = "Toggle to Find Mode";
+    private static final String ENABLE_AGGREGATION_MODE = "Toggle to Aggregation Mode";
+    private static final Icon AGGREGATION_ICON = GuiUtils.loadIcon("sqlGroupByType.png");
     private static final String QUERY_FIND_SAMPLE = "ex: {'name': 'foo'}";
     private static final String QUERY_AGGREGATION_SAMPLE = "ex: [{'$match': {'name': 'foo'}, {'$project': {'address': 1}}]";
 

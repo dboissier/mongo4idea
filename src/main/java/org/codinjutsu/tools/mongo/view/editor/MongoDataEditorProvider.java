@@ -61,7 +61,7 @@ public class MongoDataEditorProvider implements FileEditorProvider, ApplicationC
     @NotNull
     @Override
     public FileEditorState readState(@NotNull Element sourceElement, @NotNull Project project, @NotNull VirtualFile file) {
-        return null;
+        return FileEditorState.INSTANCE;
     }
 
     @Override

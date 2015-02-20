@@ -16,6 +16,8 @@
 
 package org.codinjutsu.tools.mongo.model;
 
+import org.jetbrains.annotations.NotNull;
+
 public class MongoCollection implements Comparable<MongoCollection> {
 
     private final String name;
@@ -35,7 +37,7 @@ public class MongoCollection implements Comparable<MongoCollection> {
     }
 
     @Override
-    public int compareTo(MongoCollection otherCollection) {
+    public int compareTo(@NotNull MongoCollection otherCollection) {
         return this.name.compareTo(otherCollection.getName());
     }
 }

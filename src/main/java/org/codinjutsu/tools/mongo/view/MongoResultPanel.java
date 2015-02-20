@@ -35,7 +35,6 @@ import com.mongodb.DBObject;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
-import org.codinjutsu.tools.mongo.view.action.AddMongoDocumentAction;
 import org.codinjutsu.tools.mongo.view.action.CopyResultAction;
 import org.codinjutsu.tools.mongo.view.action.EditMongoDocumentAction;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeModel;
@@ -54,20 +53,18 @@ import java.util.List;
 
 public class MongoResultPanel extends JPanel implements Disposable {
 
-    private final Project project;
     private final MongoPanel.MongoDocumentOperations mongoDocumentOperations;
     private JPanel mainPanel;
     private JPanel containerPanel;
     private JPanel toolbar;
-    private Splitter splitter;
-    private JPanel resultTreePanel;
-    private MongoEditionPanel mongoEditionPanel;
+    private final Splitter splitter;
+    private final JPanel resultTreePanel;
+    private final MongoEditionPanel mongoEditionPanel;
 
     JsonTreeTableView resultTableView;
 
 
     public MongoResultPanel(Project project, MongoPanel.MongoDocumentOperations mongoDocumentOperations) {
-        this.project = project;
         this.mongoDocumentOperations = mongoDocumentOperations;
         toolbar.setLayout(new BorderLayout());
         setLayout(new BorderLayout());
