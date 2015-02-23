@@ -16,44 +16,22 @@
 
 package org.codinjutsu.tools.mongo.view.table;
 
-import com.intellij.ui.JBColor;
-import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
-import org.jdesktop.swingx.JXMonthView;
 import org.jdesktop.swingx.table.DatePickerCellEditor;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
 
 public class MongoDatePickerCellEditor extends DatePickerCellEditor {
 
-    private static Color backgroundColor = new JPanel().getBackground();
-    private static Color foregroundColor = new JPanel().getForeground();
-    private static Color selectionBackgroundColor = JBColor.LIGHT_GRAY;
-    private static Color selectionForegroundColor = JBColor.BLACK;
-    private static Color monthForegroundColor = StyleAttributesProvider.NUMBER_COLOR;
-    private static Color dayOfTheWeekForegroundColor = StyleAttributesProvider.KEY_COLOR;
-    private static Color todayBackgroundColor = JBColor.WHITE;
-
-
     public MongoDatePickerCellEditor() {
-        this.datePicker.getEditor().setEditable(false);
-        applyUIStyle();
+        this.dateFormat = DateFormat.getDateInstance();
+        datePicker = DateTimePicker.create();
+        datePicker.getEditor().setBorder(BorderFactory.createEmptyBorder(0, 1, 0, 1));
+        datePicker.getEditor().setEditable(false);
     }
 
     public void addActionListener(ActionListener actionListener) {
         datePicker.addActionListener(actionListener);
-    }
-
-    private void applyUIStyle() {
-        JXMonthView monthView = this.datePicker.getMonthView();
-        monthView.setMonthStringBackground(backgroundColor);
-        monthView.setMonthStringForeground(monthForegroundColor);
-        monthView.setSelectionBackground(selectionBackgroundColor);
-        monthView.setSelectionForeground(selectionForegroundColor);
-        monthView.setDaysOfTheWeekForeground(dayOfTheWeekForegroundColor);
-        monthView.setBackground(backgroundColor);
-        monthView.setForeground(foregroundColor);
-        monthView.setTodayBackground(todayBackgroundColor);
     }
 }
