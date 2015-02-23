@@ -22,7 +22,6 @@ import org.codinjutsu.tools.mongo.view.AddValueDialog;
 import org.codinjutsu.tools.mongo.view.MongoEditionPanel;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 
-
 import javax.swing.*;
 
 public class AddValueAction extends AnAction {
@@ -45,7 +44,7 @@ public class AddValueAction extends AnAction {
             return;
         }
 
-        mongoEditionPanel.addValue(dialog.getJsonDataType(), dialog.getValue());
+        mongoEditionPanel.addValue(dialog.getValue());
     }
 
     @Override

@@ -6,7 +6,6 @@ import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.view.MongoPanel;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 
-
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 

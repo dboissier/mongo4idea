@@ -22,7 +22,6 @@ import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 
-
 import javax.swing.*;
 
 public class DropCollectionAction extends AnAction implements DumbAware {

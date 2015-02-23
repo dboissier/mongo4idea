@@ -20,12 +20,17 @@ import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.components.JBCheckBox;
+import com.mongodb.util.JSON;
+import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.view.model.JsonDataType;
+import org.codinjutsu.tools.mongo.view.table.DateTimePicker;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,10 +42,11 @@ public abstract class AbstractAddDialog extends DialogWrapper {
 
         UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.STRING, new StringFieldWrapper());
         UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.BOOLEAN, new BooleanFieldWrapper());
-        UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.NUMBER, new StringFieldWrapper());
+        UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.NUMBER, new NumberFieldWrapper());
         UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.NULL, new NullFieldWrapper());
-        UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.OBJECT, new StringFieldWrapper());
-        UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.ARRAY, new StringFieldWrapper());
+        UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.DATE, new DateTimeFieldWrapper());
+        UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.OBJECT, new JsonFieldWrapper());
+        UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.ARRAY, new JsonFieldWrapper());
     }
 
     final MongoEditionPanel mongoEditionPanel;
@@ -87,23 +93,39 @@ public abstract class AbstractAddDialog extends DialogWrapper {
         return currentDataType;
     }
 
-    public abstract String getValue();
+    public abstract Object getValue();
 
-    public interface TextFieldWrapper<T extends JComponent> {
+    public static abstract class TextFieldWrapper<T extends JComponent, V> {
 
-        String getValue();
+        protected final T component;
 
-        T getComponent();
+        private TextFieldWrapper(T component) {
+            this.component = component;
+        }
 
-        void reset();
+        public abstract V getValue();
+
+        public abstract void reset();
+
+        public boolean isValueSet() {
+            return true;
+        }
+
+        public T getComponent() {
+            return component;
+        }
+
+        public void validate() {
+            if (!isValueSet()) {
+                throw new IllegalArgumentException("Value is not set");
+            }
+        }
     }
 
-    private static class StringFieldWrapper implements TextFieldWrapper {
+    private static class StringFieldWrapper extends TextFieldWrapper<JTextField, String> {
 
-        private final JTextField component;
-
-        StringFieldWrapper() {
-            component = new JTextField();
+        private StringFieldWrapper() {
+            super(new JTextField());
         }
 
         @Override
@@ -111,8 +133,9 @@ public abstract class AbstractAddDialog extends DialogWrapper {
             return component.getText();
         }
 
-        public JTextField getComponent() {
-            return component;
+        @Override
+        public boolean isValueSet() {
+            return StringUtils.isNotBlank(component.getText());
         }
 
         @Override
@@ -121,21 +144,65 @@ public abstract class AbstractAddDialog extends DialogWrapper {
         }
     }
 
-    private static class BooleanFieldWrapper implements TextFieldWrapper {
+    private static class JsonFieldWrapper extends TextFieldWrapper<JTextField, Object> {
 
-        private final JBCheckBox component;
-
-        BooleanFieldWrapper() {
-            component = new JBCheckBox();
+        private JsonFieldWrapper() {
+            super(new JTextField());
         }
 
         @Override
-        public String getValue() {
-            return String.valueOf(component.isSelected());
+        public Object getValue() {
+            return JSON.parse(component.getText());
         }
 
-        public JBCheckBox getComponent() {
-            return component;
+        @Override
+        public boolean isValueSet() {
+            return StringUtils.isNotBlank(component.getText());
+        }
+
+        @Override
+        public void reset() {
+            component.setText("");
+        }
+    }
+
+    private static class NumberFieldWrapper extends TextFieldWrapper<JTextField, Number> {
+
+        private NumberFieldWrapper() {
+            super(new JTextField());
+        }
+
+        @Override
+        public Number getValue() {
+            return org.codinjutsu.tools.mongo.utils.StringUtils.parseNumber(component.getText());
+        }
+
+        @Override
+        public void reset() {
+            component.setText("");
+        }
+
+        @Override
+        public boolean isValueSet() {
+            return StringUtils.isNotBlank(component.getText());
+        }
+
+        @Override
+        public void validate() {
+            super.validate();
+            getValue();
+        }
+    }
+
+    private static class BooleanFieldWrapper extends TextFieldWrapper<JBCheckBox, Boolean> {
+
+        private BooleanFieldWrapper() {
+            super(new JBCheckBox());
+        }
+
+        @Override
+        public Boolean getValue() {
+            return component.isSelected();
         }
 
         @Override
@@ -144,26 +211,42 @@ public abstract class AbstractAddDialog extends DialogWrapper {
         }
     }
 
-    private static class NullFieldWrapper implements TextFieldWrapper {
+    private static class NullFieldWrapper extends TextFieldWrapper<JLabel, Object> {
 
-        private final JLabel component;
-
-        NullFieldWrapper() {
-            component = new JLabel("null");
+        private NullFieldWrapper() {
+            super(new JLabel("null"));
         }
 
         @Override
-        public String getValue() {
-            return component.getText();
+        public Object getValue() {
+            return null;
         }
 
         @Override
         public void reset() {
 
         }
+    }
 
-        public JLabel getComponent() {
-            return component;
+    private static class DateTimeFieldWrapper extends TextFieldWrapper<DateTimePicker, Date> {
+
+        private DateTimeFieldWrapper() {
+            super(DateTimePicker.create());
+        }
+
+        @Override
+        public Date getValue() {
+            return component.getDate();
+        }
+
+        @Override
+        public boolean isValueSet() {
+            return component.getDate() != null;
+        }
+
+        @Override
+        public void reset() {
+            component.setDate(GregorianCalendar.getInstance().getTime());
         }
     }
 }

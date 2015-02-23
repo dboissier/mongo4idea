@@ -21,7 +21,6 @@ import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
-import org.codinjutsu.tools.mongo.view.model.JsonDataType;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.fest.swing.data.TableCell;
 import org.fest.swing.driver.BasicJTableCellReader;
@@ -107,10 +106,10 @@ public class MongoEditionPanelTest {
 
 
         editionTreeTable.selectCell(TableCell.row(1).column(1));
-        mongoEditionPanel.addKey("stringKey", JsonDataType.STRING, "pouet");
+        mongoEditionPanel.addKey("stringKey", "pouet");
 
         editionTreeTable.selectCell(TableCell.row(1).column(1));
-        mongoEditionPanel.addKey("numberKey", JsonDataType.STRING, "1.1");
+        mongoEditionPanel.addKey("numberKey", "1.1");
 
         editionTreeTable.requireContents(new String[][]{
                 {"\"_id\"", "50b8d63414f85401b9268b99"},
@@ -141,7 +140,7 @@ public class MongoEditionPanelTest {
         {"[2]", "[ { \"tagName\" : \"pouet\"} , { \"tagName\" : \"paf\"}]"}});
 
         editionTreeTable.selectCell(TableCell.row(3).column(1));
-        mongoEditionPanel.addValue(JsonDataType.STRING, "refactor");
+        mongoEditionPanel.addValue("refactor");
 
         editionTreeTable.requireContents(new String[][] {
                 {"\"_id\"", "50b8d63414f85401b9268b99"},

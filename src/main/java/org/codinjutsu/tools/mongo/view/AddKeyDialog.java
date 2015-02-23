@@ -19,8 +19,6 @@ package org.codinjutsu.tools.mongo.view;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.apache.commons.lang.StringUtils;
-import org.codinjutsu.tools.mongo.utils.MongoUtils;
-import org.codinjutsu.tools.mongo.view.model.JsonDataType;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -73,18 +71,8 @@ public class AddKeyDialog extends AbstractAddDialog {
             return new ValidationInfo(String.format("Key '%s' is already used", keyName));
         }
 
-        JsonDataType dataType = getJsonDataType();
-        if (JsonDataType.NULL.equals(dataType)) {
-            return null;
-        }
-
-        String value = getValue();
-        if (StringUtils.isEmpty(value)) {
-            return new ValidationInfo("Key value is not set");
-        }
-
         try {
-            MongoUtils.parseValue(dataType, value);
+            currentEditor.validate();
         } catch (Exception ex) {
             return new ValidationInfo(ex.getMessage());
         }
@@ -103,7 +91,7 @@ public class AddKeyDialog extends AbstractAddDialog {
     }
 
     @Override
-    public String getValue() {
+    public Object getValue() {
         return currentEditor.getValue();
     }
 }

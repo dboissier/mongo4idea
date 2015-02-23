@@ -25,7 +25,6 @@ import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 
-
 import javax.swing.*;
 
 public class OpenPluginSettingsAction extends AnAction implements DumbAware {

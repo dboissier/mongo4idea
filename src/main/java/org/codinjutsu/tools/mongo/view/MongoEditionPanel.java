@@ -152,14 +152,13 @@ public class MongoEditionPanel extends JPanel implements Disposable {
         return false;
     }
 
-    public void addKey(String key, JsonDataType jsonDataType, String value) {
+    public void addKey(String key, Object value) {
 
         List<TreeNode> node = new LinkedList<TreeNode>();
-        Object mongoObject = MongoUtils.parseValue(jsonDataType, value);
-        JsonTreeNode treeNode = new JsonTreeNode(MongoKeyValueDescriptor.createDescriptor(key, mongoObject));
+        JsonTreeNode treeNode = new JsonTreeNode(MongoKeyValueDescriptor.createDescriptor(key, value));
 
-        if (mongoObject instanceof DBObject) {
-             JsonTreeModel.processDbObject(treeNode, (DBObject) mongoObject);
+        if (value instanceof DBObject) {
+             JsonTreeModel.processDbObject(treeNode, (DBObject) value);
         }
 
         node.add(treeNode);
@@ -173,15 +172,14 @@ public class MongoEditionPanel extends JPanel implements Disposable {
         treeModel.reload(parentNode);
     }
 
-    public void addValue(JsonDataType jsonDataType, String value) {
+    public void addValue(Object value) {
         List<TreeNode> node = new LinkedList<TreeNode>();
-        Object mongoObject = MongoUtils.parseValue(jsonDataType, value);
 
         JsonTreeNode parentNode = getParentNode();
 
-        JsonTreeNode treeNode = new JsonTreeNode(MongoValueDescriptor.createDescriptor(parentNode.getChildCount(), mongoObject));
-        if (mongoObject instanceof DBObject) {
-            JsonTreeModel.processDbObject(treeNode, (DBObject) mongoObject);
+        JsonTreeNode treeNode = new JsonTreeNode(MongoValueDescriptor.createDescriptor(parentNode.getChildCount(), value));
+        if (value instanceof DBObject) {
+            JsonTreeModel.processDbObject(treeNode, (DBObject) value);
         }
 
         node.add(treeNode);

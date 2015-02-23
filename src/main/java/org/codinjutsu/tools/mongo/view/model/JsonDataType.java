@@ -23,7 +23,8 @@ public enum JsonDataType {
     BOOLEAN("Boolean"),
     ARRAY("Array"),
     OBJECT("Object"),
-    NULL("Null");
+    NULL("Null"),
+    DATE("Date");
 
     public final String type;
 

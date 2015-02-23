@@ -21,7 +21,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.codinjutsu.tools.mongo.view.MongoEditionPanel;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 
-
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 

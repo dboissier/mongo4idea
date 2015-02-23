@@ -18,7 +18,6 @@ package org.codinjutsu.tools.mongo.view.nodedescriptor;
 
 import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.ColoredTreeCellRenderer;
-import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 
 
 public interface MongoNodeDescriptor {

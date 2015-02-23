@@ -22,7 +22,6 @@ import org.codinjutsu.tools.mongo.view.AddKeyDialog;
 import org.codinjutsu.tools.mongo.view.MongoEditionPanel;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 
-
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 
@@ -47,7 +46,7 @@ public class AddKeyAction extends AnAction {
             return;
         }
 
-        mongoEditionPanel.addKey(dialog.getKey(), dialog.getJsonDataType(), dialog.getValue());
+        mongoEditionPanel.addKey(dialog.getKey(), dialog.getValue());
     }
 
     @Override

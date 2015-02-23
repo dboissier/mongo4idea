@@ -16,16 +16,22 @@
 
 package org.codinjutsu.tools.mongo.view.table;
 
-import org.jdesktop.swingx.calendar.SingleDaySelectionModel;
+import com.intellij.ui.JBColor;
+import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 import org.jdesktop.swingx.JXDatePicker;
+import org.jdesktop.swingx.JXMonthView;
+import org.jdesktop.swingx.calendar.SingleDaySelectionModel;
 
 import javax.swing.*;
-import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.DateFormatter;
+import javax.swing.text.DefaultFormatterFactory;
+import java.awt.*;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.*;
-import java.awt.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 
 /**
  * This is licensed under LGPL.  License can be found here:  http://www.gnu.org/licenses/lgpl-3.0.txt
@@ -33,18 +39,33 @@ import java.awt.*;
  * This is provided as is.  If you have questions please direct them to charlie.hubbard at gmail dot you know what.
  */
 public class DateTimePicker extends JXDatePicker {
+
+    private static final Locale LOCALE = Locale.getDefault();
+    private static Color backgroundColor = new JPanel().getBackground();
+    private static Color foregroundColor = new JPanel().getForeground();
+    private static Color selectionBackgroundColor = JBColor.LIGHT_GRAY;
+    private static Color selectionForegroundColor = JBColor.BLACK;
+    private static Color monthForegroundColor = StyleAttributesProvider.NUMBER_COLOR;
+    private static Color dayOfTheWeekForegroundColor = StyleAttributesProvider.KEY_COLOR;
+    private static Color todayBackgroundColor = JBColor.WHITE;
+
+
     private JSpinner timeSpinner;
     private JPanel timePanel;
     private DateFormat timeFormat;
 
+    public static DateTimePicker create() {
+        DateTimePicker dateTimePicker = new DateTimePicker();
+        dateTimePicker.setFormats(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, LOCALE));
+        dateTimePicker.setTimeFormat( DateFormat.getTimeInstance( DateFormat.MEDIUM, LOCALE ) );
+        dateTimePicker.applyUIStyle();
+
+        return dateTimePicker;
+    }
+
     public DateTimePicker() {
         super();
         getMonthView().setSelectionModel(new SingleDaySelectionModel());
-    }
-
-    public DateTimePicker(Date d) {
-        this();
-        setDate(d);
     }
 
     public void commitEdit() throws ParseException {
@@ -67,18 +88,20 @@ public class DateTimePicker extends JXDatePicker {
         return timePanel;
     }
 
+    @Override
+    public Date getDate() {
+        return super.getDate();
+    }
+
     private JPanel createTimePanel() {
         JPanel newPanel = new JPanel();
         newPanel.setLayout(new FlowLayout());
-        //newPanel.add(panelOriginal);
 
         SpinnerDateModel dateModel = new SpinnerDateModel();
         timeSpinner = new JSpinner(dateModel);
         if( timeFormat == null ) timeFormat = DateFormat.getTimeInstance( DateFormat.SHORT );
         updateTextFieldFormat();
-        newPanel.add(new JLabel( "Time:" ) );
         newPanel.add(timeSpinner);
-        newPanel.setBackground(Color.WHITE);
         return newPanel;
     }
 
@@ -102,13 +125,12 @@ public class DateTimePicker extends JXDatePicker {
             calendar.setTime(date);
             calendar.set(Calendar.HOUR_OF_DAY, timeCalendar.get( Calendar.HOUR_OF_DAY ) );
             calendar.set(Calendar.MINUTE, timeCalendar.get( Calendar.MINUTE ) );
-            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.SECOND, timeCalendar.get( Calendar.SECOND ));
             calendar.set(Calendar.MILLISECOND, 0);
 
             Date newDate = calendar.getTime();
             setDate(newDate);
         }
-
     }
 
     private void setTimeSpinners() {
@@ -118,23 +140,31 @@ public class DateTimePicker extends JXDatePicker {
         }
     }
 
-    public DateFormat getTimeFormat() {
-        return timeFormat;
-    }
-
     public void setTimeFormat(DateFormat timeFormat) {
         this.timeFormat = timeFormat;
         updateTextFieldFormat();
     }
 
+    private void applyUIStyle() {
+        JXMonthView monthView = getMonthView();
+        monthView.setMonthStringBackground(backgroundColor);
+        monthView.setMonthStringForeground(monthForegroundColor);
+        monthView.setSelectionBackground(selectionBackgroundColor);
+        monthView.setSelectionForeground(selectionForegroundColor);
+        monthView.setDaysOfTheWeekForeground(dayOfTheWeekForegroundColor);
+        monthView.setBackground(backgroundColor);
+        monthView.setForeground(foregroundColor);
+        monthView.setTodayBackground(todayBackgroundColor);
+
+        getLinkPanel().setBackground(backgroundColor);
+        getLinkPanel().setForeground(foregroundColor);
+    }
+
     public static void main(String[] args) {
         Date date = new Date();
         JFrame frame = new JFrame();
-        frame.setTitle("Date Time Picker");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        DateTimePicker dateTimePicker = new DateTimePicker();
-        dateTimePicker.setFormats( DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.MEDIUM ) );
-        dateTimePicker.setTimeFormat( DateFormat.getTimeInstance( DateFormat.MEDIUM ) );
+        DateTimePicker dateTimePicker = create();
 
         dateTimePicker.setDate(date);
 

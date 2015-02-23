@@ -22,7 +22,6 @@ import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.view.MongoResultPanel;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 
-
 import javax.swing.*;
 
 public class EditMongoDocumentAction extends AnAction implements DumbAware {
