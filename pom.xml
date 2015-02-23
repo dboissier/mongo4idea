@@ -13,12 +13,12 @@
         <maven.compiler.target>1.6</maven.compiler.target>
 
 
-        <intellij.sdk.name>135.909</intellij.sdk.name>
-        <intellij.sdk.version>13.0</intellij.sdk.version>
-        <intellij.lib.path>/home/dboissier/applications/idea-IC-135.909/lib</intellij.lib.path>
-        <!--<intellij.sdk.name>139.1117.1</intellij.sdk.name>-->
-        <!--<intellij.sdk.version>14</intellij.sdk.version>-->
-        <!--<intellij.lib.path>/home/dboissier/applications/idea-IC-139.1117.1/lib</intellij.lib.path>-->
+        <!--<intellij.sdk.name>135.909</intellij.sdk.name>-->
+        <!--<intellij.sdk.version>13.0</intellij.sdk.version>-->
+        <!--<intellij.lib.path>/home/dboissier/applications/idea-IC-135.909/lib</intellij.lib.path>-->
+        <intellij.sdk.name>139.1117.1</intellij.sdk.name>
+        <intellij.sdk.version>14</intellij.sdk.version>
+        <intellij.lib.path>/home/dboissier/applications/idea-IC-139.1117.1/lib</intellij.lib.path>
 
         <release.dir>file:////home/dboissier/incubator/distribution/maven/m2/inhouse</release.dir>
         <snapshot.dir>file:///home/dboissier/incubator/distribution/maven/m2/inhouse-snapshot</snapshot.dir>
