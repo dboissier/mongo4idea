@@ -20,14 +20,15 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.codinjutsu.tools.mongo.view.AddKeyDialog;
 import org.codinjutsu.tools.mongo.view.MongoEditionPanel;
-import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
+import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
+
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 
 public class AddKeyAction extends AnAction {
 
-    private static final Icon ADD_ICON = StyleAttributesUtils.getInstance().getAddIcon();
+    private static final Icon ADD_ICON = StyleAttributesProvider.getAddIcon();
 
     private final MongoEditionPanel mongoEditionPanel;
 

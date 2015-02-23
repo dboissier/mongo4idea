@@ -20,13 +20,14 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
-import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
+import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
+
 
 import javax.swing.*;
 
 public class DropCollectionAction extends AnAction implements DumbAware {
 
-    private static final Icon REMOVE_ICON = StyleAttributesUtils.getInstance().getClearAllIcon();
+    private static final Icon REMOVE_ICON = StyleAttributesProvider.getClearAllIcon();
 
     private final MongoExplorerPanel mongoExplorerPanel;
 

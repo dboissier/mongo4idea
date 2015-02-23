@@ -75,7 +75,7 @@ public class MongoManagerTest {
     @Test
     public void updateMongoDocument() throws Exception {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
-        mongoQueryOptions.addQuery((BasicDBObject) JSON.parse("{'$match': {'label': 'tete'}}"));
+        mongoQueryOptions.setFilter("{'label': 'tete'}");
         MongoCollection mongoCollection = new MongoCollection("dummyCollection", "test");
         MongoCollectionResult initialData = mongoManager.loadCollectionValues(serverConfiguration, mongoCollection, mongoQueryOptions);
         assertEquals(1, initialData.getMongoObjects().size());
@@ -96,7 +96,7 @@ public class MongoManagerTest {
     @Test
     public void deleteMongoDocument() throws Exception {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
-        mongoQueryOptions.addQuery((BasicDBObject) JSON.parse("{'$match': {'label': 'tete'}}"));
+        mongoQueryOptions.setFilter("{'label': 'tete'}");
         MongoCollection mongoCollection = new MongoCollection("dummyCollection", "test");
         MongoCollectionResult initialData = mongoManager.loadCollectionValues(serverConfiguration, mongoCollection, mongoQueryOptions);
         assertEquals(1, initialData.getMongoObjects().size());
@@ -111,11 +111,9 @@ public class MongoManagerTest {
 
 
     @Test
-    public void loadCollectionsWithMatchOperator() throws Exception {
+    public void loadCollectionsWithAggregateOperators() throws Exception {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
-        mongoQueryOptions.addQuery((BasicDBObject) JSON.parse("{'$match': {'price': 15}}"));
-        mongoQueryOptions.addQuery((BasicDBObject) JSON.parse("{'$project': {'label': 1, 'price': 1}}"));
-        mongoQueryOptions.addQuery((BasicDBObject) JSON.parse("{'$group': {'_id': '$label', 'total': {'$sum': '$price'}}}"));
+        mongoQueryOptions.setOperations("[{'$match': {'price': 15}}, {'$project': {'label': 1, 'price': 1}}, {'$group': {'_id': '$label', 'total': {'$sum': '$price'}}}]");
         MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(serverConfiguration, new MongoCollection("dummyCollection", "test"), mongoQueryOptions);
         assertNotNull(mongoCollectionResult);
 

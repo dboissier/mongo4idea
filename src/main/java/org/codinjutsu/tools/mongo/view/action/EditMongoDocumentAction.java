@@ -20,13 +20,14 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.view.MongoResultPanel;
-import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
+import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
+
 
 import javax.swing.*;
 
 public class EditMongoDocumentAction extends AnAction implements DumbAware {
 
-    private static final Icon EDIT_ICON = StyleAttributesUtils.getInstance().getEditIcon();
+    private static final Icon EDIT_ICON = StyleAttributesProvider.getEditIcon();
     private final MongoResultPanel resultPanel;
 
     public EditMongoDocumentAction(MongoResultPanel resultPanel) {

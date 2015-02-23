@@ -164,11 +164,6 @@ public class QueryPanel extends JPanel implements Disposable {
         aggregationPanel.dispose();
     }
 
-    public String getQueryStringifiedValue() {
-        return getCurrentOperatorPanel().getStringifiedQuery();
-    }
-
-
     public void toggleToAggregation() {
         queryCardLayout.show(queryContainerPanel, AGGREGATION_PANEL);
     }
@@ -230,7 +225,7 @@ public class QueryPanel extends JPanel implements Disposable {
         public MongoQueryOptions buildQueryOptions() {
             MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
             try {
-                mongoQueryOptions.setFilter(getQuery());
+                mongoQueryOptions.setOperations(getQuery());
             } catch (JSONParseException ex) {
                 notifyOnErrorForOperator(editor.getComponent(), ex);
             }
@@ -245,11 +240,6 @@ public class QueryPanel extends JPanel implements Disposable {
         @Override
         public JComponent getRequestFocusComponent() {
             return this.editor.getContentComponent();
-        }
-
-        @Override
-        public String getStringifiedQuery() {
-            return buildQueryOptions().getFilter().toString();
         }
 
         @Override
@@ -311,11 +301,6 @@ public class QueryPanel extends JPanel implements Disposable {
         }
 
         @Override
-        public String getStringifiedQuery() {
-            return "";
-        }
-
-        @Override
         public void dispose() {
             operatorCompletionAction.dispose();
             EditorFactory.getInstance().releaseEditor(this.selectEditor);
@@ -363,8 +348,6 @@ public class QueryPanel extends JPanel implements Disposable {
         public abstract void validateQuery();
 
         public abstract MongoQueryOptions buildQueryOptions();
-
-        public abstract String getStringifiedQuery();
 
         void notifyOnErrorForOperator(JComponent component, Exception ex) {
             String message;

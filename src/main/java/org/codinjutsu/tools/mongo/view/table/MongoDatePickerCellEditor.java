@@ -16,7 +16,8 @@
 
 package org.codinjutsu.tools.mongo.view.table;
 
-import org.codinjutsu.tools.mongo.view.style.DarculaStyleAttributesProvider;
+import com.intellij.ui.JBColor;
+import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 import org.jdesktop.swingx.JXMonthView;
 import org.jdesktop.swingx.table.DatePickerCellEditor;
 
@@ -28,11 +29,11 @@ public class MongoDatePickerCellEditor extends DatePickerCellEditor {
 
     private static Color backgroundColor = new JPanel().getBackground();
     private static Color foregroundColor = new JPanel().getForeground();
-    private static Color selectionBackgroundColor = Color.LIGHT_GRAY;
-    private static Color selectionForegroundColor = Color.BLACK;
-    private static Color monthForegroundColor = DarculaStyleAttributesProvider.BLUE;
-    private static Color dayOfTheWeekForegroundColor = DarculaStyleAttributesProvider.ORANGE;
-    private static Color todayBackgroundColor = Color.WHITE;
+    private static Color selectionBackgroundColor = JBColor.LIGHT_GRAY;
+    private static Color selectionForegroundColor = JBColor.BLACK;
+    private static Color monthForegroundColor = StyleAttributesProvider.NUMBER_COLOR;
+    private static Color dayOfTheWeekForegroundColor = StyleAttributesProvider.KEY_COLOR;
+    private static Color todayBackgroundColor = JBColor.WHITE;
 
 
     public MongoDatePickerCellEditor() {

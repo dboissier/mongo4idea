@@ -4,13 +4,14 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.view.MongoPanel;
-import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
+import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
+
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 
 public class OpenFindAction extends AnAction implements DumbAware {
-    private static final Icon FIND_ICON = StyleAttributesUtils.getInstance().getFindIcon();
+    private static final Icon FIND_ICON = StyleAttributesProvider.getFindIcon();
     private final MongoPanel mongoPanel;
 
     public OpenFindAction(MongoPanel mongoPanel) {

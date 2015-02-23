@@ -188,7 +188,6 @@ public class MongoPanel extends JPanel implements Disposable {
 
     private void validateQuery() {
         queryPanel.validateQuery();
-
     }
 
     @Override

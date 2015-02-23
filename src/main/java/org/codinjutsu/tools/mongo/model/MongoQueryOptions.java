@@ -16,6 +16,7 @@
 
 package org.codinjutsu.tools.mongo.model;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
@@ -29,7 +30,7 @@ public class MongoQueryOptions {
     private static final int DEFAULT_RESULT_LIMIT = 300;
 
     private static final BasicDBObject EMPTY_FILTER = new BasicDBObject();
-    private final List<DBObject> operations = new LinkedList<DBObject>();
+    private final List<Object> operations = new LinkedList<Object>();
 
     private DBObject filter = EMPTY_FILTER;
     private DBObject projection = null;
@@ -41,12 +42,14 @@ public class MongoQueryOptions {
         return !operations.isEmpty();
     }
 
-    public void addQuery(BasicDBObject query) {
-        operations.add(query);
+    public List getOperations() {
+        return operations;
     }
 
-    public List<DBObject> getOperations() {
-        return operations;
+    public void setOperations(String aggregateQuery) {
+        operations.clear();
+        BasicDBList operations = (BasicDBList) JSON.parse(aggregateQuery);
+        this.operations.addAll(operations);
     }
 
     public void setFilter(String query) {
@@ -65,10 +68,10 @@ public class MongoQueryOptions {
         }
     }
 
+
     public DBObject getProjection() {
         return projection;
     }
-
 
     public void setSort(String query) {
         if (!StringUtils.isBlank(query)) {

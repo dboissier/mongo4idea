@@ -144,7 +144,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                     mongoTree.setModel(new DefaultTreeModel(rootNode));
                     mongoTree.revalidate();
 
-                    TreeUtil.expand(mongoTree, 3);
+                    TreeUtil.expand(mongoTree, 2);
 
                 } catch (ConfigurationException confEx) {
                     mongoTree.setModel(null);

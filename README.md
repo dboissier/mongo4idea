@@ -1,8 +1,8 @@
 # Mongo Plugin for IntelliJ IDEA version 0.7.0-SNAPSHOT
 
-*  work with Idea 13 only, Idea 14 compatibility is on the way...
 * [Current changelog](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)
-* [Current build](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.7.0-SNAPSHOT-distribution.zip)
+* [Build for Idea 13](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.7.0-SNAPSHOT-distribution.zip)
+* [Build for Idea 14, Webstorm 9](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.7.0-SNAPSHOT-Idea14-distribution.zip)
 
 ### Important note
 
@@ -61,13 +61,13 @@ The panel shows all documents of the collections (max 300 records by default).
 
 You can copy the result and paste in a text editor.
 
-#### Querying
+#### \[NEW\] Querying
 
 If you want to run a *find* query, click on the Magnify icon or type **CTRL+F** shortcut.
 
 The query panel will appear on the top.
 
-Type your find query in JSON format (e.g.: `{ 'name': 'foo'}`)
+Type your filter, projection or sort query fragment in JSON format (e.g.: `{ 'name': 'foo'}`)
 
 ![Simple query view](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-queryFind.png?raw=true)
 

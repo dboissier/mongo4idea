@@ -19,13 +19,11 @@ package org.codinjutsu.tools.mongo.view.nodedescriptor;
 import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
-import org.codinjutsu.tools.mongo.view.style.StyleAttributesUtils;
+
 
 public interface MongoNodeDescriptor {
 
     int MAX_LENGTH = 150;
-
-    StyleAttributesProvider TEXT_ATTRIBUTES_PROVIDER = StyleAttributesUtils.getInstance();
 
     void renderValue(ColoredTableCellRenderer cellRenderer, boolean isNodeExpanded);
 

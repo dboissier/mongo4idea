@@ -36,6 +36,16 @@ public class GuiUtils {
         return IconLoader.findIcon(ICON_FOLDER + iconFilename);
     }
 
+    public static Icon loadIcon(String iconFilename, String darkIconFilename) {
+        String iconPath = ICON_FOLDER;
+        if (isUnderDarcula()) {
+            iconPath += darkIconFilename;
+        } else {
+            iconPath += iconFilename;
+        }
+        return IconLoader.findIcon(iconPath);
+    }
+
     public static URL getIconResource(String iconFilename) {
         return GuiUtils.class.getResource(ICON_FOLDER + iconFilename);
     }
@@ -61,14 +71,14 @@ public class GuiUtils {
         }
     }
 
-//    Copy from private method com.intellij.util.ui.tree.TreeUtils#expand need to expand specifically some node instead of the whole tree
+    //    Copy from private method com.intellij.util.ui.tree.TreeUtils#expand need to expand specifically some node instead of the whole tree
     public static void expand(@NotNull JTree tree, @NotNull TreePath path, int levels) {
         if (levels == 0) return;
         tree.expandPath(path);
-        TreeNode node = (TreeNode)path.getLastPathComponent();
+        TreeNode node = (TreeNode) path.getLastPathComponent();
         Enumeration children = node.children();
         while (children.hasMoreElements()) {
-            expand(tree, path.pathByAddingChild(children.nextElement()) , levels - 1);
+            expand(tree, path.pathByAddingChild(children.nextElement()), levels - 1);
         }
     }
 }
