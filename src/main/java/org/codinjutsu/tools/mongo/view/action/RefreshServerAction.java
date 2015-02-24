@@ -19,19 +19,35 @@ package org.codinjutsu.tools.mongo.view.action;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
+import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
+import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
 
 public class RefreshServerAction extends AnAction implements DumbAware {
+
+    private static final Icon CONNECT_ICON = GuiUtils.loadIcon("connector.png", "connector_dark.png");
+    private static final Icon REFRESH_ICON = GuiUtils.loadIcon("refresh.png", "refresh_dark.png");
+    private static final String REFRESH_TEXT = "Refresh this server";
+    private static final String CONNECT_TEXT = "Connect to this server";
 
     private final MongoExplorerPanel mongoExplorerPanel;
 
     public RefreshServerAction(MongoExplorerPanel mongoExplorerPanel) {
-        super("Refresh this server");
+        super(REFRESH_TEXT);
         this.mongoExplorerPanel = mongoExplorerPanel;
     }
 
     @Override
-    public void actionPerformed(AnActionEvent anActionEvent) {
+    public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
         mongoExplorerPanel.reloadSelectedServerConfiguration();
+    }
+
+    @Override
+    public void update(@NotNull AnActionEvent event) {
+        boolean isConnected = mongoExplorerPanel.getSelectedServerNode().getChildCount() > 0;
+        event.getPresentation().setIcon(isConnected ? REFRESH_ICON  : CONNECT_ICON);
+        event.getPresentation().setText(isConnected ? REFRESH_TEXT : CONNECT_TEXT);
     }
 }

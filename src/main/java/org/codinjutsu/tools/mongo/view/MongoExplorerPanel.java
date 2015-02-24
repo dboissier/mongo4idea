@@ -273,7 +273,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         mongoTree = null;
     }
 
-    DefaultMutableTreeNode getSelectedServerNode() {
+    public DefaultMutableTreeNode getSelectedServerNode() {
         DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) mongoTree.getLastSelectedPathComponent();
         if (treeNode != null) {
             Object userObject = treeNode.getUserObject();
