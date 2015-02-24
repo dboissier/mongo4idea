@@ -81,4 +81,9 @@ public class GuiUtils {
             expand(tree, path.pathByAddingChild(children.nextElement()), levels - 1);
         }
     }
+
+    public static Dimension enlargeWidth(Dimension preferredSize, double factor) {
+        int enlargedWidth = new Double(preferredSize.width * factor).intValue();
+        return new Dimension(enlargedWidth, preferredSize.height);
+    }
 }

@@ -19,6 +19,7 @@ package org.codinjutsu.tools.mongo.view;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.apache.commons.lang.StringUtils;
+import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -34,6 +35,7 @@ public class AddKeyDialog extends AbstractAddDialog {
 
     private AddKeyDialog(MongoEditionPanel mongoEditionPanel) {
         super(mongoEditionPanel);
+        mainPanel.setPreferredSize(GuiUtils.enlargeWidth(mainPanel.getPreferredSize(), 1.5d));
         valuePanel.setLayout(new BorderLayout());
         nameTextfield.setName("keyName");
         typeCombobox.setName("valueType");

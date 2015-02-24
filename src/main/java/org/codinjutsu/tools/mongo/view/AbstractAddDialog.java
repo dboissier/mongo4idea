@@ -50,8 +50,7 @@ public abstract class AbstractAddDialog extends DialogWrapper {
     }
 
     final MongoEditionPanel mongoEditionPanel;
-    private JsonDataType currentDataType = null;
-    TextFieldWrapper currentEditor = null;
+    protected TextFieldWrapper currentEditor = null;
 
 
     AbstractAddDialog(MongoEditionPanel mongoEditionPanel) {
@@ -75,7 +74,6 @@ public abstract class AbstractAddDialog extends DialogWrapper {
             @Override
             public void itemStateChanged(ItemEvent itemEvent) {
                 JsonDataType selectedType = (JsonDataType) combobox.getSelectedItem();
-                currentDataType = selectedType;
                 currentEditor = UI_COMPONENT_BY_JSON_DATATYPE.get(selectedType);
                 currentEditor.reset();
 
@@ -87,10 +85,6 @@ public abstract class AbstractAddDialog extends DialogWrapper {
         });
 
         combobox.setSelectedItem(JsonDataType.STRING);
-    }
-
-    public JsonDataType getJsonDataType() {
-        return currentDataType;
     }
 
     public abstract Object getValue();

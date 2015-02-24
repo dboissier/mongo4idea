@@ -17,10 +17,7 @@ import javax.swing.text.DefaultFormatterFactory;
 import java.awt.*;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
+import java.util.*;
 
 
 public class DateTimePicker extends JXDatePicker {
@@ -42,7 +39,7 @@ public class DateTimePicker extends JXDatePicker {
     public static DateTimePicker create() {
         DateTimePicker dateTimePicker = new DateTimePicker();
         dateTimePicker.setFormats(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, LOCALE));
-        dateTimePicker.setTimeFormat( DateFormat.getTimeInstance( DateFormat.MEDIUM, LOCALE ) );
+        dateTimePicker.setTimeFormat(DateFormat.getTimeInstance(DateFormat.MEDIUM, LOCALE));
         dateTimePicker.applyUIStyle();
 
         return dateTimePicker;
@@ -66,7 +63,7 @@ public class DateTimePicker extends JXDatePicker {
     @Override
     public JPanel getLinkPanel() {
         super.getLinkPanel();
-        if( timePanel == null ) {
+        if (timePanel == null) {
             timePanel = createTimePanel();
         }
         setTimeSpinners();
@@ -84,19 +81,19 @@ public class DateTimePicker extends JXDatePicker {
 
         SpinnerDateModel dateModel = new SpinnerDateModel();
         timeSpinner = new JSpinner(dateModel);
-        if( timeFormat == null ) timeFormat = DateFormat.getTimeInstance( DateFormat.SHORT );
+        if (timeFormat == null) timeFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
         updateTextFieldFormat();
         newPanel.add(timeSpinner);
         return newPanel;
     }
 
     private void updateTextFieldFormat() {
-        if( timeSpinner == null ) return;
+        if (timeSpinner == null) return;
         JFormattedTextField tf = ((JSpinner.DefaultEditor) timeSpinner.getEditor()).getTextField();
         DefaultFormatterFactory factory = (DefaultFormatterFactory) tf.getFormatterFactory();
         DateFormatter formatter = (DateFormatter) factory.getDefaultFormatter();
         // Change the date format to only show the hours
-        formatter.setFormat( timeFormat );
+        formatter.setFormat(timeFormat);
     }
 
     private void commitTime() {
@@ -104,13 +101,13 @@ public class DateTimePicker extends JXDatePicker {
         if (date != null) {
             Date time = (Date) timeSpinner.getValue();
             GregorianCalendar timeCalendar = new GregorianCalendar();
-            timeCalendar.setTime( time );
+            timeCalendar.setTime(time);
 
             GregorianCalendar calendar = new GregorianCalendar();
             calendar.setTime(date);
-            calendar.set(Calendar.HOUR_OF_DAY, timeCalendar.get( Calendar.HOUR_OF_DAY ) );
-            calendar.set(Calendar.MINUTE, timeCalendar.get( Calendar.MINUTE ) );
-            calendar.set(Calendar.SECOND, timeCalendar.get( Calendar.SECOND ));
+            calendar.set(Calendar.HOUR_OF_DAY, timeCalendar.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, timeCalendar.get(Calendar.MINUTE));
+            calendar.set(Calendar.SECOND, timeCalendar.get(Calendar.SECOND));
             calendar.set(Calendar.MILLISECOND, 0);
 
             Date newDate = calendar.getTime();
@@ -121,7 +118,7 @@ public class DateTimePicker extends JXDatePicker {
     private void setTimeSpinners() {
         Date date = getDate();
         if (date != null) {
-            timeSpinner.setValue( date );
+            timeSpinner.setValue(date);
         }
     }
 
@@ -143,5 +140,19 @@ public class DateTimePicker extends JXDatePicker {
 
         getLinkPanel().setBackground(backgroundColor);
         getLinkPanel().setForeground(foregroundColor);
+    }
+
+
+    public static void main(String[] args) {
+        String[] ids = TimeZone.getAvailableIDs();
+        for (String id : ids) {
+            if (!id.startsWith("Etc")) {
+                TimeZone zone = TimeZone.getTimeZone(id);
+                int offset = zone.getRawOffset() / 1000;
+                int hour = offset / 3600;
+                int minutes = (offset % 3600) / 60;
+                System.out.println(String.format("(GMT%+d:%02d) %s", hour, minutes, id));
+            }
+        }
     }
 }
