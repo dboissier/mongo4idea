@@ -21,11 +21,12 @@ import org.jdesktop.swingx.table.DatePickerCellEditor;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
+import java.util.Locale;
 
 public class MongoDatePickerCellEditor extends DatePickerCellEditor {
 
     public MongoDatePickerCellEditor() {
-        this.dateFormat = DateUtils.utcDateTime();
+        this.dateFormat = DateUtils.utcDateTime(Locale.getDefault());
         datePicker = DateTimePicker.create();
         datePicker.getEditor().setBorder(BorderFactory.createEmptyBorder(0, 1, 0, 1));
         datePicker.getEditor().setEditable(false);

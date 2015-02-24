@@ -39,8 +39,9 @@ public class DateTimePicker extends JXDatePicker {
 
     public static DateTimePicker create() {
         DateTimePicker dateTimePicker = new DateTimePicker();
-        dateTimePicker.setFormats(DateUtils.utcDateTime());
-        dateTimePicker.setTimeFormat(DateFormat.getTimeInstance(DateFormat.MEDIUM, LOCALE));
+        dateTimePicker.setFormats(DateUtils.utcDateTime(Locale.getDefault()));
+        dateTimePicker.setTimeFormat(DateUtils.utcTime(Locale.getDefault()));
+        dateTimePicker.setTimeZone(TimeZone.getTimeZone("UTC"));
         dateTimePicker.applyUIStyle();
 
         return dateTimePicker;

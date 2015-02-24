@@ -22,8 +22,14 @@ import java.util.TimeZone;
 
 public class DateUtils {
 
-    public static DateFormat utcDateTime() {
-        DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.getDefault());
+    public static DateFormat utcDateTime(Locale locale) {
+        DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, locale);
+        format.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return format;
+    }
+
+    public static DateFormat utcTime(Locale locale) {
+        DateFormat format = DateFormat.getTimeInstance(DateFormat.MEDIUM, locale);
         format.setTimeZone(TimeZone.getTimeZone("UTC"));
         return format;
     }

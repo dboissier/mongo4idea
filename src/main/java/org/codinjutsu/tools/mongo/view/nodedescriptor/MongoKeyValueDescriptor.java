@@ -27,6 +27,7 @@ import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
@@ -165,7 +166,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
     private static class MongoKeyDateValueDescriptor extends MongoKeyValueDescriptor {
 
-        private static final DateFormat DATE_FORMAT = DateUtils.utcDateTime();
+        private static final DateFormat DATE_FORMAT = DateUtils.utcDateTime(Locale.getDefault());
 
         private static final String TO_STRING_FOR_DATE_VALUE_TEMPLATE = "\"%s\" : \"%s\"";
 
