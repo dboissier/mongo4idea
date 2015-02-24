@@ -20,14 +20,48 @@ import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.mongodb.DBObject;
+import org.codinjutsu.tools.mongo.utils.DateUtils;
 import org.codinjutsu.tools.mongo.utils.StringUtils;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
+
+import java.text.DateFormat;
+import java.util.Date;
 
 public class MongoValueDescriptor implements MongoNodeDescriptor {
 
     private final int index;
     protected Object value;
     private final SimpleTextAttributes valueTextAttributes;
+
+    public static MongoValueDescriptor createDescriptor(int index, Object value) {
+        if (value == null) {
+            return new MongoNullValueDescriptor(index);
+        }
+
+        if (value instanceof String) {
+            return new MongoStringValueDescriptor(index, (String) value);
+        } else if (value instanceof Boolean) {
+            return new MongoValueDescriptor(index, value, StyleAttributesProvider.getBooleanAttribute()) {
+                @Override
+                public void setValue(Object value) {
+                    this.value = Boolean.parseBoolean((String) value);
+                }
+            };
+        } else if (value instanceof Number) {
+            return new MongoValueDescriptor(index, value, StyleAttributesProvider.getNumberAttribute()) {
+                @Override
+                public void setValue(Object value) {
+                    this.value = Integer.parseInt((String)value);
+                }
+            };
+        } else if (value instanceof Date) {
+            return new MongoDateValueDescriptor(index, (Date) value);
+        } else if (value instanceof DBObject) {
+            return new MongoValueDescriptor(index, value, StyleAttributesProvider.getDBObjectAttribute());
+        } else {
+            return new MongoValueDescriptor(index, value, StyleAttributesProvider.getStringAttribute());
+        }
+    }
 
     private MongoValueDescriptor(int index, Object value, SimpleTextAttributes valueTextAttributes) {
         this.index = index;
@@ -41,7 +75,6 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
         }
     }
 
-    @Override
     public void renderNode(ColoredTreeCellRenderer cellRenderer) {
         cellRenderer.append(getFormattedKey(), StyleAttributesProvider.getIndexAttribute());
     }
@@ -50,7 +83,6 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
         return String.format("[%s]", index);
     }
 
-    @Override
     public String getFormattedValue() {
         return String.format("%s", getValueAndAbbreviateIfNecessary());
     }
@@ -63,12 +95,10 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
         return stringifiedValue;
     }
 
-    @Override
     public Object getValue() {
         return value;
     }
 
-    @Override
     public void setValue(Object value) {
         this.value = value;
     }
@@ -107,31 +137,28 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
         }
     }
 
-    public static MongoValueDescriptor createDescriptor(int index, Object value) {
-        if (value == null) {
-            return new MongoNullValueDescriptor(index);
+    private static class MongoDateValueDescriptor extends MongoValueDescriptor {
+
+        private static final DateFormat DATE_FORMAT = DateUtils.utcDateTime();
+
+        private static final String TO_STRING_FOR_DATE_VALUE_TEMPLATE = "\"%s\"";
+
+        private MongoDateValueDescriptor(int index, Date value) {
+            super(index, value, StyleAttributesProvider.getStringAttribute());
         }
 
-        if (value instanceof String) {
-            return new MongoStringValueDescriptor(index, (String) value);
-        } else if (value instanceof Boolean) {
-            return new MongoValueDescriptor(index, value, StyleAttributesProvider.getBooleanAttribute()) {
-                @Override
-                public void setValue(Object value) {
-                    this.value = Boolean.parseBoolean((String) value);
-                }
-            };
-        } else if (value instanceof Number) {
-            return new MongoValueDescriptor(index, value, StyleAttributesProvider.getNumberAttribute()) {
-                @Override
-                public void setValue(Object value) {
-                    this.value = Integer.parseInt((String)value);
-                }
-            };
-        } else if (value instanceof DBObject) {
-            return new MongoValueDescriptor(index, value, StyleAttributesProvider.getDBObjectAttribute());
-        } else {
-            return new MongoValueDescriptor(index, value, StyleAttributesProvider.getStringAttribute());
+        @Override
+        protected String getValueAndAbbreviateIfNecessary() {
+            return getFormattedDate();
+        }
+
+        @Override
+        public String toString() {
+            return String.format(TO_STRING_FOR_DATE_VALUE_TEMPLATE, getFormattedDate());
+        }
+
+        private String getFormattedDate() {
+            return DATE_FORMAT.format(value);
         }
     }
 }

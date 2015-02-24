@@ -72,7 +72,7 @@ public class MongoEditionPanel extends JPanel implements Disposable {
         cancelButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                actionCallback.onOperationSuccess("Modification canceled...");
+                actionCallback.onOperationCancelled("Modification canceled...");
             }
         });
 

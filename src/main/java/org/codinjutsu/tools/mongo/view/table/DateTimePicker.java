@@ -6,6 +6,7 @@
 package org.codinjutsu.tools.mongo.view.table;
 
 import com.intellij.ui.JBColor;
+import org.codinjutsu.tools.mongo.utils.DateUtils;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 import org.jdesktop.swingx.JXDatePicker;
 import org.jdesktop.swingx.JXMonthView;
@@ -38,7 +39,7 @@ public class DateTimePicker extends JXDatePicker {
 
     public static DateTimePicker create() {
         DateTimePicker dateTimePicker = new DateTimePicker();
-        dateTimePicker.setFormats(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, LOCALE));
+        dateTimePicker.setFormats(DateUtils.utcDateTime());
         dateTimePicker.setTimeFormat(DateFormat.getTimeInstance(DateFormat.MEDIUM, LOCALE));
         dateTimePicker.applyUIStyle();
 

@@ -40,91 +40,73 @@ public class StyleAttributesProvider {
     private static final SimpleTextAttributes DBOBJECT_TEXT_ATTRIBUTE = new SimpleTextAttributes(Font.BOLD, LIGHT_GRAY);
     private static final SimpleTextAttributes OBJECT_ID_TEXT_ATTRIBUTE = INTEGER_TEXT_ATTRIBUTE;
 
-
     public static SimpleTextAttributes getIndexAttribute() {
         return INDEX;
     }
-
 
     public static SimpleTextAttributes getKeyValueAttribute() {
         return KEY_VALUE;
     }
 
-
     public static SimpleTextAttributes getNumberAttribute() {
         return INTEGER_TEXT_ATTRIBUTE;
     }
-
 
     public static SimpleTextAttributes getBooleanAttribute() {
         return BOOLEAN_TEXT_ATTRIBUTE;
     }
 
-
     public static SimpleTextAttributes getStringAttribute() {
         return STRING_TEXT_ATTRIBUTE;
     }
-
 
     public static SimpleTextAttributes getNullAttribute() {
         return NULL_TEXT_ATTRIBUTE;
     }
 
-
     public static SimpleTextAttributes getDBObjectAttribute() {
         return DBOBJECT_TEXT_ATTRIBUTE;
     }
-
 
     public static SimpleTextAttributes getObjectIdAttribute() {
         return OBJECT_ID_TEXT_ATTRIBUTE;
     }
 
-
     public static Icon getAddIcon() {
         return GuiUtils.loadIcon("add.png", "add_dark.png");
     }
-
 
     public static Icon getCopyIcon() {
         return GuiUtils.loadIcon("copy.png", "copy_dark.png");
     }
 
-
     public static Icon getExecuteIcon() {
         return GuiUtils.loadIcon("execute.png", "execute_dark.png");
     }
-
 
     public static Icon getSettingsIcon() {
         return GuiUtils.loadIcon("pluginSettings.png", "pluginSettings_dark.png");
     }
 
-
     public static Icon getRefreshIcon() {
         return GuiUtils.loadIcon("refresh.png", "refresh_dark.png");
     }
-
 
     public static Icon getEditIcon() {
         return GuiUtils.loadIcon("edit.png", "edit_dark.png");
     }
 
-
     public static Icon getClearAllIcon() {
         return GuiUtils.loadIcon("clearAll.png", "clearAll_dark.png");
     }
-
 
     public static Icon getDeleteIcon() {
         return GuiUtils.loadIcon("delete.png", "delete_dark.png");
     }
 
-
     public static Icon getFindIcon() {
         return GuiUtils.loadIcon("find.png", "find_dark.png");
     }
-
 
     public static Icon getDataSchemaIcon() {
         return GuiUtils.loadIcon("dataSchema.png", "dataSchema_dark.png");

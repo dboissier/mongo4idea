@@ -16,16 +16,16 @@
 
 package org.codinjutsu.tools.mongo.view.table;
 
+import org.codinjutsu.tools.mongo.utils.DateUtils;
 import org.jdesktop.swingx.table.DatePickerCellEditor;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
-import java.text.DateFormat;
 
 public class MongoDatePickerCellEditor extends DatePickerCellEditor {
 
     public MongoDatePickerCellEditor() {
-        this.dateFormat = DateFormat.getDateInstance();
+        this.dateFormat = DateUtils.utcDateTime();
         datePicker = DateTimePicker.create();
         datePicker.getEditor().setBorder(BorderFactory.createEmptyBorder(0, 1, 0, 1));
         datePicker.getEditor().setEditable(false);

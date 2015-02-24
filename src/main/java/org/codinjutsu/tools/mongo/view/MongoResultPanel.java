@@ -95,6 +95,12 @@ public class MongoResultPanel extends JPanel implements Disposable {
             public void onOperationFailure(Exception exception) {
                 showNotification(MessageType.ERROR, exception.getMessage());
             }
+
+            @Override
+            public void onOperationCancelled(String message) {
+                hideEditionPanel();
+                showNotification(MessageType.WARNING, message);
+            }
         });
     }
 
@@ -253,5 +259,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
         void onOperationSuccess(String message);
 
         void onOperationFailure(Exception exception);
+
+        void onOperationCancelled(String message);
     }
 }
