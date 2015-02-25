@@ -23,7 +23,7 @@ import java.util.TimeZone;
 public class DateUtils {
 
     public static DateFormat utcDateTime(Locale locale) {
-        DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, locale);
+        DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.LONG, locale);
         format.setTimeZone(TimeZone.getTimeZone("UTC"));
         return format;
     }

@@ -6,6 +6,8 @@
 package org.codinjutsu.tools.mongo.view.table;
 
 import com.intellij.ui.JBColor;
+import com.intellij.ui.LightColors;
+import com.intellij.util.ui.UIUtil;
 import org.codinjutsu.tools.mongo.utils.DateUtils;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 import org.jdesktop.swingx.JXDatePicker;
@@ -23,11 +25,10 @@ import java.util.*;
 
 public class DateTimePicker extends JXDatePicker {
 
-    private static final Locale LOCALE = Locale.getDefault();
-    private static Color backgroundColor = new JPanel().getBackground();
-    private static Color foregroundColor = new JPanel().getForeground();
-    private static Color selectionBackgroundColor = JBColor.LIGHT_GRAY;
-    private static Color selectionForegroundColor = JBColor.BLACK;
+    private static Color backgroundColor = JBColor.background();
+    private static Color foregroundColor = JBColor.foreground();
+    private static Color selectionBackgroundColor = UIUtil.getTableSelectionBackground();
+    private static Color selectionForegroundColor = UIUtil.getTableSelectionForeground();
     private static Color monthForegroundColor = StyleAttributesProvider.NUMBER_COLOR;
     private static Color dayOfTheWeekForegroundColor = StyleAttributesProvider.KEY_COLOR;
     private static Color todayBackgroundColor = JBColor.WHITE;
@@ -47,8 +48,8 @@ public class DateTimePicker extends JXDatePicker {
         return dateTimePicker;
     }
 
-    public DateTimePicker() {
-        super();
+    private DateTimePicker() {
+        super(null, Locale.getDefault());
         getMonthView().setSelectionModel(new SingleDaySelectionModel());
     }
 

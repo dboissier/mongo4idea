@@ -226,6 +226,7 @@ public abstract class AbstractAddDialog extends DialogWrapper {
 
         private DateTimeFieldWrapper() {
             super(DateTimePicker.create());
+            component.getEditor().setEditable(false);
         }
 
         @Override
