@@ -1,12 +1,7 @@
-# Mongo Plugin for IntelliJ IDEA version 0.7.0-SNAPSHOT
+# Mongo Plugin for IntelliJ IDEA version 0.7.0
 
-* [Current changelog](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)
-* [Build for Idea 13](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.7.0-SNAPSHOT-distribution.zip)
-* [Build for Idea 14, Webstorm 9](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.7.0-SNAPSHOT-Idea14-distribution.zip)
-
-### Important note
-
-This release will be the last! As I announced in this [blog post](http://codinjutsu.blogspot.fr/2014/07/hi-all-mongo-plugin-seems-to-grow-in.html). I will work on **nosql4idea** plugin that will integrate Mongo and other Document Oriented Database such as CouchBase and Redis.
+* [Changelog](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)
+* **Important note**: This release will be the last! As I announced in this [blog post](http://codinjutsu.blogspot.fr/2014/07/hi-all-mongo-plugin-seems-to-grow-in.html). I will work on **nosql4idea** plugin that will integrate Mongo and other Document Oriented Database such as CouchBase and Redis.
 
 ## Description
 This plugin integrates MongoDB Servers with database/collections tree, Query Runner and Shell console.
@@ -134,20 +129,7 @@ I would like to thank:
 * My wife and my daughters who support me to have fun in software development and also remind me my husband/father duty ;).
 
 
-### Last Developer notes
-
-
-#### Why could the document be edited directly in the tree result?
-
-After making some tries, many issues were found:
-* Sometimes, projection can be used in the query. Edition requires having the object **id** to send the updated value to the mongo server and have all Mongo object content.
-* When the user updates a value, it was sent directely to the server. It is not convenient and does not handle misstyping. The user would like to update a set of key value.
-
-So, I decided to make a specific GUI for it:
-
-* Easier to make and test
-* Component non coupled with the result tree.
-* The user has the full control on the update/save operations
+## FAQ
 
 
 ### The plugin does not work. I have `ClassNotFoundDefException`
