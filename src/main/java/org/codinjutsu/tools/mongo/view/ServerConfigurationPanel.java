@@ -16,9 +16,10 @@
 
 package org.codinjutsu.tools.mongo.view;
 
-import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
+import com.intellij.openapi.ui.ComponentWithBrowseButton;
+import com.intellij.openapi.ui.TextComponentAccessor;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.RawCommandLineEditor;
@@ -38,7 +39,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ServerConfigurationPanel extends JPanel implements Disposable {
+public class ServerConfigurationPanel extends JPanel {
 
     public static final Icon SUCCESS = GuiUtils.loadIcon("success.png");
     public static final Icon FAIL = GuiUtils.loadIcon("fail.png");
@@ -266,13 +267,16 @@ public class ServerConfigurationPanel extends JPanel implements Disposable {
 
     private void createUIComponents() {
         shellWorkingDirField = new TextFieldWithBrowseButton();
-        shellWorkingDirField.addBrowseFolderListener("Mongo shell working directory", "", null,
-                new FileChooserDescriptor(false, true, false, false, false, false));
+        FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(false, true, false, false, false, false);
+        ComponentWithBrowseButton.BrowseFolderActionListener<JTextField> browseFolderActionListener =
+                new ComponentWithBrowseButton.BrowseFolderActionListener<JTextField>("Mongo shell working directory",
+                        null,
+                        shellWorkingDirField,
+                        null,
+                        fileChooserDescriptor,
+                        TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT);
+        shellWorkingDirField.addBrowseFolderListener(null, browseFolderActionListener, false);
         shellWorkingDirField.setName("shellWorkingDirField");
-    }
-
-    @Override
-    public void dispose() {
     }
 
     public void setErrorMessage(String message) {
