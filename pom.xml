@@ -89,7 +89,18 @@
             <groupId>com.intellij</groupId>
             <artifactId>resources</artifactId>
             <version>${intellij.sdk.version}</version>
-            <scope>runtime</scope>
+            <!--<scope>runtime</scope>-->
+        </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>resources_en</artifactId>
+            <version>${intellij.sdk.version}</version>
+            <!--<scope>runtime</scope>-->
+        </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>icons</artifactId>
+            <version>${intellij.sdk.version}</version>
         </dependency>
 
         <!-- Test dependencies -->
