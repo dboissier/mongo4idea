@@ -174,7 +174,7 @@ public class QueryPanel extends JPanel implements Disposable {
             add(headPanel, BorderLayout.NORTH);
             add(this.editor.getComponent(), BorderLayout.CENTER);
 
-            this.operatorCompletionAction = new OperatorCompletionAction(editor);
+            this.operatorCompletionAction = new OperatorCompletionAction(project, editor);
 
 
             myUpdateAlarm.setActivationComponent(this.editor.getComponent());
@@ -238,7 +238,7 @@ public class QueryPanel extends JPanel implements Disposable {
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
             this.selectEditor = createEditor();
-            this.operatorCompletionAction = new OperatorCompletionAction(selectEditor);
+            this.operatorCompletionAction = new OperatorCompletionAction(project, selectEditor);
             add(createSubOperatorPanel("Filter", this.selectEditor));
 
             this.projectionEditor = createEditor();

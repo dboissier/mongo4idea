@@ -1,5 +1,6 @@
 Version 0.7.0-SNAPSHOT
     * [fix] compatibility with Idea 14, Webstorm 9 products
+    * [fix] Idea violation when using mongo operator completion
     * [fix] #97 UnsupportedOperationException viewing collection
     * [fix] javascript file detection for executing script in Idea 13.1 UI
     * [fix] #81 Use User Database as authentication database
