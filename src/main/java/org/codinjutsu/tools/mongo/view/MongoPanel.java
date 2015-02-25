@@ -27,6 +27,8 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.ui.NumberDocument;
+import com.intellij.ui.components.panels.NonOpaquePanel;
 import com.mongodb.DBObject;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
@@ -44,6 +46,7 @@ public class MongoPanel extends JPanel implements Disposable {
     private Splitter splitter;
     private JPanel toolBar;
     private JPanel errorPanel;
+    private final JTextField rowLimitField = new JTextField("");
     private final MongoResultPanel resultPanel;
     private final QueryPanel queryPanel;
 
@@ -59,10 +62,7 @@ public class MongoPanel extends JPanel implements Disposable {
         errorPanel.setLayout(new BorderLayout());
 
         queryPanel = new QueryPanel(project);
-
-        splitter.setOrientation(true);
-        splitter.setProportion(0.2f);
-        toolBar.setLayout(new BorderLayout());
+        queryPanel.setVisible(false);
 
         resultPanel = createResultPanel(project, new MongoDocumentOperations() {
 
@@ -80,13 +80,30 @@ public class MongoPanel extends JPanel implements Disposable {
                 executeQuery();
             }
         });
+
+        splitter.setOrientation(true);
+        splitter.setProportion(0.2f);
         splitter.setSecondComponent(resultPanel);
 
         setLayout(new BorderLayout());
         add(rootPanel);
 
+        initToolBar();
+    }
+
+    private void initToolBar() {
+        toolBar.setLayout(new BorderLayout());
+
+        rowLimitField.setColumns(5);
+        rowLimitField.setDocument(new NumberDocument());
+
+        JPanel rowLimitPanel = new NonOpaquePanel();
+        rowLimitPanel.add(new JLabel("Row limit:"), BorderLayout.WEST);
+        rowLimitPanel.add(rowLimitField, BorderLayout.CENTER);
+        rowLimitPanel.add(Box.createHorizontalStrut(5), BorderLayout.EAST);
+        toolBar.add(rowLimitPanel, BorderLayout.WEST);
+
         installResultPanelActions();
-        installQueryPanelActions();
     }
 
     private MongoResultPanel createResultPanel(Project project, MongoDocumentOperations mongoDocumentOperations) {
@@ -99,6 +116,8 @@ public class MongoPanel extends JPanel implements Disposable {
         if (ApplicationManager.getApplication() != null) {
             actionResultGroup.add(new ExecuteQuery(this));
             actionResultGroup.add(new OpenFindAction(this));
+            actionResultGroup.add(new EnableAggregateAction(queryPanel));
+            actionResultGroup.addSeparator();
             actionResultGroup.add(new AddMongoDocumentAction(resultPanel));
             actionResultGroup.add(new EditMongoDocumentAction(resultPanel));
             actionResultGroup.add(new CopyResultAction(resultPanel));
@@ -138,28 +157,18 @@ public class MongoPanel extends JPanel implements Disposable {
             }
         });
 
+        actionResultGroup.addSeparator();
         actionResultGroup.add(expandAllAction);
         actionResultGroup.add(collapseAllAction);
+        actionResultGroup.add(new CloseFindEditorAction(this));
 
-        GuiUtils.installActionGroupInToolBar(actionResultGroup, resultPanel.getToolbar(), ActionManager.getInstance(), "MongoGroupActions", false);
-    }
-
-    void installQueryPanelActions() {
-        JPanel queryPanelToolbar = queryPanel.getToolbar();
-
-        DefaultActionGroup actionQueryGroup = new DefaultActionGroup("MongoResultGroup", true);
-        if (ApplicationManager.getApplication() != null) {
-            actionQueryGroup.add(new EnableAggregateAction(queryPanel));
-            actionQueryGroup.add(new CloseFindEditorAction(this));
-        }
-
-        ActionToolbar actionToolBar = ActionManager.getInstance().createActionToolbar("MongoQueryGroupActions", actionQueryGroup, true);
+        ActionToolbar actionToolBar = ActionManager.getInstance().createActionToolbar("MongoResultGroupActions", actionResultGroup, true);
         actionToolBar.setLayoutPolicy(ActionToolbar.AUTO_LAYOUT_POLICY);
         JComponent actionToolBarComponent = actionToolBar.getComponent();
         actionToolBarComponent.setBorder(null);
         actionToolBarComponent.setOpaque(false);
 
-        queryPanelToolbar.add(actionToolBarComponent, BorderLayout.CENTER);
+        toolBar.add(actionToolBarComponent, BorderLayout.CENTER);
     }
 
     public MongoCollection getMongoCollection() {
@@ -175,7 +184,7 @@ public class MongoPanel extends JPanel implements Disposable {
         try {
             errorPanel.setVisible(false);
             validateQuery();
-            MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(configuration, mongoCollection, queryPanel.getQueryOptions());
+            MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(configuration, mongoCollection, queryPanel.getQueryOptions(rowLimitField.getText()));
             resultPanel.updateResultTableTree(mongoCollectionResult);
         } catch (Exception ex) {
             errorPanel.invalidate();
@@ -200,6 +209,7 @@ public class MongoPanel extends JPanel implements Disposable {
     }
 
     public void openFindEditor() {
+        queryPanel.setVisible(true);
         splitter.setFirstComponent(queryPanel);
         GuiUtils.runInSwingThread(new Runnable() {
             @Override
@@ -211,6 +221,7 @@ public class MongoPanel extends JPanel implements Disposable {
 
     public void closeFindEditor() {
         splitter.setFirstComponent(null);
+        queryPanel.setVisible(false);
     }
 
     public void focusOnEditor() {

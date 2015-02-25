@@ -57,8 +57,9 @@ public class EnableAggregateAction extends ToggleAction {
     }
 
     @Override
-    public void update(AnActionEvent e) {
-        e.getPresentation().setText(isSelected(e) ? ENABLE_FIND_MODE : ENABLE_AGGREGATION_MODE);
-        e.getPresentation().setDescription(isSelected(e) ? QUERY_AGGREGATION_SAMPLE : QUERY_FIND_SAMPLE);
+    public void update(AnActionEvent event) {
+        event.getPresentation().setText(isSelected(event) ? ENABLE_FIND_MODE : ENABLE_AGGREGATION_MODE);
+        event.getPresentation().setDescription(isSelected(event) ? QUERY_AGGREGATION_SAMPLE : QUERY_FIND_SAMPLE);
+        event.getPresentation().setVisible(queryPanel.isVisible());
     }
 }

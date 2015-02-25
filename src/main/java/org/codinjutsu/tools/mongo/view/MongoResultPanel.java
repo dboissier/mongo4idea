@@ -56,7 +56,6 @@ public class MongoResultPanel extends JPanel implements Disposable {
     private final MongoPanel.MongoDocumentOperations mongoDocumentOperations;
     private JPanel mainPanel;
     private JPanel containerPanel;
-    private JPanel toolbar;
     private final Splitter splitter;
     private final JPanel resultTreePanel;
     private final MongoEditionPanel mongoEditionPanel;
@@ -66,7 +65,6 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
     public MongoResultPanel(Project project, MongoPanel.MongoDocumentOperations mongoDocumentOperations) {
         this.mongoDocumentOperations = mongoDocumentOperations;
-        toolbar.setLayout(new BorderLayout());
         setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
 
@@ -99,7 +97,6 @@ public class MongoResultPanel extends JPanel implements Disposable {
             @Override
             public void onOperationCancelled(String message) {
                 hideEditionPanel();
-                showNotification(MessageType.WARNING, message);
             }
         });
     }
@@ -228,7 +225,6 @@ public class MongoResultPanel extends JPanel implements Disposable {
         return userObject.toString();
     }
 
-
     private void hideEditionPanel() {
         splitter.setSecondComponent(null);
     }
@@ -248,11 +244,6 @@ public class MongoResultPanel extends JPanel implements Disposable {
         resultTableView = null;
         mongoEditionPanel.dispose();
     }
-
-    public JPanel getToolbar() {
-        return toolbar;
-    }
-
 
     public interface ActionCallback {
 

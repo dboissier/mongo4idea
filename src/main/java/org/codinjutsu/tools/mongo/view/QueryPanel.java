@@ -35,7 +35,6 @@ import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.wm.IdeFocusManager;
-import com.intellij.ui.NumberDocument;
 import com.intellij.ui.awt.RelativePoint;
 import com.intellij.ui.components.panels.NonOpaquePanel;
 import com.intellij.util.Alarm;
@@ -64,28 +63,12 @@ public class QueryPanel extends JPanel implements Disposable {
     private final CardLayout queryCardLayout;
 
     private JPanel queryContainerPanel;
-    private final JTextField rowLimitField;
-    private JPanel toolbar;
 
     private final OperatorPanel filterPanel;
     private final OperatorPanel aggregationPanel;
 
     public QueryPanel(Project project) {
         this.project = project;
-
-        toolbar.setLayout(new BorderLayout());
-
-        rowLimitField = new JTextField("");
-        rowLimitField.setColumns(5);
-        rowLimitField.setDocument(new NumberDocument());
-
-        JPanel rowLimitPanel = new NonOpaquePanel();
-        rowLimitPanel.add(new JLabel("Row limit:"), BorderLayout.WEST);
-        rowLimitPanel.add(rowLimitField, BorderLayout.CENTER);
-        rowLimitPanel.add(Box.createHorizontalStrut(5), BorderLayout.EAST);
-
-
-        toolbar.add(rowLimitPanel, BorderLayout.WEST);
 
         setLayout(new BorderLayout());
         add(mainPanel);
@@ -120,7 +103,7 @@ public class QueryPanel extends JPanel implements Disposable {
         }
     }
 
-    private OperatorPanel getCurrentOperatorPanel() {
+    public OperatorPanel getCurrentOperatorPanel() {
         return filterPanel.isVisible() ? filterPanel : aggregationPanel;
     }
 
@@ -153,8 +136,8 @@ public class QueryPanel extends JPanel implements Disposable {
         return new LexerEditorHighlighter(PlainTextSyntaxHighlighterFactory.getSyntaxHighlighter(language, null, null), settings);
     }
 
-    public MongoQueryOptions getQueryOptions() {
-        return getCurrentOperatorPanel().buildQueryOptions();
+    public MongoQueryOptions getQueryOptions(String rowLimit) {
+        return getCurrentOperatorPanel().buildQueryOptions(rowLimit);
     }
 
     @Override
@@ -175,11 +158,6 @@ public class QueryPanel extends JPanel implements Disposable {
     public void validateQuery() {
         getCurrentOperatorPanel().validateQuery();
     }
-
-    public JPanel getToolbar() {
-        return toolbar;
-    }
-
 
     private class AggregatorPanel extends OperatorPanel {
 
@@ -222,7 +200,7 @@ public class QueryPanel extends JPanel implements Disposable {
         }
 
         @Override
-        public MongoQueryOptions buildQueryOptions() {
+        public MongoQueryOptions buildQueryOptions(String rowLimit) {
             MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
             try {
                 mongoQueryOptions.setOperations(getQuery());
@@ -230,8 +208,8 @@ public class QueryPanel extends JPanel implements Disposable {
                 notifyOnErrorForOperator(editor.getComponent(), ex);
             }
 
-            if (StringUtils.isNotBlank(rowLimitField.getText())) {
-                mongoQueryOptions.setResultLimit(Integer.parseInt(rowLimitField.getText()));
+            if (StringUtils.isNotBlank(rowLimit)) {
+                mongoQueryOptions.setResultLimit(Integer.parseInt(rowLimit));
             }
 
             return mongoQueryOptions;
@@ -283,7 +261,7 @@ public class QueryPanel extends JPanel implements Disposable {
         }
 
         @Override
-        public MongoQueryOptions buildQueryOptions() {
+        public MongoQueryOptions buildQueryOptions(String rowLimit) {
             MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
             try {
                 mongoQueryOptions.setFilter(getQueryFrom(selectEditor));
@@ -293,8 +271,8 @@ public class QueryPanel extends JPanel implements Disposable {
                 notifyOnErrorForOperator(selectEditor.getComponent(), ex);
             }
 
-            if (StringUtils.isNotBlank(rowLimitField.getText())) {
-                mongoQueryOptions.setResultLimit(Integer.parseInt(rowLimitField.getText()));
+            if (StringUtils.isNotBlank(rowLimit)) {
+                mongoQueryOptions.setResultLimit(Integer.parseInt(rowLimit));
             }
 
             return mongoQueryOptions;
@@ -347,7 +325,7 @@ public class QueryPanel extends JPanel implements Disposable {
 
         public abstract void validateQuery();
 
-        public abstract MongoQueryOptions buildQueryOptions();
+        public abstract MongoQueryOptions buildQueryOptions(String rowLimit);
 
         void notifyOnErrorForOperator(JComponent component, Exception ex) {
             String message;
