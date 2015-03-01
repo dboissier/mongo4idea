@@ -122,7 +122,7 @@ I would like to thank:
 * Mongo Java Driver team
 * Jetbrains Team for the great sources of IntelliJ Community Edition which help me to improve this plugin
 * Mark James author of the famfamfam web site who provides beautiful icons.
-* [Jean Baptiste Potonnier](https://github.com/JJeeb) for the suggestion to create this plugin
+* [Jean Baptiste Potonnier](https://github.com/jbpotonnier) for the suggestion to create this plugin
 * [piddubnyi](https://github.com/piddubnyi) for adding [*drop database* action](https://github.com/dboissier/mongo4idea/pull/95)
 * Neko team, my first beta testers ;)
 * All users of this plugin who sent me valuable suggestions.
