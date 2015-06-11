@@ -20,9 +20,10 @@ package org.codinjutsu.tools.mongo.view.console;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.console.ConsoleHistoryController;
+import com.intellij.execution.console.ConsoleRootType;
+import com.intellij.execution.console.ProcessBackedConsoleExecuteActionHandler;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.runners.AbstractConsoleRunnerWithHistory;
-import com.intellij.execution.runners.ConsoleExecuteActionHandler;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.psi.PsiFile;
@@ -53,7 +54,7 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
     protected MongoConsoleView createConsoleView() {
         MongoConsoleView res = new MongoConsoleView(getProject());
 
-        PsiFile file = res.getConsole().getFile();
+        PsiFile file = res.getFile();
         assert file.getContext() == null;
         file.putUserData(MONGO_SHELL_FILE, Boolean.TRUE);
 
@@ -103,16 +104,14 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
 
     @NotNull
     @Override
-    protected ConsoleExecuteActionHandler createConsoleExecuteActionHandler() {
-        ConsoleExecuteActionHandler handler = new ConsoleExecuteActionHandler(getProcessHandler(), false) {
+    protected ProcessBackedConsoleExecuteActionHandler createExecuteActionHandler() {
+        ProcessBackedConsoleExecuteActionHandler handler = new ProcessBackedConsoleExecuteActionHandler(getProcessHandler(), false) {
             @Override
             public String getEmptyExecuteAction() {
                 return "Mongo.Shell.Execute";
             }
         };
-        new ConsoleHistoryController("Mongo Shell", null, getLanguageConsole(), handler.getConsoleHistoryModel()).install();
+        new ConsoleHistoryController(new ConsoleRootType("Mongo Shell", null) {}, null, getConsoleView()).install();
         return handler;
     }
-
-
 }
