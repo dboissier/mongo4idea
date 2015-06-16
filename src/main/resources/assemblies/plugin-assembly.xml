@@ -25,6 +25,7 @@
         <dependencySet>
             <outputDirectory>/lib</outputDirectory>
             <excludes>
+                <exclude>com.intellij:jna</exclude>
                 <exclude>com.intellij:forms_rt</exclude>
                 <exclude>com.intellij:openapi</exclude>
                 <exclude>com.intellij:util</exclude>
