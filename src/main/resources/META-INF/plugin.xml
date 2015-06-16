@@ -21,7 +21,7 @@
     <vendor email="david.boissier [at] gmail [dot] com" url="http://codinjutsu.blogspot.com">David Boissier</vendor>
 
     <!--<idea-version since-build="135.0" until-build="135.*"/>-->
-    <idea-version since-build="138.0"/>
+    <idea-version since-build="140.*" until-build="145.*"/>
 
     <depends>com.intellij.modules.lang</depends>
 
@@ -69,7 +69,7 @@
     <description><![CDATA[
     <p>
         This tool allows accessing to Mongo databases and provides CRUD operations on mongo collections.<br>
-        Documentation is available on the <a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.7.0/README.md">GitHub project</a>
+        Documentation is available on the <a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.7.1/README.md">GitHub project</a>
     </p>
             <br>
             <br>
@@ -80,6 +80,6 @@
 ]]> </description>
 
     <change-notes><![CDATA[
-<a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.7.0/CHANGELOG.txt">Changelog</a>
+<a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.7.1/CHANGELOG.txt">Changelog</a>
 ]]> </change-notes>
 </idea-plugin>

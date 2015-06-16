@@ -4,21 +4,21 @@
 
     <groupId>org.codinjutsu.tools.mongo</groupId>
     <artifactId>mongo4idea</artifactId>
-    <version>0.7.1</version>
+    <version>0.7.1-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
 
 
         <!--<intellij.sdk.name>135.909</intellij.sdk.name>-->
         <!--<intellij.sdk.version>13.0</intellij.sdk.version>-->
         <!--<intellij.lib.path>/home/dboissier/applications/idea-IC-135.909/lib</intellij.lib.path>-->
-        <intellij.sdk.name>141.1010.1</intellij.sdk.name>
-        <intellij.sdk.version>14.1.3</intellij.sdk.version>
-        <intellij.lib.path>C:\devel\tools\idea\lib</intellij.lib.path>
+        <intellij.sdk.name>141.177.4</intellij.sdk.name>
+        <intellij.sdk.version>14.1</intellij.sdk.version>
+        <intellij.lib.path>/home/dboissier/applications/idea-IU-141.177.4/lib</intellij.lib.path>
     </properties>
 
     <packaging>jar</packaging>

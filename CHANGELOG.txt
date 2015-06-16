@@ -1,4 +1,8 @@
-Version 0.7.0-SNAPSHOT
+Version 0.7.1
+    * [fix] compatibility with Idea 14.1 and latest jetbrains product version (thx pwilkin)
+    * [upd] migrate to mongo driver 3.0
+
+Version 0.7.0
     * [fix] compatibility with Idea 14, Webstorm 9 products
     * [fix] Idea violation when using mongo operator completion
     * [fix] #97 UnsupportedOperationException viewing collection
