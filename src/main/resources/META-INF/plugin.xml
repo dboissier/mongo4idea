@@ -21,7 +21,7 @@
     <vendor email="david.boissier [at] gmail [dot] com" url="http://codinjutsu.blogspot.com">David Boissier</vendor>
 
     <!--<idea-version since-build="135.0" until-build="135.*"/>-->
-    <idea-version since-build="140.*" until-build="145.*"/>
+    <idea-version since-build="140.0" until-build="141.999999"/>
 
     <depends>com.intellij.modules.lang</depends>
 
