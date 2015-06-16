@@ -19,10 +19,13 @@ package org.codinjutsu.tools.mongo.logic;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.mongodb.*;
+import com.mongodb.client.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.*;
+import org.codinjutsu.tools.mongo.model.MongoCollection;
+import org.codinjutsu.tools.mongo.model.MongoDatabase;
 
 import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
@@ -39,21 +42,17 @@ public class MongoManager {
     }
 
     public void connect(ServerConfiguration configuration) {
-
         MongoClient mongo = null;
         try {
             String userDatabase = configuration.getUserDatabase();
             mongo = createMongoClient(configuration);
 
-            DB databaseForTesting;
+            com.mongodb.client.MongoDatabase databaseForTesting;
             if (StringUtils.isNotEmpty(userDatabase)) {
-                databaseForTesting = mongo.getDB(userDatabase);
+                databaseForTesting = mongo.getDatabase(userDatabase);
             } else {
-                databaseForTesting = mongo.getDB("test");
+                databaseForTesting = mongo.getDatabase("test");
             }
-
-            databaseForTesting.getLastError();
-
         } catch (IOException ex) {
             throw new MongoConnectionException(ex);
         } catch (MongoException ex) {
