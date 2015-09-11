@@ -19,6 +19,7 @@ package org.codinjutsu.tools.mongo.view;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
+import org.codinjutsu.tools.mongo.model.MongoServer;
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiQuery;
 import org.fest.swing.fixture.Containers;
@@ -31,7 +32,9 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
+import java.util.Collections;
 
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
@@ -73,15 +76,19 @@ public class ServerConfigurationPanelTest {
         frameFixture.checkBox("sslConnectionField").check();
         frameFixture.checkBox("autoConnectField").check();
 
+        frameFixture.radioButton("mongodbCRAuthField").requireSelected();
+        frameFixture.radioButton("scramSHA1AuthField").click();
+
         ServerConfiguration configuration = new ServerConfiguration();
 
         configurationPanel.applyConfigurationData(configuration);
 
-        assertEquals(Arrays.asList("localhost:25"), configuration.getServerUrls());
+        assertEquals(singletonList("localhost:25"), configuration.getServerUrls());
         assertEquals("john", configuration.getUsername());
         assertTrue(configuration.isUserDatabaseAsMySingleDatabase());
         assertTrue(configuration.isSslConnection());
         assertTrue(configuration.isConnectOnIdeStartup());
+        assertEquals(MongoServer.AuthentificationMethod.SCRAM_SHA_1, configuration.getAuthentificationMethod());
     }
 
     @Test

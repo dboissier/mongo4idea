@@ -62,6 +62,8 @@ public class ServerConfigurationPanel extends JPanel {
     private TextFieldWithBrowseButton shellWorkingDirField;
     private JCheckBox userDatabaseAsMySingleDatabaseField;
     private JCheckBox sslConnectionField;
+    private JRadioButton mongodbCRAuthRadioButton;
+    private JRadioButton scramSHA1AuthRadioButton;
 
     private final MongoManager mongoManager;
 
@@ -84,6 +86,8 @@ public class ServerConfigurationPanel extends JPanel {
         autoConnectCheckBox.setName("autoConnectField");
         databaseField.setName("databaseListField");
         databaseField.setToolTipText("If your access is restricted to a specific database, you can set it right here");
+        mongodbCRAuthRadioButton.setName("mongoCRAuthField");
+        scramSHA1AuthRadioButton.setName("scramSHA1AuthField");
 
         testConnectionButton.setName("testConnection");
 

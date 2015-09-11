@@ -17,6 +17,7 @@
 package org.codinjutsu.tools.mongo;
 
 import org.apache.commons.lang.StringUtils;
+import org.codinjutsu.tools.mongo.model.MongoServer;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -43,6 +44,7 @@ public class ServerConfiguration implements Cloneable {
     private String shellArgumentsLine;
     private String shellWorkingDir;
     private boolean sslConnection;
+    private MongoServer.AuthentificationMethod authentificationMethod;
 
 
     public List<String> getServerUrls() {
@@ -138,8 +140,17 @@ public class ServerConfiguration implements Cloneable {
         return StringUtils.join(serverUrls, ",");
     }
 
+    public void setAuthentificationMethod(MongoServer.AuthentificationMethod authentificationMethod) {
+        this.authentificationMethod = authentificationMethod;
+    }
+
+    public MongoServer.AuthentificationMethod getAuthentificationMethod() {
+        return authentificationMethod;
+    }
+
     public static ServerConfiguration byDefault() {
         ServerConfiguration serverConfiguration = new ServerConfiguration();
+        serverConfiguration.setAuthentificationMethod(MongoServer.AuthentificationMethod.MONGODB_CR);
         serverConfiguration.setServerUrls(Arrays.asList(String.format("%s:%s", DEFAULT_URL, DEFAULT_PORT)));
         return serverConfiguration;
     }
