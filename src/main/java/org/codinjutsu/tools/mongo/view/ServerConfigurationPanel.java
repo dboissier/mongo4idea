@@ -28,7 +28,10 @@ import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 import org.codinjutsu.tools.mongo.logic.MongoConnectionException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
+import org.codinjutsu.tools.mongo.model.MongoServer;
+import org.codinjutsu.tools.mongo.model.MongoServer.AuthentificationMethod;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -62,10 +65,11 @@ public class ServerConfigurationPanel extends JPanel {
     private TextFieldWithBrowseButton shellWorkingDirField;
     private JCheckBox userDatabaseAsMySingleDatabaseField;
     private JCheckBox sslConnectionField;
-    private JRadioButton mongodbCRAuthRadioButton;
+    private JRadioButton mongoCRAuthRadioButton;
     private JRadioButton scramSHA1AuthRadioButton;
 
     private final MongoManager mongoManager;
+    private final ButtonGroup authMethodGroup;
 
 
     public ServerConfigurationPanel(MongoManager mongoManager) {
@@ -86,12 +90,17 @@ public class ServerConfigurationPanel extends JPanel {
         autoConnectCheckBox.setName("autoConnectField");
         databaseField.setName("databaseListField");
         databaseField.setToolTipText("If your access is restricted to a specific database, you can set it right here");
-        mongodbCRAuthRadioButton.setName("mongoCRAuthField");
+        mongoCRAuthRadioButton.setName("mongoCRAuthField");
         scramSHA1AuthRadioButton.setName("scramSHA1AuthField");
+
+        authMethodGroup = new ButtonGroup();
+        authMethodGroup.add(mongoCRAuthRadioButton);
+        authMethodGroup.add(scramSHA1AuthRadioButton);
 
         testConnectionButton.setName("testConnection");
 
         shellWorkingDirField.setText(null);
+        scramSHA1AuthRadioButton.setSelected(true);
         initListeners();
     }
 
@@ -108,12 +117,7 @@ public class ServerConfigurationPanel extends JPanel {
                         @Override
                         public void run() {
                             try {
-                                ServerConfiguration configuration = ServerConfiguration.byDefault();
-                                configuration.setServerUrls(getServerUrls());
-                                configuration.setUsername(getUsername());
-                                configuration.setPassword(getPassword());
-                                configuration.setUserDatabase(getUserDatabase());
-                                mongoManager.connect(configuration);
+                                mongoManager.connect(createServerConfigurationForTesting());
 
                                 feedbackLabel.setIcon(SUCCESS);
                                 feedbackLabel.setText("Connection successfull");
@@ -131,6 +135,18 @@ public class ServerConfigurationPanel extends JPanel {
             }
         });
 
+    }
+
+    @NotNull
+    private ServerConfiguration createServerConfigurationForTesting() {
+        ServerConfiguration configuration = ServerConfiguration.byDefault();
+        configuration.setServerUrls(getServerUrls());
+        configuration.setUsername(getUsername());
+        configuration.setPassword(getPassword());
+        configuration.setUserDatabase(getUserDatabase());
+        configuration.setAuthentificationMethod(getAuthenticationMethod());
+        configuration.setSslConnection(isSslConnection());
+        return configuration;
     }
 
     private void validateUrls() {
@@ -154,21 +170,6 @@ public class ServerConfigurationPanel extends JPanel {
     }
 
 
-    private List<String> getCollectionsToIgnore() {
-        String collectionsToIgnoreText = collectionsToIgnoreField.getText();
-        if (StringUtils.isNotBlank(collectionsToIgnoreText)) {
-            String[] collectionsToIgnore = collectionsToIgnoreText.split(",");
-
-            List<String> collections = new LinkedList<String>();
-            for (String collectionToIgnore : collectionsToIgnore) {
-                collections.add(StringUtils.trim(collectionToIgnore));
-            }
-            return collections;
-        }
-        return Collections.emptyList();
-    }
-
-
     public void applyConfigurationData(ServerConfiguration configuration) {
         validateUrls();
 
@@ -183,6 +184,43 @@ public class ServerConfigurationPanel extends JPanel {
         configuration.setShellArgumentsLine(getShellArgumentsLine());
         configuration.setShellWorkingDir(getShellWorkingDir());
         configuration.setConnectOnIdeStartup(isAutoConnect());
+        configuration.setAuthentificationMethod(getAuthenticationMethod());
+    }
+
+
+    public void loadConfigurationData(ServerConfiguration configuration) {
+        labelField.setText(configuration.getLabel());
+        serverUrlsField.setText(StringUtils.join(configuration.getServerUrls(), ","));
+        usernameField.setText(configuration.getUsername());
+        passwordField.setText(configuration.getPassword());
+        databaseField.setText(configuration.getUserDatabase());
+        sslConnectionField.setSelected(configuration.isSslConnection());
+        userDatabaseAsMySingleDatabaseField.setSelected(configuration.isUserDatabaseAsMySingleDatabase());
+        collectionsToIgnoreField.setText(StringUtils.join(configuration.getCollectionsToIgnore(), ","));
+        shellArgumentsLineField.setText(configuration.getShellArgumentsLine());
+        shellWorkingDirField.setText(configuration.getShellWorkingDir());
+        autoConnectCheckBox.setSelected(configuration.isConnectOnIdeStartup());
+
+        AuthentificationMethod authentificationMethod = configuration.getAuthentificationMethod();
+        if (AuthentificationMethod.MONGODB_CR.equals(authentificationMethod)) {
+            mongoCRAuthRadioButton.setSelected(true);
+        } else {
+            scramSHA1AuthRadioButton.setSelected(true);
+        }
+    }
+
+    private List<String> getCollectionsToIgnore() {
+        String collectionsToIgnoreText = collectionsToIgnoreField.getText();
+        if (StringUtils.isNotBlank(collectionsToIgnoreText)) {
+            String[] collectionsToIgnore = collectionsToIgnoreText.split(",");
+
+            List<String> collections = new LinkedList<String>();
+            for (String collectionToIgnore : collectionsToIgnore) {
+                collections.add(StringUtils.trim(collectionToIgnore));
+            }
+            return collections;
+        }
+        return Collections.emptyList();
     }
 
     private String getLabel() {
@@ -233,6 +271,13 @@ public class ServerConfigurationPanel extends JPanel {
         return userDatabaseAsMySingleDatabaseField.isSelected();
     }
 
+    private AuthentificationMethod getAuthenticationMethod() {
+        if (mongoCRAuthRadioButton.isSelected()) {
+            return AuthentificationMethod.MONGODB_CR;
+        }
+        return AuthentificationMethod.SCRAM_SHA_1;
+    }
+
     private String getShellArgumentsLine() {
         String shellArgumentsLine = shellArgumentsLineField.getText();
         if (StringUtils.isNotBlank(shellArgumentsLine)) {
@@ -253,20 +298,6 @@ public class ServerConfigurationPanel extends JPanel {
 
     private boolean isAutoConnect() {
         return autoConnectCheckBox.isSelected();
-    }
-
-    public void loadConfigurationData(ServerConfiguration configuration) {
-        labelField.setText(configuration.getLabel());
-        serverUrlsField.setText(StringUtils.join(configuration.getServerUrls(), ","));
-        usernameField.setText(configuration.getUsername());
-        passwordField.setText(configuration.getPassword());
-        databaseField.setText(configuration.getUserDatabase());
-        sslConnectionField.setSelected(configuration.isSslConnection());
-        userDatabaseAsMySingleDatabaseField.setSelected(configuration.isUserDatabaseAsMySingleDatabase());
-        collectionsToIgnoreField.setText(StringUtils.join(configuration.getCollectionsToIgnore(), ","));
-        shellArgumentsLineField.setText(configuration.getShellArgumentsLine());
-        shellWorkingDirField.setText(configuration.getShellWorkingDir());
-        autoConnectCheckBox.setSelected(configuration.isConnectOnIdeStartup());
     }
 
     private void createUIComponents() {

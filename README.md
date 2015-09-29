@@ -1,6 +1,6 @@
-# Mongo Plugin for IntelliJ IDEA version 0.7.1
+# Mongo Plugin for IntelliJ IDEA version 0.7.2
 
-* Fix Idea 14.1 compatibility + migrate to mongo java driver 3.0, thanks to [pwilkin](https://github.com/pwilkin)
+* Better mongodb 3.0 compatibility (MONGDB_CR or SCRAM_SHA1 authentication macanism can be set in the configuration)
 * [Changelog](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)
 * **Important note**: This release will be the last! As I announced in this [blog post](http://codinjutsu.blogspot.fr/2014/07/hi-all-mongo-plugin-seems-to-grow-in.html). I will work on **nosql4idea** plugin that will integrate Mongo and other Document Oriented Database such as CouchBase and Redis.
 
@@ -8,7 +8,7 @@
 This plugin integrates MongoDB Servers with database/collections tree, Query Runner and Shell console.
 
 ## Plugin Compatibility
-This plugin was built with JDK 1.6 and ideaIC-13.1 version (Idea 12 is not supported anymore).
+This plugin was built with JDK 1.6 and ideaIC-14.1 version (Idea 13 is not supported anymore).
 
 ## How to install it?
 

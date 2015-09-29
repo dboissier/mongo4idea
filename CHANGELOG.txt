@@ -1,3 +1,7 @@
+Version 0.7.2
+    * [fix] better mongo 3 compatibility
+    * [add] Auth mecanism choice in the configuration panel
+
 Version 0.7.1
     * [fix] compatibility with Idea 14.1 and latest jetbrains product version (thx pwilkin)
     * [upd] migrate to mongo driver 3.0

@@ -150,7 +150,7 @@ public class ServerConfiguration implements Cloneable {
 
     public static ServerConfiguration byDefault() {
         ServerConfiguration serverConfiguration = new ServerConfiguration();
-        serverConfiguration.setAuthentificationMethod(MongoServer.AuthentificationMethod.MONGODB_CR);
+        serverConfiguration.setAuthentificationMethod(MongoServer.AuthentificationMethod.SCRAM_SHA_1);
         serverConfiguration.setServerUrls(Arrays.asList(String.format("%s:%s", DEFAULT_URL, DEFAULT_PORT)));
         return serverConfiguration;
     }

@@ -76,8 +76,8 @@ public class ServerConfigurationPanelTest {
         frameFixture.checkBox("sslConnectionField").check();
         frameFixture.checkBox("autoConnectField").check();
 
-        frameFixture.radioButton("mongodbCRAuthField").requireSelected();
-        frameFixture.radioButton("scramSHA1AuthField").click();
+        frameFixture.radioButton("scramSHA1AuthField").requireSelected();
+        frameFixture.radioButton("mongoCRAuthField").click();
 
         ServerConfiguration configuration = new ServerConfiguration();
 
@@ -88,7 +88,7 @@ public class ServerConfigurationPanelTest {
         assertTrue(configuration.isUserDatabaseAsMySingleDatabase());
         assertTrue(configuration.isSslConnection());
         assertTrue(configuration.isConnectOnIdeStartup());
-        assertEquals(MongoServer.AuthentificationMethod.SCRAM_SHA_1, configuration.getAuthentificationMethod());
+        assertEquals(MongoServer.AuthentificationMethod.MONGODB_CR, configuration.getAuthentificationMethod());
     }
 
     @Test

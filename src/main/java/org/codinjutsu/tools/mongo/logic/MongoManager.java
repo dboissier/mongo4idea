@@ -19,13 +19,10 @@ package org.codinjutsu.tools.mongo.logic;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.mongodb.*;
-import com.mongodb.client.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.*;
-import org.codinjutsu.tools.mongo.model.MongoCollection;
-import org.codinjutsu.tools.mongo.model.MongoDatabase;
 
 import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
@@ -47,11 +44,10 @@ public class MongoManager {
             String userDatabase = configuration.getUserDatabase();
             mongo = createMongoClient(configuration);
 
-            com.mongodb.client.MongoDatabase databaseForTesting;
             if (StringUtils.isNotEmpty(userDatabase)) {
-                databaseForTesting = mongo.getDatabase(userDatabase);
+                mongo.getDatabase(userDatabase);
             } else {
-                databaseForTesting = mongo.getDatabase("test");
+                mongo.getDatabase("test");
             }
         } catch (IOException ex) {
             throw new MongoConnectionException(ex);
@@ -294,28 +290,83 @@ public class MongoManager {
 
     private MongoClient createMongoClient(ServerConfiguration configuration) throws UnknownHostException {
         List<String> serverUrls = configuration.getServerUrls();
-        String username = configuration.getUsername();
-        String password = configuration.getPassword();
-        String userDatabase = configuration.getUserDatabase();
         if (serverUrls.isEmpty()) {
             throw new ConfigurationException("server host is not set");
         }
 
-        List<ServerAddress> serverAddresses = new LinkedList<ServerAddress>();
-        for (String serverUrl : serverUrls) {
-            String[] host_port = serverUrl.split(":");
-            serverAddresses.add(new ServerAddress(host_port[0], Integer.valueOf(host_port[1])));
-        }
+        MongoClientBuilder builder = MongoClientBuilder.builder()
+                .setServerAddresses(serverUrls);
 
-        MongoClientOptions.Builder optionBuilder = MongoClientOptions.builder();
         if (configuration.isSslConnection()) {
-            optionBuilder.socketFactory(SSLSocketFactory.getDefault());
+            builder.setSSLOptions();
         }
 
+        String username = configuration.getUsername();
+        String password = configuration.getPassword();
         if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
-            MongoCredential credential = MongoCredential.createMongoCRCredential(username, userDatabase, password.toCharArray());
-            return new MongoClient(serverAddresses, Arrays.asList(credential), optionBuilder.build());
+            builder.setCredential(username, password, configuration.getUserDatabase(), configuration.getAuthentificationMethod());
+
         }
-        return new MongoClient(serverAddresses, optionBuilder.build());
+        return builder.build();
+    }
+
+    private static class MongoClientBuilder {
+
+
+        private final LinkedList<ServerAddress> serverAddresses;
+        private final MongoClientOptions.Builder optionsBuilder;
+        private MongoCredential credential;
+
+        private MongoClientBuilder() {
+            this.serverAddresses = new LinkedList<ServerAddress>();
+            this.optionsBuilder = MongoClientOptions.builder();
+            this.credential = null;
+        }
+
+        public static MongoClientBuilder builder() {
+            return new MongoClientBuilder();
+        }
+
+        public MongoClientBuilder setServerAddresses(List<String> serverUrls) {
+            for (String serverUrl : serverUrls) {
+                serverAddresses.add(new ServerAddress(serverUrl));
+            }
+            return this;
+        }
+
+        public MongoClientBuilder setSSLOptions() {
+            optionsBuilder.socketFactory(SSLSocketFactory.getDefault());
+            return this;
+        }
+
+        public MongoClientBuilder setCredential(String username, String password, String database, MongoServer.AuthentificationMethod authenticationMechanism) {
+            if (MongoServer.AuthentificationMethod.MONGODB_CR.equals(authenticationMechanism)) {
+                credential = MongoCredential.createMongoCRCredential(username, database, password.toCharArray());
+            } else {
+                credential = MongoCredential.createScramSha1Credential(username, database, password.toCharArray());
+            }
+            return this;
+        }
+
+        public MongoClient build() {
+            if (serverAddresses.size() == 1) {
+                if (credential != null) {
+                    String uri = String.format("mongodb://%s:%s@%s:%s/%s",
+                            credential.getUserName(),
+                            String.valueOf(credential.getPassword()),
+                            serverAddresses.get(0).getHost(),
+                            serverAddresses.get(0).getPort(),
+                            credential.getSource()
+                    );
+                    return new MongoClient(new MongoClientURI(uri));
+                }
+                return new MongoClient(serverAddresses.get(0), optionsBuilder.build());
+            } else {
+                if (credential != null) {
+                    return new MongoClient(serverAddresses, Arrays.asList(credential), optionsBuilder.build());
+                }
+                return new MongoClient(serverAddresses, optionsBuilder.build());
+            }
+        }
     }
 }

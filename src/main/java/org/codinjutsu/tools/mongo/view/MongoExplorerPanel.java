@@ -92,7 +92,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
     }
 
     public void reloadSelectedServerConfiguration() {
-        ApplicationManager.getApplication().invokeLater(new Runnable() {
+        ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
 
             @Override
             public void run() {
@@ -121,7 +121,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
 
     public void reloadAllServerConfigurations(final boolean loadOnStartup) {
-        ApplicationManager.getApplication().invokeLater(new Runnable() {
+        ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
 
             @Override
             public void run() {
@@ -215,11 +215,10 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         DefaultActionGroup actionGroup = new DefaultActionGroup("MongoExplorerGroup", false);
         ViewCollectionValuesAction viewCollectionValuesAction = new ViewCollectionValuesAction(this);
         if (ApplicationManager.getApplication() != null) {
-            actionGroup.add(new RefreshAllServerAction(this));
+            actionGroup.add(new MongoConsoleAction(this));
             actionGroup.add(viewCollectionValuesAction);
             actionGroup.add(expandAllAction);
             actionGroup.add(collapseAllAction);
-            actionGroup.add(new MongoConsoleAction(this));
             actionGroup.addSeparator();
             actionGroup.add(new OpenPluginSettingsAction());
         }
