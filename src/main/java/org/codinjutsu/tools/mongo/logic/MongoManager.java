@@ -104,7 +104,7 @@ public class MongoManager {
 
             mongo = createMongoClient(configuration);
 
-            if (StringUtils.isNotEmpty(userDatabase) && configuration.isUserDatabaseAsMySingleDatabase()) {
+            if (StringUtils.isNotEmpty(userDatabase)) {
                 DB database = mongo.getDB(userDatabase);
                 mongoDatabases.add(createMongoDatabaseAndItsCollections(database));
             } else {
@@ -303,8 +303,8 @@ public class MongoManager {
             uriBuilder.setCredential(configuration.getUsername(), configuration.getPassword(), configuration.getUserDatabase());
         }
 
-        if (configuration.getAuthentificationMecanism() != null) {
-            uriBuilder.setAuthenticationMecanism(configuration.getAuthentificationMecanism());
+        if (configuration.getAuthenticationMecanism() != null) {
+            uriBuilder.setAuthenticationMecanism(configuration.getAuthenticationMecanism());
         }
 
         if (configuration.isSslConnection()) {

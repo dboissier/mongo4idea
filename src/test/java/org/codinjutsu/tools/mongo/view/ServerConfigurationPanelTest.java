@@ -71,7 +71,7 @@ public class ServerConfigurationPanelTest {
         frameFixture.textBox("usernameField").setText("john");
         frameFixture.textBox("passwordField").setText("johnpassword");
 
-        frameFixture.checkBox("userDatabaseAsMySingleDatabaseField").check();
+        frameFixture.textBox("userDatabaseField").setText("mydatabase");
         frameFixture.checkBox("sslConnectionField").check();
         frameFixture.checkBox("autoConnectField").check();
 
@@ -84,10 +84,10 @@ public class ServerConfigurationPanelTest {
 
         assertEquals(singletonList("localhost:25"), configuration.getServerUrls());
         assertEquals("john", configuration.getUsername());
-        assertTrue(configuration.isUserDatabaseAsMySingleDatabase());
+        assertEquals("mydatabase", configuration.getUserDatabase());
         assertTrue(configuration.isSslConnection());
         assertTrue(configuration.isConnectOnIdeStartup());
-        assertEquals(AuthenticationMechanism.MONGODB_CR, configuration.getAuthentificationMecanism());
+        assertEquals(AuthenticationMechanism.MONGODB_CR, configuration.getAuthenticationMecanism());
     }
 
     @Test

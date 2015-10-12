@@ -27,6 +27,7 @@ import com.intellij.execution.runners.AbstractConsoleRunnerWithHistory;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.psi.PsiFile;
+import com.mongodb.AuthenticationMechanism;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
@@ -87,6 +88,18 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
         if (StringUtils.isNotBlank(password)) {
             commandLine.addParameter("--password");
             commandLine.addParameter(password);
+        }
+
+        String authenticationDatabase = serverConfiguration.getAuthenticationDatabase();
+        if (StringUtils.isNotBlank(authenticationDatabase)) {
+            commandLine.addParameter("--authenticationDatabase");
+            commandLine.addParameter(authenticationDatabase);
+        }
+
+        AuthenticationMechanism authenticationMecanism = serverConfiguration.getAuthenticationMecanism();
+        if (authenticationMecanism != null) {
+            commandLine.addParameter("--authenticationMecanism");
+            commandLine.addParameter(authenticationMecanism.getMechanismName());
         }
 
         String shellArgumentsLine = serverConfiguration.getShellArgumentsLine();

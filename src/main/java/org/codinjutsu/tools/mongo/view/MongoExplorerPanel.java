@@ -96,9 +96,11 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
             @Override
             public void run() {
+                mongoTree.setPaintBusy(true);
                 final DefaultMutableTreeNode serverNode = getSelectedServerNode();
                 final MongoServer mongoServer = (MongoServer) serverNode.getUserObject();
                 mongoManager.loadServer(mongoServer);
+                mongoTree.setPaintBusy(false);
 
                 GuiUtils.runInSwingThread(new Runnable() {
                     @Override

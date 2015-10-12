@@ -18,7 +18,6 @@ package org.codinjutsu.tools.mongo;
 
 import com.mongodb.AuthenticationMechanism;
 import org.apache.commons.lang.StringUtils;
-import org.codinjutsu.tools.mongo.model.MongoServer;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -38,7 +37,6 @@ public class ServerConfiguration implements Cloneable {
     private String password;
     private String userDatabase;
     private String authenticationDatabase;
-    private boolean userDatabaseAsMySingleDatabase;
 
     private boolean connectOnIdeStartup = false;
     private List<String> collectionsToIgnore = new LinkedList<String>();
@@ -47,7 +45,7 @@ public class ServerConfiguration implements Cloneable {
     private String shellWorkingDir;
     private boolean sslConnection;
 
-    private AuthenticationMechanism authentificationMecanism = null;
+    private AuthenticationMechanism authenticationMecanism = null;
 
 
     public List<String> getServerUrls() {
@@ -57,7 +55,6 @@ public class ServerConfiguration implements Cloneable {
     public void setServerUrls(List<String> serverUrls) {
         this.serverUrls = serverUrls;
     }
-
 
     public boolean isSslConnection() {
         return sslConnection;
@@ -98,15 +95,7 @@ public class ServerConfiguration implements Cloneable {
     public void setAuthenticationDatabase(String authenticationDatabase) {
         this.authenticationDatabase = authenticationDatabase;
     }
-
-    public boolean isUserDatabaseAsMySingleDatabase() {
-        return userDatabaseAsMySingleDatabase;
-    }
-
-    public void setUserDatabaseAsMySingleDatabase(boolean userDatabaseAsMySingleDatabase) {
-        this.userDatabaseAsMySingleDatabase = userDatabaseAsMySingleDatabase;
-    }
-
+    
     public boolean isConnectOnIdeStartup() {
         return connectOnIdeStartup;
     }
@@ -151,12 +140,12 @@ public class ServerConfiguration implements Cloneable {
         return StringUtils.join(serverUrls, ",");
     }
 
-    public void setAuthentificationMecanism(AuthenticationMechanism authentificationMecanism) {
-        this.authentificationMecanism = authentificationMecanism;
+    public void setAuthenticationMecanism(AuthenticationMechanism authenticationMecanism) {
+        this.authenticationMecanism = authenticationMecanism;
     }
 
-    public AuthenticationMechanism getAuthentificationMecanism() {
-        return authentificationMecanism;
+    public AuthenticationMechanism getAuthenticationMecanism() {
+        return authenticationMecanism;
     }
 
     public static ServerConfiguration byDefault() {
@@ -184,7 +173,6 @@ public class ServerConfiguration implements Cloneable {
 
         ServerConfiguration that = (ServerConfiguration) o;
 
-        if (userDatabaseAsMySingleDatabase != that.userDatabaseAsMySingleDatabase) return false;
         if (connectOnIdeStartup != that.connectOnIdeStartup) return false;
         if (sslConnection != that.sslConnection) return false;
         if (label != null ? !label.equals(that.label) : that.label != null) return false;
@@ -200,7 +188,7 @@ public class ServerConfiguration implements Cloneable {
             return false;
         if (shellWorkingDir != null ? !shellWorkingDir.equals(that.shellWorkingDir) : that.shellWorkingDir != null)
             return false;
-        return authentificationMecanism == that.authentificationMecanism;
+        return authenticationMecanism == that.authenticationMecanism;
 
     }
 
@@ -212,13 +200,12 @@ public class ServerConfiguration implements Cloneable {
         result = 31 * result + (password != null ? password.hashCode() : 0);
         result = 31 * result + (userDatabase != null ? userDatabase.hashCode() : 0);
         result = 31 * result + (authenticationDatabase != null ? authenticationDatabase.hashCode() : 0);
-        result = 31 * result + (userDatabaseAsMySingleDatabase ? 1 : 0);
         result = 31 * result + (connectOnIdeStartup ? 1 : 0);
         result = 31 * result + (collectionsToIgnore != null ? collectionsToIgnore.hashCode() : 0);
         result = 31 * result + (shellArgumentsLine != null ? shellArgumentsLine.hashCode() : 0);
         result = 31 * result + (shellWorkingDir != null ? shellWorkingDir.hashCode() : 0);
         result = 31 * result + (sslConnection ? 1 : 0);
-        result = 31 * result + (authentificationMecanism != null ? authentificationMecanism.hashCode() : 0);
+        result = 31 * result + (authenticationMecanism != null ? authenticationMecanism.hashCode() : 0);
         return result;
     }
 }
