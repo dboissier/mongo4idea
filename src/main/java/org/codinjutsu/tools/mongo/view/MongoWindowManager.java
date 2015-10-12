@@ -67,7 +67,7 @@ public class MongoWindowManager {
         ApplicationManager.getApplication().invokeLater(new Runnable() {
             @Override
             public void run() {
-                mongoExplorerPanel.reloadAllServerConfigurations(true);
+                mongoExplorerPanel.reloadAllServerConfigurations();
             }
         });
     }

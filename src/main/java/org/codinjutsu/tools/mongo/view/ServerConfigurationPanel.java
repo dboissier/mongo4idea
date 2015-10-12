@@ -23,13 +23,12 @@ import com.intellij.openapi.ui.TextComponentAccessor;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.RawCommandLineEditor;
+import com.mongodb.AuthenticationMechanism;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 import org.codinjutsu.tools.mongo.logic.MongoConnectionException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
-import org.codinjutsu.tools.mongo.model.MongoServer;
-import org.codinjutsu.tools.mongo.model.MongoServer.AuthentificationMethod;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -49,27 +48,36 @@ public class ServerConfigurationPanel extends JPanel {
 
     private JPanel rootPanel;
 
+    private JLabel feedbackLabel;
+
+    private JTextField labelField;
+
     private JTextField serverUrlsField;
+
+    private JCheckBox sslConnectionField;
+
     private JTextField usernameField;
     private JPasswordField passwordField;
 
-    private JButton testConnectionButton;
-    private JLabel feedbackLabel;
-    private JTextField collectionsToIgnoreField;
-
-    private RawCommandLineEditor shellArgumentsLineField;
-    private JPanel mongoShellOptionsPanel;
-    private JTextField labelField;
-    private JCheckBox autoConnectCheckBox;
-    private JTextField databaseField;
-    private TextFieldWithBrowseButton shellWorkingDirField;
-    private JCheckBox userDatabaseAsMySingleDatabaseField;
-    private JCheckBox sslConnectionField;
+    private JTextField authenticationDatabaseField;
+    private final ButtonGroup authMethodGroup;
     private JRadioButton mongoCRAuthRadioButton;
     private JRadioButton scramSHA1AuthRadioButton;
+    private JRadioButton defaultAuthMethodRadioButton;
+
+    private JTextField databaseField;
+    private JCheckBox userDatabaseAsMySingleDatabaseField;
+
+    private JCheckBox autoConnectCheckBox;
+    private JButton testConnectionButton;
+
+    private JTextField collectionsToIgnoreField;
+
+    private JPanel mongoShellOptionsPanel;
+    private TextFieldWithBrowseButton shellWorkingDirField;
+    private RawCommandLineEditor shellArgumentsLineField;
 
     private final MongoManager mongoManager;
-    private final ButtonGroup authMethodGroup;
 
 
     public ServerConfigurationPanel(MongoManager mongoManager) {
@@ -92,15 +100,18 @@ public class ServerConfigurationPanel extends JPanel {
         databaseField.setToolTipText("If your access is restricted to a specific database, you can set it right here");
         mongoCRAuthRadioButton.setName("mongoCRAuthField");
         scramSHA1AuthRadioButton.setName("scramSHA1AuthField");
+        defaultAuthMethodRadioButton.setName("defaultAuthMethod");
 
         authMethodGroup = new ButtonGroup();
         authMethodGroup.add(mongoCRAuthRadioButton);
         authMethodGroup.add(scramSHA1AuthRadioButton);
+        authMethodGroup.add(defaultAuthMethodRadioButton);
 
         testConnectionButton.setName("testConnection");
 
         shellWorkingDirField.setText(null);
-        scramSHA1AuthRadioButton.setSelected(true);
+        defaultAuthMethodRadioButton.setSelected(true);
+        defaultAuthMethodRadioButton.setToolTipText("Let the driver resolves the auth. mecanism");
         initListeners();
     }
 
@@ -143,8 +154,9 @@ public class ServerConfigurationPanel extends JPanel {
         configuration.setServerUrls(getServerUrls());
         configuration.setUsername(getUsername());
         configuration.setPassword(getPassword());
+        configuration.setAuthenticationDatabase(getAuthenticationDatabase());
         configuration.setUserDatabase(getUserDatabase());
-        configuration.setAuthentificationMethod(getAuthenticationMethod());
+        configuration.setAuthentificationMecanism(getAuthenticationMethod());
         configuration.setSslConnection(isSslConnection());
         return configuration;
     }
@@ -179,12 +191,13 @@ public class ServerConfigurationPanel extends JPanel {
         configuration.setUsername(getUsername());
         configuration.setPassword(getPassword());
         configuration.setUserDatabase(getUserDatabase());
+        configuration.setAuthenticationDatabase(getAuthenticationDatabase());
         configuration.setUserDatabaseAsMySingleDatabase(isUserDatabaseAsMySingleDatabase());
         configuration.setCollectionsToIgnore(getCollectionsToIgnore());
         configuration.setShellArgumentsLine(getShellArgumentsLine());
         configuration.setShellWorkingDir(getShellWorkingDir());
         configuration.setConnectOnIdeStartup(isAutoConnect());
-        configuration.setAuthentificationMethod(getAuthenticationMethod());
+        configuration.setAuthentificationMecanism(getAuthenticationMethod());
     }
 
 
@@ -194,6 +207,7 @@ public class ServerConfigurationPanel extends JPanel {
         usernameField.setText(configuration.getUsername());
         passwordField.setText(configuration.getPassword());
         databaseField.setText(configuration.getUserDatabase());
+        authenticationDatabaseField.setText(configuration.getAuthenticationDatabase());
         sslConnectionField.setSelected(configuration.isSslConnection());
         userDatabaseAsMySingleDatabaseField.setSelected(configuration.isUserDatabaseAsMySingleDatabase());
         collectionsToIgnoreField.setText(StringUtils.join(configuration.getCollectionsToIgnore(), ","));
@@ -201,11 +215,13 @@ public class ServerConfigurationPanel extends JPanel {
         shellWorkingDirField.setText(configuration.getShellWorkingDir());
         autoConnectCheckBox.setSelected(configuration.isConnectOnIdeStartup());
 
-        AuthentificationMethod authentificationMethod = configuration.getAuthentificationMethod();
-        if (AuthentificationMethod.MONGODB_CR.equals(authentificationMethod)) {
+        AuthenticationMechanism authentificationMethod = configuration.getAuthentificationMecanism();
+        if (AuthenticationMechanism.MONGODB_CR.equals(authentificationMethod)) {
             mongoCRAuthRadioButton.setSelected(true);
-        } else {
+        } else if (AuthenticationMechanism.SCRAM_SHA_1.equals(authentificationMethod)){
             scramSHA1AuthRadioButton.setSelected(true);
+        } else {
+            defaultAuthMethodRadioButton.setSelected(true);
         }
     }
 
@@ -259,6 +275,14 @@ public class ServerConfigurationPanel extends JPanel {
         return null;
     }
 
+    private String getAuthenticationDatabase() {
+        String authenticationDatabase = authenticationDatabaseField.getText();
+        if (StringUtils.isNotBlank(authenticationDatabase)) {
+            return authenticationDatabase;
+        }
+        return null;
+    }
+
     private String getUserDatabase() {
         String userDatabase = databaseField.getText();
         if (StringUtils.isNotBlank(userDatabase)) {
@@ -271,11 +295,13 @@ public class ServerConfigurationPanel extends JPanel {
         return userDatabaseAsMySingleDatabaseField.isSelected();
     }
 
-    private AuthentificationMethod getAuthenticationMethod() {
+    private AuthenticationMechanism getAuthenticationMethod() {
         if (mongoCRAuthRadioButton.isSelected()) {
-            return AuthentificationMethod.MONGODB_CR;
+            return AuthenticationMechanism.MONGODB_CR;
+        } else if (scramSHA1AuthRadioButton.isSelected()) {
+            return AuthenticationMechanism.SCRAM_SHA_1;
         }
-        return AuthentificationMethod.SCRAM_SHA_1;
+        return null;
     }
 
     private String getShellArgumentsLine() {

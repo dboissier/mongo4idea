@@ -19,12 +19,12 @@ package org.codinjutsu.tools.mongo.logic;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.mongodb.*;
+import com.mongodb.client.MongoIterable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.*;
 
-import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.*;
@@ -44,11 +44,14 @@ public class MongoManager {
             String userDatabase = configuration.getUserDatabase();
             mongo = createMongoClient(configuration);
 
+            MongoIterable<String> collectionNames;
             if (StringUtils.isNotEmpty(userDatabase)) {
-                mongo.getDatabase(userDatabase);
+                collectionNames = mongo.getDatabase(userDatabase).listCollectionNames();
             } else {
-                mongo.getDatabase("test");
+                collectionNames = mongo.getDatabase("test").listCollectionNames();
             }
+            collectionNames.first();
+
         } catch (IOException ex) {
             throw new MongoConnectionException(ex);
         } catch (MongoException ex) {
@@ -294,79 +297,21 @@ public class MongoManager {
             throw new ConfigurationException("server host is not set");
         }
 
-        MongoClientBuilder builder = MongoClientBuilder.builder()
-                .setServerAddresses(serverUrls);
+        MongoClientURIBuilder uriBuilder = MongoClientURIBuilder.builder();
+        uriBuilder.setServerAddresses(StringUtils.join(serverUrls,","));
+        if (StringUtils.isNotEmpty(configuration.getUsername())) {
+            uriBuilder.setCredential(configuration.getUsername(), configuration.getPassword(), configuration.getUserDatabase());
+        }
+
+        if (configuration.getAuthentificationMecanism() != null) {
+            uriBuilder.setAuthenticationMecanism(configuration.getAuthentificationMecanism());
+        }
 
         if (configuration.isSslConnection()) {
-            builder.setSSLOptions();
+            uriBuilder.sslEnabled();
         }
 
-        String username = configuration.getUsername();
-        String password = configuration.getPassword();
-        if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
-            builder.setCredential(username, password, configuration.getUserDatabase(), configuration.getAuthentificationMethod());
-
-        }
-        return builder.build();
+        return new MongoClient(new MongoClientURI(uriBuilder.build()));
     }
 
-    private static class MongoClientBuilder {
-
-
-        private final LinkedList<ServerAddress> serverAddresses;
-        private final MongoClientOptions.Builder optionsBuilder;
-        private MongoCredential credential;
-
-        private MongoClientBuilder() {
-            this.serverAddresses = new LinkedList<ServerAddress>();
-            this.optionsBuilder = MongoClientOptions.builder();
-            this.credential = null;
-        }
-
-        public static MongoClientBuilder builder() {
-            return new MongoClientBuilder();
-        }
-
-        public MongoClientBuilder setServerAddresses(List<String> serverUrls) {
-            for (String serverUrl : serverUrls) {
-                serverAddresses.add(new ServerAddress(serverUrl));
-            }
-            return this;
-        }
-
-        public MongoClientBuilder setSSLOptions() {
-            optionsBuilder.socketFactory(SSLSocketFactory.getDefault());
-            return this;
-        }
-
-        public MongoClientBuilder setCredential(String username, String password, String database, MongoServer.AuthentificationMethod authenticationMechanism) {
-            if (MongoServer.AuthentificationMethod.MONGODB_CR.equals(authenticationMechanism)) {
-                credential = MongoCredential.createMongoCRCredential(username, database, password.toCharArray());
-            } else {
-                credential = MongoCredential.createScramSha1Credential(username, database, password.toCharArray());
-            }
-            return this;
-        }
-
-        public MongoClient build() {
-            if (serverAddresses.size() == 1) {
-                if (credential != null) {
-                    String uri = String.format("mongodb://%s:%s@%s:%s/%s",
-                            credential.getUserName(),
-                            String.valueOf(credential.getPassword()),
-                            serverAddresses.get(0).getHost(),
-                            serverAddresses.get(0).getPort(),
-                            credential.getSource()
-                    );
-                    return new MongoClient(new MongoClientURI(uri));
-                }
-                return new MongoClient(serverAddresses.get(0), optionsBuilder.build());
-            } else {
-                if (credential != null) {
-                    return new MongoClient(serverAddresses, Arrays.asList(credential), optionsBuilder.build());
-                }
-                return new MongoClient(serverAddresses, optionsBuilder.build());
-            }
-        }
-    }
 }

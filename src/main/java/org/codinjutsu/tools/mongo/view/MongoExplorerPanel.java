@@ -86,7 +86,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         ApplicationManager.getApplication().invokeLater(new Runnable() {
             @Override
             public void run() {
-                reloadAllServerConfigurations(true);
+                reloadAllServerConfigurations();
             }
         });
     }
@@ -96,32 +96,40 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
             @Override
             public void run() {
-                mongoTree.invalidate();
-
-                DefaultMutableTreeNode serverNode = getSelectedServerNode();
-                if (serverNode == null) {
-                    return;
-                }
-
-                serverNode.removeAllChildren();
-
-                MongoServer mongoServer = (MongoServer) serverNode.getUserObject();
+                final DefaultMutableTreeNode serverNode = getSelectedServerNode();
+                final MongoServer mongoServer = (MongoServer) serverNode.getUserObject();
                 mongoManager.loadServer(mongoServer);
 
-                addIfPossibleDatabase(mongoServer, serverNode);
+                GuiUtils.runInSwingThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mongoTree.invalidate();
 
-                ((DefaultTreeModel) mongoTree.getModel()).reload(serverNode);
 
-                mongoTree.revalidate();
+                        if (serverNode == null) {
+                            return;
+                        }
 
-                GuiUtils.expand(mongoTree, TreeUtil.getPathFromRoot(serverNode), 1);
+                        serverNode.removeAllChildren();
+
+
+                        addIfPossibleDatabase(mongoServer, serverNode);
+
+                        ((DefaultTreeModel) mongoTree.getModel()).reload(serverNode);
+
+                        mongoTree.revalidate();
+
+                        GuiUtils.expand(mongoTree, TreeUtil.getPathFromRoot(serverNode), 1);
+                    }
+                });
+
             }
         });
     }
 
 
-    public void reloadAllServerConfigurations(final boolean loadOnStartup) {
-        ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
+    public void reloadAllServerConfigurations() {
+        GuiUtils.runInSwingThread(new Runnable() {
 
             @Override
             public void run() {
@@ -129,7 +137,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                     mongoTree.setRootVisible(false);
                     final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
 
-                    List<MongoServer> mongoServers = mongoManager.loadServers(getServerConfigurations(), loadOnStartup);
+                    List<MongoServer> mongoServers = mongoManager.loadServers(getServerConfigurations(), true);
                     for (MongoServer mongoServer : mongoServers) {
 
                         final DefaultMutableTreeNode serverNode = new DefaultMutableTreeNode(mongoServer);
@@ -214,7 +222,9 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
         DefaultActionGroup actionGroup = new DefaultActionGroup("MongoExplorerGroup", false);
         ViewCollectionValuesAction viewCollectionValuesAction = new ViewCollectionValuesAction(this);
+        RefreshServerAction refreshServerAction = new RefreshServerAction(this);
         if (ApplicationManager.getApplication() != null) {
+            actionGroup.add(refreshServerAction);
             actionGroup.add(new MongoConsoleAction(this));
             actionGroup.add(viewCollectionValuesAction);
             actionGroup.add(expandAllAction);
@@ -227,7 +237,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
         DefaultActionGroup actionPopupGroup = new DefaultActionGroup("MongoExplorerPopupGroup", true);
         if (ApplicationManager.getApplication() != null) {
-            actionPopupGroup.add(new RefreshServerAction(this));
+            actionPopupGroup.add(refreshServerAction);
             actionPopupGroup.add(viewCollectionValuesAction);
             actionPopupGroup.add(new DropCollectionAction(this));
             actionPopupGroup.add(new DropDatabaseAction(this));

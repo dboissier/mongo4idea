@@ -24,6 +24,7 @@ import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 public class RefreshServerAction extends AnAction implements DumbAware {
 
@@ -46,7 +47,12 @@ public class RefreshServerAction extends AnAction implements DumbAware {
 
     @Override
     public void update(@NotNull AnActionEvent event) {
-        boolean isConnected = mongoExplorerPanel.getSelectedServerNode().getChildCount() > 0;
+        DefaultMutableTreeNode selectedServerNode = mongoExplorerPanel.getSelectedServerNode();
+        event.getPresentation().setVisible(selectedServerNode != null);
+        if (selectedServerNode == null) {
+            return;
+        }
+        boolean isConnected = selectedServerNode.getChildCount() > 0;
         event.getPresentation().setIcon(isConnected ? REFRESH_ICON  : CONNECT_ICON);
         event.getPresentation().setText(isConnected ? REFRESH_TEXT : CONNECT_TEXT);
     }

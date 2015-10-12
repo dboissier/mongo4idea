@@ -27,9 +27,6 @@ public class MongoServer {
         OK, ERROR
     }
 
-    public enum AuthentificationMethod {
-        MONGODB_CR, SCRAM_SHA_1
-    }
     private List<MongoDatabase> databases = new LinkedList<MongoDatabase>();
 
     private final ServerConfiguration configuration;
