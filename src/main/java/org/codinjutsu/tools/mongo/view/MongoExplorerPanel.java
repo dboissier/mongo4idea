@@ -131,30 +131,38 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
 
     public void reloadAllServerConfigurations() {
-        GuiUtils.runInSwingThread(new Runnable() {
+        ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
 
             @Override
             public void run() {
                 try {
                     mongoTree.setRootVisible(false);
-                    final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
+                    mongoTree.setPaintBusy(true);
 
-                    List<MongoServer> mongoServers = mongoManager.loadServers(getServerConfigurations(), true);
-                    for (MongoServer mongoServer : mongoServers) {
+                    final List<MongoServer> mongoServers = mongoManager.loadServers(getServerConfigurations(), true);
 
-                        final DefaultMutableTreeNode serverNode = new DefaultMutableTreeNode(mongoServer);
-                        rootNode.add(serverNode);
+                    mongoTree.setPaintBusy(false);
+                    GuiUtils.runInSwingThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
+                            for (MongoServer mongoServer : mongoServers) {
 
-                        if (mongoServer.hasDatabases()) {
-                            addIfPossibleDatabase(mongoServer, serverNode);
+                                final DefaultMutableTreeNode serverNode = new DefaultMutableTreeNode(mongoServer);
+                                rootNode.add(serverNode);
+
+                                if (mongoServer.hasDatabases()) {
+                                    addIfPossibleDatabase(mongoServer, serverNode);
+                                }
+                            }
+
+                            mongoTree.invalidate();
+                            mongoTree.setModel(new DefaultTreeModel(rootNode));
+                            mongoTree.revalidate();
+
+                            TreeUtil.expand(mongoTree, 2);
                         }
-                    }
-
-                    mongoTree.invalidate();
-                    mongoTree.setModel(new DefaultTreeModel(rootNode));
-                    mongoTree.revalidate();
-
-                    TreeUtil.expand(mongoTree, 2);
+                    });
 
                 } catch (ConfigurationException confEx) {
                     mongoTree.setModel(null);
