@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
+
 ./fetchIdea.sh
+
+cd ./idea-IC
+export IDEA_HOME=$(pwd)
+cd ..
 
 # Run the tests
 mvn clean install

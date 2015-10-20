@@ -14,7 +14,7 @@
 
         <intellij.sdk.name>141.177.4</intellij.sdk.name>
         <intellij.sdk.version>14.1</intellij.sdk.version>
-        <intellij.lib.path>/home/dboissier/applications/idea-IU-141.177.4/lib</intellij.lib.path>
+        <intellij.lib.path>${env.IDEA_HOME}/lib</intellij.lib.path>
     </properties>
 
     <packaging>jar</packaging>
@@ -241,7 +241,7 @@
     <repositories>
         <repository>
             <id>Idea dependencies</id>
-            <url>file://${project.basedir}/target/lib</url>
+            <url>${intellij.lib.path}</url>
         </repository>
     </repositories>
 
