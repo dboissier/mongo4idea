@@ -18,6 +18,7 @@ package org.codinjutsu.tools.mongo.utils;
 
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.NotNull;
 
@@ -64,11 +65,7 @@ public class GuiUtils {
     }
 
     public static void runInSwingThread(Runnable runnable) {
-        if (SwingUtilities.isEventDispatchThread()) {
-            runnable.run();
-        } else {
-            SwingUtilities.invokeLater(runnable);
-        }
+        ApplicationManager.getApplication().invokeLater(runnable);
     }
 
     //    Copy from private method com.intellij.util.ui.tree.TreeUtils#expand need to expand specifically some node instead of the whole tree

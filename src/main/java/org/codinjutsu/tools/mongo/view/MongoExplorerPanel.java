@@ -96,25 +96,24 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
             @Override
             public void run() {
-                mongoTree.setPaintBusy(true);
+                GuiUtils.runInSwingThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mongoTree.setPaintBusy(true);
+
+                    }
+                });
                 final DefaultMutableTreeNode serverNode = getSelectedServerNode();
                 final MongoServer mongoServer = (MongoServer) serverNode.getUserObject();
                 mongoManager.loadServer(mongoServer);
-                mongoTree.setPaintBusy(false);
 
                 GuiUtils.runInSwingThread(new Runnable() {
                     @Override
                     public void run() {
+                        mongoTree.setPaintBusy(false);
                         mongoTree.invalidate();
 
-
-                        if (serverNode == null) {
-                            return;
-                        }
-
                         serverNode.removeAllChildren();
-
-
                         addIfPossibleDatabase(mongoServer, serverNode);
 
                         ((DefaultTreeModel) mongoTree.getModel()).reload(serverNode);
@@ -173,7 +172,6 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
     }
 
     private void addIfPossibleDatabase(MongoServer mongoServer, DefaultMutableTreeNode serverNode) {
-        serverNode.removeAllChildren();
         for (MongoDatabase mongoDatabase : mongoServer.getDatabases()) {
             DefaultMutableTreeNode databaseNode = new DefaultMutableTreeNode(mongoDatabase);
             for (MongoCollection collection : mongoDatabase.getCollections()) {

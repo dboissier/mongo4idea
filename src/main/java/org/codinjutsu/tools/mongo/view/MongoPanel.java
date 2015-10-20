@@ -25,6 +25,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.LoadingDecorator;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.NumberDocument;
@@ -42,6 +43,7 @@ import java.awt.*;
 
 public class MongoPanel extends JPanel implements Disposable {
 
+    private final LoadingDecorator loadingDecorator;
     private JPanel rootPanel;
     private Splitter splitter;
     private JPanel toolBar;
@@ -81,9 +83,12 @@ public class MongoPanel extends JPanel implements Disposable {
             }
         });
 
+        loadingDecorator = new LoadingDecorator(resultPanel, this, 0);
+
+
         splitter.setOrientation(true);
         splitter.setProportion(0.2f);
-        splitter.setSecondComponent(resultPanel);
+        splitter.setSecondComponent(loadingDecorator.getComponent());
 
         setLayout(new BorderLayout());
         add(rootPanel);
@@ -181,18 +186,49 @@ public class MongoPanel extends JPanel implements Disposable {
     }
 
     public void executeQuery() {
-        try {
-            errorPanel.setVisible(false);
-            validateQuery();
-            MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(configuration, mongoCollection, queryPanel.getQueryOptions(rowLimitField.getText()));
-            resultPanel.updateResultTableTree(mongoCollectionResult);
-        } catch (Exception ex) {
-            errorPanel.invalidate();
-            errorPanel.removeAll();
-            errorPanel.add(new ErrorPanel(ex), BorderLayout.CENTER);
-            errorPanel.validate();
-            errorPanel.setVisible(true);
-        }
+        errorPanel.setVisible(false);
+        validateQuery();
+        ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    GuiUtils.runInSwingThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadingDecorator.startLoading(false);
+                        }
+                    });
+
+                    final MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(configuration, mongoCollection, queryPanel.getQueryOptions(rowLimitField.getText()));
+                    GuiUtils.runInSwingThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            resultPanel.updateResultTableTree(mongoCollectionResult);
+
+                        }
+                    });
+                } catch (final Exception ex) {
+                    GuiUtils.runInSwingThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            errorPanel.invalidate();
+                            errorPanel.removeAll();
+                            errorPanel.add(new ErrorPanel(ex), BorderLayout.CENTER);
+                            errorPanel.validate();
+                            errorPanel.setVisible(true);
+                        }
+                    });
+                } finally {
+                    GuiUtils.runInSwingThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadingDecorator.stopLoading();
+                        }
+                    });
+                }
+            }
+        });
+
     }
 
     private void validateQuery() {
