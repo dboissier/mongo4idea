@@ -1,6 +1,8 @@
 Version 0.7.2
     * [fix] better mongo 3 compatibility
     * [update] Improve UI reactivity
+    * [update] Settings: remove set database single access checkbox (its usage was unclear)
+    * [update] Explorer: remove Refresh all servers action (its usage was unclear)
     * [add] Auth mecanism choice in the configuration panel
 
 Version 0.7.1
