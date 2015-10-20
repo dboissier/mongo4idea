@@ -1,5 +1,6 @@
 Version 0.7.2
     * [fix] better mongo 3 compatibility
+    * [update] Improve UI reactivity
     * [add] Auth mecanism choice in the configuration panel
 
 Version 0.7.1
