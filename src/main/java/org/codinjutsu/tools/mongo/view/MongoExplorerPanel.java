@@ -165,6 +165,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
     }
 
     private void addIfPossibleDatabase(MongoServer mongoServer, DefaultMutableTreeNode serverNode) {
+        serverNode.removeAllChildren();
         for (MongoDatabase mongoDatabase : mongoServer.getDatabases()) {
             DefaultMutableTreeNode databaseNode = new DefaultMutableTreeNode(mongoDatabase);
             for (MongoCollection collection : mongoDatabase.getCollections()) {

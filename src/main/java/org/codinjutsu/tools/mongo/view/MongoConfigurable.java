@@ -73,7 +73,7 @@ public class MongoConfigurable extends BaseConfigurable {
     @Nls
     @Override
     public String getDisplayName() {
-        return "Mongo servers";
+        return "Mongo Servers";
     }
 
     @Nullable

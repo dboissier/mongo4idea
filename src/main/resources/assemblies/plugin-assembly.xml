@@ -25,15 +25,9 @@
         <dependencySet>
             <outputDirectory>/lib</outputDirectory>
             <excludes>
-                <exclude>com.intellij:jna</exclude>
                 <exclude>com.intellij:forms_rt</exclude>
                 <exclude>com.intellij:openapi</exclude>
                 <exclude>com.intellij:util</exclude>
-                <exclude>com.intellij:idea</exclude>
-                <exclude>com.intellij:icons</exclude>
-                <exclude>com.intellij:extensions</exclude>
-                <exclude>com.intellij:resources</exclude>
-                <exclude>com.intellij:resources_en</exclude>
                 <exclude>commons-lang:commons-lang</exclude>
                 <exclude>log4j:log4j</exclude>
             </excludes>

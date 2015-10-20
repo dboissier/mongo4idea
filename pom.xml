@@ -12,10 +12,6 @@
         <maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>
 
-
-        <!--<intellij.sdk.name>135.909</intellij.sdk.name>-->
-        <!--<intellij.sdk.version>13.0</intellij.sdk.version>-->
-        <!--<intellij.lib.path>/home/dboissier/applications/idea-IC-135.909/lib</intellij.lib.path>-->
         <intellij.sdk.name>141.177.4</intellij.sdk.name>
         <intellij.sdk.version>14.1</intellij.sdk.version>
         <intellij.lib.path>/home/dboissier/applications/idea-IU-141.177.4/lib</intellij.lib.path>
@@ -69,39 +65,7 @@
         </dependency>
         <dependency>
             <groupId>com.intellij</groupId>
-            <artifactId>jna</artifactId>
-            <version>${intellij.sdk.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.intellij</groupId>
             <artifactId>util</artifactId>
-            <version>${intellij.sdk.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.intellij</groupId>
-            <artifactId>idea</artifactId>
-            <version>${intellij.sdk.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.intellij</groupId>
-            <artifactId>extensions</artifactId>
-            <version>${intellij.sdk.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.intellij</groupId>
-            <artifactId>resources</artifactId>
-            <version>${intellij.sdk.version}</version>
-            <!--<scope>runtime</scope>-->
-        </dependency>
-        <dependency>
-            <groupId>com.intellij</groupId>
-            <artifactId>resources_en</artifactId>
-            <version>${intellij.sdk.version}</version>
-            <!--<scope>runtime</scope>-->
-        </dependency>
-        <dependency>
-            <groupId>com.intellij</groupId>
-            <artifactId>icons</artifactId>
             <version>${intellij.sdk.version}</version>
         </dependency>
 
@@ -137,33 +101,75 @@
             <scope>test</scope>
         </dependency>
         
-        <!-- IntelliJ SDK -->
+        <!-- IntelliJ SDK dependencies -->
         <dependency>
             <groupId>com.intellij</groupId>
-            <artifactId>idea-trove4j</artifactId>
+            <artifactId>idea</artifactId>
+            <scope>system</scope>
+            <systemPath>${intellij.lib.path}/idea.jar</systemPath>
+            <version>${intellij.sdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>extensions</artifactId>
+            <scope>system</scope>
+            <systemPath>${intellij.lib.path}/extensions.jar</systemPath>
+            <version>${intellij.sdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>icons</artifactId>
+            <scope>system</scope>
+            <systemPath>${intellij.lib.path}/icons.jar</systemPath>
+            <version>${intellij.sdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>trove4j</artifactId>
             <scope>system</scope>
             <systemPath>${intellij.lib.path}/trove4j.jar</systemPath>
             <version>${intellij.sdk.version}</version>
         </dependency>
         <dependency>
             <groupId>com.intellij</groupId>
-            <artifactId>idea-annotations</artifactId>
+            <artifactId>annotations</artifactId>
             <scope>system</scope>
             <systemPath>${intellij.lib.path}/annotations.jar</systemPath>
             <version>${intellij.sdk.version}</version>
         </dependency>
         <dependency>
             <groupId>com.intellij</groupId>
-            <artifactId>idea-jdom</artifactId>
+            <artifactId>jdom</artifactId>
             <scope>system</scope>
             <systemPath>${intellij.lib.path}/jdom.jar</systemPath>
             <version>${intellij.sdk.version}</version>
         </dependency>
         <dependency>
             <groupId>com.intellij</groupId>
-            <artifactId>idea-swingx-core</artifactId>
+            <artifactId>swingx-core</artifactId>
             <scope>system</scope>
             <systemPath>${intellij.lib.path}/swingx-core-1.6.2.jar</systemPath>
+            <version>${intellij.sdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>jna</artifactId>
+            <scope>system</scope>
+            <systemPath>${intellij.lib.path}/jna.jar</systemPath>
+            <version>${intellij.sdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>resources</artifactId>
+            <scope>system</scope>
+            <systemPath>${intellij.lib.path}/resources.jar</systemPath>
+            <version>${intellij.sdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>resources_en</artifactId>
+            <scope>system</scope>
+            <systemPath>${intellij.lib.path}/resources_en.jar</systemPath>
             <version>${intellij.sdk.version}</version>
         </dependency>
     </dependencies>
@@ -207,47 +213,6 @@
                     </descriptors>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-idea-plugin</artifactId>
-                <version>2.2</version>
-                <configuration>
-                    <ideaPlugin>true</ideaPlugin>
-                    <jdkName>${intellij.sdk.name}</jdkName>
-                    <downloadSources>true</downloadSources>
-                    <dependenciesAsLibraries>true</dependenciesAsLibraries>
-                    <libraries>
-                        <library>
-                            <name>idea-annotations</name>
-                            <exclude>true</exclude>
-                        </library>
-                        <library>
-                            <name>idea-jdom</name>
-                            <exclude>true</exclude>
-                        </library>
-                        <library>
-                            <name>idea</name>
-                            <exclude>true</exclude>
-                        </library>
-                        <library>
-                            <name>idea-trove4j</name>
-                            <exclude>true</exclude>
-                        </library>
-                        <library>
-                            <name>idea-util</name>
-                            <exclude>true</exclude>
-                        </library>
-                        <library>
-                            <name>idea-extensions</name>
-                            <exclude>true</exclude>
-                        </library>
-                        <library>
-                            <name>idea-openapi</name>
-                            <exclude>true</exclude>
-                        </library>
-                    </libraries>
-                </configuration>
-            </plugin>
         </plugins>
         <resources>
             <resource>
@@ -269,6 +234,13 @@
         </testResources>
     </build>
 
+    <repositories>
+        <repository>
+            <id>Idea dependencies</id>
+            <url>file://${project.basedir}/target/lib</url>
+        </repository>
+    </repositories>
+
     <!--
       { License Information
     -->
@@ -281,7 +253,7 @@
 
     <!--
       | SCM Information
--->
+    -->
 
     <scm>
         <connection>scm:git:ssh://git@github.com/dboissier/mongo4idea.git</connection>
