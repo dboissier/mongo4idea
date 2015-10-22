@@ -18,6 +18,7 @@ package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.JBColor;
+import com.intellij.ui.SimpleTextAttributes;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
@@ -50,7 +51,11 @@ class MongoTreeRenderer extends ColoredTreeCellRenderer {
             if (MongoServer.Status.OK.equals(mongoServer.getStatus())) {
                 setToolTipText(host);
                 setIcon(MONGO_SERVER);
-            } else {
+            } else if (MongoServer.Status.LOADING.equals(mongoServer.getStatus())) {
+                setToolTipText(host);
+                setIcon(MONGO_SERVER);
+                append(" Loading...", SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES);
+            } else{
                 setForeground(JBColor.RED);
                 setIcon(MONGO_SERVER_ERROR);
                 setToolTipText("Unable to connect");

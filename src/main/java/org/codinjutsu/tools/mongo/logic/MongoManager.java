@@ -88,6 +88,7 @@ public class MongoManager {
 
     public void loadServer(MongoServer mongoServer) {
         try {
+            mongoServer.setStatus(MongoServer.Status.LOADING);
             List<MongoDatabase> mongoDatabases = loadDatabaseCollections(mongoServer.getConfiguration());
             mongoServer.setDatabases(mongoDatabases);
             mongoServer.setStatus(MongoServer.Status.OK);
@@ -117,9 +118,10 @@ public class MongoManager {
             }
 
             return mongoDatabases;
-        } catch (Exception ex) {
-            LOG.error("Error when collecting Mongo databases", ex);
-            throw new ConfigurationException(ex);
+        } catch (MongoException mongoEx) {
+            throw new ConfigurationException(mongoEx);
+        } catch (UnknownHostException unknownHostEx) {
+            throw new ConfigurationException(unknownHostEx);
         } finally {
             if (mongo != null) {
                 mongo.close();

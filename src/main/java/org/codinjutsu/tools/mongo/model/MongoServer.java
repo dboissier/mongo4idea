@@ -24,7 +24,7 @@ import java.util.List;
 public class MongoServer {
 
     public enum Status {
-        OK, ERROR
+        OK, LOADING, ERROR
     }
 
     private List<MongoDatabase> databases = new LinkedList<MongoDatabase>();

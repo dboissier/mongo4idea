@@ -31,7 +31,6 @@ import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.tree.TreeUtil;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
-import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
@@ -91,81 +90,63 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         });
     }
 
-    public void reloadSelectedServerConfiguration() {
-        ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
+    public void reloadAllServerConfigurations() {
+        mongoTree.setRootVisible(false);
 
-            @Override
-            public void run() {
-                GuiUtils.runInSwingThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mongoTree.setPaintBusy(true);
+        List<ServerConfiguration> serverConfigurations = getServerConfigurations();
+        if (serverConfigurations.size() == 0) {
+            mongoTree.setModel(null);
+            return;
+        }
 
-                    }
-                });
-                final DefaultMutableTreeNode serverNode = getSelectedServerNode();
-                final MongoServer mongoServer = (MongoServer) serverNode.getUserObject();
-                mongoManager.loadServer(mongoServer);
+        final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
+        mongoTree.setModel(new DefaultTreeModel(rootNode));
 
-                GuiUtils.runInSwingThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mongoTree.setPaintBusy(false);
-                        mongoTree.invalidate();
-
-                        serverNode.removeAllChildren();
-                        addIfPossibleDatabase(mongoServer, serverNode);
-
-                        ((DefaultTreeModel) mongoTree.getModel()).reload(serverNode);
-
-                        mongoTree.revalidate();
-
-                        GuiUtils.expand(mongoTree, TreeUtil.getPathFromRoot(serverNode), 1);
-                    }
-                });
-
+        for (ServerConfiguration serverConfiguration : serverConfigurations) {
+            DefaultMutableTreeNode serverNode = new DefaultMutableTreeNode(new MongoServer(serverConfiguration));
+            rootNode.add(serverNode);
+            if (serverConfiguration.isConnectOnIdeStartup()) {
+                this.reloadServerConfiguration(serverNode, false);
             }
-        });
+        }
+
+        TreeUtil.expand(mongoTree, 2);
     }
 
 
-    public void reloadAllServerConfigurations() {
+    public void reloadServerConfiguration(final DefaultMutableTreeNode serverNode, final boolean expandAfterLoading) {
+        mongoTree.setPaintBusy(true);
+
         ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
 
             @Override
             public void run() {
+                final MongoServer mongoServer;
                 try {
-                    mongoTree.setRootVisible(false);
-                    mongoTree.setPaintBusy(true);
+                    mongoServer = (MongoServer) serverNode.getUserObject();
+                    mongoManager.loadServer(mongoServer);
 
-                    final List<MongoServer> mongoServers = mongoManager.loadServers(getServerConfigurations(), true);
-
-                    mongoTree.setPaintBusy(false);
                     GuiUtils.runInSwingThread(new Runnable() {
                         @Override
                         public void run() {
-                            final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
-                            for (MongoServer mongoServer : mongoServers) {
-
-                                final DefaultMutableTreeNode serverNode = new DefaultMutableTreeNode(mongoServer);
-                                rootNode.add(serverNode);
-
-                                if (mongoServer.hasDatabases()) {
-                                    addIfPossibleDatabase(mongoServer, serverNode);
-                                }
-                            }
-
                             mongoTree.invalidate();
-                            mongoTree.setModel(new DefaultTreeModel(rootNode));
+
+                            serverNode.removeAllChildren();
+                            addIfPossibleDatabase(mongoServer, serverNode);
+
+                            ((DefaultTreeModel) mongoTree.getModel()).reload(serverNode);
+
                             mongoTree.revalidate();
 
-                            TreeUtil.expand(mongoTree, 2);
+                            if (expandAfterLoading) {
+                                GuiUtils.expand(mongoTree, TreeUtil.getPathFromRoot(serverNode), 1);
+                            }
+
                         }
                     });
 
-                } catch (ConfigurationException confEx) {
-                    mongoTree.setModel(null);
-                    mongoTree.setRootVisible(false);
+                } finally {
+                    mongoTree.setPaintBusy(false);
                 }
             }
         });
@@ -268,7 +249,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
                 if (mouseEvent.getClickCount() == 2) {
                     if (treeNode.getUserObject() instanceof MongoServer && treeNode.getChildCount() == 0) {
-                        reloadSelectedServerConfiguration();
+                        reloadServerConfiguration(getSelectedServerNode(), true);
                     }
                     if (treeNode.getUserObject() instanceof MongoCollection) {
                         loadSelectedCollectionValues();
@@ -373,12 +354,12 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
     public void dropCollection() {
         mongoManager.dropCollection(getConfiguration(), getSelectedCollection());
-        reloadSelectedServerConfiguration();
+        reloadServerConfiguration(getSelectedServerNode(), true);
     }
 
     public void dropDatabase() {
-        mongoManager.dropDatabase(getConfiguration(),getSelectedDatabase());
-        reloadSelectedServerConfiguration();
+        mongoManager.dropDatabase(getConfiguration(), getSelectedDatabase());
+        reloadServerConfiguration(getSelectedServerNode(), true);
     }
 
     private Tree createTree() {

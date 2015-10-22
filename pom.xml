@@ -12,7 +12,7 @@
         <maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>
 
-        <intellij.sdk.name>141.177.4</intellij.sdk.name>
+        <intellij.sdk.name>141.2735.5</intellij.sdk.name>
         <intellij.sdk.version>14.1</intellij.sdk.version>
         <intellij.lib.path>${env.IDEA_HOME}/lib</intellij.lib.path>
     </properties>
@@ -222,28 +222,13 @@
             <resource>
                 <directory>src/main/resources</directory>
             </resource>
-            <resource>
-                <directory>src/main/resources-filtered</directory>
-                <filtering>true</filtering>
-            </resource>
         </resources>
         <testResources>
             <testResource>
                 <directory>src/test/resources</directory>
             </testResource>
-            <testResource>
-                <directory>src/test/resources-filtered</directory>
-                <filtering>true</filtering>
-            </testResource>
         </testResources>
     </build>
-
-    <repositories>
-        <repository>
-            <id>Idea dependencies</id>
-            <url>${intellij.lib.path}</url>
-        </repository>
-    </repositories>
 
     <!--
       { License Information

@@ -132,7 +132,7 @@ public class MongoManagerTest {
 
     @Before
     public void setUp() throws Exception {
-        MongoClient mongo = new MongoClient("localhost:33333");
+        MongoClient mongo = new MongoClient("localhost:27017");
         MongoDatabase db = mongo.getDatabase("test");
 
         com.mongodb.client.MongoCollection<Document> dummyCollection = db.getCollection("dummyCollection");
@@ -141,7 +141,7 @@ public class MongoManagerTest {
 
         mongoManager = new MongoManager();
         serverConfiguration = new ServerConfiguration();
-        serverConfiguration.setServerUrls(Arrays.asList("localhost:33333"));
+        serverConfiguration.setServerUrls(Arrays.asList("localhost:27017"));
     }
 
     private static void fillCollectionWithJsonData(com.mongodb.client.MongoCollection<Document> collection, String jsonResource) throws IOException {
