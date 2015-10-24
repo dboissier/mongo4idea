@@ -1,6 +1,6 @@
 # Mongo Plugin for IntelliJ IDEA version 0.7.2-SNAPSHOT
 
-* Better mongodb 3.0 compatibility (MONGDB_CR or SCRAM_SHA1 authentication macanism can be set in the configuration)
+* [Download](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.7.2-SNAPSHOT-distribution.zip)
 * [Changelog](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)
 
 * **Important note**: This release will be the last! As I announced in this [blog post](http://codinjutsu.blogspot.fr/2014/07/hi-all-mongo-plugin-seems-to-grow-in.html). I will work on **nosql4idea** plugin that will integrate Mongo and other Document Oriented Database such as CouchBase and Redis.
