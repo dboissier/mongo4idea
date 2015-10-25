@@ -4,6 +4,8 @@
 
 ideaVersion="14.1"
 
+rm -rf ./idea-IC
+
 # Get our IDEA dependency
 wget http://download.jetbrains.com/idea/ideaIC-${ideaVersion}.tar.gz
 
