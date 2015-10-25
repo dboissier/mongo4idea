@@ -24,6 +24,8 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.MessageType;
+import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.PopupHandler;
 import com.intellij.ui.components.JBScrollPane;
@@ -31,6 +33,7 @@ import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.tree.TreeUtil;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
+import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
@@ -49,6 +52,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.List;
+
+import static org.codinjutsu.tools.mongo.utils.GuiUtils.showNotification;
 
 public class MongoExplorerPanel extends JPanel implements Disposable {
 
@@ -91,6 +96,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
     }
 
     public void reloadAllServerConfigurations() {
+        this.mongoManager.cleanUpServers();
         mongoTree.setRootVisible(false);
 
         List<ServerConfiguration> serverConfigurations = getServerConfigurations();
@@ -103,7 +109,9 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         mongoTree.setModel(new DefaultTreeModel(rootNode));
 
         for (ServerConfiguration serverConfiguration : serverConfigurations) {
-            DefaultMutableTreeNode serverNode = new DefaultMutableTreeNode(new MongoServer(serverConfiguration));
+            MongoServer mongoServer = new MongoServer(serverConfiguration);
+            this.mongoManager.registerServer(mongoServer);
+            DefaultMutableTreeNode serverNode = new DefaultMutableTreeNode(mongoServer);
             rootNode.add(serverNode);
             if (serverConfiguration.isConnectOnIdeStartup()) {
                 this.reloadServerConfiguration(serverNode, false);
@@ -121,9 +129,8 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
             @Override
             public void run() {
-                final MongoServer mongoServer;
+                final MongoServer mongoServer = (MongoServer) serverNode.getUserObject();
                 try {
-                    mongoServer = (MongoServer) serverNode.getUserObject();
                     mongoManager.loadServer(mongoServer);
 
                     GuiUtils.runInSwingThread(new Runnable() {
@@ -132,7 +139,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                             mongoTree.invalidate();
 
                             serverNode.removeAllChildren();
-                            addIfPossibleDatabase(mongoServer, serverNode);
+                            addDatabasesIfAny(mongoServer, serverNode);
 
                             ((DefaultTreeModel) mongoTree.getModel()).reload(serverNode);
 
@@ -145,14 +152,21 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                         }
                     });
 
-                } finally {
+                } catch (ConfigurationException confEx) {
+                    mongoServer.setStatus(MongoServer.Status.ERROR);
+                    showNotification(treePanel,
+                            MessageType.ERROR,
+                            String.format("Error when connecting on %s", mongoServer.getLabel()),
+                            Balloon.Position.atLeft);
+                }
+                finally {
                     mongoTree.setPaintBusy(false);
                 }
             }
         });
     }
 
-    private void addIfPossibleDatabase(MongoServer mongoServer, DefaultMutableTreeNode serverNode) {
+    private void addDatabasesIfAny(MongoServer mongoServer, DefaultMutableTreeNode serverNode) {
         for (MongoDatabase mongoDatabase : mongoServer.getDatabases()) {
             DefaultMutableTreeNode databaseNode = new DefaultMutableTreeNode(mongoDatabase);
             for (MongoCollection collection : mongoDatabase.getCollections()) {

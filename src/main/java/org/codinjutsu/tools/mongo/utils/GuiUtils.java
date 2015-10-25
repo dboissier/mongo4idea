@@ -19,7 +19,11 @@ package org.codinjutsu.tools.mongo.utils;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.ui.MessageType;
+import com.intellij.openapi.ui.popup.Balloon;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.ui.awt.RelativePoint;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -82,5 +86,17 @@ public class GuiUtils {
     public static Dimension enlargeWidth(Dimension preferredSize, double factor) {
         int enlargedWidth = new Double(preferredSize.width * factor).intValue();
         return new Dimension(enlargedWidth, preferredSize.height);
+    }
+
+    public static void showNotification(final JComponent component, final MessageType info, final String message, final Balloon.Position position) {
+        runInSwingThread(new Runnable() {
+            @Override
+            public void run() {
+                JBPopupFactory.getInstance().createBalloonBuilder(new JLabel(message))
+                        .setFillColor(info.getPopupBackground())
+                        .createBalloon()
+                        .show(new RelativePoint(component, new Point(0, 0)), position);
+            }
+        });
     }
 }

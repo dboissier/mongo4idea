@@ -64,37 +64,23 @@ public class MongoManager {
         }
     }
 
-    public List<MongoServer> loadServers(List<ServerConfiguration> serverConfigurations, boolean loadOnStartup) {
-        if (loadOnStartup) {
-            mongoServers.clear();
-        }
+    public void cleanUpServers() {
+        mongoServers.clear();
+    }
 
-        if (!mongoServers.isEmpty()) {
-            return mongoServers;
-        }
+    public void registerServer(MongoServer mongoServer) {
+        mongoServers.add(mongoServer);
+    }
 
-        for (ServerConfiguration serverConfiguration : serverConfigurations) {
-            MongoServer mongoServer = new MongoServer(serverConfiguration);
-            mongoServers.add(mongoServer);
-
-            if (loadOnStartup && !mongoServer.getConfiguration().isConnectOnIdeStartup()) {
-                continue;
-            }
-            loadServer(mongoServer);
-
-        }
+    public List<MongoServer> getServers() {
         return mongoServers;
     }
 
     public void loadServer(MongoServer mongoServer) {
-        try {
-            mongoServer.setStatus(MongoServer.Status.LOADING);
-            List<MongoDatabase> mongoDatabases = loadDatabaseCollections(mongoServer.getConfiguration());
-            mongoServer.setDatabases(mongoDatabases);
-            mongoServer.setStatus(MongoServer.Status.OK);
-        } catch (ConfigurationException e) {
-            mongoServer.setStatus(MongoServer.Status.ERROR);
-        }
+        mongoServer.setStatus(MongoServer.Status.LOADING);
+        List<MongoDatabase> mongoDatabases = loadDatabaseCollections(mongoServer.getConfiguration());
+        mongoServer.setDatabases(mongoDatabases);
+        mongoServer.setStatus(MongoServer.Status.OK);
     }
 
     List<MongoDatabase> loadDatabaseCollections(ServerConfiguration configuration) {
@@ -300,7 +286,7 @@ public class MongoManager {
         }
 
         MongoClientURIBuilder uriBuilder = MongoClientURIBuilder.builder();
-        uriBuilder.setServerAddresses(StringUtils.join(serverUrls,","));
+        uriBuilder.setServerAddresses(StringUtils.join(serverUrls, ","));
         if (StringUtils.isNotEmpty(configuration.getUsername())) {
             uriBuilder.setCredential(configuration.getUsername(), configuration.getPassword(), configuration.getUserDatabase());
         }

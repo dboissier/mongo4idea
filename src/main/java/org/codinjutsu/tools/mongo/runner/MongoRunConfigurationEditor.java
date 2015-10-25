@@ -26,7 +26,6 @@ import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.RawCommandLineEditor;
 import org.apache.commons.lang.StringUtils;
-import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
@@ -107,7 +106,7 @@ public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfigur
     }
 
     private MongoServer[] getAvailableMongoServers(Project project) {
-        List<MongoServer> mongoServers = MongoManager.getInstance(project).loadServers(MongoConfiguration.getInstance(project).getServerConfigurations(), false);
+        List<MongoServer> mongoServers = MongoManager.getInstance(project).getServers();
         List<MongoServer> availableMongoServers = new LinkedList<MongoServer>();
         for (MongoServer mongoServer : mongoServers) {
             if (mongoServer.hasDatabases()) {

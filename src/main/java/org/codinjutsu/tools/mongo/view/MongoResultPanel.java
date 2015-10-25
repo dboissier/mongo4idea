@@ -24,10 +24,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.ui.popup.Balloon;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.PopupHandler;
-import com.intellij.ui.awt.RelativePoint;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.treetable.TreeTableTree;
 import com.intellij.util.ui.tree.TreeUtil;
@@ -86,29 +84,17 @@ public class MongoResultPanel extends JPanel implements Disposable {
         return new MongoEditionPanel().init(mongoDocumentOperations, new ActionCallback() {
             public void onOperationSuccess(String message) {
                 hideEditionPanel();
-                showNotification(MessageType.INFO, message);
+                GuiUtils.showNotification(MongoResultPanel.this.resultTreePanel, MessageType.INFO, message, Balloon.Position.above);
             }
 
             @Override
             public void onOperationFailure(Exception exception) {
-                showNotification(MessageType.ERROR, exception.getMessage());
+                GuiUtils.showNotification(MongoResultPanel.this.resultTreePanel, MessageType.ERROR, exception.getMessage(), Balloon.Position.above);
             }
 
             @Override
             public void onOperationCancelled(String message) {
                 hideEditionPanel();
-            }
-        });
-    }
-
-    private void showNotification(final MessageType info, final String message) {
-        GuiUtils.runInSwingThread(new Runnable() {
-            @Override
-            public void run() {
-                JBPopupFactory.getInstance().createBalloonBuilder(new JLabel(message))
-                        .setFillColor(info.getPopupBackground())
-                        .createBalloon()
-                        .show(new RelativePoint(MongoResultPanel.this.resultTreePanel, new Point(0, 0)), Balloon.Position.above);
             }
         });
     }

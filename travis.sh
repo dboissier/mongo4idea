@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-./fetchIdea.sh
-
 cd ./idea-IC
 export IDEA_HOME=$(pwd)
 cd ..
