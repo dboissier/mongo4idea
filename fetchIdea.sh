@@ -8,7 +8,7 @@ ideaVersion="14.1"
 wget http://download.jetbrains.com/idea/ideaIC-${ideaVersion}.tar.gz
 
 # Unzip IDEA
-tar -xz ideaIC-${ideaVersion}.tar.gz
+tar xz ideaIC-${ideaVersion}.tar.gz
 rm -rf ideaIC-${ideaVersion}.tar.gz
 
 # Move the versioned IDEA folder to a known location
@@ -21,5 +21,5 @@ IDEA_HOME=$(pwd)
 libs=( "forms_rt" "openapi" "util" "idea" "resources" "resource_en" "swingx-core" "annotations" "extensions" "jna" "jdom" "icons")
 for lib in "${libs[@]}"
 do
-mvn install:install-file -Dfile=${IDEA_HOME}/lib/${lib}.jar -DgroupId=com.intellij -DartifactId=${lib} -Dversion=${ideaVersion} -Dpackaging=jar
+    mvn install:install-file -Dfile=${IDEA_HOME}/lib/${lib}.jar -DgroupId=com.intellij -DartifactId=${lib} -Dversion=${ideaVersion} -Dpackaging=jar
 done
