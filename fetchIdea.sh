@@ -8,7 +8,7 @@ ideaVersion="14.1"
 wget http://download.jetbrains.com/idea/ideaIC-${ideaVersion}.tar.gz
 
 # Unzip IDEA
-tar xz ideaIC-${ideaVersion}.tar.gz
+tar -xzf ideaIC-${ideaVersion}.tar.gz
 rm -rf ideaIC-${ideaVersion}.tar.gz
 
 # Move the versioned IDEA folder to a known location
