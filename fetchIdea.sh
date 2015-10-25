@@ -12,7 +12,8 @@ tar -xzvf ideaIC-${ideaVersion}.tar.gz
 rm -rf ideaIC-${ideaVersion}.tar.gz
 
 # Move the versioned IDEA folder to a known location
-ideaPath=$(find . -name 'idea-IC*')
+ideaPath=$(find . -name 'idea-IC*' | head -n 1)
+echo 'Found Intellij path:' + ${ideaPath}
 mv ${ideaPath} ./idea-IC
 cd ./idea-IC
 
