@@ -19,6 +19,7 @@ package org.codinjutsu.tools.mongo.view.action;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
+import org.codinjutsu.tools.mongo.model.MongoServer;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 import org.jetbrains.annotations.NotNull;
@@ -52,6 +53,10 @@ public class RefreshServerAction extends AnAction implements DumbAware {
         if (selectedServerNode == null) {
             return;
         }
+        MongoServer mongoServer = (MongoServer) selectedServerNode.getUserObject();
+        boolean isLoading = MongoServer.Status.LOADING.equals(mongoServer.getStatus());
+        event.getPresentation().setEnabled(!isLoading);
+        
         boolean isConnected = selectedServerNode.getChildCount() > 0;
         event.getPresentation().setIcon(isConnected ? REFRESH_ICON  : CONNECT_ICON);
         event.getPresentation().setText(isConnected ? REFRESH_TEXT : CONNECT_TEXT);
