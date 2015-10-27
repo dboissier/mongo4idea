@@ -6,7 +6,6 @@ env:
   - DISPLAY=:99.0
 before_install:
   - "./fetchIdea.sh"
-  - mongo -- version
   - sh -e /etc/init.d/xvfb start
 script: "./travis.sh"
 cache:
