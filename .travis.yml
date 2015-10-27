@@ -1,10 +1,13 @@
 jdk:
   - oraclejdk7
+services:
+  - mongodb
 env:
-  - DB=mongodb
+  - DISPLAY=:99.0
 before_install:
   - "./fetchIdea.sh"
-  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
+  - mongo -- version
+  - sh -e /etc/init.d/xvfb start
 script: "./travis.sh"
 cache:
   directories:
