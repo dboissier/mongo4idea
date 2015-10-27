@@ -1,5 +1,5 @@
 jdk:
-  - oraclejdk7
+  - openjdk6
 services:
   - mongodb
 env:
