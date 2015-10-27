@@ -67,16 +67,16 @@
     </actions>
 
     <description><![CDATA[
-    <p>
-        This tool allows accessing to Mongo databases and provides CRUD operations on mongo collections.<br>
-        Documentation is available on the <a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.7.2/README.md">GitHub project</a>
-    </p>
-            <br>
-            <br>
-    <p>
-        This tool is free for personal and commercial usage.<br>
-        <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4S464JTADXFMJ">Donations</a> are welcomed.
-    </p>
+    <div xmlns="http://www.w3.org/1999/html">
+        <p>
+            This tool allows accessing to Mongo databases and provides CRUD operations on mongo collections.<br>
+            Documentation is available on the <a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.7.2/README.md">GitHub project</a>
+        </p>
+        <p>
+            This tool is free for personal and commercial usage.<br>
+            <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4S464JTADXFMJ"><strong>Donations</strong></a> are welcomed.
+        </p>
+    </div>
 ]]> </description>
 
     <change-notes><![CDATA[

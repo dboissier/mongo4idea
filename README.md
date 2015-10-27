@@ -1,4 +1,4 @@
-# Mongo Plugin for IntelliJ IDEA version 0.7.2-SNAPSHOT
+# Mongo Plugin for IntelliJ IDEA version 0.7.2
 
 * [Download](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.7.2-SNAPSHOT-distribution.zip)
 * [Changelog](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)
@@ -9,7 +9,7 @@
 This plugin integrates MongoDB Servers with database/collections tree, Query Runner and Shell console.
 
 ## Plugin Compatibility
-This plugin was built with JDK 1.6 and ideaIC-14.1 version (Idea 13 is not supported anymore).
+This plugin was built with JDK 1.6 and ideaIC-14.1.5 version (Idea 13 is not supported anymore).
 
 ## How to install it?
 
