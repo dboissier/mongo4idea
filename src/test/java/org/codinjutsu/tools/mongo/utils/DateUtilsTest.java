@@ -29,7 +29,7 @@ public class DateUtilsTest {
 
     @Test
     public void testUtcDateTime() throws Exception {
-        Calendar calendar = GregorianCalendar.getInstance();
+        Calendar calendar = GregorianCalendar.getInstance(Locale.FRANCE);
         calendar.set(Calendar.YEAR, 2015);
         calendar.set(Calendar.MONTH, 1);
         calendar.set(Calendar.DAY_OF_YEAR, 1);
@@ -38,13 +38,12 @@ public class DateUtilsTest {
         calendar.set(Calendar.SECOND, 0);
 
         Date time = calendar.getTime();
-        assertEquals("Thu Jan 01 00:00:00 CET 2015", time.toString());
-        assertEquals("31/12/14 23:00:00 UTC", DateUtils.utcDateTime(Locale.FRANCE).format(time));
+        assertEquals("12/31/14 11:00:00 PM UTC", DateUtils.utcDateTime(Locale.US).format(time));
     }
 
     @Test
     public void testUtcTime() throws Exception {
-        Calendar calendar = GregorianCalendar.getInstance();
+        Calendar calendar = GregorianCalendar.getInstance(Locale.FRANCE);
         calendar.set(Calendar.YEAR, 2015);
         calendar.set(Calendar.MONTH, 1);
         calendar.set(Calendar.DAY_OF_YEAR, 1);
@@ -53,7 +52,6 @@ public class DateUtilsTest {
         calendar.set(Calendar.SECOND, 0);
 
         Date time = calendar.getTime();
-        assertEquals("Thu Jan 01 00:00:00 CET 2015", time.toString());
-        assertEquals("23:00:00", DateUtils.utcTime(Locale.FRANCE).format(time));
+        assertEquals("11:00:00 PM", DateUtils.utcTime(Locale.US).format(time));
     }
 }
