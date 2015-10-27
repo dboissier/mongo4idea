@@ -38,7 +38,6 @@ public class DateUtilsTest {
         calendar.set(Calendar.SECOND, 0);
 
         Date time = calendar.getTime();
-        assertEquals("Thu Jan 01 00:00:00 CET 2015", time.toString());
         assertEquals("31/12/14 23:00:00 UTC", DateUtils.utcDateTime(Locale.FRANCE).format(time));
     }
 
@@ -53,7 +52,6 @@ public class DateUtilsTest {
         calendar.set(Calendar.SECOND, 0);
 
         Date time = calendar.getTime();
-        assertEquals("Thu Jan 01 00:00:00 CET 2015", time.toString());
         assertEquals("23:00:00", DateUtils.utcTime(Locale.FRANCE).format(time));
     }
 }
