@@ -1,3 +1,6 @@
+Version 0.7.3
+    * [update] Compatibility with the latest Jetbrains IDE (Idea 15, Webstorm 11, etc.)
+
 Version 0.7.2
     * [fix] better mongo 3 compatibility
     * [update] Improve UI reactivity
