@@ -104,7 +104,7 @@ You can also edit a document from scratch by right-clicking in the result view a
 
 ### Mongo shell integration
 
-If you set the mongo client path (e.g., /usr/bin/mongo), you can run the console by clicking the menu item **Tools -> Mongo Shell**.
+If you set the mongo client path (e.g., /usr/bin/mongo), you can run the console by selecting a database under your mongo server node and click on the button **Mongo Shell** on the toolbar of the Mongo explorer.
 
 ![Browser](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-shell.png?raw=true)
 
