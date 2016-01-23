@@ -68,4 +68,8 @@ public class MongoServer {
     public ServerConfiguration getConfiguration() {
         return configuration;
     }
+
+    public String toString() {
+        return getLabel();
+    }
 }

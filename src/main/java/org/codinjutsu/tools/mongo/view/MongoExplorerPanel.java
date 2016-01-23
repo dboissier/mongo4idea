@@ -28,8 +28,11 @@ import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.PopupHandler;
+import com.intellij.ui.TreeUIHelper;
 import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.treeStructure.SimpleTree;
 import com.intellij.ui.treeStructure.Tree;
+import com.intellij.util.containers.Convertor;
 import com.intellij.util.ui.tree.TreeUtil;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
@@ -46,6 +49,7 @@ import org.codinjutsu.tools.mongo.view.editor.MongoObjectFile;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -378,7 +382,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
     private Tree createTree() {
 
-        Tree tree = new Tree() {
+        Tree tree = new SimpleTree() {
 
             private final JLabel myLabel = new JLabel(
                     String.format("<html><center>No Mongo server available<br><br>You may use <img src=\"%s\"> to add configuration</center></html>", pluginSettingsUrl)
@@ -403,6 +407,18 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                 } finally {
                     g2.dispose();
                 }
+            }
+
+            @Override
+            protected void configureUiHelper(final TreeUIHelper helper) {
+                helper.installTreeSpeedSearch(this, new Convertor<TreePath, String>() {
+                    @Override
+                    public String convert(TreePath o) {
+                        DefaultMutableTreeNode node = (DefaultMutableTreeNode)o.getLastPathComponent();
+                        Object obj = node.getUserObject();
+                        return obj.toString();
+                    }
+                }, false);
             }
         };
 

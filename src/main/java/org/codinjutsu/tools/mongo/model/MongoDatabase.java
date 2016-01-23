@@ -40,4 +40,8 @@ public class MongoDatabase {
     public void addCollection(MongoCollection mongoCollection) {
         collections.add(mongoCollection);
     }
+
+    public String toString() {
+        return getName();
+    }
 }
