@@ -40,4 +40,7 @@ public class MongoCollection implements Comparable<MongoCollection> {
     public int compareTo(@NotNull MongoCollection otherCollection) {
         return this.name.compareTo(otherCollection.getName());
     }
+    public String toString() {
+        return getName();
+    }
 }
