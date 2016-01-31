@@ -17,6 +17,7 @@
 package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.execution.ExecutionException;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.options.BaseConfigurable;
 import com.intellij.openapi.options.ConfigurationException;
@@ -26,12 +27,14 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.ui.*;
 import com.intellij.ui.table.JBTable;
+import com.intellij.util.PlatformIcons;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.utils.MongoUtils;
 import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -187,7 +190,24 @@ public class MongoConfigurable extends BaseConfigurable {
                             }
                         })
                         .setRemoveActionName("removeServer")
-                        .disableUpDownActions().createPanel();
+                        .disableUpDownActions()
+                        .addExtraAction(new AnActionButton("copyServer", PlatformIcons.COPY_ICON) {
+                            @Override
+                            public void actionPerformed(@NotNull AnActionEvent e) {
+                                int selectedIndex = table.getSelectedRow();
+                                ServerConfiguration sourceConfiguration = configurations.get(selectedIndex);
+                                ServerConfiguration copiedConfiguration = sourceConfiguration.clone();
+
+                                copiedConfiguration.setPassword("");
+
+                                configurations.add(copiedConfiguration);
+                                int index = configurations.size() - 1;
+                                tableModel.fireTableRowsInserted(index, index);
+                                table.getSelectionModel().setSelectionInterval(index, index);
+                                table.scrollRectToVisible(table.getCellRect(index, 0, true));
+                            }
+                        })
+                        .createPanel();
             }
         };
 
