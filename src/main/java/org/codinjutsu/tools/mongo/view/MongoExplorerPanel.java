@@ -28,8 +28,10 @@ import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.PopupHandler;
+import com.intellij.ui.TreeSpeedSearch;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
+import com.intellij.util.containers.Convertor;
 import com.intellij.util.ui.tree.TreeUtil;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
@@ -46,6 +48,7 @@ import org.codinjutsu.tools.mongo.view.editor.MongoObjectFile;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -117,6 +120,22 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                 this.reloadServerConfiguration(serverNode, false);
             }
         }
+
+        new TreeSpeedSearch(mongoTree, new Convertor<TreePath, String>() {
+
+            @Override
+            public String convert(TreePath treePath) {
+                final DefaultMutableTreeNode node = (DefaultMutableTreeNode) treePath.getLastPathComponent();
+                final Object userObject = node.getUserObject();
+                if (userObject instanceof MongoDatabase) {
+                    return ((MongoDatabase) userObject).getName();
+                }
+                if (userObject instanceof MongoCollection) {
+                    return ((MongoCollection) userObject).getName();
+                }
+                return "<empty>";
+            }
+        });
 
         TreeUtil.expand(mongoTree, 2);
     }
