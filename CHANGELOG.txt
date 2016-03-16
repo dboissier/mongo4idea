@@ -1,4 +1,6 @@
 Version 0.7.3
+    * [fix] Change label broke the Open Settings action
+    * [add] Explorer panel: speed search on databases and collections
     * [update] Compatibility with the latest Jetbrains IDE (Idea 15, Webstorm 11, etc.)
 
 Version 0.7.2
