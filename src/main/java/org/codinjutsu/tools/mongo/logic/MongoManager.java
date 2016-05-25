@@ -285,21 +285,42 @@ public class MongoManager {
             throw new ConfigurationException("server host is not set");
         }
 
-        MongoClientURIBuilder uriBuilder = MongoClientURIBuilder.builder();
-        uriBuilder.setServerAddresses(StringUtils.join(serverUrls, ","));
-        if (StringUtils.isNotEmpty(configuration.getUsername())) {
-            uriBuilder.setCredential(configuration.getUsername(), configuration.getPassword(), configuration.getUserDatabase());
+        List<ServerAddress> serverAddresses = new LinkedList<ServerAddress>();
+        for (String serverUrl : serverUrls) {
+            String[] hostAndPort = StringUtils.split(serverUrl, ':');
+            serverAddresses.add(new ServerAddress(hostAndPort[0], Integer.parseInt(hostAndPort[1])));
         }
 
-        if (configuration.getAuthenticationMecanism() != null) {
-            uriBuilder.setAuthenticationMecanism(configuration.getAuthenticationMecanism());
+        MongoClientOptions options = MongoClientOptions.builder()
+                .sslEnabled(configuration.isSslConnection())
+                .build();
+        if (StringUtils.isEmpty(configuration.getUsername())) {
+            return new MongoClient(serverAddresses, options);
+        } else {
+            MongoCredential credential = getMongoCredential(configuration);
+            return new MongoClient(serverAddresses, Collections.singletonList(credential), options);
+        }
+    }
+
+    private MongoCredential getMongoCredential(ServerConfiguration configuration) {
+        AuthenticationMechanism authenticationMechanism = configuration.getAuthenticationMechanism();
+        if (authenticationMechanism == null) {
+            return MongoCredential.createPlainCredential(configuration.getUsername(),
+                    configuration.getUserDatabase(),
+                    configuration.getPassword().toCharArray());
+        } else {
+            if (AuthenticationMechanism.MONGODB_CR.equals(authenticationMechanism)) {
+                return MongoCredential.createMongoCRCredential(configuration.getUsername(),
+                        configuration.getUserDatabase(),
+                        configuration.getPassword().toCharArray());
+            } else if (AuthenticationMechanism.SCRAM_SHA_1.equals(authenticationMechanism)) {
+                return MongoCredential.createScramSha1Credential(configuration.getUsername(),
+                        configuration.getUserDatabase(),
+                        configuration.getPassword().toCharArray());
+            }
         }
 
-        if (configuration.isSslConnection()) {
-            uriBuilder.sslEnabled();
-        }
-
-        return new MongoClient(new MongoClientURI(uriBuilder.build()));
+        throw new IllegalArgumentException("Unsupported authentication macanism: " + authenticationMechanism);
     }
 
 }

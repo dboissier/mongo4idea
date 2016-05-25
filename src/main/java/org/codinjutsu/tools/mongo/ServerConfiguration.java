@@ -45,7 +45,7 @@ public class ServerConfiguration implements Cloneable {
     private String shellWorkingDir;
     private boolean sslConnection;
 
-    private AuthenticationMechanism authenticationMecanism = null;
+    private AuthenticationMechanism authenticationMechanism = null;
 
 
     public List<String> getServerUrls() {
@@ -140,12 +140,12 @@ public class ServerConfiguration implements Cloneable {
         return StringUtils.join(serverUrls, ",");
     }
 
-    public void setAuthenticationMecanism(AuthenticationMechanism authenticationMecanism) {
-        this.authenticationMecanism = authenticationMecanism;
+    public void setAuthenticationMechanism(AuthenticationMechanism authenticationMechanism) {
+        this.authenticationMechanism = authenticationMechanism;
     }
 
-    public AuthenticationMechanism getAuthenticationMecanism() {
-        return authenticationMecanism;
+    public AuthenticationMechanism getAuthenticationMechanism() {
+        return authenticationMechanism;
     }
 
     public static ServerConfiguration byDefault() {
@@ -188,7 +188,7 @@ public class ServerConfiguration implements Cloneable {
             return false;
         if (shellWorkingDir != null ? !shellWorkingDir.equals(that.shellWorkingDir) : that.shellWorkingDir != null)
             return false;
-        return authenticationMecanism == that.authenticationMecanism;
+        return authenticationMechanism == that.authenticationMechanism;
 
     }
 
@@ -205,7 +205,7 @@ public class ServerConfiguration implements Cloneable {
         result = 31 * result + (shellArgumentsLine != null ? shellArgumentsLine.hashCode() : 0);
         result = 31 * result + (shellWorkingDir != null ? shellWorkingDir.hashCode() : 0);
         result = 31 * result + (sslConnection ? 1 : 0);
-        result = 31 * result + (authenticationMecanism != null ? authenticationMecanism.hashCode() : 0);
+        result = 31 * result + (authenticationMechanism != null ? authenticationMechanism.hashCode() : 0);
         return result;
     }
 }

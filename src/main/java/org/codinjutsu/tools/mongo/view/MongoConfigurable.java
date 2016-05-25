@@ -88,7 +88,7 @@ public class MongoConfigurable extends BaseConfigurable {
         JPanel mongoShellOptionsPanel = new JPanel();
         mongoShellOptionsPanel.setLayout(new BoxLayout(mongoShellOptionsPanel, BoxLayout.X_AXIS));
         shellPathField = createShellPathField();
-        mongoShellOptionsPanel.add(new JLabel("Path to Mongo executable:"));
+        mongoShellOptionsPanel.add(new JLabel("Path to Mongo CLI:"));
         mongoShellOptionsPanel.add(shellPathField);
         mongoShellOptionsPanel.add(createTestButton());
         mongoShellOptionsPanel.add(createFeedbackLabel());
@@ -230,7 +230,7 @@ public class MongoConfigurable extends BaseConfigurable {
         TextFieldWithBrowseButton component = new TextFieldWithBrowseButton();
         component.getChildComponent().setName("shellPathField");
         shellPathField.setComponent(component);
-        shellPathField.getComponent().addBrowseFolderListener("Mongo shell configuration", "", null,
+        shellPathField.getComponent().addBrowseFolderListener("Mongo Shell Configuration", "", null,
                 new FileChooserDescriptor(true, false, false, false, false, false));
 
         shellPathField.getComponent().setText(configuration.getShellPath());

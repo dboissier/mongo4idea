@@ -87,7 +87,7 @@ public class ServerConfigurationPanelTest {
         assertEquals("mydatabase", configuration.getUserDatabase());
         assertTrue(configuration.isSslConnection());
         assertTrue(configuration.isConnectOnIdeStartup());
-        assertEquals(AuthenticationMechanism.MONGODB_CR, configuration.getAuthenticationMecanism());
+        assertEquals(AuthenticationMechanism.MONGODB_CR, configuration.getAuthenticationMechanism());
     }
 
     @Test

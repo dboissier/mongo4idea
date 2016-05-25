@@ -96,10 +96,10 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
             commandLine.addParameter(authenticationDatabase);
         }
 
-        AuthenticationMechanism authenticationMecanism = serverConfiguration.getAuthenticationMecanism();
-        if (authenticationMecanism != null) {
-            commandLine.addParameter("--authenticationMecanism");
-            commandLine.addParameter(authenticationMecanism.getMechanismName());
+        AuthenticationMechanism authenticationMechanism = serverConfiguration.getAuthenticationMechanism();
+        if (authenticationMechanism != null) {
+            commandLine.addParameter("--authenticationMechanism");
+            commandLine.addParameter(authenticationMechanism.getMechanismName());
         }
 
         String shellArgumentsLine = serverConfiguration.getShellArgumentsLine();

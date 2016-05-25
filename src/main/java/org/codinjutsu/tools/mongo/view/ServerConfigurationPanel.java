@@ -112,7 +112,7 @@ public class ServerConfigurationPanel extends JPanel {
         authMethodGroup.add(defaultAuthMethodRadioButton);
 
         defaultAuthMethodRadioButton.setSelected(true);
-        defaultAuthMethodRadioButton.setToolTipText("Let the driver resolves the auth. mecanism");
+        defaultAuthMethodRadioButton.setToolTipText("Let the driver resolves the auth. mechanism");
         shellWorkingDirField.setText(null);
         initListeners();
     }
@@ -158,7 +158,7 @@ public class ServerConfigurationPanel extends JPanel {
         configuration.setPassword(getPassword());
         configuration.setAuthenticationDatabase(getAuthenticationDatabase());
         configuration.setUserDatabase(getUserDatabase());
-        configuration.setAuthenticationMecanism(getAuthenticationMethod());
+        configuration.setAuthenticationMechanism(getAuthenticationMethod());
         configuration.setSslConnection(isSslConnection());
         return configuration;
     }
@@ -198,7 +198,7 @@ public class ServerConfigurationPanel extends JPanel {
         configuration.setShellArgumentsLine(getShellArgumentsLine());
         configuration.setShellWorkingDir(getShellWorkingDir());
         configuration.setConnectOnIdeStartup(isAutoConnect());
-        configuration.setAuthenticationMecanism(getAuthenticationMethod());
+        configuration.setAuthenticationMechanism(getAuthenticationMethod());
     }
 
 
@@ -215,7 +215,7 @@ public class ServerConfigurationPanel extends JPanel {
         shellWorkingDirField.setText(configuration.getShellWorkingDir());
         autoConnectCheckBox.setSelected(configuration.isConnectOnIdeStartup());
 
-        AuthenticationMechanism authentificationMethod = configuration.getAuthenticationMecanism();
+        AuthenticationMechanism authentificationMethod = configuration.getAuthenticationMechanism();
         if (AuthenticationMechanism.MONGODB_CR.equals(authentificationMethod)) {
             mongoCRAuthRadioButton.setSelected(true);
         } else if (AuthenticationMechanism.SCRAM_SHA_1.equals(authentificationMethod)){
