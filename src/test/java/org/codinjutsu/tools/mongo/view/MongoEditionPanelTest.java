@@ -19,15 +19,15 @@ package org.codinjutsu.tools.mongo.view;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.apache.commons.io.IOUtils;
+import org.assertj.swing.data.TableCell;
+import org.assertj.swing.driver.BasicJTableCellReader;
+import org.assertj.swing.edt.GuiActionRunner;
+import org.assertj.swing.edt.GuiQuery;
+import org.assertj.swing.fixture.Containers;
+import org.assertj.swing.fixture.FrameFixture;
+import org.assertj.swing.fixture.JTableFixture;
 import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
-import org.fest.swing.data.TableCell;
-import org.fest.swing.driver.BasicJTableCellReader;
-import org.fest.swing.edt.GuiActionRunner;
-import org.fest.swing.edt.GuiQuery;
-import org.fest.swing.fixture.Containers;
-import org.fest.swing.fixture.FrameFixture;
-import org.fest.swing.fixture.JTableFixture;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -74,8 +74,10 @@ public class MongoEditionPanelTest {
 
     @Test
     public void displayMongoDocumentInTheTreeTable() throws Exception {
-        frameFixture.table("editionTreeTable").cellReader(new JsonTableCellReader())
-                .requireColumnCount(2)
+        JTableFixture tableFixture = frameFixture.table("editionTreeTable");
+        tableFixture.replaceCellReader(new JsonTableCellReader());
+
+        tableFixture.requireColumnCount(2)
                 .requireContents(new String[][]{
                         {"\"_id\"", "50b8d63414f85401b9268b99"},
                         {"\"label\"", "toto"},
@@ -86,10 +88,14 @@ public class MongoEditionPanelTest {
 
     @Test
     public void editKeyWithStringValue() throws Exception {
-        JTableFixture editionTreeTable = frameFixture.table("editionTreeTable").cellReader(new JsonTableCellReader());
+        JTableFixture editionTreeTable = frameFixture.table("editionTreeTable");
+
+        editionTreeTable.replaceCellReader(new JsonTableCellReader());
 
 //        edit 'label' key
-        editionTreeTable.enterValue(TableCell.row(1).column(1), "Hello");
+        editionTreeTable.cell(TableCell.row(1).column(1))
+                .doubleClick()
+                .enterValue("Hello");
 
         frameFixture.button("saveButton").click();
 
@@ -104,10 +110,14 @@ public class MongoEditionPanelTest {
 
     @Test
     public void cancelEdition() throws Exception {
-        JTableFixture editionTreeTable = frameFixture.table("editionTreeTable").cellReader(new JsonTableCellReader());
+        JTableFixture editionTreeTable = frameFixture.table("editionTreeTable");
+
+        editionTreeTable.replaceCellReader(new JsonTableCellReader());
 
 //        edit 'label' key
-        editionTreeTable.enterValue(TableCell.row(1).column(1), "Hello");
+        editionTreeTable.cell(TableCell.row(1).column(1))
+                .doubleClick()
+                .enterValue("Hello");
 
         frameFixture.button("cancelButton").click();
         verify(mockMongoOperations, times(0)).updateMongoDocument(any(DBObject.class));
@@ -117,7 +127,9 @@ public class MongoEditionPanelTest {
 
     @Test
     public void addKeyWithSomeValue() throws Exception {
-        JTableFixture editionTreeTable = frameFixture.table("editionTreeTable").cellReader(new JsonTableCellReader());
+        JTableFixture editionTreeTable = frameFixture.table("editionTreeTable");
+
+        editionTreeTable.replaceCellReader(new JsonTableCellReader());
 
 
         editionTreeTable.selectCell(TableCell.row(1).column(1));
@@ -140,7 +152,9 @@ public class MongoEditionPanelTest {
     public void addValueInAList() throws Exception {
 
         mongoEditionPanel.updateEditionTree(buildDocument("simpleDocumentWithSubList.json"));
-        JTableFixture editionTreeTable = frameFixture.table("editionTreeTable").cellReader(new JsonTableCellReader());
+        JTableFixture editionTreeTable = frameFixture.table("editionTreeTable");
+
+        editionTreeTable.replaceCellReader(new JsonTableCellReader());
 
         editionTreeTable.requireContents(new String[][]{
                 {"\"_id\"", "50b8d63414f85401b9268b99"},
@@ -186,6 +200,7 @@ public class MongoEditionPanelTest {
         }
 
     }
+
 
     private DBObject buildDocument(String jsonFile) throws IOException {
         DBObject mongoDocument = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("model/" + jsonFile)));

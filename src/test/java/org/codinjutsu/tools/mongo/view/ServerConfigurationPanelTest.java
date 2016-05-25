@@ -17,13 +17,13 @@
 package org.codinjutsu.tools.mongo.view;
 
 import com.mongodb.AuthenticationMechanism;
+import org.assertj.swing.edt.GuiActionRunner;
+import org.assertj.swing.edt.GuiQuery;
+import org.assertj.swing.fixture.Containers;
+import org.assertj.swing.fixture.FrameFixture;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
-import org.fest.swing.edt.GuiActionRunner;
-import org.fest.swing.edt.GuiQuery;
-import org.fest.swing.fixture.Containers;
-import org.fest.swing.fixture.FrameFixture;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,6 +32,7 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
@@ -93,7 +94,7 @@ public class ServerConfigurationPanelTest {
     @Test
     public void loadFormWithOneServerUrl() throws Exception {
         ServerConfiguration configuration = new ServerConfiguration();
-        configuration.setServerUrls(Arrays.asList("localhost:25"));
+        configuration.setServerUrls(Collections.singletonList("localhost:25"));
         configuration.setUsername("john");
         configuration.setPassword("johnpassword");
 
