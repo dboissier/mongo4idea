@@ -19,6 +19,7 @@ package org.codinjutsu.tools.mongo.view.action;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
+import com.intellij.openapi.util.SystemInfo;
 import org.codinjutsu.tools.mongo.view.MongoResultPanel;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 
@@ -32,7 +33,12 @@ public class AddMongoDocumentAction extends AnAction implements DumbAware {
 
     public AddMongoDocumentAction(MongoResultPanel resultPanel) {
         super("Add", "Add mongo document", ADD_ICON);
-        registerCustomShortcutSet(KeyEvent.VK_INSERT, KeyEvent.ALT_MASK, resultPanel);
+
+        if (SystemInfo.isMac) {
+            registerCustomShortcutSet(KeyEvent.VK_N, KeyEvent.CTRL_MASK, resultPanel);
+        } else {
+            registerCustomShortcutSet(KeyEvent.VK_INSERT, KeyEvent.ALT_MASK, resultPanel);
+        }
         this.resultPanel = resultPanel;
     }
 
