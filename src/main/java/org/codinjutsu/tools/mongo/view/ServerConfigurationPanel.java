@@ -18,12 +18,15 @@ package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
+import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.ComponentWithBrowseButton;
 import com.intellij.openapi.ui.TextComponentAccessor;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.RawCommandLineEditor;
 import com.mongodb.AuthenticationMechanism;
+import com.mongodb.ReadPreference;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
@@ -75,6 +78,8 @@ public class ServerConfigurationPanel extends JPanel {
     private JPanel mongoShellOptionsPanel;
     private TextFieldWithBrowseButton shellWorkingDirField;
     private RawCommandLineEditor shellArgumentsLineField;
+    private JComboBox readPreferenceComboBox;
+    private JPanel connectionOptionPanel;
 
     private final MongoManager mongoManager;
 
@@ -88,6 +93,7 @@ public class ServerConfigurationPanel extends JPanel {
         feedbackLabel.setName("feedbackLabel");
 
         sslConnectionField.setName("sslConnectionField");
+        readPreferenceComboBox.setName("readPreferenceComboBox");
         authenticationPanel.setBorder(IdeBorderFactory.createTitledBorder("Authentication settings", true));
         serverUrlsField.setName("serverUrlsField");
         usernameField.setName("usernameField");
@@ -105,6 +111,27 @@ public class ServerConfigurationPanel extends JPanel {
         shellArgumentsLineField.setDialogCaption("Mongo arguments");
 
         testConnectionButton.setName("testConnection");
+
+        connectionOptionPanel.setBorder(IdeBorderFactory.createTitledBorder("Connection Settings", true));
+        readPreferenceComboBox.setModel(new DefaultComboBoxModel<>(
+                new ReadPreference[]{
+                        ReadPreference.primary(),
+                        ReadPreference.primaryPreferred(),
+                        ReadPreference.secondary(),
+                        ReadPreference.secondaryPreferred(),
+                        ReadPreference.nearest()
+                }));
+
+        readPreferenceComboBox.setRenderer(new ColoredListCellRenderer() {
+            @Override
+            protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
+                ReadPreference readPreference = (ReadPreference) value;
+                append(readPreference.getName());
+            }
+        });
+
+        readPreferenceComboBox.setSelectedItem(ReadPreference.primary());
+
 
         authMethodGroup = new ButtonGroup();
         authMethodGroup.add(mongoCRAuthRadioButton);
@@ -190,6 +217,7 @@ public class ServerConfigurationPanel extends JPanel {
         configuration.setLabel(getLabel());
         configuration.setServerUrls(getServerUrls());
         configuration.setSslConnection(isSslConnection());
+        configuration.setReadPreference(getReadPreference());
         configuration.setUsername(getUsername());
         configuration.setPassword(getPassword());
         configuration.setUserDatabase(getUserDatabase());
@@ -201,7 +229,6 @@ public class ServerConfigurationPanel extends JPanel {
         configuration.setAuthenticationMechanism(getAuthenticationMethod());
     }
 
-
     public void loadConfigurationData(ServerConfiguration configuration) {
         labelField.setText(configuration.getLabel());
         serverUrlsField.setText(StringUtils.join(configuration.getServerUrls(), ","));
@@ -210,6 +237,7 @@ public class ServerConfigurationPanel extends JPanel {
         userDatabaseField.setText(configuration.getUserDatabase());
         authenticationDatabaseField.setText(configuration.getAuthenticationDatabase());
         sslConnectionField.setSelected(configuration.isSslConnection());
+        readPreferenceComboBox.setSelectedItem(configuration.getReadPreference());
         collectionsToIgnoreField.setText(StringUtils.join(configuration.getCollectionsToIgnore(), ","));
         shellArgumentsLineField.setText(configuration.getShellArgumentsLine());
         shellWorkingDirField.setText(configuration.getShellWorkingDir());
@@ -225,18 +253,23 @@ public class ServerConfigurationPanel extends JPanel {
         }
     }
 
+
     private List<String> getCollectionsToIgnore() {
         String collectionsToIgnoreText = collectionsToIgnoreField.getText();
         if (StringUtils.isNotBlank(collectionsToIgnoreText)) {
             String[] collectionsToIgnore = collectionsToIgnoreText.split(",");
 
-            List<String> collections = new LinkedList<String>();
+            List<String> collections = new LinkedList<>();
             for (String collectionToIgnore : collectionsToIgnore) {
                 collections.add(StringUtils.trim(collectionToIgnore));
             }
             return collections;
         }
         return Collections.emptyList();
+    }
+
+    private ReadPreference getReadPreference() {
+        return (ReadPreference) readPreferenceComboBox.getSelectedItem();
     }
 
     private String getLabel() {

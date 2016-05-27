@@ -293,6 +293,7 @@ public class MongoManager {
 
         MongoClientOptions options = MongoClientOptions.builder()
                 .sslEnabled(configuration.isSslConnection())
+                .readPreference(configuration.getReadPreference())
                 .build();
         if (StringUtils.isEmpty(configuration.getUsername())) {
             return new MongoClient(serverAddresses, options);

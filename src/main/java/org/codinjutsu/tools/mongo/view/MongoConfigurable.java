@@ -88,7 +88,7 @@ public class MongoConfigurable extends BaseConfigurable {
         JPanel mongoShellOptionsPanel = new JPanel();
         mongoShellOptionsPanel.setLayout(new BoxLayout(mongoShellOptionsPanel, BoxLayout.X_AXIS));
         shellPathField = createShellPathField();
-        mongoShellOptionsPanel.add(new JLabel("Path to Mongo CLI:"));
+        mongoShellOptionsPanel.add(new JLabel("Path to Mongo Shell:"));
         mongoShellOptionsPanel.add(shellPathField);
         mongoShellOptionsPanel.add(createTestButton());
         mongoShellOptionsPanel.add(createFeedbackLabel());

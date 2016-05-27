@@ -28,6 +28,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.psi.PsiFile;
 import com.mongodb.AuthenticationMechanism;
+import com.mongodb.ReadPreference;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
@@ -65,12 +66,13 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
     @Nullable
     @Override
     protected Process createProcess() throws ExecutionException {
+        String shellPath = MongoConfiguration.getInstance(getProject()).getShellPath();
+        return buildCommandLine(shellPath, serverConfiguration, database).createProcess();
+    }
 
-        MongoConfiguration mongoConfiguration = MongoConfiguration.getInstance(getProject());
-        String shellPath = mongoConfiguration.getShellPath();
-        final GeneralCommandLine commandLine = new GeneralCommandLine();
+    private static GeneralCommandLine buildCommandLine(String shellPath, ServerConfiguration serverConfiguration, MongoDatabase database) {
+        GeneralCommandLine commandLine = new GeneralCommandLine();
         commandLine.setExePath(shellPath);
-
         commandLine.addParameter(MongoUtils.buildMongoUrl(serverConfiguration, database));
 
         String shellWorkingDir = serverConfiguration.getShellWorkingDir();
@@ -102,12 +104,18 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
             commandLine.addParameter(authenticationMechanism.getMechanismName());
         }
 
+//        ReadPreference readPreference = serverConfiguration.getReadPreference();
+//        if (readPreference != null) {
+//            commandLine.addParameter("--readPreference");
+//            commandLine.addParameter(readPreference.getName());
+//        }
+
         String shellArgumentsLine = serverConfiguration.getShellArgumentsLine();
         if (StringUtils.isNotBlank(shellArgumentsLine)) {
             commandLine.addParameters(shellArgumentsLine.split(" "));
         }
 
-        return commandLine.createProcess();
+        return commandLine;
     }
 
     @Override
@@ -124,7 +132,8 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
                 return "Mongo.Shell.Execute";
             }
         };
-        new ConsoleHistoryController(new ConsoleRootType("Mongo Shell", null) {}, null, getConsoleView()).install();
+        new ConsoleHistoryController(new ConsoleRootType("Mongo Shell", null) {
+        }, null, getConsoleView()).install();
         return handler;
     }
 }

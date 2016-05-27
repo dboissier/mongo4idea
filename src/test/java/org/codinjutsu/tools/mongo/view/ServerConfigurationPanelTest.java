@@ -17,6 +17,7 @@
 package org.codinjutsu.tools.mongo.view;
 
 import com.mongodb.AuthenticationMechanism;
+import com.mongodb.ReadPreference;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.edt.GuiQuery;
 import org.assertj.swing.fixture.Containers;
@@ -69,26 +70,30 @@ public class ServerConfigurationPanelTest {
     public void validateFormWithOneServerUrl() throws Exception {
 
         frameFixture.textBox("serverUrlsField").setText("localhost:25");
+        frameFixture.checkBox("sslConnectionField").check();
+        frameFixture.comboBox("readPreferenceComboBox").requireSelection("primary");
+        frameFixture.comboBox("readPreferenceComboBox").selectItem("secondary");
+
         frameFixture.textBox("usernameField").setText("john");
         frameFixture.textBox("passwordField").setText("johnpassword");
-
-        frameFixture.textBox("userDatabaseField").setText("mydatabase");
-        frameFixture.checkBox("sslConnectionField").check();
-        frameFixture.checkBox("autoConnectField").check();
-
         frameFixture.radioButton("defaultAuthMethod").requireSelected();
         frameFixture.radioButton("mongoCRAuthField").click();
 
-        ServerConfiguration configuration = new ServerConfiguration();
+        frameFixture.textBox("userDatabaseField").setText("mydatabase");
+        frameFixture.checkBox("autoConnectField").check();
 
+
+        ServerConfiguration configuration = new ServerConfiguration();
         configurationPanel.applyConfigurationData(configuration);
 
         assertEquals(singletonList("localhost:25"), configuration.getServerUrls());
-        assertEquals("john", configuration.getUsername());
-        assertEquals("mydatabase", configuration.getUserDatabase());
         assertTrue(configuration.isSslConnection());
-        assertTrue(configuration.isConnectOnIdeStartup());
+        assertEquals(ReadPreference.secondary(), configuration.getReadPreference());
+        assertEquals("john", configuration.getUsername());
+        assertEquals("johnpassword", configuration.getPassword());
+        assertEquals("mydatabase", configuration.getUserDatabase());
         assertEquals(AuthenticationMechanism.MONGODB_CR, configuration.getAuthenticationMechanism());
+        assertTrue(configuration.isConnectOnIdeStartup());
     }
 
     @Test
@@ -97,12 +102,15 @@ public class ServerConfigurationPanelTest {
         configuration.setServerUrls(Collections.singletonList("localhost:25"));
         configuration.setUsername("john");
         configuration.setPassword("johnpassword");
+        configuration.setReadPreference(ReadPreference.nearest());
 
         configurationPanel.loadConfigurationData(configuration);
 
         frameFixture.textBox("serverUrlsField").requireText("localhost:25");
         frameFixture.textBox("usernameField").requireText("john");
         frameFixture.textBox("passwordField").requireText("johnpassword");
+
+        frameFixture.comboBox("readPreferenceComboBox").requireSelection("nearest");
     }
 
     @Test

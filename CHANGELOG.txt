@@ -1,5 +1,7 @@
 Version 0.7.3
     * [fix] Change label broke the Open Settings action
+    * [fix] Mongo Shell command launching
+    * [add] Server Settings: ReadPreference option
     * [add] Explorer panel: speed search on databases and collections
     * [update] Compatibility with the latest Jetbrains IDE (Idea 15, Webstorm 11, etc.)
 
