@@ -230,14 +230,6 @@
               <text value="Read  Preferences:"/>
             </properties>
           </component>
-          <component id="4683d" class="javax.swing.JCheckBox" binding="sslConnectionField">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="SSL "/>
-            </properties>
-          </component>
           <component id="3734" class="javax.swing.JComboBox" binding="readPreferenceComboBox">
             <constraints>
               <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
@@ -262,7 +254,7 @@
           </component>
           <component id="264eb" class="javax.swing.JTextField" binding="serverUrlsField">
             <constraints>
-              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
               </grid>
             </constraints>
@@ -272,7 +264,7 @@
           </component>
           <component id="3c8c4" class="javax.swing.JLabel">
             <constraints>
-              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <text value="Server url(s):"/>
@@ -280,11 +272,19 @@
           </component>
           <component id="ab51" class="javax.swing.JLabel">
             <constraints>
-              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font style="2"/>
               <text value="format: host:port. If replicat set: host:port1,host:port2,..."/>
+            </properties>
+          </component>
+          <component id="4683d" class="javax.swing.JCheckBox" binding="sslConnectionField">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="SSL "/>
             </properties>
           </component>
         </children>
