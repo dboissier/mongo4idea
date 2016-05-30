@@ -3,7 +3,12 @@
 * [Download](https://plugins.jetbrains.com/plugin/download?pr=idea&updateId=22433)
 * [Changelog](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)
 
-* **Important note**: This release will be the last! As I announced in this [blog post](http://codinjutsu.blogspot.fr/2014/07/hi-all-mongo-plugin-seems-to-grow-in.html). I will work on **nosql4idea** plugin that will integrate Mongo and other Document Oriented Database such as CouchBase and Redis.
+
+## Version 0.7.4-SNAPSHOT
+
+* [Build for Idea 14](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.7.4-SNAPSHOT-distribution.zip)
+* [Changelog](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)
+
 
 ## Description
 This plugin integrates MongoDB Servers with database/collections tree, Query Runner and Shell console.
