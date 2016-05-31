@@ -136,7 +136,7 @@ public class MongoConfigurable extends BaseConfigurable {
 
                                 ServerConfiguration serverConfiguration = ServerConfiguration.byDefault();
 
-                                ConfigurationDialog dialog = new ConfigurationDialog(mainPanel, mongoManager, serverConfiguration);
+                                ConfigurationDialog dialog = new ConfigurationDialog(project, mainPanel, mongoManager, serverConfiguration);
                                 dialog.setTitle("Add a Mongo Server");
                                 dialog.show();
                                 if (!dialog.isOK()) {
@@ -164,7 +164,7 @@ public class MongoConfigurable extends BaseConfigurable {
                                 ServerConfiguration copiedConfiguration = sourceConfiguration.clone();
 
 
-                                ConfigurationDialog dialog = new ConfigurationDialog(mainPanel, mongoManager, copiedConfiguration);
+                                ConfigurationDialog dialog = new ConfigurationDialog(project, mainPanel, mongoManager, copiedConfiguration);
                                 dialog.setTitle("Edit a Mongo Server");
                                 dialog.show();
                                 if (!dialog.isOK()) {

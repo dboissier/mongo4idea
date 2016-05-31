@@ -16,6 +16,7 @@
 
 package org.codinjutsu.tools.mongo.view;
 
+import com.intellij.openapi.command.impl.DummyProject;
 import com.mongodb.AuthenticationMechanism;
 import com.mongodb.ReadPreference;
 import org.assertj.swing.edt.GuiActionRunner;
@@ -54,7 +55,7 @@ public class ServerConfigurationPanelTest {
         mongoManager = Mockito.spy(new MongoManager());
         configurationPanel = GuiActionRunner.execute(new GuiQuery<ServerConfigurationPanel>() {
             protected ServerConfigurationPanel executeInEDT() {
-                return new ServerConfigurationPanel(mongoManager);
+                return new ServerConfigurationPanel(DummyProject.getInstance(), mongoManager);
             }
         });
 

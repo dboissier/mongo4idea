@@ -18,10 +18,11 @@ package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
-import com.intellij.openapi.ui.ComboBox;
-import com.intellij.openapi.ui.ComponentWithBrowseButton;
-import com.intellij.openapi.ui.TextComponentAccessor;
-import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.*;
+import com.intellij.openapi.util.Ref;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.RawCommandLineEditor;
@@ -48,6 +49,7 @@ public class ServerConfigurationPanel extends JPanel {
 
     public static final Icon SUCCESS = GuiUtils.loadIcon("success.png");
     public static final Icon FAIL = GuiUtils.loadIcon("fail.png");
+    private final Project project;
 
     private JPanel rootPanel;
 
@@ -84,7 +86,8 @@ public class ServerConfigurationPanel extends JPanel {
     private final MongoManager mongoManager;
 
 
-    public ServerConfigurationPanel(MongoManager mongoManager) {
+    public ServerConfigurationPanel(Project project, MongoManager mongoManager) {
+        this.project = project;
         setLayout(new BorderLayout());
         add(rootPanel, BorderLayout.CENTER);
         this.mongoManager = mongoManager;
@@ -148,29 +151,30 @@ public class ServerConfigurationPanel extends JPanel {
         testConnectionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                try {
-                    validateUrls();
-                    testConnectionButton.setEnabled(false);
-                    testConnectionButton.setText("Connecting...");
-                    testConnectionButton.repaint();
-                    ApplicationManager.getApplication().invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                mongoManager.connect(createServerConfigurationForTesting());
+                final Ref<Exception> excRef = new Ref<>();
+                final ProgressManager progressManager = ProgressManager.getInstance();
+                progressManager.runProcessWithProgressSynchronously(new Runnable() {
+                    @Override
+                    public void run() {
+                        ServerConfiguration configuration = createServerConfigurationForTesting();
 
-                                feedbackLabel.setIcon(SUCCESS);
-                                feedbackLabel.setText("Connection successfull");
-                            } catch (MongoConnectionException ex) {
-                                setErrorMessage(ex.getMessage());
-                            } finally {
-                                testConnectionButton.setEnabled(true);
-                                testConnectionButton.setText("Test connection");
-                            }
+                        final ProgressIndicator progressIndicator = progressManager.getProgressIndicator();
+                        if (progressIndicator != null) {
+                            progressIndicator.setText("Connecting to Mongo server...");
                         }
-                    });
-                } catch (ConfigurationException ex) {
-                    setErrorMessage(ex.getMessage());
+                        try {
+                            mongoManager.connect(configuration);
+                        } catch (Exception ex) {
+                            excRef.set(ex);
+                        }
+                    }
+
+                }, "Testing Connection", true, ServerConfigurationPanel.this.project);
+
+                if (!excRef.isNull()) {
+                    Messages.showErrorDialog(rootPanel, excRef.get().getMessage(), "Connection Test Failed");
+                } else {
+                    Messages.showInfoMessage(rootPanel, "Connection test successful", "Connection Test Successful");
                 }
             }
         });

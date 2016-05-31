@@ -15,7 +15,7 @@
 This plugin integrates MongoDB Servers with database/collections tree, Query Runner and Shell console.
 
 ## Plugin Compatibility
-This plugin was built with JDK 1.6 and ideaIC-14.1.5 version (Idea 13 is not supported anymore).
+This plugin was built with JDK 1.7 and ideaIC-14.1.5 version (Idea 13 is not supported anymore).
 
 ## How to install it?
 
@@ -64,7 +64,7 @@ The panel shows all documents of the collections (max 300 records by default).
 
 You can copy the result and paste it in a text editor.
 
-#### \[NEW\] Querying
+#### Querying
 
 If you want to run a *find* query, click on the Magnifying glass icon or use the **CTRL+F** shortcut.
 
@@ -116,7 +116,7 @@ If you set the mongo client path (e.g., /usr/bin/mongo), you can run the console
 
 ### Run a file
 
-If you need to run a JavaScript file on your mongo server, just type CTRL+SHIFT+F10 (or right-clik in your file and select Run *myscript.js* file)
+If you need to run a JavaScript file on your mongo server, just type **CTRL+SHIFT+F10** (or right-click in your file and select Run *myscript.js* file)
 
 ![Document edition](https://github.com/dboissier/mongo4idea/blob/master/doc/mongo4idea-runAFile.png?raw=true)
 
@@ -131,6 +131,7 @@ I would like to thank:
 * Jetbrains Team for the great sources of IntelliJ Community Edition which help me to improve this plugin
 * Mark James author of the famfamfam web site who provides beautiful icons.
 * [Jean Baptiste Potonnier](https://github.com/jbpotonnier) for the suggestion to create this plugin
+* [piddubnyi](https://github.com/kocherovf) for adding [*copy server* action](https://github.com/dboissier/mongo4idea/pull/141) and [*search in explorer* action](https://github.com/dboissier/mongo4idea/pull/138)
 * [piddubnyi](https://github.com/piddubnyi) for adding [*drop database* action](https://github.com/dboissier/mongo4idea/pull/95)
 * Neko team, my first beta testers ;)
 * All users of this plugin who sent me valuable suggestions.

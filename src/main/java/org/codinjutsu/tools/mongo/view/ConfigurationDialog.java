@@ -16,6 +16,7 @@
 
 package org.codinjutsu.tools.mongo.view;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
@@ -27,12 +28,14 @@ import java.awt.*;
 
 class ConfigurationDialog extends DialogWrapper {
 
+    private final Project project;
     private final MongoManager mongoManager;
     private final ServerConfiguration configuration;
     private ServerConfigurationPanel serverConfigurationPanel;
 
-    ConfigurationDialog(Component parent, MongoManager mongoManager, ServerConfiguration configuration) {
+    ConfigurationDialog(Project project, Component parent, MongoManager mongoManager, ServerConfiguration configuration) {
         super(parent, true);
+        this.project = project;
         this.mongoManager = mongoManager;
         this.configuration = configuration;
 
@@ -42,7 +45,7 @@ class ConfigurationDialog extends DialogWrapper {
     @Nullable
     @Override
     protected JComponent createCenterPanel() {
-        serverConfigurationPanel = new ServerConfigurationPanel(mongoManager);
+        serverConfigurationPanel = new ServerConfigurationPanel(project, mongoManager);
         serverConfigurationPanel.loadConfigurationData(configuration);
         return serverConfigurationPanel;
     }
