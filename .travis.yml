@@ -6,8 +6,6 @@ env:
   - DISPLAY=:99.0
 before_install:
   - "./fetchIdea.sh"
-  - sh -e /usr/bin/xvfb-run -a
-  - sleep 3
 script: "./travis.sh"
 cache:
   directories:

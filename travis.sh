@@ -5,7 +5,7 @@ export IDEA_HOME=$(pwd)
 cd ..
 
 # Run the tests
-xvfb-run mvn clean install
+xvfb-run -a mvn clean install
 
 # Was our build successful?
 stat=$?
