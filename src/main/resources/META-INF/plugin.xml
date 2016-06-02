@@ -20,9 +20,9 @@
     <version>0.7.4</version>
     <vendor email="david.boissier [at] gmail [dot] com" url="http://codinjutsu.blogspot.com">David Boissier</vendor>
 
-    <idea-version since-build="141.0" until-build="141.*"/>
-    <!--<idea-version since-build="143.0" until-build="143.*"/>-->
-    <!--<idea-version since-build="143.0"/>-->
+    <!--<idea-version since-build="141.0" until-build="141.*"/>-->
+    <idea-version since-build="143.0" until-build="143.*"/>
+    <!--<idea-version since-build="145.0"/>-->
 
     <depends>com.intellij.modules.lang</depends>
 
@@ -58,6 +58,8 @@
             <implementation-class>org.codinjutsu.tools.mongo.view.editor.MongoFileSystem</implementation-class>
         </component>
     </application-components>
+
+    <applicationConfigurable groupId="tools" instance="org.codinjutsu.tools.mongo.view.MongoConfigurable" id="preferences.mongoOptions"/>
 
     <actions>
         <action id="Mongo.Shell.Execute" class="com.intellij.openapi.actionSystem.EmptyAction"

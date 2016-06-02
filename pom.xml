@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.codinjutsu.tools.mongo</groupId>
@@ -11,11 +12,15 @@
 
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
-
         <!--<intellij.sdk.name>141.177.4</intellij.sdk.name>-->
         <!--<intellij.sdk.version>14.1</intellij.sdk.version>-->
         <intellij.sdk.name>143.381.42</intellij.sdk.name>
         <intellij.sdk.version>15.0</intellij.sdk.version>
+
+        <!--<maven.compiler.source>1.8</maven.compiler.source>-->
+        <!--<maven.compiler.target>1.8</maven.compiler.target>-->
+        <!--<intellij.sdk.name>145.597.3</intellij.sdk.name>-->
+        <!--<intellij.sdk.version>2016</intellij.sdk.version>-->
         <intellij.lib.path>${env.IDEA_HOME}/lib</intellij.lib.path>
     </properties>
 
@@ -106,7 +111,7 @@
             <version>1.4</version>
             <scope>test</scope>
         </dependency>
-        
+
         <!-- IntelliJ SDK dependencies -->
         <dependency>
             <groupId>com.intellij</groupId>

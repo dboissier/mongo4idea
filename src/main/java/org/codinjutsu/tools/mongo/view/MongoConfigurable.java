@@ -21,6 +21,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.options.BaseConfigurable;
 import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.ui.Messages;
@@ -47,9 +48,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-public class MongoConfigurable extends BaseConfigurable {
+public class MongoConfigurable extends BaseConfigurable implements SearchableConfigurable {
 
 
+    public static final String PLUGIN_SETTINGS_NAME = "Mongo Servers";
     private final Project project;
 
     private final MongoConfiguration configuration;
@@ -76,7 +78,7 @@ public class MongoConfigurable extends BaseConfigurable {
     @Nls
     @Override
     public String getDisplayName() {
-        return "Mongo Servers";
+        return PLUGIN_SETTINGS_NAME;
     }
 
     @Nullable
@@ -329,4 +331,15 @@ public class MongoConfigurable extends BaseConfigurable {
         }
     }
 
+    @NotNull
+    @Override
+    public String getId() {
+        return "preferences.mongoOptions";
+    }
+
+    @Nullable
+    @Override
+    public Runnable enableSearch(String option) {
+        return null;
+    }
 }
