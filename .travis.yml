@@ -1,5 +1,5 @@
 jdk:
-  - openjdk6
+  - oraclejdk7
 services:
   - mongodb
 env:
@@ -7,6 +7,7 @@ env:
 before_install:
   - "./fetchIdea.sh"
   - sh -e /etc/init.d/xvfb start
+  - sleep 3
 script: "./travis.sh"
 cache:
   directories:
