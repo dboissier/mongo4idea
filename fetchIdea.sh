@@ -2,7 +2,7 @@
 # original file from https://github.com/go-lang-plugin-org/go-lang-idea-plugin
 # thanks zolotov :)
 
-ideaVersion='15.0'
+ideaVersion='15.0.6'
 ideaVersionForMaven='15.0'
 
 rm -rf ./idea-IC
