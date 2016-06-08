@@ -307,16 +307,16 @@ public class MongoManager {
         AuthenticationMechanism authenticationMechanism = configuration.getAuthenticationMechanism();
         if (authenticationMechanism == null) {
             return MongoCredential.createPlainCredential(configuration.getUsername(),
-                    configuration.getUserDatabase(),
+                    configuration.getAuthenticationDatabase(),
                     configuration.getPassword().toCharArray());
         } else {
             if (AuthenticationMechanism.MONGODB_CR.equals(authenticationMechanism)) {
                 return MongoCredential.createMongoCRCredential(configuration.getUsername(),
-                        configuration.getUserDatabase(),
+                        configuration.getAuthenticationDatabase(),
                         configuration.getPassword().toCharArray());
             } else if (AuthenticationMechanism.SCRAM_SHA_1.equals(authenticationMechanism)) {
                 return MongoCredential.createScramSha1Credential(configuration.getUsername(),
-                        configuration.getUserDatabase(),
+                        configuration.getAuthenticationDatabase(),
                         configuration.getPassword().toCharArray());
             }
         }
