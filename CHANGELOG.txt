@@ -1,3 +1,6 @@
+Version 0.8
+    * [fix] #123 cannot connect when user database is not set
+
 Version 0.7.6
     * Idea 2016
 
