@@ -70,7 +70,7 @@ public class MongoConfigurable extends BaseConfigurable implements SearchableCon
         this.project = project;
         this.configuration = MongoConfiguration.getInstance(project);
         this.mongoManager = MongoManager.getInstance(project);
-        configurations = new LinkedList<ServerConfiguration>(this.configuration.getServerConfigurations());
+        configurations = new LinkedList<>(this.configuration.getServerConfigurations());
         tableModel = new MongoServerTableModel(configurations);
         mainPanel = new JPanel(new BorderLayout());
     }

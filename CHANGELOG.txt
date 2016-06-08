@@ -1,3 +1,9 @@
+Version 0.7.6
+    * Idea 2016
+
+Version 0.7.5
+    * Idea 15
+
 Version 0.7.4
     * [fix] Open Settings action
     * [fix] Mongo Shell command launching
