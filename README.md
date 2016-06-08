@@ -6,9 +6,9 @@
 
 ## Current builds
 
-* [Build for Idea 14](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.7.4-idea14-distribution.zip)
-* [Build for Idea 15](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.7.5-idea15-distribution.zip)
-* [Build for Idea 2016](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.7.6-idea2016-distribution.zip)
+* [Build for Idea 14](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.8.0-idea14-distribution.zip)
+* [Build for Idea 15](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.8.0-idea15-distribution.zip)
+* [Build for Idea 2016](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.8.0-idea2016-distribution.zip)
 
 
 ## Description
