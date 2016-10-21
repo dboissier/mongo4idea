@@ -215,7 +215,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
             @Override
             public boolean canExpand() {
-                return true;
+                return !getServerConfigurations().isEmpty();
             }
 
             @Override
@@ -225,7 +225,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
             @Override
             public boolean canCollapse() {
-                return true;
+                return !getServerConfigurations().isEmpty();
             }
         };
 
