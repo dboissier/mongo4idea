@@ -26,18 +26,11 @@ import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoResultDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoValueDescriptor;
 
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import java.util.Enumeration;
 import java.util.List;
 
-public class JsonTreeModel extends DefaultTreeModel {
-
-
-    public JsonTreeModel(MongoCollectionResult mongoCollectionResult) {
-        super(buildJsonTree(mongoCollectionResult));
-    }
-
+public class JsonTreeUtils {
 
     public static TreeNode buildJsonTree(MongoCollectionResult mongoCollectionResult) {
         JsonTreeNode rootNode = new JsonTreeNode(new MongoResultDescriptor(mongoCollectionResult.getCollectionName()));
@@ -127,7 +120,7 @@ public class JsonTreeModel extends DefaultTreeModel {
         return basicDBList;
     }
 
-    public static JsonTreeNode findObjectIdNode(JsonTreeNode treeNode) {
+    static JsonTreeNode findObjectIdNode(JsonTreeNode treeNode) {
         MongoNodeDescriptor descriptor = treeNode.getDescriptor();
         if (descriptor instanceof MongoResultDescriptor) { //defensive prog?
             return null;
@@ -150,7 +143,7 @@ public class JsonTreeModel extends DefaultTreeModel {
         return null;
     }
 
-    public static Object findDocument(JsonTreeNode startingNode) {
+    static Object findDocument(JsonTreeNode startingNode) {
         if (startingNode.getDescriptor() instanceof MongoValueDescriptor) {
             if (((JsonTreeNode) startingNode.getParent()).getDescriptor() instanceof MongoResultDescriptor) {
                 return startingNode.getDescriptor().getValue();

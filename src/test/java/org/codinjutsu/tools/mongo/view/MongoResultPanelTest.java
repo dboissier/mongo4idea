@@ -74,7 +74,7 @@ public class MongoResultPanelTest {
 
     @Test
     public void displayTreeWithASimpleArray() throws Exception {
-        mongoResultPanel.updateResultTableTree(createCollectionResults("simpleArray.json", "mycollec"));
+        mongoResultPanel.updateResultView(createCollectionResults("simpleArray.json", "mycollec"));
 
         getResultTable().requireColumnCount(2)
                 .requireContents(new String[][]{
@@ -87,7 +87,7 @@ public class MongoResultPanelTest {
 
     @Test
     public void testDisplayTreeWithASimpleDocument() throws Exception {
-        mongoResultPanel.updateResultTableTree(createCollectionResults("simpleDocument.json", "mycollec"));
+        mongoResultPanel.updateResultView(createCollectionResults("simpleDocument.json", "mycollec"));
 
         getResultTable().requireColumnCount(2)
                 .requireContents(new String[][]{
@@ -102,8 +102,8 @@ public class MongoResultPanelTest {
 
     @Test
     public void testDisplayTreeWithAStructuredDocument() throws Exception {
-        mongoResultPanel.updateResultTableTree(createCollectionResults("structuredDocument.json", "mycollec"));
-        TreeUtil.expandAll(mongoResultPanel.resultTableView.getTree());
+        mongoResultPanel.updateResultView(createCollectionResults("structuredDocument.json", "mycollec"));
+        TreeUtil.expandAll(mongoResultPanel.resultTreeTableView.getTree());
         getResultTable().requireColumnCount(2)
                 .requireContents(new String[][]{
                         {"[0]", "{ \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}"},
@@ -123,9 +123,9 @@ public class MongoResultPanelTest {
 
     @Test
     public void testDisplayTreeWithAnArrayOfStructuredDocument() throws Exception {
-        mongoResultPanel.updateResultTableTree(createCollectionResults("arrayOfDocuments.json", "mycollec"));
+        mongoResultPanel.updateResultView(createCollectionResults("arrayOfDocuments.json", "mycollec"));
 
-        TreeUtil.expandAll(mongoResultPanel.resultTableView.getTree());
+        TreeUtil.expandAll(mongoResultPanel.resultTreeTableView.getTree());
         getResultTable().requireContents(new String[][]{
 
                 {"[0]", "{ \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}"},
@@ -155,24 +155,24 @@ public class MongoResultPanelTest {
 
     @Test
     public void testCopyMongoObjectNodeValue() throws Exception {
-        mongoResultPanel.updateResultTableTree(createCollectionResults("structuredDocument.json", "mycollec"));
-        TreeUtil.expandAll(mongoResultPanel.resultTableView.getTree());
+        mongoResultPanel.updateResultView(createCollectionResults("structuredDocument.json", "mycollec"));
+        TreeUtil.expandAll(mongoResultPanel.resultTreeTableView.getTree());
 
-        mongoResultPanel.resultTableView.setRowSelectionInterval(0, 0);
+        mongoResultPanel.resultTreeTableView.setRowSelectionInterval(0, 0);
         assertEquals("{ \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}", mongoResultPanel.getSelectedNodeStringifiedValue());
 
-        mongoResultPanel.resultTableView.setRowSelectionInterval(2, 2);
+        mongoResultPanel.resultTreeTableView.setRowSelectionInterval(2, 2);
         assertEquals("\"label\" : \"toto\"", mongoResultPanel.getSelectedNodeStringifiedValue());
 
-        mongoResultPanel.resultTableView.setRowSelectionInterval(4, 4);
+        mongoResultPanel.resultTreeTableView.setRowSelectionInterval(4, 4);
         assertEquals("\"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}", mongoResultPanel.getSelectedNodeStringifiedValue());
     }
 
     @Test
     public void copyMongoResults() throws Exception {
-        mongoResultPanel.updateResultTableTree(createCollectionResults("arrayOfDocuments.json", "mycollec"));
+        mongoResultPanel.updateResultView(createCollectionResults("arrayOfDocuments.json", "mycollec"));
 
-        TreeUtil.expandAll(mongoResultPanel.resultTableView.getTree());
+        TreeUtil.expandAll(mongoResultPanel.resultTreeTableView.getTree());
 
         getResultTable().requireContents(new String[][]{
                 {"[0]", "{ \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"doc\" : { \"title\" : \"hello\" , \"nbPages\" : 10 , \"keyWord\" : [ \"toto\" , true , 10]}}"},

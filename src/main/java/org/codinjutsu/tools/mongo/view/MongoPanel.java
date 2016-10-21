@@ -55,11 +55,13 @@ public class MongoPanel extends JPanel implements Disposable {
     private final MongoManager mongoManager;
     private final ServerConfiguration configuration;
     private final MongoCollection mongoCollection;
+    private MongoCollectionResult currentResults;
 
     public MongoPanel(Project project, final MongoManager mongoManager, final ServerConfiguration configuration, final MongoCollection mongoCollection) {
         this.mongoManager = mongoManager;
         this.mongoCollection = mongoCollection;
         this.configuration = configuration;
+        this.currentResults = new MongoCollectionResult(mongoCollection.getName());
 
         errorPanel.setLayout(new BorderLayout());
 
@@ -174,6 +176,17 @@ public class MongoPanel extends JPanel implements Disposable {
         actionToolBarComponent.setOpaque(false);
 
         toolBar.add(actionToolBarComponent, BorderLayout.CENTER);
+
+        DefaultActionGroup viewSelectGroup = new DefaultActionGroup("MongoViewSelectGroup", false);
+        viewSelectGroup.add(new ViewAsTreeAction(this));
+        viewSelectGroup.add(new ViewAsTableAction(this));
+
+        ActionToolbar viewToolbar = ActionManager.getInstance().createActionToolbar("MongoViewSelectecActions", viewSelectGroup, true);
+        viewToolbar.setLayoutPolicy(ActionToolbar.AUTO_LAYOUT_POLICY);
+        JComponent viewToolbarComponent = viewToolbar.getComponent();
+        viewToolbarComponent.setBorder(null);
+        viewToolbarComponent.setOpaque(false);
+        toolBar.add(viewToolbarComponent, BorderLayout.EAST);
     }
 
     public MongoCollection getMongoCollection() {
@@ -185,7 +198,7 @@ public class MongoPanel extends JPanel implements Disposable {
         executeQuery();
     }
 
-    public void executeQuery() {
+    public void executeQuery(final boolean useCachedResults) {
         errorPanel.setVisible(false);
         validateQuery();
         ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
@@ -199,11 +212,13 @@ public class MongoPanel extends JPanel implements Disposable {
                         }
                     });
 
-                    final MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(configuration, mongoCollection, queryPanel.getQueryOptions(rowLimitField.getText()));
+                    if (!useCachedResults) {
+                        currentResults = mongoManager.loadCollectionValues(configuration, mongoCollection, queryPanel.getQueryOptions(rowLimitField.getText()));
+                    }
                     GuiUtils.runInSwingThread(new Runnable() {
                         @Override
                         public void run() {
-                            resultPanel.updateResultTableTree(mongoCollectionResult);
+                            resultPanel.updateResultView(currentResults);
 
                         }
                     });
@@ -228,6 +243,10 @@ public class MongoPanel extends JPanel implements Disposable {
                 }
             }
         });
+    }
+
+    public void executeQuery() {
+        executeQuery(false);
 
     }
 
@@ -266,6 +285,14 @@ public class MongoPanel extends JPanel implements Disposable {
 
     public boolean isFindEditorOpened() {
         return splitter.getFirstComponent() == queryPanel;
+    }
+
+    public void setViewMode(MongoResultPanel.ViewMode viewMode) {
+        if (resultPanel.getCurrentViewMode().equals(viewMode)) {
+            return;
+        }
+        this.resultPanel.setCurrentViewMode(viewMode);
+        executeQuery(true);
     }
 
     interface MongoDocumentOperations {

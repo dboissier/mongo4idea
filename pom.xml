@@ -5,7 +5,7 @@
 
     <groupId>org.codinjutsu.tools.mongo</groupId>
     <artifactId>mongo4idea</artifactId>
-    <version>0.8.0-SNAPSHOT</version>
+    <version>0.9.0-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -49,6 +49,11 @@
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>0.1.54</version>
         </dependency>
 
         <dependency>
@@ -224,18 +229,6 @@
         </testResources>
     </build>
     <profiles>
-        <profile>
-            <id>idea-14</id>
-            <properties>
-                <maven.compiler.source>1.7</maven.compiler.source>
-                <maven.compiler.target>1.7</maven.compiler.target>
-                <intellij.sdk.name>141.1532.4</intellij.sdk.name>
-                <intellij.sdk.version>14.1</intellij.sdk.version>
-                <intellij.lib.path>/Users/dboissier/dev/IntellijSDK/idea-IC-${intellij.sdk.name}/lib</intellij.lib.path>
-                <plugin.min.version>141.0</plugin.min.version>
-                <plugin.max.version>141.9999</plugin.max.version>
-            </properties>
-        </profile>
         <profile>
             <id>idea-15</id>
             <properties>

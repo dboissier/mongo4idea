@@ -26,12 +26,10 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.tree.TreeUtil;
 import com.mongodb.DBObject;
 import org.apache.commons.lang.StringUtils;
-import org.codinjutsu.tools.mongo.utils.MongoUtils;
 import org.codinjutsu.tools.mongo.view.action.edition.AddKeyAction;
 import org.codinjutsu.tools.mongo.view.action.edition.AddValueAction;
 import org.codinjutsu.tools.mongo.view.action.edition.DeleteKeyAction;
-import org.codinjutsu.tools.mongo.view.model.JsonDataType;
-import org.codinjutsu.tools.mongo.view.model.JsonTreeModel;
+import org.codinjutsu.tools.mongo.view.model.JsonTreeUtils;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
@@ -110,7 +108,7 @@ public class MongoEditionPanel extends JPanel implements Disposable {
         }
 
         mainPanel.setBorder(IdeBorderFactory.createTitledBorder(panelTitle, true));
-        editTableView = new JsonTreeTableView(JsonTreeModel.buildJsonTree(mongoDocument), JsonTreeTableView.COLUMNS_FOR_WRITING);
+        editTableView = new JsonTreeTableView(JsonTreeUtils.buildJsonTree(mongoDocument), JsonTreeTableView.COLUMNS_FOR_WRITING);
         editTableView.setName("editionTreeTable");
 
         editionTreePanel.invalidate();
@@ -158,7 +156,7 @@ public class MongoEditionPanel extends JPanel implements Disposable {
         JsonTreeNode treeNode = new JsonTreeNode(MongoKeyValueDescriptor.createDescriptor(key, value));
 
         if (value instanceof DBObject) {
-             JsonTreeModel.processDbObject(treeNode, (DBObject) value);
+             JsonTreeUtils.processDbObject(treeNode, (DBObject) value);
         }
 
         node.add(treeNode);
@@ -179,7 +177,7 @@ public class MongoEditionPanel extends JPanel implements Disposable {
 
         JsonTreeNode treeNode = new JsonTreeNode(MongoValueDescriptor.createDescriptor(parentNode.getChildCount(), value));
         if (value instanceof DBObject) {
-            JsonTreeModel.processDbObject(treeNode, (DBObject) value);
+            JsonTreeUtils.processDbObject(treeNode, (DBObject) value);
         }
 
         node.add(treeNode);
@@ -228,7 +226,7 @@ public class MongoEditionPanel extends JPanel implements Disposable {
 
     private DBObject buildMongoDocument() {
         JsonTreeNode rootNode = (JsonTreeNode) editTableView.getTree().getModel().getRoot();
-        return JsonTreeModel.buildDBObject(rootNode);
+        return JsonTreeUtils.buildDBObject(rootNode);
     }
 
     @Override

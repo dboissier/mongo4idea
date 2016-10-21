@@ -35,8 +35,9 @@ import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.CopyResultAction;
 import org.codinjutsu.tools.mongo.view.action.EditMongoDocumentAction;
-import org.codinjutsu.tools.mongo.view.model.JsonTreeModel;
+import org.codinjutsu.tools.mongo.view.model.JsonTableUtils;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
+import org.codinjutsu.tools.mongo.view.model.JsonTreeUtils;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoResultDescriptor;
@@ -58,7 +59,11 @@ public class MongoResultPanel extends JPanel implements Disposable {
     private final JPanel resultTreePanel;
     private final MongoEditionPanel mongoEditionPanel;
 
-    JsonTreeTableView resultTableView;
+    JsonTreeTableView resultTreeTableView;
+
+    JsonTableView resultTableView;
+
+    private ViewMode currentViewMode = ViewMode.TREE;
 
 
     public MongoResultPanel(Project project, MongoPanel.MongoDocumentOperations mongoDocumentOperations) {
@@ -99,11 +104,19 @@ public class MongoResultPanel extends JPanel implements Disposable {
         });
     }
 
-    public void updateResultTableTree(MongoCollectionResult mongoCollectionResult) {
-        resultTableView = new JsonTreeTableView(JsonTreeModel.buildJsonTree(mongoCollectionResult), JsonTreeTableView.COLUMNS_FOR_READING);
-        resultTableView.setName("resultTreeTable");
+    public void updateResultView(MongoCollectionResult mongoCollectionResult) {
+        if (ViewMode.TREE.equals(currentViewMode)) {
+            updateResultTreeTable(mongoCollectionResult);
+        } else {
+            updateResultTable(mongoCollectionResult);
+        }
+    }
 
-        resultTableView.addMouseListener(new MouseAdapter() {
+    private void updateResultTreeTable(MongoCollectionResult mongoCollectionResult) {
+        resultTreeTableView = new JsonTreeTableView(JsonTreeUtils.buildJsonTree(mongoCollectionResult), JsonTreeTableView.COLUMNS_FOR_READING);
+        resultTreeTableView.setName("resultTreeTable");
+
+        resultTreeTableView.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
                 if (mouseEvent.getClickCount() == 2 && MongoResultPanel.this.isSelectedNodeId()) {
@@ -114,9 +127,18 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
         buildPopupMenu();
 
+        displayResult(resultTreeTableView);
+    }
+
+    private void updateResultTable(MongoCollectionResult mongoCollectionResult) {
+        resultTableView = new JsonTableView(JsonTableUtils.buildJsonTable(mongoCollectionResult));
+        displayResult(resultTableView);
+    }
+
+    private void displayResult(JComponent tableView) {
         resultTreePanel.invalidate();
         resultTreePanel.removeAll();
-        resultTreePanel.add(new JBScrollPane(resultTableView));
+        resultTreePanel.add(new JBScrollPane(tableView));
         resultTreePanel.validate();
     }
 
@@ -127,7 +149,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
             actionPopupGroup.add(new CopyResultAction(this));
         }
 
-        PopupHandler.installPopupHandler(resultTableView, actionPopupGroup, "POPUP", ActionManager.getInstance());
+        PopupHandler.installPopupHandler(resultTreeTableView, actionPopupGroup, "POPUP", ActionManager.getInstance());
     }
 
 
@@ -151,7 +173,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
     }
 
     private DBObject getSelectedMongoDocument() {
-        TreeTableTree tree = resultTableView.getTree();
+        TreeTableTree tree = resultTreeTableView.getTree();
         JsonTreeNode treeNode = (JsonTreeNode) tree.getLastSelectedPathComponent();
         if (treeNode == null) {
             return null;
@@ -170,10 +192,10 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
 
     public boolean isSelectedNodeId() {
-        if (resultTableView == null) {
+        if (resultTreeTableView == null) {
             return false;
         }
-        TreeTableTree tree = resultTableView.getTree();
+        TreeTableTree tree = resultTreeTableView.getTree();
         JsonTreeNode treeNode = (JsonTreeNode) tree.getLastSelectedPathComponent();
         if (treeNode == null) {
             return false;
@@ -190,18 +212,18 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
 
     void expandAll() {
-        TreeUtil.expandAll(resultTableView.getTree());
+        TreeUtil.expandAll(resultTreeTableView.getTree());
     }
 
     void collapseAll() {
-        TreeTableTree tree = resultTableView.getTree();
+        TreeTableTree tree = resultTreeTableView.getTree();
         TreeUtil.collapseAll(tree, 1);
     }
 
     public String getSelectedNodeStringifiedValue() {
-        JsonTreeNode lastSelectedResultNode = (JsonTreeNode) resultTableView.getTree().getLastSelectedPathComponent();
+        JsonTreeNode lastSelectedResultNode = (JsonTreeNode) resultTreeTableView.getTree().getLastSelectedPathComponent();
         if (lastSelectedResultNode == null) {
-            lastSelectedResultNode = (JsonTreeNode) resultTableView.getTree().getModel().getRoot();
+            lastSelectedResultNode = (JsonTreeNode) resultTreeTableView.getTree().getModel().getRoot();
         }
         MongoNodeDescriptor userObject = lastSelectedResultNode.getDescriptor();
         if (userObject instanceof MongoResultDescriptor) {
@@ -216,7 +238,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
     }
 
     private String stringifyResult(DefaultMutableTreeNode selectedResultNode) {
-        List<Object> stringifiedObjects = new LinkedList<Object>();
+        List<Object> stringifiedObjects = new LinkedList<>();
         for (int i = 0; i < selectedResultNode.getChildCount(); i++) {
             DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) selectedResultNode.getChildAt(i);
             stringifiedObjects.add(childNode.getUserObject());
@@ -227,8 +249,16 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
     @Override
     public void dispose() {
-        resultTableView = null;
+        resultTreeTableView = null;
         mongoEditionPanel.dispose();
+    }
+
+    public void setCurrentViewMode(ViewMode viewMode) {
+        this.currentViewMode = viewMode;
+    }
+
+    public ViewMode getCurrentViewMode() {
+        return currentViewMode;
     }
 
     public interface ActionCallback {
@@ -238,5 +268,9 @@ public class MongoResultPanel extends JPanel implements Disposable {
         void onOperationFailure(Exception exception);
 
         void onOperationCancelled(String message);
+    }
+
+    public enum ViewMode {
+        TREE, TABLE
     }
 }
