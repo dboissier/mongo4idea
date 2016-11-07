@@ -16,6 +16,7 @@
 
 package org.codinjutsu.tools.mongo.logic;
 
+import com.intellij.openapi.command.impl.DummyProject;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -140,7 +141,7 @@ public class MongoManagerTest {
         dummyCollection.deleteMany(new BasicDBObject());
         fillCollectionWithJsonData(dummyCollection, IOUtils.toString(getClass().getResourceAsStream("dummyCollection.json")));
 
-        mongoManager = new MongoManager();
+        mongoManager = new MongoManager(DummyProject.getInstance());
         serverConfiguration = new ServerConfiguration();
         serverConfiguration.setServerUrls(Arrays.asList("localhost:27017"));
     }

@@ -28,6 +28,7 @@
                 <exclude>com.intellij:forms_rt</exclude>
                 <exclude>com.intellij:openapi</exclude>
                 <exclude>com.intellij:util</exclude>
+                <exclude>com.intellij:jsch</exclude>
                 <exclude>commons-lang:commons-lang</exclude>
                 <exclude>log4j:log4j</exclude>
             </excludes>

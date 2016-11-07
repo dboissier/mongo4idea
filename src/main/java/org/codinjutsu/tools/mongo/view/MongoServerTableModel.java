@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 David Boissier
+ * Copyright (c) 2016.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.util.ui.ItemRemovable;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
+import org.codinjutsu.tools.mongo.SshTunnelingConfiguration;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
@@ -26,9 +27,10 @@ class MongoServerTableModel extends AbstractTableModel implements ItemRemovable 
     private final String[] columnNames = new String[]{
             "Label",
             "URL",
+            "SSH Tunneling",
             "Autoconnect"
     };
-    private final Class[] columnClasses = new Class[]{String.class, String.class, Boolean.class};
+    private final Class[] columnClasses = new Class[]{String.class, String.class, Boolean.class, Boolean.class};
 
     private final List<ServerConfiguration> mongoServerConfigurations;
 
@@ -45,7 +47,7 @@ class MongoServerTableModel extends AbstractTableModel implements ItemRemovable 
     }
 
     public int getColumnCount() {
-        return 3;
+        return 4;
     }
 
     public int getRowCount() {
@@ -66,7 +68,10 @@ class MongoServerTableModel extends AbstractTableModel implements ItemRemovable 
             case 1: { // "URL" column
                 return configuration.getUrlsInSingleString();
             }
-            case 2: { // "Autoconnect" column
+            case 2: { // "SSH Tunneling" column
+                return !SshTunnelingConfiguration.isEmpty(configuration.getSshTunnelingConfiguration());
+            }
+            case 3: { // "Autoconnect" column
                 return configuration.isConnectOnIdeStartup();
             }
             default: {
@@ -87,6 +92,10 @@ class MongoServerTableModel extends AbstractTableModel implements ItemRemovable 
                 break;
             }
             case 2: {
+                //do nothing url = serverHosts
+                break;
+            }
+            case 3: {
                 configuration.setConnectOnIdeStartup((Boolean) value);
                 break;
             }

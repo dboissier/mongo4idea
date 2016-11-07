@@ -16,52 +16,51 @@
 
 package org.codinjutsu.tools.mongo.logic;
 
+import com.intellij.notification.NotificationGroup;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.MessageType;
 import com.mongodb.*;
-import com.mongodb.client.MongoIterable;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
+import org.codinjutsu.tools.mongo.SshTunnelingConfiguration;
+import org.codinjutsu.tools.mongo.logic.ssh.SshConnection;
 import org.codinjutsu.tools.mongo.model.*;
 
-import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.*;
 
 public class MongoManager {
 
-    private static final Logger LOG = Logger.getLogger(MongoManager.class);
-    private final List<MongoServer> mongoServers = new LinkedList<MongoServer>();
+    private final static NotificationGroup MONGO_GROUP = NotificationGroup.logOnlyGroup("Mongo");
+
+    private static final String DEFAULT_TUNNEL_LOCAL_HOST = "localhost";
+    private static final int DEFAULT_TUNNEL_LOCAL_PORT = 9080;
+
+    private final List<MongoServer> mongoServers = new LinkedList<>();
+    private final Project project;
 
     public static MongoManager getInstance(Project project) {
         return ServiceManager.getService(project, MongoManager.class);
     }
 
-    public void connect(ServerConfiguration configuration) {
-        MongoClient mongo = null;
-        try {
-            String userDatabase = configuration.getUserDatabase();
-            mongo = createMongoClient(configuration);
+    public MongoManager(Project project) {
+        this.project = project;
+    }
 
-            MongoIterable<String> collectionNames;
-            if (StringUtils.isNotEmpty(userDatabase)) {
-                collectionNames = mongo.getDatabase(userDatabase).listCollectionNames();
-            } else {
-                collectionNames = mongo.getDatabase("test").listCollectionNames();
-            }
-            collectionNames.first();
+    public void connect(final ServerConfiguration configuration) {
+        Task task = new Task() {
+            @Override
+            public void run(MongoClient mongoClient) {
+                String userDatabase = configuration.getUserDatabase();
+                String databaseName = StringUtils.isNotEmpty(userDatabase) ? userDatabase : "test";
 
-        } catch (IOException ex) {
-            throw new MongoConnectionException(ex);
-        } catch (MongoException ex) {
-            LOG.error("Error when accessing Mongo server", ex);
-            throw new MongoConnectionException(ex.getMessage());
-        } finally {
-            if (mongo != null) {
-                mongo.close();
+                mongoClient.getDatabase(databaseName).listCollectionNames().first();
             }
-        }
+        };
+
+
+        executeTask(configuration, task);
     }
 
     public void cleanUpServers() {
@@ -78,46 +77,75 @@ public class MongoManager {
 
     public void loadServer(MongoServer mongoServer) {
         mongoServer.setStatus(MongoServer.Status.LOADING);
+
         List<MongoDatabase> mongoDatabases = loadDatabaseCollections(mongoServer.getConfiguration());
+
         mongoServer.setDatabases(mongoDatabases);
         mongoServer.setStatus(MongoServer.Status.OK);
     }
 
-    List<MongoDatabase> loadDatabaseCollections(ServerConfiguration configuration) {
-        MongoClient mongo = null;
-        List<MongoDatabase> mongoDatabases = new LinkedList<MongoDatabase>();
-        try {
-            String userDatabase = configuration.getUserDatabase();
+    private List<MongoDatabase> loadDatabaseCollections(final ServerConfiguration configuration) {
+        final List<MongoDatabase> mongoDatabases = new LinkedList<>();
+        TaskWithReturnedObject<List<MongoDatabase>> perform = new TaskWithReturnedObject<List<MongoDatabase>>() {
+            @Override
+            public List<MongoDatabase> run(MongoClient mongoClient) {
+                String userDatabase = configuration.getUserDatabase();
 
-            mongo = createMongoClient(configuration);
-
-            if (StringUtils.isNotEmpty(userDatabase)) {
-                DB database = mongo.getDB(userDatabase);
-                mongoDatabases.add(createMongoDatabaseAndItsCollections(database));
-            } else {
-                List<String> databaseNames = mongo.getDatabaseNames();
-                Collections.sort(databaseNames);
-                for (String databaseName : databaseNames) {
-                    DB database = mongo.getDB(databaseName);
+                if (StringUtils.isNotEmpty(userDatabase)) {
+                    DB database = mongoClient.getDB(userDatabase);
                     mongoDatabases.add(createMongoDatabaseAndItsCollections(database));
+                } else {
+                    List<String> databaseNames = mongoClient.getDatabaseNames();
+                    Collections.sort(databaseNames);
+                    for (String databaseName : databaseNames) {
+                        DB database = mongoClient.getDB(databaseName);
+                        mongoDatabases.add(createMongoDatabaseAndItsCollections(database));
+                    }
                 }
+                return mongoDatabases;
             }
+        };
 
-            return mongoDatabases;
-        } catch (MongoException mongoEx) {
-            throw new ConfigurationException(mongoEx);
-        } catch (UnknownHostException unknownHostEx) {
-            throw new ConfigurationException(unknownHostEx);
-        } finally {
-            if (mongo != null) {
-                mongo.close();
+        return executeTask(configuration, perform);
+    }
+
+    public MongoCollectionResult loadCollectionValues(ServerConfiguration configuration, final MongoCollection mongoCollection, final MongoQueryOptions mongoQueryOptions) {
+        TaskWithReturnedObject<MongoCollectionResult> task = new TaskWithReturnedObject<MongoCollectionResult>() {
+            @Override
+            public MongoCollectionResult run(MongoClient mongoClient) {
+                String databaseName = mongoCollection.getDatabaseName();
+
+                DB database = mongoClient.getDB(databaseName);
+                DBCollection collection = database.getCollection(mongoCollection.getName());
+
+                MongoCollectionResult mongoCollectionResult = new MongoCollectionResult(mongoCollection.getName());
+                if (mongoQueryOptions.isAggregate()) {
+                    return aggregate(mongoQueryOptions, mongoCollectionResult, collection);
+                }
+
+                return find(mongoQueryOptions, mongoCollectionResult, collection);
             }
-        }
+        };
+
+        return execute(configuration, task);
+    }
+
+    public DBObject findMongoDocument(ServerConfiguration configuration, final MongoCollection mongoCollection, final Object _id) {
+        TaskWithReturnedObject<DBObject> task = new TaskWithReturnedObject<DBObject>() {
+            @Override
+            public DBObject run(MongoClient mongoClient) {
+                String databaseName = mongoCollection.getDatabaseName();
+                DB database = mongoClient.getDB(databaseName);
+                DBCollection collection = database.getCollection(mongoCollection.getName());
+                return collection.findOne(new BasicDBObject("_id", _id));
+            }
+        };
+
+        return execute(configuration, task);
     }
 
     private MongoDatabase createMongoDatabaseAndItsCollections(DB database) {
         MongoDatabase mongoDatabase = new MongoDatabase(database.getName());
-
 
         Set<String> collectionNames = database.getCollectionNames();
         for (String collectionName : collectionNames) {
@@ -126,118 +154,108 @@ public class MongoManager {
         return mongoDatabase;
     }
 
-    public void update(ServerConfiguration configuration, MongoCollection mongoCollection, DBObject mongoDocument) {
-        MongoClient mongo = null;
-        try {
-            String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration);
-
-            DB database = mongo.getDB(databaseName);
-            DBCollection collection = database.getCollection(mongoCollection.getName());
-
-            collection.save(mongoDocument);
-        } catch (UnknownHostException ex) {
-            throw new ConfigurationException(ex);
-        } finally {
-            if (mongo != null) {
-                mongo.close();
+    private <T> T executeTask(ServerConfiguration configuration, TaskWithReturnedObject<T> perform) {
+        if (SshTunnelingConfiguration.isEmpty(configuration.getSshTunnelingConfiguration())) {
+            return execute(configuration, perform);
+        } else {
+            try (SshConnection ignored = SshConnection.create(configuration)) {
+                return execute(configuration, perform);
             }
         }
     }
 
-    public void delete(ServerConfiguration configuration, MongoCollection mongoCollection, Object _id) {
-        MongoClient mongo = null;
-        try {
-            String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration);
+    private <T> T execute(ServerConfiguration configuration, TaskWithReturnedObject<T> perform) {
+        try (MongoClient mongo = createMongoClient(configuration)) {
+            return perform.run(mongo);
+        } catch (UnknownHostException | MongoException mongoEx) {
+            MONGO_GROUP.createNotification(String.format("Error when connecting on %s", configuration.getLabel()),
+                    MessageType.ERROR)
+                    .notify(project);
+            throw new ConfigurationException(mongoEx);
+        }
+    }
 
-            DB database = mongo.getDB(databaseName);
-            DBCollection collection = database.getCollection(mongoCollection.getName());
+    public void update(ServerConfiguration configuration, final MongoCollection mongoCollection, final DBObject mongoDocument) {
+        Task task = new Task() {
+            @Override
+            public void run(MongoClient mongoClient) {
+                String databaseName = mongoCollection.getDatabaseName();
+                DB database = mongoClient.getDB(databaseName);
+                DBCollection collection = database.getCollection(mongoCollection.getName());
 
-            collection.remove(new BasicDBObject("_id", _id));
-        } catch (UnknownHostException ex) {
-            throw new ConfigurationException(ex);
-        } finally {
-            if (mongo != null) {
-                mongo.close();
+                collection.save(mongoDocument);
+                MONGO_GROUP.createNotification("Document " + mongoDocument.toString() + " saved", MessageType.INFO)
+                .notify();
+            }
+        };
+
+        executeTask(configuration, task);
+    }
+
+    public void delete(ServerConfiguration configuration, final MongoCollection mongoCollection, final Object _id) {
+        Task task = new Task() {
+            @Override
+            public void run(MongoClient mongoClient) {
+                String databaseName = mongoCollection.getDatabaseName();
+
+                DB database = mongoClient.getDB(databaseName);
+                DBCollection collection = database.getCollection(mongoCollection.getName());
+
+                collection.remove(new BasicDBObject("_id", _id));
+                MONGO_GROUP.createNotification("Document with _id=" + _id + " removed", MessageType.INFO)
+                        .notify(project);
+            }
+        };
+
+        executeTask(configuration, task);
+    }
+
+    public void dropCollection(ServerConfiguration configuration, final MongoCollection mongoCollection) {
+        Task task = new Task() {
+            @Override
+            public void run(MongoClient mongoClient) {
+                String databaseName = mongoCollection.getDatabaseName();
+
+                DB database = mongoClient.getDB(databaseName);
+                DBCollection collection = database.getCollection(mongoCollection.getName());
+
+                collection.drop();
+                MONGO_GROUP.createNotification("Collection " + mongoCollection.getName() + " dropped", MessageType.INFO)
+                        .notify(project);
+            }
+        };
+        executeTask(configuration, task);
+    }
+
+
+    public void dropDatabase(ServerConfiguration configuration, final MongoDatabase selectedDatabase) {
+        Task task = new Task() {
+            @Override
+            public void run(MongoClient mongoClient) {
+                mongoClient.dropDatabase(selectedDatabase.getName());
+                MONGO_GROUP.createNotification("Datatabase " + selectedDatabase.getName() + " dropped", MessageType.INFO)
+                        .notify(project);
+            }
+        };
+
+        executeTask(configuration, task);
+    }
+
+    private void executeTask(ServerConfiguration configuration, Task perform) {
+        if (SshTunnelingConfiguration.isEmpty(configuration.getSshTunnelingConfiguration())) {
+            execute(configuration, perform);
+        } else {
+            try (SshConnection ignored = SshConnection.create(configuration)) {
+                execute(configuration, perform);
             }
         }
     }
 
-    public void dropCollection(ServerConfiguration configuration, MongoCollection mongoCollection) {
-        MongoClient mongo = null;
-        try {
-            String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration);
-
-            DB database = mongo.getDB(databaseName);
-            DBCollection collection = database.getCollection(mongoCollection.getName());
-
-            collection.drop();
-        } catch (UnknownHostException ex) {
+    private void execute(ServerConfiguration configuration, Task task) {
+        try (MongoClient mongoClient = createMongoClient(configuration)) {
+            task.run(mongoClient);
+        } catch (UnknownHostException | MongoException ex) {
             throw new ConfigurationException(ex);
-        } finally {
-            if (mongo != null) {
-                mongo.close();
-            }
-        }
-    }
-
-    public void dropDatabase(ServerConfiguration configuration, MongoDatabase selectedDatabase) {
-        MongoClient mongo = null;
-        try {
-            mongo = createMongoClient(configuration);
-            mongo.dropDatabase(selectedDatabase.getName());
-        } catch (UnknownHostException ex) {
-            throw new ConfigurationException(ex);
-        } finally {
-            if (mongo != null) {
-                mongo.close();
-            }
-        }
-    }
-
-    public MongoCollectionResult loadCollectionValues(ServerConfiguration configuration, MongoCollection mongoCollection, MongoQueryOptions mongoQueryOptions) {
-        MongoClient mongo = null;
-        try {
-            String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration);
-
-            DB database = mongo.getDB(databaseName);
-            DBCollection collection = database.getCollection(mongoCollection.getName());
-
-            MongoCollectionResult mongoCollectionResult = new MongoCollectionResult(mongoCollection.getName());
-            if (mongoQueryOptions.isAggregate()) {
-                return aggregate(mongoQueryOptions, mongoCollectionResult, collection);
-            }
-
-            return find(mongoQueryOptions, mongoCollectionResult, collection);
-
-        } catch (UnknownHostException ex) {
-            throw new ConfigurationException(ex);
-        } finally {
-            if (mongo != null) {
-                mongo.close();
-            }
-        }
-    }
-
-    public DBObject findMongoDocument(ServerConfiguration configuration, MongoCollection mongoCollection, Object _id) {
-        MongoClient mongo = null;
-        try {
-            String databaseName = mongoCollection.getDatabaseName();
-            mongo = createMongoClient(configuration);
-
-            DB database = mongo.getDB(databaseName);
-            DBCollection collection = database.getCollection(mongoCollection.getName());
-            return collection.findOne(new BasicDBObject("_id", _id));
-
-        } catch (UnknownHostException ex) {
-            throw new ConfigurationException(ex);
-        } finally {
-            if (mongo != null) {
-                mongo.close();
-            }
         }
     }
 
@@ -285,16 +303,21 @@ public class MongoManager {
             throw new ConfigurationException("server host is not set");
         }
 
-        List<ServerAddress> serverAddresses = new LinkedList<ServerAddress>();
-        for (String serverUrl : serverUrls) {
-            String[] hostAndPort = StringUtils.split(serverUrl, ':');
-            serverAddresses.add(new ServerAddress(hostAndPort[0], Integer.parseInt(hostAndPort[1])));
+        List<ServerAddress> serverAddresses = new LinkedList<>();
+        if (SshTunnelingConfiguration.isEmpty(configuration.getSshTunnelingConfiguration())) {
+            for (String serverUrl : serverUrls) {
+                ServerConfiguration.HostAndPort hostAndPort = ServerConfiguration.extractHostAndPort(serverUrl);
+                serverAddresses.add(new ServerAddress(hostAndPort.host, hostAndPort.port));
+            }
+        } else {
+            serverAddresses.add(new ServerAddress(DEFAULT_TUNNEL_LOCAL_HOST, DEFAULT_TUNNEL_LOCAL_PORT));
         }
 
         MongoClientOptions options = MongoClientOptions.builder()
                 .sslEnabled(configuration.isSslConnection())
                 .readPreference(configuration.getReadPreference())
                 .build();
+
         if (StringUtils.isEmpty(configuration.getUsername())) {
             return new MongoClient(serverAddresses, options);
         } else {
@@ -302,6 +325,7 @@ public class MongoManager {
             return new MongoClient(serverAddresses, Collections.singletonList(credential), options);
         }
     }
+
 
     private MongoCredential getMongoCredential(ServerConfiguration configuration) {
         AuthenticationMechanism authenticationMechanism = configuration.getAuthenticationMechanism();
@@ -324,4 +348,14 @@ public class MongoManager {
         throw new IllegalArgumentException("Unsupported authentication macanism: " + authenticationMechanism);
     }
 
+    private interface Task {
+
+        void run(MongoClient mongoClient);
+    }
+
+
+    private interface TaskWithReturnedObject<T> {
+
+        T run(MongoClient mongoClient);
+    }
 }

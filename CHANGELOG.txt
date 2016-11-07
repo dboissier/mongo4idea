@@ -1,3 +1,8 @@
+Version 0.9
+    * [fix] #139 NPE when clicking on Expand/Collapse whereas there is no server configuration set
+    * [add] #151 Add SSH Tunneling (experimental)
+    * [add] #105 add Table view
+
 Version 0.8
     * [fix] #123 cannot connect when user database is not set
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 David Boissier
+ * Copyright (c) 2016.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,8 @@ package org.codinjutsu.tools.mongo;
 import com.mongodb.AuthenticationMechanism;
 import com.mongodb.ReadPreference;
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,23 +34,23 @@ public class ServerConfiguration implements Cloneable {
 
     private String label;
 
-    private List<String> serverUrls = new LinkedList<String>();
+    private List<String> serverUrls = new LinkedList<>();
 
     private boolean sslConnection;
-    private ReadPreference readPreference = ReadPreference.primary();
 
+    private ReadPreference readPreference = ReadPreference.primary();
     private String username;
     private String password;
     private String authenticationDatabase;
+
     private AuthenticationMechanism authenticationMechanism = null;
-
     private String userDatabase;
-    private boolean connectOnIdeStartup = false;
 
+    private boolean connectOnIdeStartup = false;
     private List<String> collectionsToIgnore = new LinkedList<>();
     private String shellArgumentsLine;
     private String shellWorkingDir;
-
+    private SshTunnelingConfiguration sshTunnelingConfiguration;
 
     public String getLabel() {
         return label;
@@ -157,9 +156,18 @@ public class ServerConfiguration implements Cloneable {
         this.shellWorkingDir = shellWorkingDir;
     }
 
+    public void setSshTunnelingConfiguration(SshTunnelingConfiguration sshTunnelingConfiguration) {
+        this.sshTunnelingConfiguration = sshTunnelingConfiguration;
+    }
+
+    public SshTunnelingConfiguration getSshTunnelingConfiguration() {
+        return sshTunnelingConfiguration;
+    }
+
     public static ServerConfiguration byDefault() {
         ServerConfiguration serverConfiguration = new ServerConfiguration();
         serverConfiguration.setServerUrls(singletonList(String.format("%s:%s", DEFAULT_URL, DEFAULT_PORT)));
+        serverConfiguration.setSshTunnelingConfiguration(SshTunnelingConfiguration.EMPTY);
         return serverConfiguration;
     }
 
@@ -171,12 +179,9 @@ public class ServerConfiguration implements Cloneable {
         return serverUrls.size() == 1;
     }
 
-    public ServerConfiguration clone() {
-        try {
-            return (ServerConfiguration) super.clone();
-        } catch (CloneNotSupportedException e) {
-            return null;
-        }
+    public static HostAndPort extractHostAndPort(@NotNull String serverUrl) {
+        String[] hostAndPort = StringUtils.split(serverUrl, ":");
+        return new HostAndPort(hostAndPort[0], Integer.parseInt(hostAndPort[1]));
     }
 
     @Override
@@ -188,37 +193,61 @@ public class ServerConfiguration implements Cloneable {
 
         if (sslConnection != that.sslConnection) return false;
         if (connectOnIdeStartup != that.connectOnIdeStartup) return false;
-        if (!label.equals(that.label)) return false;
-        if (!serverUrls.equals(that.serverUrls)) return false;
-        if (!readPreference.equals(that.readPreference)) return false;
+        if (label != null ? !label.equals(that.label) : that.label != null) return false;
+        if (serverUrls != null ? !serverUrls.equals(that.serverUrls) : that.serverUrls != null) return false;
+        if (readPreference != null ? !readPreference.equals(that.readPreference) : that.readPreference != null)
+            return false;
         if (username != null ? !username.equals(that.username) : that.username != null) return false;
         if (password != null ? !password.equals(that.password) : that.password != null) return false;
         if (authenticationDatabase != null ? !authenticationDatabase.equals(that.authenticationDatabase) : that.authenticationDatabase != null)
             return false;
         if (authenticationMechanism != that.authenticationMechanism) return false;
         if (userDatabase != null ? !userDatabase.equals(that.userDatabase) : that.userDatabase != null) return false;
-        if (!collectionsToIgnore.equals(that.collectionsToIgnore)) return false;
+        if (collectionsToIgnore != null ? !collectionsToIgnore.equals(that.collectionsToIgnore) : that.collectionsToIgnore != null)
+            return false;
         if (shellArgumentsLine != null ? !shellArgumentsLine.equals(that.shellArgumentsLine) : that.shellArgumentsLine != null)
             return false;
-        return !(shellWorkingDir != null ? !shellWorkingDir.equals(that.shellWorkingDir) : that.shellWorkingDir != null);
+        if (shellWorkingDir != null ? !shellWorkingDir.equals(that.shellWorkingDir) : that.shellWorkingDir != null)
+            return false;
+        return sshTunnelingConfiguration != null ? sshTunnelingConfiguration.equals(that.sshTunnelingConfiguration) : that.sshTunnelingConfiguration == null;
 
     }
 
     @Override
     public int hashCode() {
-        int result = label.hashCode();
-        result = 31 * result + serverUrls.hashCode();
+        int result = label != null ? label.hashCode() : 0;
+        result = 31 * result + (serverUrls != null ? serverUrls.hashCode() : 0);
         result = 31 * result + (sslConnection ? 1 : 0);
-        result = 31 * result + readPreference.hashCode();
+        result = 31 * result + (readPreference != null ? readPreference.hashCode() : 0);
         result = 31 * result + (username != null ? username.hashCode() : 0);
         result = 31 * result + (password != null ? password.hashCode() : 0);
         result = 31 * result + (authenticationDatabase != null ? authenticationDatabase.hashCode() : 0);
         result = 31 * result + (authenticationMechanism != null ? authenticationMechanism.hashCode() : 0);
         result = 31 * result + (userDatabase != null ? userDatabase.hashCode() : 0);
         result = 31 * result + (connectOnIdeStartup ? 1 : 0);
-        result = 31 * result + collectionsToIgnore.hashCode();
+        result = 31 * result + (collectionsToIgnore != null ? collectionsToIgnore.hashCode() : 0);
         result = 31 * result + (shellArgumentsLine != null ? shellArgumentsLine.hashCode() : 0);
         result = 31 * result + (shellWorkingDir != null ? shellWorkingDir.hashCode() : 0);
+        result = 31 * result + (sshTunnelingConfiguration != null ? sshTunnelingConfiguration.hashCode() : 0);
         return result;
+    }
+
+    public ServerConfiguration clone() {
+        try {
+            return (ServerConfiguration) super.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
+    }
+
+    public static class HostAndPort {
+
+        public final String host;
+        public final int port;
+
+        public HostAndPort(String host, int port) {
+            this.host = host;
+            this.port = port;
+        }
     }
 }

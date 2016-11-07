@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 David Boissier
+ * Copyright (c) 2016.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,14 @@
 
 package org.codinjutsu.tools.mongo.view;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.*;
+import com.intellij.openapi.ui.ComponentWithBrowseButton;
+import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.ui.TextComponentAccessor;
+import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.Ref;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.IdeBorderFactory;
@@ -30,8 +32,8 @@ import com.mongodb.AuthenticationMechanism;
 import com.mongodb.ReadPreference;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
+import org.codinjutsu.tools.mongo.SshTunnelingConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
-import org.codinjutsu.tools.mongo.logic.MongoConnectionException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.jetbrains.annotations.NotNull;
@@ -45,6 +47,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+@SuppressWarnings("unchecked")
 public class ServerConfigurationPanel extends JPanel {
 
     public static final Icon SUCCESS = GuiUtils.loadIcon("success.png");
@@ -58,8 +61,6 @@ public class ServerConfigurationPanel extends JPanel {
     private JCheckBox sslConnectionField;
 
     private JTextField labelField;
-
-    private JPanel authenticationPanel;
 
     private JTextField serverUrlsField;
     private JTextField usernameField;
@@ -81,7 +82,12 @@ public class ServerConfigurationPanel extends JPanel {
     private TextFieldWithBrowseButton shellWorkingDirField;
     private RawCommandLineEditor shellArgumentsLineField;
     private JComboBox readPreferenceComboBox;
-    private JPanel connectionOptionPanel;
+
+    private JTextField sshProxyHostField;
+    private JTextField sshProxyPortField;
+    private JTextField sshProxyUserField;
+    private JPasswordField sshProxyPasswordField;
+    private JTabbedPane settingTabbedPane;
 
     private final MongoManager mongoManager;
 
@@ -94,16 +100,21 @@ public class ServerConfigurationPanel extends JPanel {
 
         labelField.setName("labelField");
         feedbackLabel.setName("feedbackLabel");
+        settingTabbedPane.setName("tabbedSettings");
 
         sslConnectionField.setName("sslConnectionField");
         readPreferenceComboBox.setName("readPreferenceComboBox");
-        authenticationPanel.setBorder(IdeBorderFactory.createTitledBorder("Authentication settings", true));
         serverUrlsField.setName("serverUrlsField");
         usernameField.setName("usernameField");
         passwordField.setName("passwordField");
         mongoCRAuthRadioButton.setName("mongoCRAuthField");
         scramSHA1AuthRadioButton.setName("scramSHA1AuthField");
         defaultAuthMethodRadioButton.setName("defaultAuthMethod");
+
+        sshProxyHostField.setName("sshProxyHostField");
+        sshProxyPortField.setName("sshProxyPortField");
+        sshProxyUserField.setName("sshProxyUsernameField");
+        sshProxyPasswordField.setName("sshProxyPasswordField");
 
         userDatabaseField.setName("userDatabaseField");
         userDatabaseField.setToolTipText("If your access is restricted to a specific database (e.g.: MongoLab), you can set it right here");
@@ -115,7 +126,6 @@ public class ServerConfigurationPanel extends JPanel {
 
         testConnectionButton.setName("testConnection");
 
-        connectionOptionPanel.setBorder(IdeBorderFactory.createTitledBorder("Connection Settings", true));
         readPreferenceComboBox.setModel(new DefaultComboBoxModel<>(
                 new ReadPreference[]{
                         ReadPreference.primary(),
@@ -178,7 +188,6 @@ public class ServerConfigurationPanel extends JPanel {
                 }
             }
         });
-
     }
 
     @NotNull
@@ -191,6 +200,9 @@ public class ServerConfigurationPanel extends JPanel {
         configuration.setUserDatabase(getUserDatabase());
         configuration.setAuthenticationMechanism(getAuthenticationMethod());
         configuration.setSslConnection(isSslConnection());
+
+        configuration.setSshTunnelingConfiguration(isSshTunneling() ? createSshTunnelingSettings() : SshTunnelingConfiguration.EMPTY);
+
         return configuration;
     }
 
@@ -231,6 +243,12 @@ public class ServerConfigurationPanel extends JPanel {
         configuration.setShellWorkingDir(getShellWorkingDir());
         configuration.setConnectOnIdeStartup(isAutoConnect());
         configuration.setAuthenticationMechanism(getAuthenticationMethod());
+
+        configuration.setSshTunnelingConfiguration(isSshTunneling() ? createSshTunnelingSettings() : SshTunnelingConfiguration.EMPTY);
+    }
+
+    private SshTunnelingConfiguration createSshTunnelingSettings() {
+        return new SshTunnelingConfiguration(getSshProxyHost(), getSshProxyPort(), getSshProxyUser(), getSshProxyPassword());
     }
 
     public void loadConfigurationData(ServerConfiguration configuration) {
@@ -247,10 +265,18 @@ public class ServerConfigurationPanel extends JPanel {
         shellWorkingDirField.setText(configuration.getShellWorkingDir());
         autoConnectCheckBox.setSelected(configuration.isConnectOnIdeStartup());
 
+        SshTunnelingConfiguration sshTunnelingConfiguration = configuration.getSshTunnelingConfiguration();
+        if (!SshTunnelingConfiguration.isEmpty(sshTunnelingConfiguration)) {
+            sshProxyHostField.setText(sshTunnelingConfiguration.getProxyHost());
+            sshProxyPortField.setText(String.valueOf(sshTunnelingConfiguration.getProxyPort()));
+            sshProxyUserField.setText(sshTunnelingConfiguration.getProxyUser());
+            sshProxyPasswordField.setText(sshTunnelingConfiguration.getProxyPassword());
+        }
+
         AuthenticationMechanism authentificationMethod = configuration.getAuthenticationMechanism();
         if (AuthenticationMechanism.MONGODB_CR.equals(authentificationMethod)) {
             mongoCRAuthRadioButton.setSelected(true);
-        } else if (AuthenticationMechanism.SCRAM_SHA_1.equals(authentificationMethod)){
+        } else if (AuthenticationMechanism.SCRAM_SHA_1.equals(authentificationMethod)) {
             scramSHA1AuthRadioButton.setSelected(true);
         } else {
             defaultAuthMethodRadioButton.setSelected(true);
@@ -296,6 +322,10 @@ public class ServerConfigurationPanel extends JPanel {
         return sslConnectionField.isSelected();
     }
 
+    private boolean isSshTunneling() {
+        return StringUtils.isNotBlank(getSshProxyHost());
+    }
+
     private String getUsername() {
         String username = usernameField.getText();
         if (StringUtils.isNotBlank(username)) {
@@ -324,6 +354,38 @@ public class ServerConfigurationPanel extends JPanel {
         String userDatabase = userDatabaseField.getText();
         if (StringUtils.isNotBlank(userDatabase)) {
             return userDatabase;
+        }
+        return null;
+    }
+
+    private String getSshProxyHost() {
+        String proxyHost = sshProxyHostField.getText();
+        if (StringUtils.isNotBlank(proxyHost)) {
+            return proxyHost;
+        }
+        return null;
+    }
+
+    private Integer getSshProxyPort() {
+        String proxyPort = sshProxyPortField.getText();
+        if (StringUtils.isNotBlank(proxyPort)) {
+            return Integer.parseInt(proxyPort);
+        }
+        return null;
+    }
+
+    private String getSshProxyUser() {
+        String proxyUser = sshProxyUserField.getText();
+        if (StringUtils.isNotBlank(proxyUser)) {
+            return proxyUser;
+        }
+        return null;
+    }
+
+    private String getSshProxyPassword() {
+        String proxyUser = String.valueOf(sshProxyPasswordField.getPassword());
+        if (StringUtils.isNotBlank(proxyUser)) {
+            return proxyUser;
         }
         return null;
     }
@@ -363,7 +425,7 @@ public class ServerConfigurationPanel extends JPanel {
         shellWorkingDirField = new TextFieldWithBrowseButton();
         FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(false, true, false, false, false, false);
         ComponentWithBrowseButton.BrowseFolderActionListener<JTextField> browseFolderActionListener =
-                new ComponentWithBrowseButton.BrowseFolderActionListener<JTextField>("Mongo shell working directory",
+                new ComponentWithBrowseButton.BrowseFolderActionListener<>("Mongo shell working directory",
                         null,
                         shellWorkingDirField,
                         null,

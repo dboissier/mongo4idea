@@ -24,6 +24,7 @@ import org.assertj.swing.edt.GuiQuery;
 import org.assertj.swing.fixture.Containers;
 import org.assertj.swing.fixture.FrameFixture;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
+import org.codinjutsu.tools.mongo.SshTunnelingConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.junit.After;
@@ -34,10 +35,10 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class ServerConfigurationPanelTest {
@@ -52,7 +53,7 @@ public class ServerConfigurationPanelTest {
 
     @Before
     public void setUp() throws Exception {
-        mongoManager = Mockito.spy(new MongoManager());
+        mongoManager = Mockito.spy(new MongoManager(DummyProject.getInstance()));
         configurationPanel = GuiActionRunner.execute(new GuiQuery<ServerConfigurationPanel>() {
             protected ServerConfigurationPanel executeInEDT() {
                 return new ServerConfigurationPanel(DummyProject.getInstance(), mongoManager);
@@ -70,23 +71,27 @@ public class ServerConfigurationPanelTest {
     @Test
     public void validateFormWithOneServerUrl() throws Exception {
 
+        frameFixture.textBox("labelField").setText("MyServer");
+        frameFixture.checkBox("autoConnectField").check();
+
         frameFixture.textBox("serverUrlsField").setText("localhost:25");
         frameFixture.checkBox("sslConnectionField").check();
         frameFixture.comboBox("readPreferenceComboBox").requireSelection("primary");
         frameFixture.comboBox("readPreferenceComboBox").selectItem("secondary");
+        frameFixture.textBox("userDatabaseField").setText("mydatabase");
+
+        frameFixture.tabbedPane("tabbedSettings")
+                .selectTab("Authentication");
 
         frameFixture.textBox("usernameField").setText("john");
         frameFixture.textBox("passwordField").setText("johnpassword");
         frameFixture.radioButton("defaultAuthMethod").requireSelected();
         frameFixture.radioButton("mongoCRAuthField").click();
 
-        frameFixture.textBox("userDatabaseField").setText("mydatabase");
-        frameFixture.checkBox("autoConnectField").check();
-
-
         ServerConfiguration configuration = new ServerConfiguration();
         configurationPanel.applyConfigurationData(configuration);
 
+        assertEquals("MyServer", configuration.getLabel());
         assertEquals(singletonList("localhost:25"), configuration.getServerUrls());
         assertTrue(configuration.isSslConnection());
         assertEquals(ReadPreference.secondary(), configuration.getReadPreference());
@@ -94,24 +99,73 @@ public class ServerConfigurationPanelTest {
         assertEquals("johnpassword", configuration.getPassword());
         assertEquals("mydatabase", configuration.getUserDatabase());
         assertEquals(AuthenticationMechanism.MONGODB_CR, configuration.getAuthenticationMechanism());
+        assertEquals(SshTunnelingConfiguration.EMPTY, configuration.getSshTunnelingConfiguration());
         assertTrue(configuration.isConnectOnIdeStartup());
     }
 
     @Test
-    public void loadFormWithOneServerUrl() throws Exception {
+    public void validateFormWithSSHTunneling() throws Exception {
+        frameFixture.textBox("labelField").setText("MyServer");
+        frameFixture.textBox("serverUrlsField").setText("localhost:25");
+
+        frameFixture.tabbedPane("tabbedSettings")
+                .selectTab("SSH");
+        frameFixture.textBox("sshProxyHostField").setText("remotehost");
+        frameFixture.textBox("sshProxyPortField").setText("22");
+        frameFixture.textBox("sshProxyUsernameField").setText("john.doe");
+        frameFixture.textBox("sshProxyPasswordField").setText("mySecuredPassword");
+
         ServerConfiguration configuration = new ServerConfiguration();
-        configuration.setServerUrls(Collections.singletonList("localhost:25"));
+        configurationPanel.applyConfigurationData(configuration);
+
+        assertEquals(singletonList("localhost:25"), configuration.getServerUrls());
+        SshTunnelingConfiguration sshTunnelingConfiguration = configuration.getSshTunnelingConfiguration();
+        assertNotNull(sshTunnelingConfiguration);
+        assertEquals("remotehost", sshTunnelingConfiguration.getProxyHost());
+        assertEquals(new Integer(22), sshTunnelingConfiguration.getProxyPort());
+        assertEquals("john.doe", sshTunnelingConfiguration.getProxyUser());
+        assertEquals("mySecuredPassword", sshTunnelingConfiguration.getProxyPassword());
+    }
+
+    @Test
+    public void loadFormWithOneServerUrl() throws Exception {
+        ServerConfiguration configuration = ServerConfiguration.byDefault();
         configuration.setUsername("john");
         configuration.setPassword("johnpassword");
         configuration.setReadPreference(ReadPreference.nearest());
 
         configurationPanel.loadConfigurationData(configuration);
 
-        frameFixture.textBox("serverUrlsField").requireText("localhost:25");
+        frameFixture.textBox("serverUrlsField").requireText("localhost:27017");
+        frameFixture.comboBox("readPreferenceComboBox").requireSelection("nearest");
+
+        frameFixture.tabbedPane("tabbedSettings")
+                .selectTab("Authentication");
         frameFixture.textBox("usernameField").requireText("john");
         frameFixture.textBox("passwordField").requireText("johnpassword");
 
-        frameFixture.comboBox("readPreferenceComboBox").requireSelection("nearest");
+        frameFixture.tabbedPane("tabbedSettings")
+                .selectTab("SSH");
+        frameFixture.textBox("sshProxyHostField").requireEmpty();
+        frameFixture.textBox("sshProxyPortField").requireEmpty();
+        frameFixture.textBox("sshProxyUsernameField").requireEmpty();
+        frameFixture.textBox("sshProxyPasswordField").requireEmpty();
+
+    }
+
+    @Test
+    public void loadFormWithSSHTunneling() throws Exception {
+        ServerConfiguration configuration = ServerConfiguration.byDefault();
+        configuration.setSshTunnelingConfiguration(
+                new SshTunnelingConfiguration("remotehost", 22, "john.doe", "mySecuredPassword"));
+        configurationPanel.loadConfigurationData(configuration);
+
+        frameFixture.tabbedPane("tabbedSettings")
+                .selectTab("SSH");
+        frameFixture.textBox("sshProxyHostField").requireText("remotehost");
+        frameFixture.textBox("sshProxyPortField").requireText("22");
+        frameFixture.textBox("sshProxyUsernameField").requireText("john.doe");
+        frameFixture.textBox("sshProxyPasswordField").requireText("mySecuredPassword");
     }
 
     @Test
