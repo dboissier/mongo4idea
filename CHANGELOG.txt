@@ -1,6 +1,7 @@
 Version 0.9
     * [fix] #139 NPE when clicking on Expand/Collapse whereas there is no server configuration set
     * [add] #151 Add SSH Tunneling (experimental)
+    * [add] Use Event Log for plugin messages
     * [add] #105 add Table view
 
 Version 0.8

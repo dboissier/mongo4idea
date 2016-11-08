@@ -32,8 +32,6 @@ import java.util.*;
 
 public class MongoManager {
 
-    private final static NotificationGroup MONGO_GROUP = NotificationGroup.logOnlyGroup("Mongo");
-
     private static final String DEFAULT_TUNNEL_LOCAL_HOST = "localhost";
     private static final int DEFAULT_TUNNEL_LOCAL_PORT = 9080;
 
@@ -168,9 +166,6 @@ public class MongoManager {
         try (MongoClient mongo = createMongoClient(configuration)) {
             return perform.run(mongo);
         } catch (UnknownHostException | MongoException mongoEx) {
-            MONGO_GROUP.createNotification(String.format("Error when connecting on %s", configuration.getLabel()),
-                    MessageType.ERROR)
-                    .notify(project);
             throw new ConfigurationException(mongoEx);
         }
     }
@@ -184,8 +179,6 @@ public class MongoManager {
                 DBCollection collection = database.getCollection(mongoCollection.getName());
 
                 collection.save(mongoDocument);
-                MONGO_GROUP.createNotification("Document " + mongoDocument.toString() + " saved", MessageType.INFO)
-                .notify();
             }
         };
 
@@ -202,8 +195,6 @@ public class MongoManager {
                 DBCollection collection = database.getCollection(mongoCollection.getName());
 
                 collection.remove(new BasicDBObject("_id", _id));
-                MONGO_GROUP.createNotification("Document with _id=" + _id + " removed", MessageType.INFO)
-                        .notify(project);
             }
         };
 
@@ -220,8 +211,6 @@ public class MongoManager {
                 DBCollection collection = database.getCollection(mongoCollection.getName());
 
                 collection.drop();
-                MONGO_GROUP.createNotification("Collection " + mongoCollection.getName() + " dropped", MessageType.INFO)
-                        .notify(project);
             }
         };
         executeTask(configuration, task);
@@ -233,8 +222,6 @@ public class MongoManager {
             @Override
             public void run(MongoClient mongoClient) {
                 mongoClient.dropDatabase(selectedDatabase.getName());
-                MONGO_GROUP.createNotification("Datatabase " + selectedDatabase.getName() + " dropped", MessageType.INFO)
-                        .notify(project);
             }
         };
 

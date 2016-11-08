@@ -37,6 +37,7 @@ import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
+import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
 import org.codinjutsu.tools.mongo.model.MongoServer;
@@ -71,10 +72,12 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
     private final Project project;
     private final MongoManager mongoManager;
+    private final Notifier notifier;
 
-    public MongoExplorerPanel(Project project, MongoManager mongoManager) {
+    public MongoExplorerPanel(Project project, MongoManager mongoManager, Notifier notifier) {
         this.project = project;
         this.mongoManager = mongoManager;
+        this.notifier = notifier;
 
         treePanel.setLayout(new BorderLayout());
 
@@ -173,12 +176,13 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
                 } catch (ConfigurationException confEx) {
                     mongoServer.setStatus(MongoServer.Status.ERROR);
+                    String errorMessage = String.format("Error when connecting on %s", mongoServer.getLabel());
+                    notifier.notifyError(errorMessage);
                     showNotification(treePanel,
                             MessageType.ERROR,
-                            String.format("Error when connecting on %s", mongoServer.getLabel()),
+                            errorMessage,
                             Balloon.Position.atLeft);
-                }
-                finally {
+                } finally {
                     mongoTree.setPaintBusy(false);
                 }
             }
@@ -386,12 +390,18 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
     }
 
     public void dropCollection() {
-        mongoManager.dropCollection(getConfiguration(), getSelectedCollection());
+        MongoCollection selectedCollection = getSelectedCollection();
+        mongoManager.dropCollection(getConfiguration(), selectedCollection);
+        notifier.notifyInfo("Collection " + selectedCollection.getName() + " dropped");
+
         reloadServerConfiguration(getSelectedServerNode(), true);
     }
 
     public void dropDatabase() {
-        mongoManager.dropDatabase(getConfiguration(), getSelectedDatabase());
+        MongoDatabase selectedDatabase = getSelectedDatabase();
+        mongoManager.dropDatabase(getConfiguration(), selectedDatabase);
+        notifier.notifyInfo("Datatabase " + selectedDatabase.getName() + " dropped");
+
         reloadServerConfiguration(getSelectedServerNode(), true);
     }
 

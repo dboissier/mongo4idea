@@ -25,6 +25,7 @@ import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
+import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 
 import javax.swing.*;
@@ -49,7 +50,7 @@ public class MongoWindowManager {
         this.project = project;
 
         ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
-        mongoExplorerPanel = new MongoExplorerPanel(project, MongoManager.getInstance(project));
+        mongoExplorerPanel = new MongoExplorerPanel(project, MongoManager.getInstance(project), Notifier.getInstance(project));
         mongoExplorerPanel.installActions();
         Content mongoExplorer = ContentFactory.SERVICE.getInstance().createContent(mongoExplorerPanel, null, false);
 

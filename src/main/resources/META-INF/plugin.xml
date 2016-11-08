@@ -33,6 +33,8 @@
                         serviceImplementation="org.codinjutsu.tools.mongo.view.MongoWindowManager"/>
         <projectService serviceInterface="org.codinjutsu.tools.mongo.logic.MongoManager"
                         serviceImplementation="org.codinjutsu.tools.mongo.logic.MongoManager"/>
+        <projectService serviceInterface="org.codinjutsu.tools.mongo.logic.Notifier"
+                        serviceImplementation="org.codinjutsu.tools.mongo.logic.Notifier"/>
         <projectConfigurable instance="org.codinjutsu.tools.mongo.view.MongoConfigurable"
                              id="preferences.mongoOptions"/>
         <configurationType implementation="org.codinjutsu.tools.mongo.runner.MongoRunConfigurationType"/>

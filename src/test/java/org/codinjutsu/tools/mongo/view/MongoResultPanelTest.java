@@ -27,6 +27,7 @@ import org.assertj.swing.edt.GuiQuery;
 import org.assertj.swing.fixture.Containers;
 import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.fixture.JTableFixture;
+import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.jetbrains.annotations.NotNull;
@@ -34,6 +35,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import javax.swing.*;
@@ -46,6 +48,8 @@ public class MongoResultPanelTest {
     private MongoResultPanel mongoResultPanel;
 
     private FrameFixture frameFixture;
+
+    private Notifier notifierMock = Mockito.mock(Notifier.class);
 
     @Mock
     private MongoPanel.MongoDocumentOperations mongoDocumentOperations;
@@ -61,7 +65,7 @@ public class MongoResultPanelTest {
 
         mongoResultPanel = GuiActionRunner.execute(new GuiQuery<MongoResultPanel>() {
             protected MongoResultPanel executeInEDT() {
-                return new MongoResultPanel(DummyProject.getInstance(), mongoDocumentOperations) {
+                return new MongoResultPanel(DummyProject.getInstance(), mongoDocumentOperations, notifierMock) {
                     @Override
                     void buildPopupMenu() {
                     }

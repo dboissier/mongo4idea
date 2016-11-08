@@ -78,8 +78,10 @@ public class MongoEditionPanel extends JPanel implements Disposable {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    mongoDocumentOperations.updateMongoDocument(buildMongoDocument());
-                    actionCallback.onOperationSuccess("Document saved...");
+                    DBObject mongoDocument = buildMongoDocument();
+                    mongoDocumentOperations.updateMongoDocument(mongoDocument);
+                    actionCallback.onOperationSuccess("Document " + mongoDocument.toString() + " saved...");
+
                 } catch (Exception exception) {
                     actionCallback.onOperationFailure(exception);
                 }
@@ -90,8 +92,9 @@ public class MongoEditionPanel extends JPanel implements Disposable {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    mongoDocumentOperations.deleteMongoDocument(getDocumentId());
-                    actionCallback.onOperationSuccess("Document deleted...");
+                    Object documentId = getDocumentId();
+                    mongoDocumentOperations.deleteMongoDocument(documentId);
+                    actionCallback.onOperationSuccess("Document with _id=" + documentId + " deleted...");
                 } catch (Exception exception) {
                     actionCallback.onOperationFailure(exception);
                 }

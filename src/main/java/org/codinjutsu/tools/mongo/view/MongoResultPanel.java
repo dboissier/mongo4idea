@@ -31,6 +31,7 @@ import com.intellij.ui.treeStructure.treetable.TreeTableTree;
 import com.intellij.util.ui.tree.TreeUtil;
 import com.mongodb.DBObject;
 import org.apache.commons.lang.StringUtils;
+import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.CopyResultAction;
@@ -53,6 +54,7 @@ import java.util.List;
 public class MongoResultPanel extends JPanel implements Disposable {
 
     private final MongoPanel.MongoDocumentOperations mongoDocumentOperations;
+    private final Notifier notifier;
     private JPanel mainPanel;
     private JPanel containerPanel;
     private final Splitter splitter;
@@ -66,8 +68,9 @@ public class MongoResultPanel extends JPanel implements Disposable {
     private ViewMode currentViewMode = ViewMode.TREE;
 
 
-    public MongoResultPanel(Project project, MongoPanel.MongoDocumentOperations mongoDocumentOperations) {
+    public MongoResultPanel(Project project, MongoPanel.MongoDocumentOperations mongoDocumentOperations, Notifier notifier) {
         this.mongoDocumentOperations = mongoDocumentOperations;
+        this.notifier = notifier;
         setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
 
@@ -89,11 +92,13 @@ public class MongoResultPanel extends JPanel implements Disposable {
         return new MongoEditionPanel().init(mongoDocumentOperations, new ActionCallback() {
             public void onOperationSuccess(String message) {
                 hideEditionPanel();
+                notifier.notifyInfo(message);
                 GuiUtils.showNotification(MongoResultPanel.this.resultTreePanel, MessageType.INFO, message, Balloon.Position.above);
             }
 
             @Override
             public void onOperationFailure(Exception exception) {
+                notifier.notifyError(exception.getMessage());
                 GuiUtils.showNotification(MongoResultPanel.this.resultTreePanel, MessageType.ERROR, exception.getMessage(), Balloon.Position.above);
             }
 

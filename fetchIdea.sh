@@ -22,7 +22,7 @@ cd ./idea-IC
 
 # install IDEA dependencies 
 IDEA_HOME=$(pwd)
-libs=( 'forms_rt' 'openapi' 'util' 'idea' 'resources' 'resources_en' 'swingx-core-1.6.2' 'annotations' 'extensions' 'jna' 'jdom' 'icons')
+libs=( 'forms_rt' 'openapi' 'util' 'idea' 'resources' 'resources_en' 'swingx-core-1.6.2' 'annotations' 'extensions' 'jna' 'jdom' 'icons', 'jsch-0.1.52')
 for lib in "${libs[@]}"
 do
     mvn install:install-file -Dfile=${IDEA_HOME}/lib/${lib}.jar -DgroupId=com.intellij -DartifactId=${lib} -Dversion=${ideaVersionForMaven} -Dpackaging=jar

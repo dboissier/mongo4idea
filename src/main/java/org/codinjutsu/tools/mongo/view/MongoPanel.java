@@ -33,6 +33,7 @@ import com.intellij.ui.components.panels.NonOpaquePanel;
 import com.mongodb.DBObject;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
+import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
@@ -83,7 +84,7 @@ public class MongoPanel extends JPanel implements Disposable {
                 mongoManager.delete(configuration, mongoCollection, objectId);
                 executeQuery();
             }
-        });
+        }, Notifier.getInstance(project));
 
         loadingDecorator = new LoadingDecorator(resultPanel, this, 0);
 
@@ -113,8 +114,8 @@ public class MongoPanel extends JPanel implements Disposable {
         installResultPanelActions();
     }
 
-    private MongoResultPanel createResultPanel(Project project, MongoDocumentOperations mongoDocumentOperations) {
-        return new MongoResultPanel(project, mongoDocumentOperations);
+    private MongoResultPanel createResultPanel(Project project, MongoDocumentOperations mongoDocumentOperations, Notifier notifier) {
+        return new MongoResultPanel(project, mongoDocumentOperations, notifier);
     }
 
 
