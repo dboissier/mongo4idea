@@ -19,7 +19,7 @@ package org.codinjutsu.tools.mongo.view.nodedescriptor;
 import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
-import com.mongodb.DBObject;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.utils.DateUtils;
 import org.codinjutsu.tools.mongo.utils.StringUtils;
@@ -32,7 +32,7 @@ import java.util.Locale;
 public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
     private static final String STRING_SURROUNDED = "\"%s\"";
-    protected static final String TO_STRING_TEMPLATE = "\"%s\" : %s";
+    private static final String TO_STRING_TEMPLATE = "\"%s\" : %s";
 
     protected final String key;
     protected Object value;
@@ -78,8 +78,13 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
             return new MongoKeyDateValueDescriptor(key, (Date) value);
         } else if (value instanceof ObjectId) {
             return new MongoKeyValueDescriptor(key, value, StyleAttributesProvider.getObjectIdAttribute());
-        } else if (value instanceof DBObject) {
-            return new MongoKeyValueDescriptor(key, value, StyleAttributesProvider.getDBObjectAttribute());
+        } else if (value instanceof Document) {
+            return new MongoKeyValueDescriptor(key, value, StyleAttributesProvider.getDocumentAttribute()) {
+                @Override
+                public String getFormattedValue() {
+                    return super.getFormattedValue();
+                }
+            };
         } else {
             return new MongoKeyValueDescriptor(key, value, StyleAttributesProvider.getStringAttribute());
         }
@@ -93,7 +98,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
     public void renderValue(ColoredTableCellRenderer cellRenderer, boolean isNodeExpanded) {
         if (!isNodeExpanded) {
-            cellRenderer.append(getValueAndAbbreviateIfNecessary(), valueTextAttributes);
+            cellRenderer.append(StringUtils.abbreviateInCenter(value.toString(), MAX_LENGTH), valueTextAttributes);
         }
     }
 
@@ -106,7 +111,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
     }
 
     public String getFormattedValue() {
-        return getValueAndAbbreviateIfNecessary();
+        return StringUtils.abbreviateInCenter(value.toString(), MAX_LENGTH);
     }
 
     public String getKey() {
@@ -126,21 +131,14 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
         return String.format(TO_STRING_TEMPLATE, key, value);
     }
 
-    protected String getValueAndAbbreviateIfNecessary() {
-        String stringifiedValue = value.toString();
-        if (stringifiedValue.length() > MAX_LENGTH) {
-            return StringUtils.abbreviateInCenter(stringifiedValue, MAX_LENGTH);
-        }
-        return stringifiedValue;
-    }
-
     private static class MongoKeyNullValueDescriptor extends MongoKeyValueDescriptor {
 
         private MongoKeyNullValueDescriptor(String key) {
             super(key, null, StyleAttributesProvider.getNullAttribute());
         }
 
-        protected String getValueAndAbbreviateIfNecessary() {
+        @Override
+        public String getFormattedValue() {
             return "null";
         }
     }
@@ -154,7 +152,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
         }
 
         @Override
-        protected String getValueAndAbbreviateIfNecessary() {
+        public String getFormattedValue() {
             return String.format(STRING_SURROUNDED, value);
         }
 
@@ -175,7 +173,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
         }
 
         @Override
-        protected String getValueAndAbbreviateIfNecessary() {
+        public String getFormattedValue() {
             return getFormattedDate();
         }
 

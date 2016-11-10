@@ -16,7 +16,6 @@
 
 package org.codinjutsu.tools.mongo.logic;
 
-import com.intellij.openapi.command.impl.DummyProject;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -52,7 +51,7 @@ public class MongoManagerTest {
         mongoQueryOptions.setResultLimit(3);
         MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(serverConfiguration, new MongoCollection("dummyCollection", "test"), mongoQueryOptions);
         assertNotNull(mongoCollectionResult);
-        assertEquals(3, mongoCollectionResult.getMongoObjects().size());
+        assertEquals(3, mongoCollectionResult.getDocuments().size());
     }
 
     @Test
@@ -63,8 +62,10 @@ public class MongoManagerTest {
         mongoQueryOptions.setResultLimit(3);
         MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(serverConfiguration, new MongoCollection("dummyCollection", "test"), mongoQueryOptions);
         assertNotNull(mongoCollectionResult);
-        assertEquals(2, mongoCollectionResult.getMongoObjects().size());
-        assertEquals("[{ \"label\" : \"tata\"}, { \"label\" : \"tata\"}]", mongoCollectionResult.getMongoObjects().toString());
+        assertEquals(2, mongoCollectionResult.getDocuments().size());
+        assertEquals(
+                Arrays.asList(new Document("label", "tata"), new Document("label", "tata")),
+                mongoCollectionResult.getDocuments());
     }
 
     @Test
@@ -76,8 +77,13 @@ public class MongoManagerTest {
         mongoQueryOptions.setResultLimit(3);
         MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(serverConfiguration, new MongoCollection("dummyCollection", "test"), mongoQueryOptions);
         assertNotNull(mongoCollectionResult);
-        assertEquals(2, mongoCollectionResult.getMongoObjects().size());
-        assertEquals("[{ \"label\" : \"tata\" , \"price\" : 10}, { \"label\" : \"tata\" , \"price\" : 15}]", mongoCollectionResult.getMongoObjects().toString());
+        assertEquals(2, mongoCollectionResult.getDocuments().size());
+        assertEquals(Arrays.asList(
+                new Document("label", "tata")
+                        .append("price", 10),
+                new Document("label", "tata")
+                        .append("price", 15)),
+                mongoCollectionResult.getDocuments());
     }
 
     @Test
@@ -86,16 +92,16 @@ public class MongoManagerTest {
         mongoQueryOptions.setFilter("{'label': 'tete'}");
         MongoCollection mongoCollection = new MongoCollection("dummyCollection", "test");
         MongoCollectionResult initialData = mongoManager.loadCollectionValues(serverConfiguration, mongoCollection, mongoQueryOptions);
-        assertEquals(1, initialData.getMongoObjects().size());
-        DBObject initialMongoDocument = initialData.getMongoObjects().get(0);
+        assertEquals(1, initialData.getDocuments().size());
+        Document initialMongoDocument = initialData.getDocuments().get(0);
 
         initialMongoDocument.put("price", 25);
         mongoManager.update(serverConfiguration, mongoCollection, initialMongoDocument);
 
         MongoCollectionResult updatedResult = mongoManager.loadCollectionValues(serverConfiguration, mongoCollection, mongoQueryOptions);
-        List<DBObject> updatedMongoDocuments = updatedResult.getMongoObjects();
+        List<Document> updatedMongoDocuments = updatedResult.getDocuments();
         assertEquals(1, updatedMongoDocuments.size());
-        DBObject updatedMongoDocument = updatedMongoDocuments.get(0);
+        Document updatedMongoDocument = updatedMongoDocuments.get(0);
 
         assertEquals(25, updatedMongoDocument.get("price"));
     }
@@ -107,13 +113,13 @@ public class MongoManagerTest {
         mongoQueryOptions.setFilter("{'label': 'tete'}");
         MongoCollection mongoCollection = new MongoCollection("dummyCollection", "test");
         MongoCollectionResult initialData = mongoManager.loadCollectionValues(serverConfiguration, mongoCollection, mongoQueryOptions);
-        assertEquals(1, initialData.getMongoObjects().size());
-        DBObject initialMongoDocument = initialData.getMongoObjects().get(0);
+        assertEquals(1, initialData.getDocuments().size());
+        Document initialMongoDocument = initialData.getDocuments().get(0);
 
         mongoManager.delete(serverConfiguration, mongoCollection, initialMongoDocument.get("_id"));
 
         MongoCollectionResult deleteResult = mongoManager.loadCollectionValues(serverConfiguration, mongoCollection, mongoQueryOptions);
-        List<DBObject> updatedMongoDocuments = deleteResult.getMongoObjects();
+        List<Document> updatedMongoDocuments = deleteResult.getDocuments();
         assertEquals(0, updatedMongoDocuments.size());
     }
 
@@ -125,11 +131,13 @@ public class MongoManagerTest {
         MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(serverConfiguration, new MongoCollection("dummyCollection", "test"), mongoQueryOptions);
         assertNotNull(mongoCollectionResult);
 
-        List<DBObject> mongoObjects = mongoCollectionResult.getMongoObjects();
+        List<Document> mongoObjects = mongoCollectionResult.getDocuments();
 
         assertEquals(2, mongoObjects.size());
-        assertEquals("{ \"_id\" : \"tutu\" , \"total\" : 15}", mongoObjects.get(0).toString());
-        assertEquals("{ \"_id\" : \"tata\" , \"total\" : 15}", mongoObjects.get(1).toString());
+        assertEquals(new Document("_id", "tutu")
+                .append("total", 15), mongoObjects.get(0));
+        assertEquals(new Document("_id", "tata")
+                .append("total", 15), mongoObjects.get(1));
     }
 
     @Before
@@ -141,7 +149,7 @@ public class MongoManagerTest {
         dummyCollection.deleteMany(new BasicDBObject());
         fillCollectionWithJsonData(dummyCollection, IOUtils.toString(getClass().getResourceAsStream("dummyCollection.json")));
 
-        mongoManager = new MongoManager(DummyProject.getInstance());
+        mongoManager = new MongoManager();
         serverConfiguration = new ServerConfiguration();
         serverConfiguration.setServerUrls(Arrays.asList("localhost:27017"));
     }

@@ -29,8 +29,8 @@ import com.intellij.ui.PopupHandler;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.treetable.TreeTableTree;
 import com.intellij.util.ui.tree.TreeUtil;
-import com.mongodb.DBObject;
 import org.apache.commons.lang.StringUtils;
+import org.bson.Document;
 import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
@@ -109,7 +109,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
         });
     }
 
-    public void updateResultView(MongoCollectionResult mongoCollectionResult) {
+    void updateResultView(MongoCollectionResult mongoCollectionResult) {
         if (ViewMode.TREE.equals(currentViewMode)) {
             updateResultTreeTable(mongoCollectionResult);
         } else {
@@ -160,7 +160,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
     public void editSelectedMongoDocument() {
 
-        DBObject mongoDocument = getSelectedMongoDocument();
+        Document mongoDocument = getSelectedMongoDocument();
 
         if (mongoDocument == null) {
             return;
@@ -177,7 +177,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
         splitter.setSecondComponent(mongoEditionPanel);
     }
 
-    private DBObject getSelectedMongoDocument() {
+    private Document getSelectedMongoDocument() {
         TreeTableTree tree = resultTreeTableView.getTree();
         JsonTreeNode treeNode = (JsonTreeNode) tree.getLastSelectedPathComponent();
         if (treeNode == null) {
@@ -258,15 +258,15 @@ public class MongoResultPanel extends JPanel implements Disposable {
         mongoEditionPanel.dispose();
     }
 
-    public void setCurrentViewMode(ViewMode viewMode) {
+    void setCurrentViewMode(ViewMode viewMode) {
         this.currentViewMode = viewMode;
     }
 
-    public ViewMode getCurrentViewMode() {
+    ViewMode getCurrentViewMode() {
         return currentViewMode;
     }
 
-    public interface ActionCallback {
+    interface ActionCallback {
 
         void onOperationSuccess(String message);
 

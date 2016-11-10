@@ -25,7 +25,7 @@ import com.intellij.util.containers.Convertor;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.tree.TreeUtil;
-import com.mongodb.DBObject;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
@@ -42,6 +42,7 @@ import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
+import java.util.List;
 
 public class JsonTreeTableView extends TreeTable {
 
@@ -157,7 +158,7 @@ public class JsonTreeTableView extends TreeTable {
         @Override
         public boolean isCellEditable(JsonTreeNode treeNode) {
             Object value = treeNode.getDescriptor().getValue();
-            if (value instanceof DBObject) {
+            if (value instanceof Document || value instanceof List) {
                 return false;
             }
 

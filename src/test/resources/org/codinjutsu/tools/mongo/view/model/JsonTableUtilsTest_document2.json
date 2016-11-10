@@ -1,0 +1,12 @@
+{
+  "_id": "50b8d63414f85401b9268baa",
+  "label": "tata",
+  "visible": true,
+  "doc": {
+    "title": "ola",
+    "nbPages": 1,
+    "keyWord": [
+      "tutu", false, 10
+    ]
+  }
+}

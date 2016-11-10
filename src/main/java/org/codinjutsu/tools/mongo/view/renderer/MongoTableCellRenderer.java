@@ -18,16 +18,11 @@ package org.codinjutsu.tools.mongo.view.renderer;
 
 import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
-import com.intellij.ui.treeStructure.treetable.TreeTable;
-import com.intellij.ui.treeStructure.treetable.TreeTableTree;
-import com.mongodb.DBObject;
+import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 
 import javax.swing.*;
-import javax.swing.tree.TreePath;
-import java.util.Date;
 
 public class MongoTableCellRenderer extends ColoredTableCellRenderer {
 
@@ -35,16 +30,15 @@ public class MongoTableCellRenderer extends ColoredTableCellRenderer {
     protected void customizeCellRenderer(JTable table, Object value, boolean selected, boolean hasFocus, int row, int column) {
 
         if (value == null) {
-         append("null", StyleAttributesProvider.getNullAttribute());
-        }
-        else {
+            append("null", StyleAttributesProvider.getNullAttribute());
+        } else {
             SimpleTextAttributes styleAttribute;
             if (value instanceof Number) {
                 styleAttribute = StyleAttributesProvider.getNumberAttribute();
             } else if (value instanceof Boolean) {
                 styleAttribute = StyleAttributesProvider.getBooleanAttribute();
-            } else if (value instanceof DBObject) {
-                styleAttribute = StyleAttributesProvider.getDBObjectAttribute();
+            } else if (value instanceof Document) {
+                styleAttribute = StyleAttributesProvider.getDocumentAttribute();
             } else if (value instanceof ObjectId) {
                 styleAttribute = StyleAttributesProvider.getObjectIdAttribute();
             } else {

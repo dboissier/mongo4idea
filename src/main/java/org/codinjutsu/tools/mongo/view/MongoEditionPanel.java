@@ -24,13 +24,13 @@ import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.PopupHandler;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.tree.TreeUtil;
-import com.mongodb.DBObject;
 import org.apache.commons.lang.StringUtils;
+import org.bson.Document;
 import org.codinjutsu.tools.mongo.view.action.edition.AddKeyAction;
 import org.codinjutsu.tools.mongo.view.action.edition.AddValueAction;
 import org.codinjutsu.tools.mongo.view.action.edition.DeleteKeyAction;
-import org.codinjutsu.tools.mongo.view.model.JsonTreeUtils;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
+import org.codinjutsu.tools.mongo.view.model.JsonTreeUtils;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoValueDescriptor;
@@ -78,7 +78,7 @@ public class MongoEditionPanel extends JPanel implements Disposable {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    DBObject mongoDocument = buildMongoDocument();
+                    Document mongoDocument = buildMongoDocument();
                     mongoDocumentOperations.updateMongoDocument(mongoDocument);
                     actionCallback.onOperationSuccess("Document " + mongoDocument.toString() + " saved...");
 
@@ -104,7 +104,7 @@ public class MongoEditionPanel extends JPanel implements Disposable {
         return this;
     }
 
-    public void updateEditionTree(DBObject mongoDocument) {
+    public void updateEditionTree(Document mongoDocument) {
         String panelTitle = "New document";
         if (mongoDocument != null) {
             panelTitle = "Edition";
@@ -140,10 +140,10 @@ public class MongoEditionPanel extends JPanel implements Disposable {
         }
 
         Enumeration children = parentNode.children();
-        while(children.hasMoreElements()) {
+        while (children.hasMoreElements()) {
             JsonTreeNode childNode = (JsonTreeNode) children.nextElement();
             MongoNodeDescriptor descriptor = childNode.getDescriptor();
-            if(descriptor instanceof MongoKeyValueDescriptor) {
+            if (descriptor instanceof MongoKeyValueDescriptor) {
                 MongoKeyValueDescriptor keyValueDescriptor = (MongoKeyValueDescriptor) descriptor;
                 if (StringUtils.equals(key, keyValueDescriptor.getKey())) {
                     return true;
@@ -155,11 +155,11 @@ public class MongoEditionPanel extends JPanel implements Disposable {
 
     public void addKey(String key, Object value) {
 
-        List<TreeNode> node = new LinkedList<TreeNode>();
+        List<TreeNode> node = new LinkedList<>();
         JsonTreeNode treeNode = new JsonTreeNode(MongoKeyValueDescriptor.createDescriptor(key, value));
 
-        if (value instanceof DBObject) {
-             JsonTreeUtils.processDbObject(treeNode, (DBObject) value);
+        if (value instanceof Document) {
+            JsonTreeUtils.processDocument(treeNode, (Document) value);
         }
 
         node.add(treeNode);
@@ -174,13 +174,13 @@ public class MongoEditionPanel extends JPanel implements Disposable {
     }
 
     public void addValue(Object value) {
-        List<TreeNode> node = new LinkedList<TreeNode>();
+        List<TreeNode> node = new LinkedList<>();
 
         JsonTreeNode parentNode = getParentNode();
 
         JsonTreeNode treeNode = new JsonTreeNode(MongoValueDescriptor.createDescriptor(parentNode.getChildCount(), value));
-        if (value instanceof DBObject) {
-            JsonTreeUtils.processDbObject(treeNode, (DBObject) value);
+        if (value instanceof Document) {
+            JsonTreeUtils.processDocument(treeNode, (Document) value);
         }
 
         node.add(treeNode);
@@ -227,9 +227,9 @@ public class MongoEditionPanel extends JPanel implements Disposable {
 
     }
 
-    private DBObject buildMongoDocument() {
+    private Document buildMongoDocument() {
         JsonTreeNode rootNode = (JsonTreeNode) editTableView.getTree().getModel().getRoot();
-        return JsonTreeUtils.buildDBObject(rootNode);
+        return JsonTreeUtils.buildDocumentObject(rootNode);
     }
 
     @Override

@@ -30,7 +30,7 @@ import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.NumberDocument;
 import com.intellij.ui.components.panels.NonOpaquePanel;
-import com.mongodb.DBObject;
+import org.bson.Document;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.logic.Notifier;
@@ -71,11 +71,11 @@ public class MongoPanel extends JPanel implements Disposable {
 
         resultPanel = createResultPanel(project, new MongoDocumentOperations() {
 
-            public DBObject getMongoDocument(Object _id) {
+            public Document getMongoDocument(Object _id) {
                 return mongoManager.findMongoDocument(configuration, mongoCollection, _id);
             }
 
-            public void updateMongoDocument(DBObject mongoDocument) {
+            public void updateMongoDocument(Document mongoDocument) {
                 mongoManager.update(configuration, mongoCollection, mongoDocument);
                 executeQuery();
             }
@@ -297,10 +297,10 @@ public class MongoPanel extends JPanel implements Disposable {
     }
 
     interface MongoDocumentOperations {
-        DBObject getMongoDocument(Object _id);
+        Document getMongoDocument(Object _id);
 
         void deleteMongoDocument(Object mongoDocument);
 
-        void updateMongoDocument(DBObject mongoDocument);
+        void updateMongoDocument(Document mongoDocument);
     }
 }

@@ -18,8 +18,6 @@ package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.openapi.command.impl.DummyProject;
 import com.intellij.util.ui.tree.TreeUtil;
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 import org.apache.commons.io.IOUtils;
 import org.assertj.swing.driver.BasicJTableCellReader;
 import org.assertj.swing.edt.GuiActionRunner;
@@ -27,6 +25,7 @@ import org.assertj.swing.edt.GuiQuery;
 import org.assertj.swing.fixture.Containers;
 import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.fixture.JTableFixture;
+import org.bson.Document;
 import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
@@ -95,7 +94,7 @@ public class MongoResultPanelTest {
 
         getResultTable().requireColumnCount(2)
                 .requireContents(new String[][]{
-                        {"[0]", "{ \"id\" : 0 , \"label\" : \"toto\" , \"visible\" : false , \"image\" :  null }"},
+                        {"[0]", "{ \"id\" : 0, \"label\" : \"toto\", \"visible\" : false, \"image\" : null }"},
                         {"\"id\"", "0"},
                         {"\"label\"", "\"toto\""},
                         {"\"visible\"", "false"},
@@ -211,7 +210,7 @@ public class MongoResultPanelTest {
     }
 
     private MongoCollectionResult createCollectionResults(String data, String collectionName) throws IOException {
-        DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream(data)));
+        Document jsonObject = Document.parse(IOUtils.toString(getClass().getResourceAsStream(data)));
 
         MongoCollectionResult mongoCollectionResult = new MongoCollectionResult(collectionName);
         mongoCollectionResult.add(jsonObject);

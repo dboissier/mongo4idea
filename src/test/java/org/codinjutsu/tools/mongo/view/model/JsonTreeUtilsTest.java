@@ -16,12 +16,14 @@
 
 package org.codinjutsu.tools.mongo.view.model;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 import org.apache.commons.io.IOUtils;
+import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -29,88 +31,100 @@ import static org.junit.Assert.assertNull;
 public class JsonTreeUtilsTest {
 
     @Test
-    public void buildDBObjectFromSimpleTree() throws Exception {
-        DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("simpleDocument.json")));
+    public void buildDocumentFromSimpleTree() throws Exception {
+        Document originalDocument =
+                new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
+                        .append("label", "toto")
+                        .append("visible", false)
+                        .append("image", null);
 
-//        Hack to convert _id fron string to ObjectId
-        jsonObject.put("_id", new ObjectId(String.valueOf(jsonObject.get("_id"))));
-
-        JsonTreeNode treeNode = (JsonTreeNode) JsonTreeUtils.buildJsonTree(jsonObject);
+        JsonTreeNode treeNode = (JsonTreeNode) JsonTreeUtils.buildJsonTree(originalDocument);
         JsonTreeNode labelNode = (JsonTreeNode) treeNode.getChildAt(1);
         labelNode.getDescriptor().setValue("tata");
 
+        Document actualDocument = JsonTreeUtils.buildDocumentObject(treeNode);
 
-        DBObject dbObject = JsonTreeUtils.buildDBObject(treeNode);
-
-        assertEquals("{ \"_id\" : { \"$oid\" : \"50b8d63414f85401b9268b99\"} , \"label\" : \"tata\" , \"visible\" : false , \"image\" :  null }",
-                dbObject.toString());
+        assertEquals(new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
+                        .append("label", "tata")
+                        .append("visible", false)
+                        .append("image", null),
+                actualDocument);
     }
 
     @Test
-    public void buildDBObjectFromTreeWithSubNodes() throws Exception {
-        DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("simpleDocumentWithInnerNodes.json")));
+    public void buildDocumentFromTreeWithSubNodes() throws Exception {
+        Document originalDocument =
+                new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
+                        .append("label", "toto")
+                        .append("visible", false)
+                        .append("image", null)
+                        .append("innerdoc", new Document("title", "What?")
+                                .append("numberOfPages", 52)
+                                .append("soldOut", false));
 
-//        Hack to convert _id fron string to ObjectId
-        jsonObject.put("_id", new ObjectId(String.valueOf(jsonObject.get("_id"))));
+        JsonTreeNode treeNode = (JsonTreeNode) JsonTreeUtils.buildJsonTree(originalDocument);
 
-        JsonTreeNode treeNode = (JsonTreeNode) JsonTreeUtils.buildJsonTree(jsonObject);
-
-//      Simulate updating from the treeNode
         JsonTreeNode innerDocNode = (JsonTreeNode) treeNode.getChildAt(4);
         JsonTreeNode soldOutNode = (JsonTreeNode) innerDocNode.getChildAt(2);
         soldOutNode.getDescriptor().setValue("false");
 
-        DBObject dbObject = JsonTreeUtils.buildDBObject(treeNode);
+        Document actualDocument = JsonTreeUtils.buildDocumentObject(treeNode);
 
-        assertEquals("{ \"_id\" : { \"$oid\" : \"50b8d63414f85401b9268b99\"} , \"label\" : \"toto\" , \"visible\" : false , \"image\" :  null  , \"innerdoc\" : { \"title\" : \"What?\" , \"numberOfPages\" : 52 , \"soldOut\" : false}}",
-                dbObject.toString());
+        assertEquals(new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
+                        .append("label", "toto")
+                        .append("visible", false)
+                        .append("image", null)
+                        .append("innerdoc", new Document("title", "What?")
+                                .append("numberOfPages", 52)
+                                .append("soldOut", false)),
+                actualDocument);
     }
 
     @Test
-    public void buildDBObjectFromTreeWithSubList() throws Exception {
-        DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("simpleDocumentWithSubList.json")));
+    public void buildDocumentFromTreeWithSubList() throws Exception {
+        Document document = parseDocument("simpleDocumentWithSubList.json");
 
-//        Hack to convert _id fron string to ObjectId
-        jsonObject.put("_id", new ObjectId(String.valueOf(jsonObject.get("_id"))));
-
-        JsonTreeNode treeNode = (JsonTreeNode) JsonTreeUtils.buildJsonTree(jsonObject);
+        JsonTreeNode treeNode = (JsonTreeNode) JsonTreeUtils.buildJsonTree(document);
         JsonTreeNode tagsNode = (JsonTreeNode) treeNode.getChildAt(2);
         JsonTreeNode agileTagNode = (JsonTreeNode) tagsNode.getChildAt(2);
         agileTagNode.getDescriptor().setValue("a gilles");
 
-        DBObject dbObject = JsonTreeUtils.buildDBObject(treeNode);
+        Document actualDocument = JsonTreeUtils.buildDocumentObject(treeNode);
 
-        assertEquals("{ \"_id\" : { \"$oid\" : \"50b8d63414f85401b9268b99\"} , \"title\" : \"XP by example\" , \"tags\" : [ \"pair programming\" , \"tdd\" , \"a gilles\"] , \"innerList\" : [ [ 1 , 2 , 3 , 4] , [ false , true] , [ { \"tagName\" : \"pouet\"} , { \"tagName\" : \"paf\"}]]}",
-                dbObject.toString());
+        assertEquals(
+                new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
+                        .append("title", "XP by example")
+                        .append("tags", Arrays.asList(
+                                "pair programming", "tdd", "a gilles"
+                        ))
+                        .append("innerList",
+                                Arrays.asList(
+                                        Arrays.asList(1, 2, 3, 4),
+                                        Arrays.asList(false, true),
+                                        Arrays.asList(
+                                                new Document("tagName", "pouet"),
+                                                new Document("tagName", "paf"))
+                                )),
+                actualDocument);
     }
 
     @Test
     public void getObjectIdFromANode() throws Exception {
-        DBObject jsonObject = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("simpleDocumentWithInnerNodes.json")));
-        jsonObject.put("_id", new ObjectId(String.valueOf(jsonObject.get("_id"))));
+        Document document = parseDocument("simpleDocumentWithInnerNodes.json");
 
-        JsonTreeNode treeNode = (JsonTreeNode) JsonTreeUtils.buildJsonTree(jsonObject);
+        JsonTreeNode treeNode = (JsonTreeNode) JsonTreeUtils.buildJsonTree(document);
         JsonTreeNode objectIdNode = (JsonTreeNode) treeNode.getChildAt(0);
         assertEquals("\"_id\"", objectIdNode.getDescriptor().getFormattedKey());
 
         assertNull(JsonTreeUtils.findObjectIdNode(treeNode));
         assertEquals(objectIdNode, JsonTreeUtils.findObjectIdNode((JsonTreeNode) treeNode.getChildAt(0)));
-//        assertEquals(objectIdNode, JsonTreeUtils.findObjectIdNode((JsonTreeNode) treeNode.getChildAt(3)));
-
     }
 
-    @Test
-    public void findDocumentFromANode() throws Exception {
-        BasicDBList dbList = (BasicDBList) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("arrayOfDocuments.json")));
-
-        DBObject first = (DBObject) dbList.get(0);
-        first.put("_id", new ObjectId(String.valueOf(first.get("_id"))));
-
-        DBObject second = (DBObject) dbList.get(1);
-        second.put("_id", new ObjectId(String.valueOf(second.get("_id"))));
-
-        JsonTreeNode treeNode = (JsonTreeNode) JsonTreeUtils.buildJsonTree(dbList);
-
-        assertEquals(first, JsonTreeUtils.findDocument((JsonTreeNode) treeNode.getChildAt(0)));
+    @NotNull
+    private Document parseDocument(String fileName) throws IOException {
+        Document document = Document.parse(IOUtils.toString(getClass().getResourceAsStream(fileName)));
+//        Hack to convert _id from string to ObjectId
+        document.put("_id", new ObjectId(String.valueOf(document.get("_id"))));
+        return document;
     }
 }

@@ -16,8 +16,6 @@
 
 package org.codinjutsu.tools.mongo.view;
 
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 import org.apache.commons.io.IOUtils;
 import org.assertj.swing.data.TableCell;
 import org.assertj.swing.driver.BasicJTableCellReader;
@@ -26,10 +24,10 @@ import org.assertj.swing.edt.GuiQuery;
 import org.assertj.swing.fixture.Containers;
 import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.fixture.JTableFixture;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -37,6 +35,7 @@ import org.mockito.ArgumentCaptor;
 import javax.swing.*;
 import java.io.IOException;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -99,11 +98,14 @@ public class MongoEditionPanelTest {
 
         frameFixture.button("saveButton").click();
 
-        ArgumentCaptor<DBObject> argument = ArgumentCaptor.forClass(DBObject.class);
+        ArgumentCaptor<Document> argument = ArgumentCaptor.forClass(Document.class);
         verify(mockMongoOperations).updateMongoDocument(argument.capture());
 
-        Assert.assertEquals("{ \"_id\" : { \"$oid\" : \"50b8d63414f85401b9268b99\"} , \"label\" : \"Hello\" , \"visible\" : false , \"image\" :  null }",
-                argument.getValue().toString());
+        assertEquals(new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
+                        .append("label", "Hello")
+                        .append("visible", false)
+                        .append("image", null),
+                argument.getValue());
 
         verify(mockActionCallback, times(1)).onOperationSuccess(any(String.class));
     }
@@ -120,7 +122,7 @@ public class MongoEditionPanelTest {
                 .enterValue("Hello");
 
         frameFixture.button("cancelButton").click();
-        verify(mockMongoOperations, times(0)).updateMongoDocument(any(DBObject.class));
+        verify(mockMongoOperations, times(0)).updateMongoDocument(any(Document.class));
 
         verify(mockActionCallback, times(1)).onOperationCancelled(any(String.class));
     }
@@ -202,9 +204,9 @@ public class MongoEditionPanelTest {
     }
 
 
-    private DBObject buildDocument(String jsonFile) throws IOException {
-        DBObject mongoDocument = (DBObject) JSON.parse(IOUtils.toString(getClass().getResourceAsStream("model/" + jsonFile)));
-        mongoDocument.put("_id", new ObjectId(String.valueOf(mongoDocument.get("_id"))));
-        return mongoDocument;
+    private Document buildDocument(String jsonFile) throws IOException {
+        Document document = Document.parse(IOUtils.toString(getClass().getResourceAsStream("model/" + jsonFile)));
+        document.put("_id", new ObjectId(String.valueOf(document.get("_id"))));
+        return document;
     }
 }

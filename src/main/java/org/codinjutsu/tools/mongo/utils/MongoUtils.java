@@ -21,10 +21,8 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.CapturingProcessHandler;
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.openapi.vfs.CharsetToolkit;
-import com.mongodb.util.JSON;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
-import org.codinjutsu.tools.mongo.view.model.JsonDataType;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
@@ -41,7 +39,9 @@ public class MongoUtils {
         GeneralCommandLine commandLine = new GeneralCommandLine();
         commandLine.setExePath(mongoShellPath);
         commandLine.addParameter("--version");
-        CapturingProcessHandler handler = new CapturingProcessHandler(commandLine.createProcess(), CharsetToolkit.getDefaultSystemCharset());
+        CapturingProcessHandler handler = new CapturingProcessHandler(commandLine.createProcess(),
+                CharsetToolkit.getDefaultSystemCharset(),
+                commandLine.getCommandLineString());
         ProcessOutput result = handler.runProcess(15 * 1000);
         return result.getExitCode() == 0;
     }

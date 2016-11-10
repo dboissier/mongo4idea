@@ -19,7 +19,7 @@ package org.codinjutsu.tools.mongo.view.nodedescriptor;
 import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
-import com.mongodb.DBObject;
+import org.bson.Document;
 import org.codinjutsu.tools.mongo.utils.DateUtils;
 import org.codinjutsu.tools.mongo.utils.StringUtils;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
@@ -52,13 +52,19 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
             return new MongoValueDescriptor(index, value, StyleAttributesProvider.getNumberAttribute()) {
                 @Override
                 public void setValue(Object value) {
-                    this.value = Integer.parseInt((String)value);
+                    this.value = Integer.parseInt((String) value);
                 }
             };
         } else if (value instanceof Date) {
             return new MongoDateValueDescriptor(index, (Date) value);
-        } else if (value instanceof DBObject) {
-            return new MongoValueDescriptor(index, value, StyleAttributesProvider.getDBObjectAttribute());
+        } else if (value instanceof Document) {
+            return new MongoValueDescriptor(index, value, StyleAttributesProvider.getDocumentAttribute()) {
+                @Override
+                public String getFormattedValue() {
+                    Document document = (Document) this.value;
+                    return String.format("%s", StringUtils.abbreviateInCenter(document.toJson(), MAX_LENGTH));
+                }
+            };
         } else {
             return new MongoValueDescriptor(index, value, StyleAttributesProvider.getStringAttribute());
         }
@@ -85,15 +91,7 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
     }
 
     public String getFormattedValue() {
-        return String.format("%s", getValueAndAbbreviateIfNecessary());
-    }
-
-    protected String getValueAndAbbreviateIfNecessary() {
-        String stringifiedValue = value.toString();
-        if (stringifiedValue.length() > MAX_LENGTH) {
-            return StringUtils.abbreviateInCenter(stringifiedValue, MAX_LENGTH);
-        }
-        return stringifiedValue;
+        return String.format("%s", StringUtils.abbreviateInCenter(value.toString(), MAX_LENGTH));
     }
 
     public Object getValue() {
@@ -117,7 +115,7 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
 
         @Override
         public String getFormattedValue() {
-            return String.format("\"%s\"", getValueAndAbbreviateIfNecessary());
+            return String.format("\"%s\"", StringUtils.abbreviateInCenter(value.toString(), MAX_LENGTH));
         }
     }
 
@@ -149,7 +147,7 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
         }
 
         @Override
-        protected String getValueAndAbbreviateIfNecessary() {
+        public String getFormattedValue() {
             return getFormattedDate();
         }
 

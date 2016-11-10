@@ -16,10 +16,8 @@
 
 package org.codinjutsu.tools.mongo.view.model;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import org.apache.commons.lang.StringUtils;
+import org.bson.Document;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
@@ -27,6 +25,7 @@ import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoResultDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoValueDescriptor;
 
 import javax.swing.tree.TreeNode;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -35,84 +34,78 @@ public class JsonTreeUtils {
     public static TreeNode buildJsonTree(MongoCollectionResult mongoCollectionResult) {
         JsonTreeNode rootNode = new JsonTreeNode(new MongoResultDescriptor(mongoCollectionResult.getCollectionName()));
 
-        List<DBObject> mongoObjects = mongoCollectionResult.getMongoObjects();
+        List<Document> mongoObjects = mongoCollectionResult.getDocuments();
         int i = 0;
-        for (DBObject mongoObject : mongoObjects) {
-            if (mongoObject instanceof BasicDBList) {
-                processDbObject(rootNode, mongoObject);
-            } else if (mongoObject instanceof BasicDBObject) {//dead code?
-                JsonTreeNode currentNode = new JsonTreeNode(MongoValueDescriptor.createDescriptor(i++, mongoObject));
-                processDbObject(currentNode, mongoObject);
-                rootNode.add(currentNode);
-            }
+        for (Document document : mongoObjects) {
+            JsonTreeNode currentNode = new JsonTreeNode(MongoValueDescriptor.createDescriptor(i++, document));
+            processDocument(currentNode, document);
+            rootNode.add(currentNode);
         }
         return rootNode;
     }
 
-    public static TreeNode buildJsonTree(DBObject mongoObject) {
+    public static TreeNode buildJsonTree(Document document) {
         JsonTreeNode rootNode = new JsonTreeNode(new MongoResultDescriptor());//TODO crappy
-        processDbObject(rootNode, mongoObject);
+        processDocument(rootNode, document);
         return rootNode;
     }
 
-    public static void processDbObject(JsonTreeNode parentNode, DBObject mongoObject) {
-        if (mongoObject instanceof BasicDBList) {
-            BasicDBList mongoObjectList = (BasicDBList) mongoObject;
-            for (int i = 0; i < mongoObjectList.size(); i++) {
-                Object mongoObjectOfList = mongoObjectList.get(i);
-                JsonTreeNode currentNode = new JsonTreeNode(MongoValueDescriptor.createDescriptor(i, mongoObjectOfList));
-                if (mongoObjectOfList instanceof DBObject) {
-                    processDbObject(currentNode, (DBObject) mongoObjectOfList);
-                }
-                parentNode.add(currentNode);
+    public static void processDocument(JsonTreeNode parentNode, Document document) {
+        for (String key : document.keySet()) {
+            Object value = document.get(key);
+            JsonTreeNode currentNode = new JsonTreeNode(MongoKeyValueDescriptor.createDescriptor(key, value));
+            if (value instanceof Document) {
+                processDocument(currentNode, (Document) value);
+            } else if (value instanceof List) {
+                processObjectList(currentNode, (List) value);
             }
-        } else if (mongoObject instanceof BasicDBObject) {
-            BasicDBObject basicDBObject = (BasicDBObject) mongoObject;
-            for (String key : basicDBObject.keySet()) {
-                Object value = basicDBObject.get(key);
-                JsonTreeNode currentNode = new JsonTreeNode(MongoKeyValueDescriptor.createDescriptor(key, value));
-                if (value instanceof DBObject) {
-                    processDbObject(currentNode, (DBObject) value);
-                }
-                parentNode.add(currentNode);
-            }
+            parentNode.add(currentNode);
         }
     }
 
-    public static DBObject buildDBObject(JsonTreeNode rootNode) {
-        BasicDBObject basicDBObject = new BasicDBObject();
+    private static void processObjectList(JsonTreeNode parentNode, List objectList) {
+        for (int i = 0; i < objectList.size(); i++) {
+            Object object = objectList.get(i);
+            JsonTreeNode subNode = new JsonTreeNode(MongoValueDescriptor.createDescriptor(i, object));
+            if (object instanceof Document) {
+                processDocument(subNode, (Document) object);
+            } else if (object instanceof List) {
+                processObjectList(subNode, (List) object);
+            }
+            parentNode.add(subNode);
+        }
+    }
+
+    public static Document buildDocumentObject(JsonTreeNode rootNode) {
+        Document document = new Document();
         Enumeration children = rootNode.children();
         while (children.hasMoreElements()) {
             JsonTreeNode node = (JsonTreeNode) children.nextElement();
             MongoKeyValueDescriptor descriptor = (MongoKeyValueDescriptor) node.getDescriptor();
             Object value = descriptor.getValue();
-            if (value instanceof DBObject) {
-                if (value instanceof BasicDBList) {
-                    basicDBObject.put(descriptor.getKey(), buildDBList(node));
-                } else {
-                    basicDBObject.put(descriptor.getKey(), buildDBObject(node));
-                }
+            if (value instanceof Document) {
+                document.put(descriptor.getKey(), buildDocumentObject(node));
+            } else if (value instanceof List) {
+                    document.put(descriptor.getKey(), buildObjectList(node));
             } else {
-                basicDBObject.put(descriptor.getKey(), value);
+                document.put(descriptor.getKey(), value);
             }
         }
 
-        return basicDBObject;
+        return document;
     }
 
-    private static DBObject buildDBList(JsonTreeNode parentNode) {
-        BasicDBList basicDBList = new BasicDBList();
+    private static List buildObjectList(JsonTreeNode parentNode) {
+        List<Object> basicDBList = new ArrayList<>();
         Enumeration children = parentNode.children();
         while (children.hasMoreElements()) {
             JsonTreeNode node = (JsonTreeNode) children.nextElement();
             MongoValueDescriptor descriptor = (MongoValueDescriptor) node.getDescriptor();
             Object value = descriptor.getValue();
-            if (value instanceof DBObject) {
-                if (value instanceof BasicDBList) {
-                    basicDBList.add(buildDBList(node));
-                } else {
-                    basicDBList.add(buildDBObject(node));
-                }
+            if (value instanceof Document) {
+                basicDBList.add(buildDocumentObject(node));
+            } else if (value instanceof List) {
+                    basicDBList.add(buildObjectList(node));
             } else {
                 basicDBList.add(value);
             }

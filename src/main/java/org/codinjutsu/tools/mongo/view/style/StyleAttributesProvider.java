@@ -37,7 +37,7 @@ public class StyleAttributesProvider {
     private static final SimpleTextAttributes BOOLEAN_TEXT_ATTRIBUTE = INTEGER_TEXT_ATTRIBUTE;
     private static final SimpleTextAttributes STRING_TEXT_ATTRIBUTE = new SimpleTextAttributes(Font.PLAIN, LIGNT_GREEN);
     private static final SimpleTextAttributes NULL_TEXT_ATTRIBUTE = new SimpleTextAttributes(Font.ITALIC, LIGHT_GRAY);
-    private static final SimpleTextAttributes DBOBJECT_TEXT_ATTRIBUTE = new SimpleTextAttributes(Font.BOLD, LIGHT_GRAY);
+    private static final SimpleTextAttributes DOCUMENT_TEXT_ATTRIBUTE = new SimpleTextAttributes(Font.BOLD, LIGHT_GRAY);
     private static final SimpleTextAttributes OBJECT_ID_TEXT_ATTRIBUTE = INTEGER_TEXT_ATTRIBUTE;
 
     public static SimpleTextAttributes getIndexAttribute() {
@@ -64,8 +64,8 @@ public class StyleAttributesProvider {
         return NULL_TEXT_ATTRIBUTE;
     }
 
-    public static SimpleTextAttributes getDBObjectAttribute() {
-        return DBOBJECT_TEXT_ATTRIBUTE;
+    public static SimpleTextAttributes getDocumentAttribute() {
+        return DOCUMENT_TEXT_ATTRIBUTE;
     }
 
     public static SimpleTextAttributes getObjectIdAttribute() {

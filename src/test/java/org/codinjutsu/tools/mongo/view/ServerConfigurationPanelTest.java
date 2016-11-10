@@ -37,9 +37,7 @@ import org.mockito.Mockito;
 import java.util.Arrays;
 
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ServerConfigurationPanelTest {
 
@@ -53,7 +51,7 @@ public class ServerConfigurationPanelTest {
 
     @Before
     public void setUp() throws Exception {
-        mongoManager = Mockito.spy(new MongoManager(DummyProject.getInstance()));
+        mongoManager = Mockito.spy(new MongoManager());
         configurationPanel = GuiActionRunner.execute(new GuiQuery<ServerConfigurationPanel>() {
             protected ServerConfigurationPanel executeInEDT() {
                 return new ServerConfigurationPanel(DummyProject.getInstance(), mongoManager);
