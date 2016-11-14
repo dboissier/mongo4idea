@@ -16,25 +16,23 @@
 
 package org.codinjutsu.tools.mongo.view.action;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.view.MongoResultPanel;
-import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 
 public class CopyResultAction extends AnAction implements DumbAware {
 
-    private static final Icon COPY_ICON = StyleAttributesProvider.getCopyIcon();
     private final MongoResultPanel mongoResultPanel;
 
     public CopyResultAction(MongoResultPanel mongoResultPanel) {
-        super("Copy", "Copy results to clipboard", COPY_ICON);
+        super("Copy", "Copy results to clipboard", AllIcons.Actions.Copy);
         this.mongoResultPanel = mongoResultPanel;
 
         registerCustomShortcutSet(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), mongoResultPanel);

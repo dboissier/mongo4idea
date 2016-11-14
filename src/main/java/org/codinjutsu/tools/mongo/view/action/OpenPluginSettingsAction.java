@@ -16,6 +16,7 @@
 
 package org.codinjutsu.tools.mongo.view.action;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -24,17 +25,12 @@ import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import org.codinjutsu.tools.mongo.view.MongoConfigurable;
-import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
-
-import javax.swing.*;
 
 public class OpenPluginSettingsAction extends AnAction implements DumbAware {
 
 
-    private static final Icon SETTINGS_ICON = StyleAttributesProvider.getSettingsIcon();
-
     public OpenPluginSettingsAction() {
-        super("Mongo Settings", "Edit the Mongo settings for the current project", SETTINGS_ICON);
+        super("Mongo Settings", "Edit the Mongo settings for the current project", AllIcons.General.Settings);
     }
 
     @Override

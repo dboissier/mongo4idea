@@ -19,9 +19,7 @@ package org.codinjutsu.tools.mongo.view.style;
 import com.intellij.ui.Gray;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SimpleTextAttributes;
-import org.codinjutsu.tools.mongo.utils.GuiUtils;
 
-import javax.swing.*;
 import java.awt.*;
 
 public class StyleAttributesProvider {
@@ -70,45 +68,5 @@ public class StyleAttributesProvider {
 
     public static SimpleTextAttributes getObjectIdAttribute() {
         return OBJECT_ID_TEXT_ATTRIBUTE;
-    }
-
-    public static Icon getAddIcon() {
-        return GuiUtils.loadIcon("add.png", "add_dark.png");
-    }
-
-    public static Icon getCopyIcon() {
-        return GuiUtils.loadIcon("copy.png", "copy_dark.png");
-    }
-
-    public static Icon getExecuteIcon() {
-        return GuiUtils.loadIcon("execute.png", "execute_dark.png");
-    }
-
-    public static Icon getSettingsIcon() {
-        return GuiUtils.loadIcon("pluginSettings.png", "pluginSettings_dark.png");
-    }
-
-    public static Icon getRefreshIcon() {
-        return GuiUtils.loadIcon("refresh.png", "refresh_dark.png");
-    }
-
-    public static Icon getEditIcon() {
-        return GuiUtils.loadIcon("edit.png", "edit_dark.png");
-    }
-
-    public static Icon getClearAllIcon() {
-        return GuiUtils.loadIcon("clearAll.png", "clearAll_dark.png");
-    }
-
-    public static Icon getDeleteIcon() {
-        return GuiUtils.loadIcon("delete.png", "delete_dark.png");
-    }
-
-    public static Icon getFindIcon() {
-        return GuiUtils.loadIcon("find.png", "find_dark.png");
-    }
-
-    public static Icon getDataSchemaIcon() {
-        return GuiUtils.loadIcon("dataSchema.png", "dataSchema_dark.png");
     }
 }

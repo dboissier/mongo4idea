@@ -19,7 +19,6 @@ package org.codinjutsu.tools.mongo.view.action;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.Result;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.CaretModel;
@@ -43,9 +42,8 @@ public class OperatorCompletionAction extends AnAction implements Disposable {
 
     private static final JBList QUERY_OPERATOR_LIST;
 
-
     static {
-        List<String> operator = new LinkedList<String>();
+        List<String> operator = new LinkedList<>();
         for (MongoAggregateOperator aggregateOperator : MongoAggregateOperator.values()) {
             operator.add(aggregateOperator.getLabel());
         }
@@ -53,10 +51,8 @@ public class OperatorCompletionAction extends AnAction implements Disposable {
         for (Field field : QueryOperators.class.getFields()) {
             try {
                 operator.add((String) QueryOperators.class.getDeclaredField(field.getName()).get(String.class));
-            } catch (IllegalAccessException e) {
-
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (IllegalAccessException | NoSuchFieldException ex) {
+                throw new IllegalStateException(ex);
             }
         }
 

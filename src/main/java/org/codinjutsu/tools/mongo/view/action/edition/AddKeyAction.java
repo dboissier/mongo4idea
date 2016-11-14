@@ -16,23 +16,20 @@
 
 package org.codinjutsu.tools.mongo.view.action.edition;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.codinjutsu.tools.mongo.view.AddKeyDialog;
 import org.codinjutsu.tools.mongo.view.MongoEditionPanel;
-import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 
-import javax.swing.*;
 import java.awt.event.KeyEvent;
 
 public class AddKeyAction extends AnAction {
 
-    private static final Icon ADD_ICON = StyleAttributesProvider.getAddIcon();
-
     private final MongoEditionPanel mongoEditionPanel;
 
     public AddKeyAction(MongoEditionPanel mongoEditionPanel) {
-        super("Add a key", "Add a key", ADD_ICON);
+        super("Add a key", "Add a key", AllIcons.General.Add);
         registerCustomShortcutSet(KeyEvent.VK_INSERT, KeyEvent.ALT_MASK, mongoEditionPanel);
         this.mongoEditionPanel = mongoEditionPanel;
     }

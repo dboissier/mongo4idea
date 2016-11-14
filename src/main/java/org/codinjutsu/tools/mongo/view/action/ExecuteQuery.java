@@ -16,10 +16,10 @@
 
 package org.codinjutsu.tools.mongo.view.action;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.codinjutsu.tools.mongo.view.MongoPanel;
-import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -28,7 +28,7 @@ public class ExecuteQuery extends AnAction {
     private final MongoPanel mongoPanel;
 
     public ExecuteQuery(MongoPanel mongoPanel) {
-        super("Execute query", "Execute query with options", StyleAttributesProvider.getExecuteIcon());
+        super("Execute query", "Execute query with options", AllIcons.Actions.Execute);
         this.mongoPanel = mongoPanel;
 
         registerCustomShortcutSet(KeyEvent.VK_ENTER, InputEvent.CTRL_MASK, mongoPanel);

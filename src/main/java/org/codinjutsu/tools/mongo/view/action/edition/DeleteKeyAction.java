@@ -16,22 +16,19 @@
 
 package org.codinjutsu.tools.mongo.view.action.edition;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.codinjutsu.tools.mongo.view.MongoEditionPanel;
-import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 
-import javax.swing.*;
 import java.awt.event.KeyEvent;
 
 public class DeleteKeyAction extends AnAction {
 
-    private static final Icon DELETE_ICON = StyleAttributesProvider.getDeleteIcon();
-
     private final MongoEditionPanel mongoEditionPanel;
 
     public DeleteKeyAction(MongoEditionPanel mongoEditionPanel) {
-        super("Delete this", "Delete the selected node", DELETE_ICON);
+        super("Delete this", "Delete the selected node", AllIcons.Actions.Delete);
         registerCustomShortcutSet(KeyEvent.VK_DELETE, KeyEvent.ALT_MASK, mongoEditionPanel);
         this.mongoEditionPanel = mongoEditionPanel;
     }

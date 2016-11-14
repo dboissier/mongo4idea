@@ -16,30 +16,28 @@
 
 package org.codinjutsu.tools.mongo.view.action;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
-import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 
 import javax.swing.*;
 
 public class DropCollectionAction extends AnAction implements DumbAware {
 
-    private static final Icon REMOVE_ICON = StyleAttributesProvider.getClearAllIcon();
-
     private final MongoExplorerPanel mongoExplorerPanel;
 
     public DropCollectionAction(MongoExplorerPanel mongoExplorerPanel) {
-        super("Drop collection", "Drop the selected collection", REMOVE_ICON);
+        super("Drop collection", "Drop the selected collection", AllIcons.Actions.GC);
         this.mongoExplorerPanel = mongoExplorerPanel;
     }
 
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
-        int result = JOptionPane.showConfirmDialog (null, String.format("Do you REALLY want to drop the '%s' collection?", mongoExplorerPanel.getSelectedCollection().getName()),"Warning",JOptionPane.YES_NO_OPTION);
+        int result = JOptionPane.showConfirmDialog(null, String.format("Do you REALLY want to drop the '%s' collection?", mongoExplorerPanel.getSelectedCollection().getName()), "Warning", JOptionPane.YES_NO_OPTION);
 
-        if(result == JOptionPane.YES_OPTION){
+        if (result == JOptionPane.YES_OPTION) {
             mongoExplorerPanel.dropCollection();
         }
     }

@@ -16,6 +16,7 @@
 
 package org.codinjutsu.tools.mongo.view.action;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
@@ -30,7 +31,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class RefreshServerAction extends AnAction implements DumbAware {
 
     private static final Icon CONNECT_ICON = GuiUtils.loadIcon("connector.png", "connector_dark.png");
-    private static final Icon REFRESH_ICON = GuiUtils.loadIcon("refresh.png", "refresh_dark.png");
+    private static final Icon REFRESH_ICON = AllIcons.Actions.Refresh;
     private static final String REFRESH_TEXT = "Refresh this server";
     private static final String CONNECT_TEXT = "Connect to this server";
 

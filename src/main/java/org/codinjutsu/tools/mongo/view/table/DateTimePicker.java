@@ -22,7 +22,6 @@
 package org.codinjutsu.tools.mongo.view.table;
 
 import com.intellij.ui.JBColor;
-import com.intellij.ui.LightColors;
 import com.intellij.util.ui.UIUtil;
 import org.codinjutsu.tools.mongo.utils.DateUtils;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;

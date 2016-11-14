@@ -30,14 +30,12 @@ import org.codinjutsu.tools.mongo.view.console.MongoConsoleRunner;
 
 public class MongoConsoleAction extends AnAction implements DumbAware {
 
-
     private final MongoExplorerPanel mongoExplorerPanel;
 
     public MongoConsoleAction(MongoExplorerPanel mongoExplorerPanel) {
         super("Mongo Shell...", "Select a database to enable it", GuiUtils.loadIcon("toolConsole.png"));
         this.mongoExplorerPanel = mongoExplorerPanel;
     }
-
 
     @Override
     public void update(AnActionEvent e) {

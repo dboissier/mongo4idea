@@ -40,7 +40,6 @@ public class EnableAggregateAction extends ToggleAction {
         this.queryPanel = queryPanel;
     }
 
-
     @Override
     public boolean isSelected(AnActionEvent anActionEvent) {
         return enableAggregation;
