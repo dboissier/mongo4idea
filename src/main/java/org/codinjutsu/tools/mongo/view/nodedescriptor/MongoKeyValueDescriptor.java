@@ -79,12 +79,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
         } else if (value instanceof ObjectId) {
             return new MongoKeyValueDescriptor(key, value, StyleAttributesProvider.getObjectIdAttribute());
         } else if (value instanceof Document) {
-            return new MongoKeyValueDescriptor(key, value, StyleAttributesProvider.getDocumentAttribute()) {
-                @Override
-                public String getFormattedValue() {
-                    return super.getFormattedValue();
-                }
-            };
+            return new MongoKeyDocumentValueDescriptor(key, value);
         } else {
             return new MongoKeyValueDescriptor(key, value, StyleAttributesProvider.getStringAttribute());
         }
@@ -98,7 +93,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
     public void renderValue(ColoredTableCellRenderer cellRenderer, boolean isNodeExpanded) {
         if (!isNodeExpanded) {
-            cellRenderer.append(StringUtils.abbreviateInCenter(value.toString(), MAX_LENGTH), valueTextAttributes);
+            cellRenderer.append(getFormattedValue(), valueTextAttributes);
         }
     }
 
@@ -184,6 +179,23 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
         private String getFormattedDate() {
             return DATE_FORMAT.format(value);
+        }
+    }
+
+    private static class MongoKeyDocumentValueDescriptor extends MongoKeyValueDescriptor {
+        public MongoKeyDocumentValueDescriptor(String key, Object value) {
+            super(key, value, StyleAttributesProvider.getDocumentAttribute());
+        }
+
+        @Override
+        public String getFormattedValue() {
+            Document document = (Document) this.value;
+            return String.format("%s", StringUtils.abbreviateInCenter(document.toJson(), MAX_LENGTH));
+        }
+
+        @Override
+        public String toString() {
+            return ((Document) value).toJson();
         }
     }
 }

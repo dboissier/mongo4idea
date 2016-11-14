@@ -249,7 +249,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
             stringifiedObjects.add(childNode.getUserObject());
         }
 
-        return String.format("[ %s ]", StringUtils.join(stringifiedObjects, " , "));
+        return String.format("[ %s ]", StringUtils.join(stringifiedObjects, ", "));
     }
 
     @Override

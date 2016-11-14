@@ -1,6 +1,7 @@
 Version 0.9
     * [fix] #139 NPE when clicking on Expand/Collapse whereas there is no server configuration set
-    * [add] #151 Add SSH Tunneling (experimental)
+    * [update] Migrate to mongo driver 3.3.0
+    * [add] #151 Add SSH Tunneling (experimental) + redesign configuration Panel
     * [add] Use Event Log for plugin messages
     * [add] #105 add Table view
 
@@ -69,7 +70,7 @@ Version 0.5.1
     * [fix] #57 Fatal Error with new releases of Jebrains products(Webstorm 7, Idea 13, etc.) due to some API changes
 
 Version 0.5.0
-    * [fix] #57 Fatal Error with new releases of Jebrains products(Webstorm 7, Idea 13, etc.) due to some API changes
+    * [fix] #57 Fatal Error with new releases of Jebrains products (Webstorm 7, Idea 13, etc.) due to some API changes
     * [fix] #48 Key column is not resizable
     * [add] Document can be edited (right click on the object id of the document)
     * [add] Collections can be cleared (right click on the collection in the mongo explorer)

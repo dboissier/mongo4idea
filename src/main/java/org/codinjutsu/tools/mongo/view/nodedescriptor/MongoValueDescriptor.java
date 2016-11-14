@@ -58,13 +58,7 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
         } else if (value instanceof Date) {
             return new MongoDateValueDescriptor(index, (Date) value);
         } else if (value instanceof Document) {
-            return new MongoValueDescriptor(index, value, StyleAttributesProvider.getDocumentAttribute()) {
-                @Override
-                public String getFormattedValue() {
-                    Document document = (Document) this.value;
-                    return String.format("%s", StringUtils.abbreviateInCenter(document.toJson(), MAX_LENGTH));
-                }
-            };
+            return new MongoDocumentValueDescriptor(index, value);
         } else {
             return new MongoValueDescriptor(index, value, StyleAttributesProvider.getStringAttribute());
         }
@@ -158,6 +152,23 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
 
         private String getFormattedDate() {
             return DATE_FORMAT.format(value);
+        }
+    }
+
+    private static class MongoDocumentValueDescriptor extends MongoValueDescriptor {
+        public MongoDocumentValueDescriptor(int index, Object value) {
+            super(index, value, StyleAttributesProvider.getDocumentAttribute());
+        }
+
+        @Override
+        public String getFormattedValue() {
+            Document document = (Document) value;
+            return String.format("%s", StringUtils.abbreviateInCenter(document.toJson(), MAX_LENGTH));
+        }
+
+        @Override
+        public String toString() {
+            return ((Document) value).toJson();
         }
     }
 }

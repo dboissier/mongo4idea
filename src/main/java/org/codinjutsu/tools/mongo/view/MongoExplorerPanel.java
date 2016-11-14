@@ -177,7 +177,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                 } catch (ConfigurationException confEx) {
                     mongoServer.setStatus(MongoServer.Status.ERROR);
                     String errorMessage = String.format("Error when connecting on %s", mongoServer.getLabel());
-                    notifier.notifyError(errorMessage);
+                    notifier.notifyError(errorMessage + ": " + confEx.getMessage());
                     showNotification(treePanel,
                             MessageType.ERROR,
                             errorMessage,
