@@ -194,7 +194,7 @@ public class JsonTreeTableView extends TreeTable {
         }
 
         public Object valueOf(JsonTreeNode treeNode) {
-            return treeNode.getDescriptor().getValue();
+            return treeNode.getDescriptor();
 
         }
 

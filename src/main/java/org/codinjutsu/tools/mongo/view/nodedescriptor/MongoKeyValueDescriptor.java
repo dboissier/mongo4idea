@@ -22,11 +22,13 @@ import com.intellij.ui.SimpleTextAttributes;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.utils.DateUtils;
+import org.codinjutsu.tools.mongo.utils.MongoUtils;
 import org.codinjutsu.tools.mongo.utils.StringUtils;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
@@ -39,7 +41,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
     private final SimpleTextAttributes valueTextAttributes;
 
-    public static MongoKeyValueDescriptor createDescriptor(String key, Object value) {
+    public static MongoKeyValueDescriptor createDescriptor(String key, Object value) { //TODO refactor needed
         if (value == null) {
             return new MongoKeyNullValueDescriptor(key);
         }
@@ -80,6 +82,8 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
             return new MongoKeyValueDescriptor(key, value, StyleAttributesProvider.getObjectIdAttribute());
         } else if (value instanceof Document) {
             return new MongoKeyDocumentValueDescriptor(key, value);
+        } else if (value instanceof List) {
+            return new MongoKeyListValueDescriptor(key, value);
         } else {
             return new MongoKeyValueDescriptor(key, value, StyleAttributesProvider.getStringAttribute());
         }
@@ -148,7 +152,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
         @Override
         public String getFormattedValue() {
-            return String.format(STRING_SURROUNDED, value);
+            return value.toString();
         }
 
         @Override
@@ -183,19 +187,44 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
     }
 
     private static class MongoKeyDocumentValueDescriptor extends MongoKeyValueDescriptor {
-        public MongoKeyDocumentValueDescriptor(String key, Object value) {
+
+        MongoKeyDocumentValueDescriptor(String key, Object value) {
             super(key, value, StyleAttributesProvider.getDocumentAttribute());
         }
 
         @Override
         public String getFormattedValue() {
             Document document = (Document) this.value;
-            return String.format("%s", StringUtils.abbreviateInCenter(document.toJson(), MAX_LENGTH));
+            return StringUtils.abbreviateInCenter(document.toJson(), MAX_LENGTH);
         }
 
         @Override
         public String toString() {
+            return String.format(TO_STRING_TEMPLATE, key, getFormattedDocument());
+        }
+
+        private String getFormattedDocument() {
             return ((Document) value).toJson();
+        }
+    }
+
+    private static class MongoKeyListValueDescriptor extends MongoKeyValueDescriptor {
+        public MongoKeyListValueDescriptor(String key, Object value) {
+            super(key, value, StyleAttributesProvider.getDocumentAttribute());
+        }
+
+        @Override
+        public String getFormattedValue() {
+            return StringUtils.abbreviateInCenter(getFormattedList(), MAX_LENGTH);
+        }
+
+        @Override
+        public String toString() {
+            return String.format(TO_STRING_TEMPLATE, key, getFormattedList());
+        }
+
+        private String getFormattedList() {
+            return MongoUtils.stringifyList((List) value);
         }
     }
 }

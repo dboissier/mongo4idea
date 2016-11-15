@@ -21,11 +21,13 @@ import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import org.bson.Document;
 import org.codinjutsu.tools.mongo.utils.DateUtils;
+import org.codinjutsu.tools.mongo.utils.MongoUtils;
 import org.codinjutsu.tools.mongo.utils.StringUtils;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;
 
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class MongoValueDescriptor implements MongoNodeDescriptor {
@@ -59,6 +61,8 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
             return new MongoDateValueDescriptor(index, (Date) value);
         } else if (value instanceof Document) {
             return new MongoDocumentValueDescriptor(index, value);
+        } else if (value instanceof List) {
+            return new MongoListValueDescriptor(index, value);
         } else {
             return new MongoValueDescriptor(index, value, StyleAttributesProvider.getStringAttribute());
         }
@@ -109,7 +113,7 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
 
         @Override
         public String getFormattedValue() {
-            return String.format("\"%s\"", StringUtils.abbreviateInCenter(value.toString(), MAX_LENGTH));
+            return StringUtils.abbreviateInCenter(value.toString(), MAX_LENGTH);
         }
     }
 
@@ -169,6 +173,26 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
         @Override
         public String toString() {
             return ((Document) value).toJson();
+        }
+    }
+
+    private static class MongoListValueDescriptor extends MongoValueDescriptor {
+        public MongoListValueDescriptor(int index, Object value) {
+            super(index, value, StyleAttributesProvider.getDocumentAttribute());
+        }
+
+        @Override
+        public String getFormattedValue() {
+            return getFormattedList();
+        }
+
+        @Override
+        public String toString() {
+            return getFormattedList();
+        }
+
+        private String getFormattedList() {
+            return MongoUtils.stringifyList((List) value);
         }
     }
 }

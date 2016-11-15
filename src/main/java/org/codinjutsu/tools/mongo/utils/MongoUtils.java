@@ -21,8 +21,12 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.CapturingProcessHandler;
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.openapi.vfs.CharsetToolkit;
+import org.bson.Document;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
@@ -48,5 +52,24 @@ public class MongoUtils {
 
     public static String buildMongoUrl(ServerConfiguration serverConfiguration, MongoDatabase database) {
         return String.format("%s/%s", serverConfiguration.getServerUrls().get(0), database == null ? "test" : database.getName());
+    }
+
+    public static String stringifyList(List list) {
+        List<String> stringifiedObjects = new LinkedList<>();
+        for (Object object : list) {
+            if (object == null) {
+                stringifiedObjects.add("null");
+            } else if (object instanceof String) {
+                stringifiedObjects.add("\"" + object.toString() + "\"");
+            } else if (object instanceof Document) {
+                stringifiedObjects.add(((Document) object).toJson());
+            } else if (object instanceof List) {
+                stringifiedObjects.add(stringifyList(((List) object)));
+            } else {
+                stringifiedObjects.add(object.toString());
+            }
+        }
+
+        return "[" + org.apache.commons.lang.StringUtils.join(stringifiedObjects, ", ") + "]";
     }
 }

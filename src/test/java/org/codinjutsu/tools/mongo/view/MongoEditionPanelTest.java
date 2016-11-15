@@ -18,7 +18,6 @@ package org.codinjutsu.tools.mongo.view;
 
 import org.apache.commons.io.IOUtils;
 import org.assertj.swing.data.TableCell;
-import org.assertj.swing.driver.BasicJTableCellReader;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.edt.GuiQuery;
 import org.assertj.swing.fixture.Containers;
@@ -26,16 +25,14 @@ import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.fixture.JTableFixture;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import javax.swing.*;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -66,7 +63,11 @@ public class MongoEditionPanelTest {
             }
         });
 
-        mongoEditionPanel.updateEditionTree(buildDocument("simpleDocument.json"));
+        mongoEditionPanel.updateEditionTree(
+                new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
+                        .append("label", "toto")
+                        .append("visible", false)
+                        .append("image", null));
 
         frameFixture = Containers.showInFrame(mongoEditionPanel);
     }
@@ -88,7 +89,6 @@ public class MongoEditionPanelTest {
     @Test
     public void editKeyWithStringValue() throws Exception {
         JTableFixture editionTreeTable = frameFixture.table("editionTreeTable");
-
         editionTreeTable.replaceCellReader(new JsonTableCellReader());
 
 //        edit 'label' key
@@ -101,11 +101,11 @@ public class MongoEditionPanelTest {
         ArgumentCaptor<Document> argument = ArgumentCaptor.forClass(Document.class);
         verify(mockMongoOperations).updateMongoDocument(argument.capture());
 
-        assertEquals(new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
+        assertThat(argument.getValue())
+                .isEqualTo(new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
                         .append("label", "Hello")
                         .append("visible", false)
-                        .append("image", null),
-                argument.getValue());
+                        .append("image", null));
 
         verify(mockActionCallback, times(1)).onOperationSuccess(any(String.class));
     }
@@ -161,14 +161,14 @@ public class MongoEditionPanelTest {
         editionTreeTable.requireContents(new String[][]{
                 {"\"_id\"", "50b8d63414f85401b9268b99"},
                 {"\"title\"", "XP by example"},
-                {"\"tags\"", "[ \"pair programming\" , \"tdd\" , \"agile\"]"},
+                {"\"tags\"", "[\"pair programming\", \"tdd\", \"agile\"]"},
                 {"[0]", "pair programming"},
                 {"[1]", "tdd"},
                 {"[2]", "agile"},
-                {"\"innerList\"", "[ [ 1 , 2 , 3 , 4] , [ false , true] , [ { \"tagName\" : \"pouet\"} , { \"tagName\" : \"paf\"}]]"},
-                {"[0]", "[ 1 , 2 , 3 , 4]"},
-                {"[1]", "[ false , true]"},
-                {"[2]", "[ { \"tagName\" : \"pouet\"} , { \"tagName\" : \"paf\"}]"}});
+                {"\"innerList\"", "[[1, 2, 3, 4], [false, true], [{ \"tagName\" : \"pouet\" }, { \"tagName\" : \"paf\" }]]"},
+                {"[0]", "[1, 2, 3, 4]"},
+                {"[1]", "[false, true]"},
+                {"[2]", "[{ \"tagName\" : \"pouet\" }, { \"tagName\" : \"paf\" }]"}});
 
         editionTreeTable.selectCell(TableCell.row(3).column(1));
         mongoEditionPanel.addValue("refactor");
@@ -176,30 +176,15 @@ public class MongoEditionPanelTest {
         editionTreeTable.requireContents(new String[][]{
                 {"\"_id\"", "50b8d63414f85401b9268b99"},
                 {"\"title\"", "XP by example"},
-                {"\"tags\"", "[ \"pair programming\" , \"tdd\" , \"agile\"]"},
+                {"\"tags\"", "[\"pair programming\", \"tdd\", \"agile\"]"},
                 {"[0]", "pair programming"},
                 {"[1]", "tdd"},
                 {"[2]", "agile"},
                 {"[3]", "refactor"},
-                {"\"innerList\"", "[ [ 1 , 2 , 3 , 4] , [ false , true] , [ { \"tagName\" : \"pouet\"} , { \"tagName\" : \"paf\"}]]"},
-                {"[0]", "[ 1 , 2 , 3 , 4]"},
-                {"[1]", "[ false , true]"},
-                {"[2]", "[ { \"tagName\" : \"pouet\"} , { \"tagName\" : \"paf\"}]"}});
-
-    }
-
-    private static class JsonTableCellReader extends BasicJTableCellReader {
-
-        @Override
-        public String valueAt(JTable table, int row, int column) {
-            Object value = table.getValueAt(row, column);
-            if (value instanceof MongoNodeDescriptor) {
-                MongoNodeDescriptor nodeDescriptor = (MongoNodeDescriptor) value;
-                return nodeDescriptor.getFormattedKey();
-            } else {
-                return value == null ? "null" : value.toString();
-            }
-        }
+                {"\"innerList\"", "[[1, 2, 3, 4], [false, true], [{ \"tagName\" : \"pouet\" }, { \"tagName\" : \"paf\" }]]"},
+                {"[0]", "[1, 2, 3, 4]"},
+                {"[1]", "[false, true]"},
+                {"[2]", "[{ \"tagName\" : \"pouet\" }, { \"tagName\" : \"paf\" }]"}});
 
     }
 
