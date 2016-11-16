@@ -1,5 +1,6 @@
 Version 0.9
     * [fix] #139 NPE when clicking on Expand/Collapse whereas there is no server configuration set
+    * [fix] #172 and #168 NPE when configuration label is not set
     * [update] Migrate to mongo driver 3.3.0
     * [add] #151 Add SSH Tunneling (experimental) + redesign configuration Panel
     * [add] Use Event Log for plugin messages

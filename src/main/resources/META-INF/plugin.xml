@@ -75,7 +75,7 @@
     <div xmlns="http://www.w3.org/1999/html">
         <p>
             This tool allows accessing to Mongo databases and provides CRUD operations on mongo collections.<br>
-            Documentation is available on the <a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.7.2/README.md">GitHub project</a>
+            Documentation is available on the <a href="https://github.com/dboissier/mongo4idea">GitHub project</a>
         </p>
         <p>
             This tool is free for personal and commercial usage.<br>
@@ -85,6 +85,6 @@
 ]]> </description>
 
     <change-notes><![CDATA[
-<a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.8.0/CHANGELOG.txt">Changelog</a>
+<a href="https://github.com/dboissier/mongo4idea/blob/mongo4idea-0.9.0/CHANGELOG.txt">Changelog</a>
 ]]> </change-notes>
 </idea-plugin>
