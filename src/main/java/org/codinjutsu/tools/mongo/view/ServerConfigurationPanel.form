@@ -332,7 +332,7 @@
               </component>
             </children>
           </grid>
-          <grid id="29e9a" layout-manager="GridLayoutManager" row-count="4" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="29e9a" layout-manager="GridLayoutManager" row-count="5" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="5" left="5" bottom="5" right="5"/>
             <constraints>
               <tabbedpane title="SSH"/>
@@ -342,7 +342,7 @@
             <children>
               <vspacer id="ddbd7">
                 <constraints>
-                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                  <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
                 </constraints>
               </vspacer>
               <component id="abd7c" class="javax.swing.JLabel">
@@ -407,6 +407,15 @@
                 </constraints>
                 <properties>
                   <text value="Proxy host:"/>
+                </properties>
+              </component>
+              <component id="6de53" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="3" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <font style="2"/>
+                  <text value="SSH local port used is 9080."/>
                 </properties>
               </component>
             </children>
