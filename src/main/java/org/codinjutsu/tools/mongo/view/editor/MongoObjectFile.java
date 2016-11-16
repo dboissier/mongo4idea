@@ -33,10 +33,10 @@ import java.io.OutputStream;
 public class MongoObjectFile extends VirtualFile {
 
     private final long myModStamp;
-    private ServerConfiguration configuration;
-    private MongoCollection collection;
-    private Project project;
-    private String name;
+    private final ServerConfiguration configuration;
+    private final MongoCollection collection;
+    private final Project project;
+    private final String name;
 
     public MongoObjectFile(Project project, ServerConfiguration configuration, MongoCollection collection) {
         this.project = project;

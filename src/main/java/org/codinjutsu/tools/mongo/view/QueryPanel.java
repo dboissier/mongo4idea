@@ -103,7 +103,7 @@ public class QueryPanel extends JPanel implements Disposable {
         }
     }
 
-    public OperatorPanel getCurrentOperatorPanel() {
+    private OperatorPanel getCurrentOperatorPanel() {
         return filterPanel.isVisible() ? filterPanel : aggregationPanel;
     }
 
@@ -188,9 +188,7 @@ public class QueryPanel extends JPanel implements Disposable {
                     return;
                 }
                 JSON.parse(query);
-            } catch (JSONParseException ex) {
-                notifyOnErrorForOperator(editor.getComponent(), ex);
-            } catch (NumberFormatException ex) {
+            } catch (JSONParseException | NumberFormatException ex) {
                 notifyOnErrorForOperator(editor.getComponent(), ex);
             }
         }
@@ -293,9 +291,7 @@ public class QueryPanel extends JPanel implements Disposable {
                     return;
                 }
                 JSON.parse(query);
-            } catch (JSONParseException ex) {
-                notifyOnErrorForOperator(editor.getComponent(), ex);
-            } catch (NumberFormatException ex) {
+            } catch (JSONParseException | NumberFormatException ex) {
                 notifyOnErrorForOperator(editor.getComponent(), ex);
             }
         }
@@ -347,7 +343,7 @@ public class QueryPanel extends JPanel implements Disposable {
                     .show(new RelativePoint(component, new Point(0, 0)), Balloon.Position.above);
         }
 
-        protected Editor createEditor() {
+        Editor createEditor() {
             EditorFactory editorFactory = EditorFactory.getInstance();
             Document editorDocument = editorFactory.createDocument("");
             Editor editor = editorFactory.createEditor(editorDocument, project);

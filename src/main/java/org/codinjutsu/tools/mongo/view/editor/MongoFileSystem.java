@@ -107,6 +107,7 @@ public class MongoFileSystem extends VirtualFileSystem implements ApplicationCom
 
     }
 
+    @NotNull
     @Override
     protected VirtualFile createChildFile(Object requestor, @NotNull VirtualFile vDir, @NotNull String fileName) throws IOException {
         return null;
@@ -118,6 +119,7 @@ public class MongoFileSystem extends VirtualFileSystem implements ApplicationCom
         throw new UnsupportedOperationException("No file management in this plugin");
     }
 
+    @NotNull
     @Override
     protected VirtualFile copyFile(Object requestor, @NotNull VirtualFile virtualFile, @NotNull VirtualFile newParent, @NotNull String copyName) throws IOException {
         return null;

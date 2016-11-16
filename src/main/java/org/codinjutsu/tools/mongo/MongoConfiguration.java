@@ -32,7 +32,7 @@ import java.util.List;
 )
 public class MongoConfiguration implements PersistentStateComponent<MongoConfiguration> {
 
-    private List<ServerConfiguration> serverConfigurations = new LinkedList<ServerConfiguration>();
+    private List<ServerConfiguration> serverConfigurations = new LinkedList<>();
     private String shellPath;
 
     public static MongoConfiguration getInstance(Project project) {

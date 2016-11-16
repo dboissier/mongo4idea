@@ -34,8 +34,9 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class AbstractAddDialog extends DialogWrapper {
-    private static final Map<JsonDataType, TextFieldWrapper> UI_COMPONENT_BY_JSON_DATATYPE = new HashMap<JsonDataType, TextFieldWrapper>();
+@SuppressWarnings("unchecked")
+abstract class AbstractAddDialog extends DialogWrapper {
+    private static final Map<JsonDataType, TextFieldWrapper> UI_COMPONENT_BY_JSON_DATATYPE = new HashMap<>();
 
 
     static {
@@ -50,7 +51,7 @@ public abstract class AbstractAddDialog extends DialogWrapper {
     }
 
     final MongoEditionPanel mongoEditionPanel;
-    protected TextFieldWrapper currentEditor = null;
+    TextFieldWrapper currentEditor = null;
 
 
     AbstractAddDialog(MongoEditionPanel mongoEditionPanel) {
@@ -59,7 +60,7 @@ public abstract class AbstractAddDialog extends DialogWrapper {
     }
 
     void initCombo(final ComboBox combobox, final JPanel parentPanel) {
-        combobox.setModel(new DefaultComboBoxModel(JsonDataType.values()));
+        combobox.setModel(new DefaultComboBoxModel<>(JsonDataType.values()));
         combobox.setRenderer(new ColoredListCellRenderer() {
 
             @Override
@@ -89,9 +90,9 @@ public abstract class AbstractAddDialog extends DialogWrapper {
 
     public abstract Object getValue();
 
-    public static abstract class TextFieldWrapper<T extends JComponent, V> {
+    static abstract class TextFieldWrapper<T extends JComponent, V> {
 
-        protected final T component;
+        final T component;
 
         private TextFieldWrapper(T component) {
             this.component = component;

@@ -107,7 +107,7 @@ public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfigur
 
     private MongoServer[] getAvailableMongoServers(Project project) {
         List<MongoServer> mongoServers = MongoManager.getInstance(project).getServers();
-        List<MongoServer> availableMongoServers = new LinkedList<MongoServer>();
+        List<MongoServer> availableMongoServers = new LinkedList<>();
         for (MongoServer mongoServer : mongoServers) {
             if (mongoServer.hasDatabases()) {
                 availableMongoServers.add(mongoServer);
@@ -145,7 +145,7 @@ public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfigur
         return selectedServer == null ? null : selectedServer.getConfiguration();
     }
 
-    public MongoDatabase getSelectedDatabase() {
+    private MongoDatabase getSelectedDatabase() {
         return (MongoDatabase) databaseCombobox.getSelectedItem();
     }
 

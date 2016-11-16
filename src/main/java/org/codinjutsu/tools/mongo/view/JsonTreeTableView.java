@@ -44,7 +44,7 @@ import java.awt.event.ActionListener;
 import java.util.Date;
 import java.util.List;
 
-public class JsonTreeTableView extends TreeTable {
+class JsonTreeTableView extends TreeTable {
 
     private static final ColumnInfo KEY = new ColumnInfo("Key") {
 

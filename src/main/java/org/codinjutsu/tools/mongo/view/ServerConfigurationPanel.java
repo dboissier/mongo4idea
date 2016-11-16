@@ -66,7 +66,6 @@ public class ServerConfigurationPanel extends JPanel {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JTextField authenticationDatabaseField;
-    private final ButtonGroup authMethodGroup;
     private JRadioButton mongoCRAuthRadioButton;
     private JRadioButton scramSHA1AuthRadioButton;
     private JRadioButton defaultAuthMethodRadioButton;
@@ -146,7 +145,7 @@ public class ServerConfigurationPanel extends JPanel {
         readPreferenceComboBox.setSelectedItem(ReadPreference.primary());
 
 
-        authMethodGroup = new ButtonGroup();
+        ButtonGroup authMethodGroup = new ButtonGroup();
         authMethodGroup.add(mongoCRAuthRadioButton);
         authMethodGroup.add(scramSHA1AuthRadioButton);
         authMethodGroup.add(defaultAuthMethodRadioButton);

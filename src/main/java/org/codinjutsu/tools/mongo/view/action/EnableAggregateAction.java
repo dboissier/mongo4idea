@@ -20,6 +20,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.QueryPanel;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
@@ -56,7 +57,7 @@ public class EnableAggregateAction extends ToggleAction {
     }
 
     @Override
-    public void update(AnActionEvent event) {
+    public void update(@NotNull AnActionEvent event) {
         event.getPresentation().setText(isSelected(event) ? ENABLE_FIND_MODE : ENABLE_AGGREGATION_MODE);
         event.getPresentation().setDescription(isSelected(event) ? QUERY_AGGREGATION_SAMPLE : QUERY_FIND_SAMPLE);
         event.getPresentation().setVisible(queryPanel.isVisible());

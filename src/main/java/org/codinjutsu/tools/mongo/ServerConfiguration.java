@@ -29,7 +29,7 @@ import static java.util.Collections.singletonList;
 public class ServerConfiguration implements Cloneable {
 
     private static final String DEFAULT_URL = "localhost";
-    public static final int DEFAULT_PORT = 27017;
+    private static final int DEFAULT_PORT = 27017;
 
 
     private String label;

@@ -31,7 +31,7 @@ public class Notifier {
         return ServiceManager.getService(project, Notifier.class);
     }
 
-    public Notifier(Project project) {
+    private Notifier(Project project) {
         this.project = project;
     }
 

@@ -31,7 +31,7 @@ public class SshConnection implements Closeable {
 
     private static final int DEFAULT_TUNNEL_LOCAL_PORT = 9080;
 
-    private List<Session> sshSessions = new LinkedList<>();
+    private final List<Session> sshSessions = new LinkedList<>();
 
     public static SshConnection create(ServerConfiguration serverConfiguration) {
         return new SshConnection(serverConfiguration.getServerUrls(), serverConfiguration.getSshTunnelingConfiguration());

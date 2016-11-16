@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-/**
- * This is licensed under LGPL.  License can be found here:  http://www.gnu.org/licenses/lgpl-3.0.txt
- *
- * This is provided as is.  If you have questions please direct them to charlie.hubbard at gmail dot you know what.
+/*
+  This is licensed under LGPL.  License can be found here:  http://www.gnu.org/licenses/lgpl-3.0.txt
+  This is provided as is.  If you have questions please direct them to charlie.hubbard at gmail dot you know what.
  */
 package org.codinjutsu.tools.mongo.view.table;
 
@@ -40,13 +39,13 @@ import java.util.*;
 
 public class DateTimePicker extends JXDatePicker {
 
-    private static Color backgroundColor = JBColor.background();
-    private static Color foregroundColor = JBColor.foreground();
-    private static Color selectionBackgroundColor = UIUtil.getTableSelectionBackground();
-    private static Color selectionForegroundColor = UIUtil.getTableSelectionForeground();
-    private static Color monthForegroundColor = StyleAttributesProvider.NUMBER_COLOR;
-    private static Color dayOfTheWeekForegroundColor = StyleAttributesProvider.KEY_COLOR;
-    private static Color todayBackgroundColor = JBColor.WHITE;
+    private static final Color backgroundColor = JBColor.background();
+    private static final Color foregroundColor = JBColor.foreground();
+    private static final Color selectionBackgroundColor = UIUtil.getTableSelectionBackground();
+    private static final Color selectionForegroundColor = UIUtil.getTableSelectionForeground();
+    private static final Color monthForegroundColor = StyleAttributesProvider.NUMBER_COLOR;
+    private static final Color dayOfTheWeekForegroundColor = StyleAttributesProvider.KEY_COLOR;
+    private static final Color todayBackgroundColor = JBColor.WHITE;
 
 
     private JSpinner timeSpinner;
@@ -86,11 +85,6 @@ public class DateTimePicker extends JXDatePicker {
         }
         setTimeSpinners();
         return timePanel;
-    }
-
-    @Override
-    public Date getDate() {
-        return super.getDate();
     }
 
     private JPanel createTimePanel() {
@@ -140,7 +134,7 @@ public class DateTimePicker extends JXDatePicker {
         }
     }
 
-    public void setTimeFormat(DateFormat timeFormat) {
+    private void setTimeFormat(DateFormat timeFormat) {
         this.timeFormat = timeFormat;
         updateTextFieldFormat();
     }

@@ -62,7 +62,8 @@ public class MongoRunConfigurationType implements ConfigurationType {
             super(type);
         }
 
-        public RunConfiguration createTemplateConfiguration(Project project) {
+        @NotNull
+        public RunConfiguration createTemplateConfiguration(@NotNull Project project) {
             return new MongoRunConfiguration(new RunConfigurationModule(project), this);
         }
     }

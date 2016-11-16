@@ -23,7 +23,7 @@ import java.util.TreeSet;
 public class MongoDatabase {
     private final String name;
 
-    private final SortedSet<MongoCollection> collections = new TreeSet<MongoCollection>();
+    private final SortedSet<MongoCollection> collections = new TreeSet<>();
 
     public MongoDatabase(String name) {
         this.name = name;

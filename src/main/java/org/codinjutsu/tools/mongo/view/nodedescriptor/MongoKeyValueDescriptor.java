@@ -36,8 +36,8 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
     private static final String STRING_SURROUNDED = "\"%s\"";
     private static final String TO_STRING_TEMPLATE = "\"%s\" : %s";
 
-    protected final String key;
-    protected Object value;
+    final String key;
+    Object value;
 
     private final SimpleTextAttributes valueTextAttributes;
 
@@ -209,7 +209,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
     }
 
     private static class MongoKeyListValueDescriptor extends MongoKeyValueDescriptor {
-        public MongoKeyListValueDescriptor(String key, Object value) {
+        MongoKeyListValueDescriptor(String key, Object value) {
             super(key, value, StyleAttributesProvider.getDocumentAttribute());
         }
 

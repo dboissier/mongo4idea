@@ -248,7 +248,7 @@ public class MongoConfigurable extends BaseConfigurable implements SearchableCon
     }
 
     private LabeledComponent<TextFieldWithBrowseButton> createShellPathField() {
-        LabeledComponent<TextFieldWithBrowseButton> shellPathField = new LabeledComponent<TextFieldWithBrowseButton>();
+        LabeledComponent<TextFieldWithBrowseButton> shellPathField = new LabeledComponent<>();
         TextFieldWithBrowseButton component = new TextFieldWithBrowseButton();
         component.getChildComponent().setName("shellPathField");
         shellPathField.setComponent(component);

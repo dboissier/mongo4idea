@@ -28,7 +28,7 @@ public enum JsonDataType {
 
     public final String type;
 
-    private JsonDataType(String type) {
+    JsonDataType(String type) {
         this.type = type;
     }
 }

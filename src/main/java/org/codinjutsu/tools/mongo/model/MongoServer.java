@@ -27,7 +27,7 @@ public class MongoServer {
         OK, LOADING, ERROR
     }
 
-    private List<MongoDatabase> databases = new LinkedList<MongoDatabase>();
+    private List<MongoDatabase> databases = new LinkedList<>();
 
     private final ServerConfiguration configuration;
 

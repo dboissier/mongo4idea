@@ -136,12 +136,4 @@ public class JsonTreeUtils {
         return null;
     }
 
-    static Object findDocument(JsonTreeNode startingNode) {
-        if (startingNode.getDescriptor() instanceof MongoValueDescriptor) {
-            if (((JsonTreeNode) startingNode.getParent()).getDescriptor() instanceof MongoResultDescriptor) {
-                return startingNode.getDescriptor().getValue();
-            }
-        }
-        return null;
-    }
 }

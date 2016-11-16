@@ -29,7 +29,6 @@ import org.codinjutsu.tools.mongo.SshTunnelingConfiguration;
 import org.codinjutsu.tools.mongo.logic.ssh.SshConnection;
 import org.codinjutsu.tools.mongo.model.*;
 
-import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -166,7 +165,7 @@ public class MongoManager {
     private <T> T execute(ServerConfiguration configuration, TaskWithReturnedObject<T> perform) {
         try (MongoClient mongo = createMongoClient(configuration)) {
             return perform.run(mongo);
-        } catch (UnknownHostException | MongoException mongoEx) {
+        } catch (MongoException mongoEx) {
             throw new ConfigurationException(mongoEx);
         }
     }
@@ -248,7 +247,7 @@ public class MongoManager {
     private void execute(ServerConfiguration configuration, Task task) {
         try (MongoClient mongoClient = createMongoClient(configuration)) {
             task.run(mongoClient);
-        } catch (UnknownHostException | MongoException ex) {
+        } catch (MongoException ex) {
             throw new ConfigurationException(ex);
         }
     }
@@ -290,7 +289,7 @@ public class MongoManager {
         return mongoCollectionResult;
     }
 
-    private MongoClient createMongoClient(ServerConfiguration configuration) throws UnknownHostException {
+    private MongoClient createMongoClient(ServerConfiguration configuration) {
         List<String> serverUrls = configuration.getServerUrls();
         if (serverUrls.isEmpty()) {
             throw new ConfigurationException("server host is not set");

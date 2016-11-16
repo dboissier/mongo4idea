@@ -24,9 +24,6 @@ import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 
 import javax.swing.*;
 
-/**
- * Created by piddubnyi on 06.11.14 .
- */
 public class DropDatabaseAction extends AnAction implements DumbAware {
 
     private final MongoExplorerPanel mongoExplorerPanel;

@@ -35,7 +35,7 @@ public class MongoWindowManager {
 
     private static final Icon MONGO_ICON = GuiUtils.loadIcon("mongo_logo.png");
 
-    public static final String MONGO_RUNNER = "Mongo Runner";
+    private static final String MONGO_RUNNER = "Mongo Runner";
 
     private static final String MONGO_EXPLORER = "Mongo Explorer";
 
@@ -46,7 +46,7 @@ public class MongoWindowManager {
         return ServiceManager.getService(project, MongoWindowManager.class);
     }
 
-    public MongoWindowManager(Project project) {
+    private MongoWindowManager(Project project) {
         this.project = project;
 
         ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);

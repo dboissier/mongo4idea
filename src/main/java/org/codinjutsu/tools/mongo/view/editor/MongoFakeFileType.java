@@ -24,9 +24,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public class MongoFakeFileType extends FakeFileType {
+class MongoFakeFileType extends FakeFileType {
 
-    public static final Icon MONGO_ICON = GuiUtils.loadIcon("mongo_logo.png");
+    private static final Icon MONGO_ICON = GuiUtils.loadIcon("mongo_logo.png");
 
     public static final FileType INSTANCE = new MongoFakeFileType();
 
@@ -37,7 +37,7 @@ public class MongoFakeFileType extends FakeFileType {
     }
 
     @Override
-    public boolean isMyFileType(VirtualFile file) {
+    public boolean isMyFileType(@NotNull VirtualFile file) {
         return false;
     }
 

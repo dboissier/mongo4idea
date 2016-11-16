@@ -65,7 +65,7 @@ public class MongoEditionPanel extends JPanel implements Disposable {
         deleteButton.setName("deleteButton");
     }
 
-    public MongoEditionPanel init(final MongoPanel.MongoDocumentOperations mongoDocumentOperations, final MongoResultPanel.ActionCallback actionCallback) {
+    MongoEditionPanel init(final MongoPanel.MongoDocumentOperations mongoDocumentOperations, final MongoResultPanel.ActionCallback actionCallback) {
 
         cancelButton.addActionListener(new AbstractAction() {
             @Override
@@ -104,7 +104,7 @@ public class MongoEditionPanel extends JPanel implements Disposable {
         return this;
     }
 
-    public void updateEditionTree(Document mongoDocument) {
+    void updateEditionTree(Document mongoDocument) {
         String panelTitle = "New document";
         if (mongoDocument != null) {
             panelTitle = "Edition";
@@ -133,7 +133,7 @@ public class MongoEditionPanel extends JPanel implements Disposable {
         PopupHandler.installPopupHandler(editTableView, actionPopupGroup, "POPUP", ActionManager.getInstance());
     }
 
-    public boolean containsKey(String key) {
+    boolean containsKey(String key) {
         JsonTreeNode parentNode = getParentNode();
         if (parentNode == null) {
             return false;
@@ -179,6 +179,9 @@ public class MongoEditionPanel extends JPanel implements Disposable {
         List<TreeNode> node = new LinkedList<>();
 
         JsonTreeNode parentNode = getParentNode();
+        if (parentNode == null) {
+            return;
+        }
 
         JsonTreeNode treeNode = new JsonTreeNode(MongoValueDescriptor.createDescriptor(parentNode.getChildCount(), value));
         if (value instanceof Document) {
@@ -202,14 +205,6 @@ public class MongoEditionPanel extends JPanel implements Disposable {
 
     public JsonTreeNode getSelectedNode() {
         return (JsonTreeNode) editTableView.getTree().getLastSelectedPathComponent();
-    }
-
-    public boolean canAddKey() {
-        JsonTreeNode selectedNode = getSelectedNode();
-        if (selectedNode == null) {
-            return false;
-        }
-        return selectedNode.getDescriptor() instanceof MongoKeyValueDescriptor;
     }
 
     public boolean canAddValue() {

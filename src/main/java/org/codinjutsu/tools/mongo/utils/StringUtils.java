@@ -38,13 +38,13 @@ public class StringUtils {
             return Integer.parseInt(number);
 
         } catch(NumberFormatException ex) {
-            ; //UGLY :(
+            //UGLY :(
         }
         try {
             return Long.parseLong(number);
 
         } catch(NumberFormatException ex) {
-            ; //UGLY :(
+            //UGLY :(
         }
         return Double.parseDouble(number);
     }

@@ -45,9 +45,4 @@ public class AddKeyAction extends AnAction {
 
         mongoEditionPanel.addKey(dialog.getKey(), dialog.getValue());
     }
-
-    @Override
-    public void update(AnActionEvent event) {
-//        event.getPresentation().setVisible(mongoEditionPanel.canAddKey());
-    }
 }

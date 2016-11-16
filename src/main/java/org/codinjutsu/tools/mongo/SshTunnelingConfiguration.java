@@ -18,14 +18,14 @@ package org.codinjutsu.tools.mongo;
 
 public class SshTunnelingConfiguration implements Cloneable {
 
-    public static SshTunnelingConfiguration EMPTY = new SshTunnelingConfiguration();
+    public static final SshTunnelingConfiguration EMPTY = new SshTunnelingConfiguration();
 
     private String proxyHost;
     private Integer proxyPort;
     private String proxyUser;
     private String proxyPassword;
 
-    public SshTunnelingConfiguration() {
+    private SshTunnelingConfiguration() {
         proxyHost = null;
         proxyPort = null;
         proxyUser = null;

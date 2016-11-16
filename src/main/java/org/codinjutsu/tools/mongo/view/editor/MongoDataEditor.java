@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.beans.PropertyChangeListener;
 
-public class MongoDataEditor extends UserDataHolderBase implements FileEditor {
+class MongoDataEditor extends UserDataHolderBase implements FileEditor {
 
 
     private MongoPanel panel;
@@ -76,7 +76,7 @@ public class MongoDataEditor extends UserDataHolderBase implements FileEditor {
         }
     }
 
-    public boolean isDisposed() {
+    private boolean isDisposed() {
         return disposed;
     }
 

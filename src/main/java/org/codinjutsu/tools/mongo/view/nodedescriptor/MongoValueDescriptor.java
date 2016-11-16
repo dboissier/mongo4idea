@@ -33,7 +33,7 @@ import java.util.Locale;
 public class MongoValueDescriptor implements MongoNodeDescriptor {
 
     private final int index;
-    protected Object value;
+    Object value;
     private final SimpleTextAttributes valueTextAttributes;
 
     public static MongoValueDescriptor createDescriptor(int index, Object value) {

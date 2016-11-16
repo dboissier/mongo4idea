@@ -119,7 +119,7 @@ public class MongoPanel extends JPanel implements Disposable {
     }
 
 
-    void installResultPanelActions() {
+    private void installResultPanelActions() {
         DefaultActionGroup actionResultGroup = new DefaultActionGroup("MongoResultGroup", true);
         if (ApplicationManager.getApplication() != null) {
             actionResultGroup.add(new ExecuteQuery(this));
@@ -199,7 +199,7 @@ public class MongoPanel extends JPanel implements Disposable {
         executeQuery();
     }
 
-    public void executeQuery(final boolean useCachedResults) {
+    private void executeQuery(final boolean useCachedResults) {
         errorPanel.setVisible(false);
         validateQuery();
         ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {

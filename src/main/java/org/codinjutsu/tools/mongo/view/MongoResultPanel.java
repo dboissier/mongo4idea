@@ -63,8 +63,6 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
     JsonTreeTableView resultTreeTableView;
 
-    JsonTableView resultTableView;
-
     private ViewMode currentViewMode = ViewMode.TREE;
 
 
@@ -136,7 +134,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
     }
 
     private void updateResultTable(MongoCollectionResult mongoCollectionResult) {
-        resultTableView = new JsonTableView(JsonTableUtils.buildJsonTable(mongoCollectionResult));
+        JsonTableView resultTableView = new JsonTableView(JsonTableUtils.buildJsonTable(mongoCollectionResult));
         displayResult(resultTableView);
     }
 
