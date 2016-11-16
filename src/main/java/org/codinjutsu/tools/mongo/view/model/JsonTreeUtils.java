@@ -63,7 +63,7 @@ public class JsonTreeUtils {
         }
     }
 
-    private static void processObjectList(JsonTreeNode parentNode, List objectList) {
+    public static void processObjectList(JsonTreeNode parentNode, List objectList) {
         for (int i = 0; i < objectList.size(); i++) {
             Object object = objectList.get(i);
             JsonTreeNode subNode = new JsonTreeNode(MongoValueDescriptor.createDescriptor(i, object));

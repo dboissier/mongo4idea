@@ -160,6 +160,8 @@ public class MongoEditionPanel extends JPanel implements Disposable {
 
         if (value instanceof Document) {
             JsonTreeUtils.processDocument(treeNode, (Document) value);
+        } else if (value instanceof List) {
+            JsonTreeUtils.processObjectList(treeNode, (List) value);
         }
 
         node.add(treeNode);
