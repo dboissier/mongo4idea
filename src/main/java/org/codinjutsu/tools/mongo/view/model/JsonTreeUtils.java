@@ -46,7 +46,9 @@ public class JsonTreeUtils {
 
     public static TreeNode buildJsonTree(Document document) {
         JsonTreeNode rootNode = new JsonTreeNode(new MongoResultDescriptor());//TODO crappy
-        processDocument(rootNode, document);
+        if (document != null) {
+            processDocument(rootNode, document);
+        }
         return rootNode;
     }
 
