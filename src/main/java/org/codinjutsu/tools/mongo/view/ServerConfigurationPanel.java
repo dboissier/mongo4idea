@@ -106,6 +106,8 @@ public class ServerConfigurationPanel extends JPanel {
         serverUrlsField.setName("serverUrlsField");
         usernameField.setName("usernameField");
         passwordField.setName("passwordField");
+        authenticationDatabaseField.setName("authenticationDatabaseField");
+        authenticationDatabaseField.setToolTipText("admin by default, otherwise set the user database here if restriced access");
         mongoCRAuthRadioButton.setName("mongoCRAuthField");
         scramSHA1AuthRadioButton.setName("scramSHA1AuthField");
         defaultAuthMethodRadioButton.setName("defaultAuthMethod");

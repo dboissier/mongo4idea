@@ -323,21 +323,26 @@ public class MongoManager {
         AuthenticationMechanism authenticationMechanism = configuration.getAuthenticationMechanism();
         if (authenticationMechanism == null) {
             return MongoCredential.createPlainCredential(configuration.getUsername(),
-                    configuration.getAuthenticationDatabase(),
+                    getAuthenticationDatabase(configuration),
                     configuration.getPassword().toCharArray());
         } else {
             if (AuthenticationMechanism.MONGODB_CR.equals(authenticationMechanism)) {
                 return MongoCredential.createMongoCRCredential(configuration.getUsername(),
-                        configuration.getAuthenticationDatabase(),
+                        getAuthenticationDatabase(configuration),
                         configuration.getPassword().toCharArray());
             } else if (AuthenticationMechanism.SCRAM_SHA_1.equals(authenticationMechanism)) {
                 return MongoCredential.createScramSha1Credential(configuration.getUsername(),
-                        configuration.getAuthenticationDatabase(),
+                        getAuthenticationDatabase(configuration),
                         configuration.getPassword().toCharArray());
             }
         }
 
         throw new IllegalArgumentException("Unsupported authentication macanism: " + authenticationMechanism);
+    }
+
+    private static String getAuthenticationDatabase(ServerConfiguration configuration) {
+        String authenticationDatabase = configuration.getAuthenticationDatabase();
+        return StringUtils.isEmpty(authenticationDatabase) ? "admin" : authenticationDatabase;
     }
 
     private interface Task {
