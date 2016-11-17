@@ -88,15 +88,15 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
     private MongoEditionPanel createMongoEditionPanel() {
         return new MongoEditionPanel().init(mongoDocumentOperations, new ActionCallback() {
-            public void onOperationSuccess(String message) {
+            public void onOperationSuccess(String label, String message) {
                 hideEditionPanel();
-                notifier.notifyInfo(message);
-                GuiUtils.showNotification(MongoResultPanel.this.resultTreePanel, MessageType.INFO, message, Balloon.Position.above);
+                GuiUtils.showNotification(MongoResultPanel.this.resultTreePanel, MessageType.INFO, label, Balloon.Position.above);
+                notifier.notifyInfo(label + "\n" + message);
             }
 
             @Override
             public void onOperationFailure(Exception exception) {
-                notifier.notifyError(exception.getMessage());
+                notifier.notifyError("An error occured (see Event Log)");
                 GuiUtils.showNotification(MongoResultPanel.this.resultTreePanel, MessageType.ERROR, exception.getMessage(), Balloon.Position.above);
             }
 
@@ -266,7 +266,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
     interface ActionCallback {
 
-        void onOperationSuccess(String message);
+        void onOperationSuccess(String label, String message);
 
         void onOperationFailure(Exception exception);
 

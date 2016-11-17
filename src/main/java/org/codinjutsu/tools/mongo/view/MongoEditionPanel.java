@@ -80,7 +80,7 @@ public class MongoEditionPanel extends JPanel implements Disposable {
                 try {
                     Document mongoDocument = buildMongoDocument();
                     mongoDocumentOperations.updateMongoDocument(mongoDocument);
-                    actionCallback.onOperationSuccess("Document " + mongoDocument.toJson() + " saved...");
+                    actionCallback.onOperationSuccess("Document saved", "Document " + mongoDocument.toJson() + " saved...");
 
                 } catch (Exception exception) {
                     actionCallback.onOperationFailure(exception);
@@ -94,7 +94,7 @@ public class MongoEditionPanel extends JPanel implements Disposable {
                 try {
                     Object documentId = getDocumentId();
                     mongoDocumentOperations.deleteMongoDocument(documentId);
-                    actionCallback.onOperationSuccess("Document with _id=" + documentId + " deleted...");
+                    actionCallback.onOperationSuccess("Document deleted", "_id=" + documentId);
                 } catch (Exception exception) {
                     actionCallback.onOperationFailure(exception);
                 }

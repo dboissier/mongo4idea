@@ -176,12 +176,9 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
                 } catch (ConfigurationException confEx) {
                     mongoServer.setStatus(MongoServer.Status.ERROR);
-                    String errorMessage = String.format("Error when connecting on %s", mongoServer.getLabel());
+                    String errorMessage = String.format("Error when connecting to %s", mongoServer.getLabel());
                     notifier.notifyError(errorMessage + ": " + confEx.getMessage());
-                    showNotification(treePanel,
-                            MessageType.ERROR,
-                            errorMessage,
-                            Balloon.Position.atLeft);
+                    showNotification(treePanel, MessageType.ERROR, errorMessage, Balloon.Position.atLeft);
                 } finally {
                     mongoTree.setPaintBusy(false);
                 }

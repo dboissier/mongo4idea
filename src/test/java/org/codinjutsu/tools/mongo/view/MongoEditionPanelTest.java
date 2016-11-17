@@ -107,7 +107,7 @@ public class MongoEditionPanelTest {
                         .append("visible", false)
                         .append("image", null));
 
-        verify(mockActionCallback, times(1)).onOperationSuccess(any(String.class));
+        verify(mockActionCallback, times(1)).onOperationSuccess(any(String.class), any(String.class));
     }
 
     @Test

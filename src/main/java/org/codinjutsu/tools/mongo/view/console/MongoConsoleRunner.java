@@ -31,6 +31,7 @@ import com.mongodb.AuthenticationMechanism;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
+import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
 import org.codinjutsu.tools.mongo.utils.MongoUtils;
 import org.jetbrains.annotations.NotNull;
@@ -42,11 +43,12 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
     private static final Key<Boolean> MONGO_SHELL_FILE = Key.create("MONGO_SHELL_FILE");
     private final ServerConfiguration serverConfiguration;
     private final MongoDatabase database;
+    private final Notifier notifier;
 
 
     public MongoConsoleRunner(@NotNull Project project, ServerConfiguration serverConfiguration, MongoDatabase database) {
         super(project, "Mongo Shell", "/tmp");
-
+        notifier = Notifier.getInstance(project);
         this.serverConfiguration = serverConfiguration;
         this.database = database;
     }
@@ -69,7 +71,7 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
         return buildCommandLine(shellPath, serverConfiguration, database).createProcess();
     }
 
-    private static GeneralCommandLine buildCommandLine(String shellPath, ServerConfiguration serverConfiguration, MongoDatabase database) {
+    private GeneralCommandLine buildCommandLine(String shellPath, ServerConfiguration serverConfiguration, MongoDatabase database) {
         GeneralCommandLine commandLine = new GeneralCommandLine();
         commandLine.setExePath(shellPath);
         commandLine.addParameter(MongoUtils.buildMongoUrl(serverConfiguration, database));
@@ -114,12 +116,14 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
             commandLine.addParameters(shellArgumentsLine.split(" "));
         }
 
+        notifier.notifyInfo("Running " + commandLine.getCommandLineString());
+
         return commandLine;
     }
 
     @Override
     protected OSProcessHandler createProcessHandler(Process process) {
-        return new OSProcessHandler(process, null);
+        return new OSProcessHandler(process, MongoConfiguration.getInstance(getProject()).getShellPath());
     }
 
     @NotNull
