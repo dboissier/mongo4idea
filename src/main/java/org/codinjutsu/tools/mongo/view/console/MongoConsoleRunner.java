@@ -22,13 +22,12 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.console.ConsoleHistoryController;
 import com.intellij.execution.console.ConsoleRootType;
 import com.intellij.execution.console.ProcessBackedConsoleExecuteActionHandler;
+import com.intellij.execution.process.ColoredProcessHandler;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.runners.AbstractConsoleRunnerWithHistory;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.psi.PsiFile;
-import com.mongodb.AuthenticationMechanism;
-import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.Notifier;
@@ -68,62 +67,15 @@ public class MongoConsoleRunner extends AbstractConsoleRunnerWithHistory<MongoCo
     @Override
     protected Process createProcess() throws ExecutionException {
         String shellPath = MongoConfiguration.getInstance(getProject()).getShellPath();
-        return buildCommandLine(shellPath, serverConfiguration, database).createProcess();
-    }
-
-    private GeneralCommandLine buildCommandLine(String shellPath, ServerConfiguration serverConfiguration, MongoDatabase database) {
-        GeneralCommandLine commandLine = new GeneralCommandLine();
-        commandLine.setExePath(shellPath);
-        commandLine.addParameter(MongoUtils.buildMongoUrl(serverConfiguration, database));
-
-        String shellWorkingDir = serverConfiguration.getShellWorkingDir();
-        if (StringUtils.isNotBlank(shellWorkingDir)) {
-            commandLine.setWorkDirectory(shellWorkingDir);
-        }
-
-        String username = serverConfiguration.getUsername();
-        if (StringUtils.isNotBlank(username)) {
-            commandLine.addParameter("--username");
-            commandLine.addParameter(username);
-        }
-
-        String password = serverConfiguration.getPassword();
-        if (StringUtils.isNotBlank(password)) {
-            commandLine.addParameter("--password");
-            commandLine.addParameter(password);
-        }
-
-        String authenticationDatabase = serverConfiguration.getAuthenticationDatabase();
-        if (StringUtils.isNotBlank(authenticationDatabase)) {
-            commandLine.addParameter("--authenticationDatabase");
-            commandLine.addParameter(authenticationDatabase);
-        }
-
-        AuthenticationMechanism authenticationMechanism = serverConfiguration.getAuthenticationMechanism();
-        if (authenticationMechanism != null) {
-            commandLine.addParameter("--authenticationMechanism");
-            commandLine.addParameter(authenticationMechanism.getMechanismName());
-        }
-
-//        ReadPreference readPreference = serverConfiguration.getReadPreference();
-//        if (readPreference != null) {
-//            commandLine.addParameter("--readPreference");
-//            commandLine.addParameter(readPreference.getName());
-//        }
-
-        String shellArgumentsLine = serverConfiguration.getShellArgumentsLine();
-        if (StringUtils.isNotBlank(shellArgumentsLine)) {
-            commandLine.addParameters(shellArgumentsLine.split(" "));
-        }
-
+        GeneralCommandLine commandLine = MongoUtils.buildCommandLine(shellPath, serverConfiguration, database);
         notifier.notifyInfo("Running " + commandLine.getCommandLineString());
 
-        return commandLine;
+        return commandLine.createProcess();
     }
 
     @Override
     protected OSProcessHandler createProcessHandler(Process process) {
-        return new OSProcessHandler(process, MongoConfiguration.getInstance(getProject()).getShellPath());
+        return new ColoredProcessHandler(process, MongoConfiguration.getInstance(getProject()).getShellPath());
     }
 
     @NotNull

@@ -21,6 +21,8 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.CapturingProcessHandler;
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.openapi.vfs.CharsetToolkit;
+import com.mongodb.AuthenticationMechanism;
+import org.apache.commons.lang.*;
 import org.bson.Document;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
@@ -71,5 +73,48 @@ public class MongoUtils {
         }
 
         return "[" + org.apache.commons.lang.StringUtils.join(stringifiedObjects, ", ") + "]";
+    }
+
+    public static GeneralCommandLine buildCommandLine(String shellPath, ServerConfiguration serverConfiguration, MongoDatabase database) {
+        GeneralCommandLine commandLine = new GeneralCommandLine();
+        commandLine.setExePath(shellPath);
+        commandLine.addParameter(buildMongoUrl(serverConfiguration, database));
+
+
+        String username = serverConfiguration.getUsername();
+        if (org.apache.commons.lang.StringUtils.isNotBlank(username)) {
+            commandLine.addParameter("--username");
+            commandLine.addParameter(username);
+        }
+
+        String password = serverConfiguration.getPassword();
+        if (org.apache.commons.lang.StringUtils.isNotBlank(password)) {
+            commandLine.addParameter("--password");
+            commandLine.addParameter(password);
+        }
+
+        String authenticationDatabase = serverConfiguration.getAuthenticationDatabase();
+        if (org.apache.commons.lang.StringUtils.isNotBlank(authenticationDatabase)) {
+            commandLine.addParameter("--authenticationDatabase");
+            commandLine.addParameter(authenticationDatabase);
+        }
+
+        AuthenticationMechanism authenticationMechanism = serverConfiguration.getAuthenticationMechanism();
+        if (authenticationMechanism != null) {
+            commandLine.addParameter("--authenticationMechanism");
+            commandLine.addParameter(authenticationMechanism.getMechanismName());
+        }
+
+        String shellWorkingDir = serverConfiguration.getShellWorkingDir();
+        if (org.apache.commons.lang.StringUtils.isNotBlank(shellWorkingDir)) {
+            commandLine.setWorkDirectory(shellWorkingDir);
+        }
+
+        String shellArgumentsLine = serverConfiguration.getShellArgumentsLine();
+        if (org.apache.commons.lang.StringUtils.isNotBlank(shellArgumentsLine)) {
+            commandLine.addParameters(shellArgumentsLine.split(" "));
+        }
+
+        return commandLine;
     }
 }

@@ -77,7 +77,6 @@ class MongoRunConfiguration extends ModuleBasedConfiguration<RunConfigurationMod
         super.readExternal(element);
         scriptPath = JDOMExternalizer.readString(element, "path");
         shellParameters = JDOMExternalizer.readString(element, "shellParams");
-//        serverConfiguration = JDOMExternalizer.readBoolean(element, "serverConfiguration");
     }
 
     @Override
@@ -85,7 +84,6 @@ class MongoRunConfiguration extends ModuleBasedConfiguration<RunConfigurationMod
         super.writeExternal(element);
         JDOMExternalizer.write(element, "path", scriptPath);
         JDOMExternalizer.write(element, "shellParams", shellParameters);
-//        JDOMExternalizer.write(element, "serverConfiguration", serverConfiguration);
 
         PathMacroManager.getInstance(getProject()).collapsePathsRecursively(element);
     }

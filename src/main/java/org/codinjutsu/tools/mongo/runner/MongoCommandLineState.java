@@ -24,10 +24,8 @@ import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.process.ProcessTerminatedListener;
 import com.intellij.execution.runners.ExecutionEnvironment;
-import com.intellij.openapi.vfs.VirtualFile;
 import org.apache.commons.lang.StringUtils;
-import org.codinjutsu.tools.mongo.ServerConfiguration;
-import org.codinjutsu.tools.mongo.model.MongoDatabase;
+import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.utils.MongoUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,7 +33,7 @@ class MongoCommandLineState extends CommandLineState {
 
     private final MongoRunConfiguration mongoRunConfiguration;
 
-    public MongoCommandLineState(MongoRunConfiguration mongoRunConfiguration, ExecutionEnvironment environment) {
+    MongoCommandLineState(MongoRunConfiguration mongoRunConfiguration, ExecutionEnvironment environment) {
         super(environment);
         this.mongoRunConfiguration = mongoRunConfiguration;
     }
@@ -43,30 +41,30 @@ class MongoCommandLineState extends CommandLineState {
     @NotNull
     @Override
     protected ProcessHandler startProcess() throws ExecutionException {
-        GeneralCommandLine commandLine = generateCommandLine();
+
+        GeneralCommandLine commandLine =
+                MongoUtils.buildCommandLine(mongoRunConfiguration.getMongoShell(),
+                        mongoRunConfiguration.getServerConfiguration(),
+                        mongoRunConfiguration.getDatabase());
+
+        commandLine = overwriteSomeParametersIfNeeded(commandLine);
+
         final OSProcessHandler processHandler = new ColoredProcessHandler(commandLine);
         ProcessTerminatedListener.attach(processHandler);
         return processHandler;
     }
 
-    private GeneralCommandLine generateCommandLine() {
-        final GeneralCommandLine commandLine = new GeneralCommandLine();
-
-        String exePath = mongoRunConfiguration.getMongoShell();
-        commandLine.setExePath(exePath);
-
-        ServerConfiguration serverConfiguration = mongoRunConfiguration.getServerConfiguration();
-        MongoDatabase database = mongoRunConfiguration.getDatabase();
-        commandLine.addParameter(MongoUtils.buildMongoUrl(serverConfiguration, database));
-
-        VirtualFile scriptPath = mongoRunConfiguration.getScriptPath();
-        commandLine.addParameter(scriptPath.getPath());
-
-
+    private GeneralCommandLine overwriteSomeParametersIfNeeded(GeneralCommandLine commandLine) {
         String shellWorkingDir = mongoRunConfiguration.getShellWorkingDir();
         if (StringUtils.isNotEmpty(shellWorkingDir)) {
             commandLine.setWorkDirectory(shellWorkingDir);
         }
+
+        String shellParameters = mongoRunConfiguration.getShellParameters();
+        if (StringUtils.isNotEmpty(shellWorkingDir)) {
+            commandLine.addParameters(shellParameters.split(" "));
+        }
+
         return commandLine;
     }
 }
