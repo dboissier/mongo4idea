@@ -36,8 +36,7 @@ import org.mockito.Mockito;
 
 import java.util.Arrays;
 
-import static java.util.Collections.singletonList;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ServerConfigurationPanelTest {
 
@@ -89,16 +88,16 @@ public class ServerConfigurationPanelTest {
         ServerConfiguration configuration = new ServerConfiguration();
         configurationPanel.applyConfigurationData(configuration);
 
-        assertEquals("MyServer", configuration.getLabel());
-        assertEquals(singletonList("localhost:25"), configuration.getServerUrls());
-        assertTrue(configuration.isSslConnection());
-        assertEquals(ReadPreference.secondary(), configuration.getReadPreference());
-        assertEquals("john", configuration.getUsername());
-        assertEquals("johnpassword", configuration.getPassword());
-        assertEquals("mydatabase", configuration.getUserDatabase());
-        assertEquals(AuthenticationMechanism.MONGODB_CR, configuration.getAuthenticationMechanism());
-        assertEquals(SshTunnelingConfiguration.EMPTY, configuration.getSshTunnelingConfiguration());
-        assertTrue(configuration.isConnectOnIdeStartup());
+        assertThat(configuration.getLabel()).isEqualTo("MyServer");
+        assertThat(configuration.getServerUrls()).containsExactly("localhost:25");
+        assertThat(configuration.isSslConnection()).isTrue();
+        assertThat(configuration.getReadPreference()).isEqualTo(ReadPreference.secondary());
+        assertThat(configuration.getUsername()).isEqualTo("john");
+        assertThat(configuration.getPassword()).isEqualTo("johnpassword");
+        assertThat(configuration.getUserDatabase()).isEqualTo("mydatabase");
+        assertThat(configuration.getAuthenticationMechanism()).isEqualTo(AuthenticationMechanism.MONGODB_CR);
+        assertThat(configuration.getSshTunnelingConfiguration()).isEqualTo(SshTunnelingConfiguration.EMPTY);
+        assertThat(configuration.isConnectOnIdeStartup()).isTrue();
     }
 
     @Test
@@ -116,13 +115,14 @@ public class ServerConfigurationPanelTest {
         ServerConfiguration configuration = new ServerConfiguration();
         configurationPanel.applyConfigurationData(configuration);
 
-        assertEquals(singletonList("localhost:25"), configuration.getServerUrls());
+        assertThat(configuration.getServerUrls()).containsExactly("localhost:25");
+
         SshTunnelingConfiguration sshTunnelingConfiguration = configuration.getSshTunnelingConfiguration();
-        assertNotNull(sshTunnelingConfiguration);
-        assertEquals("remotehost", sshTunnelingConfiguration.getProxyHost());
-        assertEquals(new Integer(22), sshTunnelingConfiguration.getProxyPort());
-        assertEquals("john.doe", sshTunnelingConfiguration.getProxyUser());
-        assertEquals("mySecuredPassword", sshTunnelingConfiguration.getProxyPassword());
+        assertThat(sshTunnelingConfiguration).isNotNull();
+        assertThat(sshTunnelingConfiguration.getProxyHost()).isEqualTo("remotehost");
+        assertThat(sshTunnelingConfiguration.getProxyPort()).isEqualTo(22);
+        assertThat(sshTunnelingConfiguration.getProxyUser()).isEqualTo("john.doe");
+        assertThat(sshTunnelingConfiguration.getProxyPassword()).isEqualTo("mySecuredPassword");
     }
 
     @Test
@@ -217,7 +217,7 @@ public class ServerConfigurationPanelTest {
 
         configurationPanel.applyConfigurationData(configuration);
 
-        assertEquals(Arrays.asList("localhost:25", "localhost:26"), configuration.getServerUrls());
+        assertThat(configuration.getServerUrls()).containsExactly("localhost:25", "localhost:26");
     }
 
     @Test

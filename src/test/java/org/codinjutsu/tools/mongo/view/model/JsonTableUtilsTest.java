@@ -18,7 +18,6 @@ package org.codinjutsu.tools.mongo.view.model;
 
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.ListTableModel;
-import com.mongodb.BasicDBList;
 import org.apache.commons.io.IOUtils;
 import org.bson.Document;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
@@ -26,8 +25,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JsonTableUtilsTest {
 
@@ -42,26 +40,27 @@ public class JsonTableUtilsTest {
 
         ListTableModel tableModel = JsonTableUtils.buildJsonTable(result);
 
-        assertNotNull(tableModel);
+        assertThat(tableModel).isNotNull();
 
         ColumnInfo[] columnInfos = tableModel.getColumnInfos();
-        assertEquals(4, columnInfos.length);
-        assertEquals("_id", columnInfos[0].getName());
-        assertEquals("label", columnInfos[1].getName());
-        assertEquals("visible", columnInfos[2].getName());
-        assertEquals("doc", columnInfos[3].getName());
+        assertThat(columnInfos.length).isEqualTo(4);
+        assertThat(columnInfos[0].getName()).isEqualTo("_id");
+        assertThat(columnInfos[1].getName()).isEqualTo("label");
+        assertThat(columnInfos[2].getName()).isEqualTo("visible");
+        assertThat(columnInfos[3].getName()).isEqualTo("doc");
 
-        assertEquals(2, tableModel.getRowCount());
+        assertThat(tableModel.getRowCount()).isEqualTo(2);
 
         Document item = (Document) tableModel.getItem(0);
-        assertEquals("50b8d63414f85401b9268b99", item.get("_id"));
-        assertEquals("toto", item.get("label"));
-        assertEquals(false, item.get("visible"));
-        BasicDBList docElement = new BasicDBList();
-        docElement.addAll(Arrays.asList("toto", true, 10));
-        assertEquals(new Document("title", "hello")
-                .append("nbPages", 10)
-                .append("keyWord", docElement), item.get("doc"));
+        assertThat(item.get("_id")).isEqualTo("50b8d63414f85401b9268b99");
+        assertThat(item.get("label")).isEqualTo("toto");
+        assertThat(item.get("visible")).isEqualTo(false);
+
+        assertThat(item.get("doc")).isEqualTo(
+                new Document("title", "hello")
+                        .append("nbPages", 10)
+                        .append("keyWord", Arrays.asList("toto", true, 10))
+        );
     }
 
 }

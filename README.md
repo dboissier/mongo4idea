@@ -14,7 +14,7 @@
 This plugin integrates MongoDB Servers with database/collections tree, Query Runner and Shell console.
 
 ## Plugin Compatibility
-This plugin was built with JDK 1.7 for IDEA 15 and IDEA 2016 versions. Mongo 2 and 3 are supported.
+This plugin was built for IDEA 15 and IDEA 2016 versions and requires JRE 1.8 now (otherwise SSH Tunneling will not work). Mongo 2 and 3 are supported.
 
 
 ## How to install it?

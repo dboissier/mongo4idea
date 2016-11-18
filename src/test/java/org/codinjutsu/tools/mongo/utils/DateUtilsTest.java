@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DateUtilsTest {
 
@@ -38,7 +38,7 @@ public class DateUtilsTest {
         calendar.set(Calendar.SECOND, 0);
 
         Date time = calendar.getTime();
-        assertEquals("12/31/14 11:00:00 PM UTC", DateUtils.utcDateTime(Locale.US).format(time));
+        assertThat(DateUtils.utcDateTime(Locale.US).format(time)).isEqualTo("12/31/14 11:00:00 PM UTC");
     }
 
     @Test
@@ -52,6 +52,6 @@ public class DateUtilsTest {
         calendar.set(Calendar.SECOND, 0);
 
         Date time = calendar.getTime();
-        assertEquals("11:00:00 PM", DateUtils.utcTime(Locale.US).format(time));
+        assertThat(DateUtils.utcTime(Locale.US).format(time)).isEqualTo("11:00:00 PM");
     }
 }

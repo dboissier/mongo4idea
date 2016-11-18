@@ -25,8 +25,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JsonTreeUtilsTest {
 
@@ -42,13 +41,11 @@ public class JsonTreeUtilsTest {
         JsonTreeNode labelNode = (JsonTreeNode) treeNode.getChildAt(1);
         labelNode.getDescriptor().setValue("tata");
 
-        Document actualDocument = JsonTreeUtils.buildDocumentObject(treeNode);
-
-        assertEquals(new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
+        assertThat(JsonTreeUtils.buildDocumentObject(treeNode)).isEqualTo(
+                new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
                         .append("label", "tata")
                         .append("visible", false)
-                        .append("image", null),
-                actualDocument);
+                        .append("image", null));
     }
 
     @Test
@@ -68,16 +65,15 @@ public class JsonTreeUtilsTest {
         JsonTreeNode soldOutNode = (JsonTreeNode) innerDocNode.getChildAt(2);
         soldOutNode.getDescriptor().setValue("false");
 
-        Document actualDocument = JsonTreeUtils.buildDocumentObject(treeNode);
-
-        assertEquals(new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
+        assertThat(JsonTreeUtils.buildDocumentObject(treeNode)).isEqualTo(
+                new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
                         .append("label", "toto")
                         .append("visible", false)
                         .append("image", null)
                         .append("innerdoc", new Document("title", "What?")
                                 .append("numberOfPages", 52)
-                                .append("soldOut", false)),
-                actualDocument);
+                                .append("soldOut", false))
+        );
     }
 
     @Test
@@ -89,9 +85,7 @@ public class JsonTreeUtilsTest {
         JsonTreeNode agileTagNode = (JsonTreeNode) tagsNode.getChildAt(2);
         agileTagNode.getDescriptor().setValue("a gilles");
 
-        Document actualDocument = JsonTreeUtils.buildDocumentObject(treeNode);
-
-        assertEquals(
+        assertThat(JsonTreeUtils.buildDocumentObject(treeNode)).isEqualTo(
                 new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
                         .append("title", "XP by example")
                         .append("tags", Arrays.asList(
@@ -104,8 +98,8 @@ public class JsonTreeUtilsTest {
                                         Arrays.asList(
                                                 new Document("tagName", "pouet"),
                                                 new Document("tagName", "paf"))
-                                )),
-                actualDocument);
+                                ))
+        );
     }
 
     @Test
@@ -114,10 +108,10 @@ public class JsonTreeUtilsTest {
 
         JsonTreeNode treeNode = (JsonTreeNode) JsonTreeUtils.buildJsonTree(document);
         JsonTreeNode objectIdNode = (JsonTreeNode) treeNode.getChildAt(0);
-        assertEquals("\"_id\"", objectIdNode.getDescriptor().getFormattedKey());
+        assertThat(objectIdNode.getDescriptor().getFormattedKey()).isEqualTo("\"_id\"");
 
-        assertNull(JsonTreeUtils.findObjectIdNode(treeNode));
-        assertEquals(objectIdNode, JsonTreeUtils.findObjectIdNode((JsonTreeNode) treeNode.getChildAt(0)));
+        assertThat(JsonTreeUtils.findObjectIdNode(treeNode)).isNull();
+        assertThat(JsonTreeUtils.findObjectIdNode((JsonTreeNode) treeNode.getChildAt(0))).isEqualTo(objectIdNode);
     }
 
     @NotNull

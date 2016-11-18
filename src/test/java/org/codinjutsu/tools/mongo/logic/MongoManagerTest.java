@@ -16,14 +16,11 @@
 
 package org.codinjutsu.tools.mongo.logic;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.util.JSON;
-import org.apache.commons.io.IOUtils;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
@@ -31,96 +28,117 @@ import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MongoManagerTest {
 
     private MongoManager mongoManager;
     private ServerConfiguration serverConfiguration;
+    private com.mongodb.client.MongoCollection<Document> peopleCollection;
 
+    @Before
+    public void setUp() throws Exception {
+        MongoClient mongo = new MongoClient("localhost:27017");
+        MongoDatabase database = mongo.getDatabase("test");
+
+        peopleCollection = database.getCollection("people");
+        peopleCollection.deleteMany(new Document());
+        peopleCollection.insertMany(Arrays.asList(
+                new Document()
+                        .append("_id", new ObjectId("582ecee28feed271b9f54e58"))
+                        .append("name", "Paul")
+                        .append("position", "developer")
+                        .append("age", 25),
+                new Document()
+                        .append("_id", new ObjectId("582ecee28feed271b9f54e59"))
+                        .append("name", "Melissa")
+                        .append("position", "developer")
+                        .append("age", 26),
+                new Document()
+                        .append("_id", new ObjectId("582ecee28feed271b9f54e60"))
+                        .append("name", "Roger")
+                        .append("position", "manager")
+                        .append("age", 27),
+                new Document()
+                        .append("_id", new ObjectId("582ecee28feed271b9f54f58"))
+                        .append("name", "Shirley")
+                        .append("comment", "director")
+                        .append("age", 28)
+        ));
+
+        mongoManager = new MongoManager();
+        serverConfiguration = new ServerConfiguration();
+        serverConfiguration.setServerUrls(Collections.singletonList("localhost:27017"));
+    }
 
     @Test
-    public void loadCollectionsWithEmptyFilter() throws Exception {
+    public void loadCollectionsWithEmptyFilterAndLimitToThreeDocuments() throws Exception {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
         mongoQueryOptions.setResultLimit(3);
-        MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(serverConfiguration, new MongoCollection("dummyCollection", "test"), mongoQueryOptions);
-        assertNotNull(mongoCollectionResult);
-        assertEquals(3, mongoCollectionResult.getDocuments().size());
+
+        MongoCollectionResult mongoCollectionResult =
+                mongoManager.loadCollectionValues(serverConfiguration,
+                        new MongoCollection("people", "test"), mongoQueryOptions);
+
+        assertThat(mongoCollectionResult.getDocuments()).containsExactly(
+                new Document()
+                        .append("_id", new ObjectId("582ecee28feed271b9f54e58"))
+                        .append("name", "Paul")
+                        .append("position", "developer")
+                        .append("age", 25),
+                new Document()
+                        .append("_id", new ObjectId("582ecee28feed271b9f54e59"))
+                        .append("name", "Melissa")
+                        .append("position", "developer")
+                        .append("age", 26),
+                new Document()
+                        .append("_id", new ObjectId("582ecee28feed271b9f54e60"))
+                        .append("name", "Roger")
+                        .append("position", "manager")
+                        .append("age", 27)
+        );
     }
 
     @Test
     public void loadCollectionsWithFilterAndProjection() throws Exception {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
-        mongoQueryOptions.setFilter("{\"label\":\"tata\"}");
-        mongoQueryOptions.setProjection("{\"label\":1, \"_id\": 0}");
+        mongoQueryOptions.setFilter(
+                new Document("position", "developer").toJson());
+        mongoQueryOptions.setProjection(
+                new Document("name", 1)
+                        .append("_id", 0).toJson());
         mongoQueryOptions.setResultLimit(3);
-        MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(serverConfiguration, new MongoCollection("dummyCollection", "test"), mongoQueryOptions);
-        assertNotNull(mongoCollectionResult);
-        assertEquals(2, mongoCollectionResult.getDocuments().size());
-        assertEquals(
-                Arrays.asList(new Document("label", "tata"), new Document("label", "tata")),
-                mongoCollectionResult.getDocuments());
+
+        MongoCollectionResult mongoCollectionResult =
+                mongoManager.loadCollectionValues(serverConfiguration,
+                        new MongoCollection("people", "test"), mongoQueryOptions);
+
+        assertThat(mongoCollectionResult.getDocuments())
+                .containsExactly(
+                        new Document("name", "Paul"),
+                        new Document("name", "Melissa"));
     }
 
     @Test
-    public void loadCollectionsWithFilterAndProjectionAndSortByPrice() throws Exception {
+    public void loadCollectionsWithFilterAndProjectionAndSort() throws Exception {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
-        mongoQueryOptions.setFilter("{\"label\":\"tata\"}");
-        mongoQueryOptions.setProjection("{\"label\": 1, \"_id\": 0, \"price\": 1}");
-        mongoQueryOptions.setSort("{\"price\": 1}");
-        mongoQueryOptions.setResultLimit(3);
-        MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(serverConfiguration, new MongoCollection("dummyCollection", "test"), mongoQueryOptions);
-        assertNotNull(mongoCollectionResult);
-        assertEquals(2, mongoCollectionResult.getDocuments().size());
-        assertEquals(Arrays.asList(
-                new Document("label", "tata")
-                        .append("price", 10),
-                new Document("label", "tata")
-                        .append("price", 15)),
-                mongoCollectionResult.getDocuments());
-    }
+        mongoQueryOptions.setFilter("{'position': 'developer'}");
+        mongoQueryOptions.setProjection("{'name': 1, 'age': 1, '_id': 0}");
+        mongoQueryOptions.setSort("{'age': -1}");
 
-    @Test
-    public void updateMongoDocument() throws Exception {
-        MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
-        mongoQueryOptions.setFilter("{'label': 'tete'}");
-        MongoCollection mongoCollection = new MongoCollection("dummyCollection", "test");
-        MongoCollectionResult initialData = mongoManager.loadCollectionValues(serverConfiguration, mongoCollection, mongoQueryOptions);
-        assertEquals(1, initialData.getDocuments().size());
-        Document initialMongoDocument = initialData.getDocuments().get(0);
+        MongoCollectionResult mongoCollectionResult =
+                mongoManager.loadCollectionValues(serverConfiguration,
+                        new MongoCollection("people", "test"), mongoQueryOptions);
 
-        initialMongoDocument.put("price", 25);
-        mongoManager.update(serverConfiguration, mongoCollection, initialMongoDocument);
-
-        MongoCollectionResult updatedResult = mongoManager.loadCollectionValues(serverConfiguration, mongoCollection, mongoQueryOptions);
-        List<Document> updatedMongoDocuments = updatedResult.getDocuments();
-        assertEquals(1, updatedMongoDocuments.size());
-        Document updatedMongoDocument = updatedMongoDocuments.get(0);
-
-        assertEquals(25, updatedMongoDocument.get("price"));
-    }
-
-
-    @Test
-    public void deleteMongoDocument() throws Exception {
-        MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
-        mongoQueryOptions.setFilter("{'label': 'tete'}");
-        MongoCollection mongoCollection = new MongoCollection("dummyCollection", "test");
-        MongoCollectionResult initialData = mongoManager.loadCollectionValues(serverConfiguration, mongoCollection, mongoQueryOptions);
-        assertEquals(1, initialData.getDocuments().size());
-        Document initialMongoDocument = initialData.getDocuments().get(0);
-
-        mongoManager.delete(serverConfiguration, mongoCollection, initialMongoDocument.get("_id"));
-
-        MongoCollectionResult deleteResult = mongoManager.loadCollectionValues(serverConfiguration, mongoCollection, mongoQueryOptions);
-        List<Document> updatedMongoDocuments = deleteResult.getDocuments();
-        assertEquals(0, updatedMongoDocuments.size());
+        assertThat(mongoCollectionResult.getDocuments())
+                .containsExactly(
+                        new Document("name", "Melissa")
+                                .append("age", 26),
+                        new Document("name", "Paul")
+                                .append("age", 25));
     }
 
 
@@ -128,52 +146,66 @@ public class MongoManagerTest {
     public void loadCollectionsWithAggregateOperators() throws Exception {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
         mongoQueryOptions.setOperations("[{'$match': {'price': 15}}, {'$project': {'label': 1, 'price': 1}}, {'$group': {'_id': '$label', 'total': {'$sum': '$price'}}}]");
-        MongoCollectionResult mongoCollectionResult = mongoManager.loadCollectionValues(serverConfiguration, new MongoCollection("dummyCollection", "test"), mongoQueryOptions);
-        assertNotNull(mongoCollectionResult);
+        MongoCollectionResult mongoCollectionResult =
+                mongoManager.loadCollectionValues(serverConfiguration,
+                        new MongoCollection("dummyCollection", "test"), mongoQueryOptions);
 
-        List<Document> mongoObjects = mongoCollectionResult.getDocuments();
-
-        assertEquals(2, mongoObjects.size());
-        assertEquals(new Document("_id", "tutu")
-                .append("total", 15), mongoObjects.get(0));
-        assertEquals(new Document("_id", "tata")
-                .append("total", 15), mongoObjects.get(1));
+        assertThat(mongoCollectionResult.getDocuments()).containsExactly(
+                new Document("_id", "tutu")
+                        .append("total", 15),
+                new Document("_id", "tata")
+                        .append("total", 15));
     }
 
-    @Before
-    public void setUp() throws Exception {
-        MongoClient mongo = new MongoClient("localhost:27017");
-        MongoDatabase db = mongo.getDatabase("test");
 
-        com.mongodb.client.MongoCollection<Document> dummyCollection = db.getCollection("dummyCollection");
-        dummyCollection.deleteMany(new BasicDBObject());
-        fillCollectionWithJsonData(dummyCollection, IOUtils.toString(getClass().getResourceAsStream("dummyCollection.json")));
+    @Test
+    public void updateMongoDocument() throws Exception {
+        Document documentToUpdate = peopleCollection.find(new Document("name", "Paul")).first();
 
-        mongoManager = new MongoManager();
-        serverConfiguration = new ServerConfiguration();
-        serverConfiguration.setServerUrls(Arrays.asList("localhost:27017"));
+        documentToUpdate.put("surname", "Paulo les Gaz");
+        mongoManager.update(serverConfiguration, new MongoCollection("people", "test"), documentToUpdate);
+
+        FindIterable<Document> iterable = peopleCollection.find().projection(new Document("_id", 0));
+        assertThat(iterable).contains(
+                new Document()
+                        .append("name", "Paul")
+                        .append("position", "developer")
+                        .append("surname", "Paulo les Gaz")
+                        .append("age", 25),
+                new Document()
+                        .append("name", "Melissa")
+                        .append("position", "developer")
+                        .append("age", 26),
+                new Document()
+                        .append("name", "Roger")
+                        .append("position", "manager")
+                        .append("age", 27),
+                new Document()
+                        .append("name", "Shirley")
+                        .append("comment", "director")
+                        .append("age", 28)
+        );
     }
 
-    private static void fillCollectionWithJsonData(com.mongodb.client.MongoCollection<Document> collection, String jsonResource) throws IOException {
-        Object jsonParsed = JSON.parse(jsonResource);
-        if (jsonParsed instanceof BasicDBList) {
-            BasicDBList jsonObject = (BasicDBList) jsonParsed;
-            for (Object o : jsonObject) {
-                DBObject dbObject = (DBObject) o;
-                Document document = new Document();
-                for (String key : dbObject.keySet()) {
-                    document.append(key, dbObject.get(key));
-                }
-                collection.insertOne(document);
-            }
-        } else {
-            DBObject dbObject = (DBObject) jsonParsed;
-            Document document = new Document();
-            for (String key : dbObject.keySet()) {
-                document.append(key, dbObject.get(key));
-            }
-            collection.insertOne(document);
-        }
+    @Test
+    public void deleteMongoDocument() throws Exception {
+        MongoCollection mongoCollection = new MongoCollection("people", "test");
+        Document documentToDelete = peopleCollection.find(new Document("name", "Roger")).first();
+        mongoManager.delete(serverConfiguration, mongoCollection, documentToDelete.get("_id"));
+
+        FindIterable<Document> iterable = peopleCollection.find().projection(new Document("_id", 0));
+        assertThat(iterable).containsExactly(
+                new Document()
+                        .append("name", "Paul")
+                        .append("position", "developer")
+                        .append("age", 25),
+                new Document("name", "Melissa")
+                        .append("position", "developer")
+                        .append("age", 26),
+                new Document("name", "Shirley")
+                        .append("comment", "director")
+                        .append("age", 28));
     }
+
 }
 

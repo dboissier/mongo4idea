@@ -22,7 +22,7 @@ import org.junit.Test;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MongoUtilsTest {
 
@@ -34,8 +34,7 @@ public class MongoUtilsTest {
         list.add(null);
         list.add(new Document("key", "value"));
 
-        assertEquals("[\"foo\", 123, null, { \"key\" : \"value\" }]", MongoUtils.stringifyList(list));
-
+        assertThat(MongoUtils.stringifyList(list)).isEqualTo("[\"foo\", 123, null, { \"key\" : \"value\" }]");
     }
 
     @Test
@@ -47,7 +46,6 @@ public class MongoUtilsTest {
         list.add(innerList);
         list.add(new Document("bar", 12));
 
-        assertEquals("[[\"foo\", { \"key\" : \"value1\" }], { \"bar\" : 12 }]", MongoUtils.stringifyList(list));
-
+        assertThat(MongoUtils.stringifyList(list)).isEqualTo("[[\"foo\", { \"key\" : \"value1\" }], { \"bar\" : 12 }]");
     }
 }

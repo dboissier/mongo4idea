@@ -38,7 +38,7 @@ import org.mockito.MockitoAnnotations;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MongoResultPanelTest {
 
@@ -212,13 +212,16 @@ public class MongoResultPanelTest {
         TreeUtil.expandAll(mongoResultPanel.resultTreeTableView.getTree());
 
         mongoResultPanel.resultTreeTableView.setRowSelectionInterval(0, 0);
-        assertEquals("{ \"id\" : 0, \"label\" : \"toto\", \"visible\" : false, \"doc\" : { \"title\" : \"hello\", \"nbPages\" : 10, \"keyWords\" : [\"toto\", true, 10] } }", mongoResultPanel.getSelectedNodeStringifiedValue());
+        assertThat(mongoResultPanel.getSelectedNodeStringifiedValue())
+                .isEqualTo("{ \"id\" : 0, \"label\" : \"toto\", \"visible\" : false, \"doc\" : { \"title\" : \"hello\", \"nbPages\" : 10, \"keyWords\" : [\"toto\", true, 10] } }");
 
         mongoResultPanel.resultTreeTableView.setRowSelectionInterval(2, 2);
-        assertEquals("\"label\" : \"toto\"", mongoResultPanel.getSelectedNodeStringifiedValue());
+        assertThat(mongoResultPanel.getSelectedNodeStringifiedValue())
+                .isEqualTo("\"label\" : \"toto\"");
 
         mongoResultPanel.resultTreeTableView.setRowSelectionInterval(4, 4);
-        assertEquals("\"doc\" : { \"title\" : \"hello\", \"nbPages\" : 10, \"keyWords\" : [\"toto\", true, 10] }", mongoResultPanel.getSelectedNodeStringifiedValue());
+        assertThat(mongoResultPanel.getSelectedNodeStringifiedValue())
+                .isEqualTo("\"doc\" : { \"title\" : \"hello\", \"nbPages\" : 10, \"keyWords\" : [\"toto\", true, 10] }");
     }
 
     @Test
@@ -270,11 +273,11 @@ public class MongoResultPanelTest {
                 {"[1]", "false"},
                 {"[2]", "10"},
         });
-        assertEquals("[ " +
+        assertThat(mongoResultPanel.getSelectedNodeStringifiedValue())
+                .isEqualTo("[ " +
                         "{ \"id\" : 0, \"label\" : \"toto\", \"visible\" : false, \"doc\" : { \"title\" : \"hello\", \"nbPages\" : 10, \"keyWords\" : [\"toto\", true, 10] } }, " +
                         "{ \"id\" : 1, \"label\" : \"tata\", \"visible\" : false, \"doc\" : { \"title\" : \"ola\", \"nbPages\" : 1, \"keyWords\" : [\"tutu\", false, 10] } }" +
-                        " ]",
-                mongoResultPanel.getSelectedNodeStringifiedValue());
+                        " ]");
     }
 
     private MongoCollectionResult createCollectionResults(String data, String collectionName) throws IOException {

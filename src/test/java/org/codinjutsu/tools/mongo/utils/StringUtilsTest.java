@@ -16,27 +16,23 @@
 
 package org.codinjutsu.tools.mongo.utils;
 
-import org.bson.Document;
 import org.junit.Test;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class StringUtilsTest {
 
     @Test
     public void abbreviateInCenter() throws Exception {
         String value = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
-        assertEquals("abcdefghijklmnopq...ghijklmnopqrstuvwxyz", StringUtils.abbreviateInCenter(value, 40));
+        assertThat(StringUtils.abbreviateInCenter(value, 40)).isEqualTo("abcdefghijklmnopq...ghijklmnopqrstuvwxyz");
 
     }
 
     @Test
     public void parseNumber() throws Exception {
-        assertEquals(1, StringUtils.parseNumber("1"));
-        assertEquals(1.000000000001d, StringUtils.parseNumber("1.000000000001"));
-        assertEquals(1000000000000000L, StringUtils.parseNumber("1000000000000000"));
+        assertThat(StringUtils.parseNumber("1")).isEqualTo(1);
+        assertThat(StringUtils.parseNumber("1.000000000001")).isEqualTo(1.000000000001d);
+        assertThat(StringUtils.parseNumber("1000000000000000")).isEqualTo(1000000000000000L);
     }
 }
