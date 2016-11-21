@@ -20,8 +20,8 @@ import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.components.JBCheckBox;
-import com.mongodb.util.JSON;
 import org.apache.commons.lang.StringUtils;
+import org.bson.Document;
 import org.codinjutsu.tools.mongo.view.model.JsonDataType;
 import org.codinjutsu.tools.mongo.view.table.DateTimePicker;
 
@@ -147,7 +147,7 @@ abstract class AbstractAddDialog extends DialogWrapper {
 
         @Override
         public Object getValue() {
-            return JSON.parse(component.getText());
+            return Document.parse(component.getText());
         }
 
         @Override

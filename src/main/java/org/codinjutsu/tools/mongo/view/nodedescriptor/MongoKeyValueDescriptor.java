@@ -19,6 +19,7 @@ package org.codinjutsu.tools.mongo.view.nodedescriptor;
 import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
+import com.mongodb.DBRef;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.utils.DateUtils;
@@ -41,7 +42,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
     private final SimpleTextAttributes valueTextAttributes;
 
-    public static MongoKeyValueDescriptor createDescriptor(String key, Object value) { //TODO refactor needed
+    public static MongoKeyValueDescriptor createDescriptor(String key, Object value) { //TODO refactor this
         if (value == null) {
             return new MongoKeyNullValueDescriptor(key);
         }
@@ -82,6 +83,8 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
             return new MongoKeyValueDescriptor(key, value, StyleAttributesProvider.getObjectIdAttribute());
         } else if (value instanceof Document) {
             return new MongoKeyDocumentValueDescriptor(key, value);
+        } else if (value instanceof DBRef) {
+            return new MongoKeyRefValueDescriptor(key, value);
         } else if (value instanceof List) {
             return new MongoKeyListValueDescriptor(key, value);
         } else {
@@ -208,6 +211,24 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
         }
     }
 
+
+    private static class MongoKeyRefValueDescriptor extends MongoKeyValueDescriptor {
+        public MongoKeyRefValueDescriptor(String key, Object value) {
+            super(key, value, StyleAttributesProvider.getDocumentAttribute());
+        }
+
+        @Override
+        public String getFormattedValue() {
+            DBRef dbRef = (DBRef) this.value;
+            return StringUtils.abbreviateInCenter(dbRef.toString(), MAX_LENGTH);
+        }
+
+        @Override
+        public String toString() {
+            return String.format(TO_STRING_TEMPLATE, key, value.toString());
+        }
+    }
+
     private static class MongoKeyListValueDescriptor extends MongoKeyValueDescriptor {
         MongoKeyListValueDescriptor(String key, Object value) {
             super(key, value, StyleAttributesProvider.getDocumentAttribute());
@@ -227,4 +248,5 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
             return MongoUtils.stringifyList((List) value);
         }
     }
+
 }

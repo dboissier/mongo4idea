@@ -18,6 +18,7 @@ package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.openapi.command.impl.DummyProject;
 import com.intellij.util.ui.tree.TreeUtil;
+import com.mongodb.DBRef;
 import org.apache.commons.io.IOUtils;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.edt.GuiQuery;
@@ -25,6 +26,7 @@ import org.assertj.swing.fixture.Containers;
 import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.fixture.JTableFixture;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.jetbrains.annotations.NotNull;
@@ -103,7 +105,6 @@ public class MongoResultPanelTest {
                 });
     }
 
-
     @Test
     public void testDisplayTreeWithAStructuredDocument() throws Exception {
         MongoCollectionResult collectionResult = new MongoCollectionResult("mycollect");
@@ -132,6 +133,29 @@ public class MongoResultPanelTest {
                         {"[1]", "true"},
                         {"[2]", "10"},
                 });
+    }
+
+
+    @Test
+    public void displayDBRef() throws  Exception {
+        MongoCollectionResult collectionResult = new MongoCollectionResult("mycollect");
+        collectionResult.add(new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
+                .append("creation", new DBRef(
+                        "anotherdatabase",
+                        "mycollection",
+                        new ObjectId("40c1e63414f85401b9268b01"))));
+
+        mongoResultPanel.updateResultView(collectionResult);
+        TreeUtil.expandAll(mongoResultPanel.resultTreeTableView.getTree());
+        getResultTable().requireContents(new String[][] {
+                {"[0]", "{ \"_id\" : { \"$oid\" : \"50b8d63414f85401b9268b99\" }, \"creation\" : { \"$ref\"...d\" : { \"$oid\" : \"40c1e63414f85401b9268b01\" }, \"$db\" : \"anotherdatabase\" } }"},
+                {"\"_id\"", "50b8d63414f85401b9268b99"},
+                {"\"creation\"", "{ \"$ref\" : \"mycollection\", \"$id\" : \"40c1e63414f85401b9268b01, \"$db\" : \"anotherdatabase\" }"},
+                {"\"$ref\"", "mycollection"},
+                {"\"$id\"", "40c1e63414f85401b9268b01"},
+                {"\"$db\"", "anotherdatabase"},
+
+        });
     }
 
 

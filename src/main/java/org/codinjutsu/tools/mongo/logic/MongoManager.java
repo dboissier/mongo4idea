@@ -308,6 +308,7 @@ public class MongoManager {
         MongoClientOptions options = MongoClientOptions.builder()
                 .sslEnabled(configuration.isSslConnection())
                 .readPreference(configuration.getReadPreference())
+                .codecRegistry(MongoClient.getDefaultCodecRegistry())
                 .build();
 
         if (StringUtils.isEmpty(configuration.getUsername())) {

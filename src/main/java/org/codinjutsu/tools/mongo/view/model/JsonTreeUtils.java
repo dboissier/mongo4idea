@@ -16,8 +16,10 @@
 
 package org.codinjutsu.tools.mongo.view.model;
 
+import com.mongodb.DBRef;
 import org.apache.commons.lang.StringUtils;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
@@ -56,26 +58,34 @@ public class JsonTreeUtils {
         for (String key : document.keySet()) {
             Object value = document.get(key);
             JsonTreeNode currentNode = new JsonTreeNode(MongoKeyValueDescriptor.createDescriptor(key, value));
-            if (value instanceof Document) {
-                processDocument(currentNode, (Document) value);
-            } else if (value instanceof List) {
-                processObjectList(currentNode, (List) value);
-            }
+            processValue(value, currentNode);
             parentNode.add(currentNode);
         }
     }
 
     public static void processObjectList(JsonTreeNode parentNode, List objectList) {
         for (int i = 0; i < objectList.size(); i++) {
-            Object object = objectList.get(i);
-            JsonTreeNode subNode = new JsonTreeNode(MongoValueDescriptor.createDescriptor(i, object));
-            if (object instanceof Document) {
-                processDocument(subNode, (Document) object);
-            } else if (object instanceof List) {
-                processObjectList(subNode, (List) object);
-            }
-            parentNode.add(subNode);
+            Object value = objectList.get(i);
+            JsonTreeNode currentNode = new JsonTreeNode(MongoValueDescriptor.createDescriptor(i, value));
+            processValue(value, currentNode);
+            parentNode.add(currentNode);
         }
+    }
+
+    private static void processValue(Object value, JsonTreeNode currentNode) {
+        if (value instanceof Document) {
+            processDocument(currentNode, (Document) value);
+        } else if (value instanceof DBRef) {
+            processDBRef(currentNode, (DBRef) value);
+        } else if (value instanceof List) {
+            processObjectList(currentNode, (List) value);
+        }
+    }
+
+    private static void processDBRef(JsonTreeNode parentNode, DBRef dbRef) {
+        parentNode.add(new JsonTreeNode(MongoKeyValueDescriptor.createDescriptor("$ref", dbRef.getCollectionName())));
+        parentNode.add(new JsonTreeNode(MongoKeyValueDescriptor.createDescriptor("$id", dbRef.getId())));
+        parentNode.add(new JsonTreeNode(MongoKeyValueDescriptor.createDescriptor("$db", dbRef.getDatabaseName())));
     }
 
     public static Document buildDocumentObject(JsonTreeNode rootNode) {
@@ -87,14 +97,40 @@ public class JsonTreeUtils {
             Object value = descriptor.getValue();
             if (value instanceof Document) {
                 document.put(descriptor.getKey(), buildDocumentObject(node));
+            } else if (value instanceof DBRef) {
+                document.put(descriptor.getKey(), buildDBRefObject(node));
             } else if (value instanceof List) {
-                    document.put(descriptor.getKey(), buildObjectList(node));
+                document.put(descriptor.getKey(), buildObjectList(node));
             } else {
                 document.put(descriptor.getKey(), value);
             }
         }
 
         return document;
+    }
+
+    private static DBRef buildDBRefObject(JsonTreeNode parentNode) {
+        ObjectId objectId = null;
+        String collectionName = null;
+        String databaseName = null;
+        Enumeration children = parentNode.children();
+        while (children.hasMoreElements()) {
+            JsonTreeNode node = (JsonTreeNode) children.nextElement();
+            MongoNodeDescriptor descriptor = node.getDescriptor();
+            String formattedKey = descriptor.getFormattedKey();
+            switch (formattedKey) {
+                case "\"$id\"":
+                    objectId = (ObjectId) descriptor.getValue();
+                case "\"$ref\"":
+                    collectionName = (String) descriptor.getValue();
+                case "\"$db\"":
+                    databaseName = (String) descriptor.getValue();
+            }
+        }
+        if (databaseName == null || collectionName == null || objectId == null) {
+            throw new IllegalArgumentException("When using DBRef, $ref, $id and $db should be set.");
+        }
+        return new DBRef(databaseName, collectionName, objectId);
     }
 
     private static List buildObjectList(JsonTreeNode parentNode) {
@@ -107,35 +143,11 @@ public class JsonTreeUtils {
             if (value instanceof Document) {
                 basicDBList.add(buildDocumentObject(node));
             } else if (value instanceof List) {
-                    basicDBList.add(buildObjectList(node));
+                basicDBList.add(buildObjectList(node));
             } else {
                 basicDBList.add(value);
             }
         }
         return basicDBList;
     }
-
-    static JsonTreeNode findObjectIdNode(JsonTreeNode treeNode) {
-        MongoNodeDescriptor descriptor = treeNode.getDescriptor();
-        if (descriptor instanceof MongoResultDescriptor) { //defensive prog?
-            return null;
-        }
-
-        if (descriptor instanceof MongoKeyValueDescriptor) {
-            MongoKeyValueDescriptor keyValueDescriptor = (MongoKeyValueDescriptor) descriptor;
-            if (StringUtils.equals(keyValueDescriptor.getKey(), "_id")) {
-                return treeNode;
-            }
-        }
-
-        JsonTreeNode parentTreeNode = (JsonTreeNode) treeNode.getParent();
-        if (parentTreeNode.getDescriptor() instanceof MongoValueDescriptor) {
-            if (((JsonTreeNode) parentTreeNode.getParent()).getDescriptor() instanceof MongoResultDescriptor) {
-                //find
-            }
-        }
-
-        return null;
-    }
-
 }

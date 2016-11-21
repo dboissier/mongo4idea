@@ -80,7 +80,7 @@ public class MongoEditionPanel extends JPanel implements Disposable {
                 try {
                     Document mongoDocument = buildMongoDocument();
                     mongoDocumentOperations.updateMongoDocument(mongoDocument);
-                    actionCallback.onOperationSuccess("Document " + mongoDocument.toString() + " saved...");
+                    actionCallback.onOperationSuccess("Document " + mongoDocument.toJson() + " saved...");
 
                 } catch (Exception exception) {
                     actionCallback.onOperationFailure(exception);

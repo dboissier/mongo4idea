@@ -23,8 +23,8 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class JsonTreeUtilsTest {
@@ -88,30 +88,18 @@ public class JsonTreeUtilsTest {
         assertThat(JsonTreeUtils.buildDocumentObject(treeNode)).isEqualTo(
                 new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
                         .append("title", "XP by example")
-                        .append("tags", Arrays.asList(
+                        .append("tags", asList(
                                 "pair programming", "tdd", "a gilles"
                         ))
                         .append("innerList",
-                                Arrays.asList(
-                                        Arrays.asList(1, 2, 3, 4),
-                                        Arrays.asList(false, true),
-                                        Arrays.asList(
+                                asList(
+                                        asList(1, 2, 3, 4),
+                                        asList(false, true),
+                                        asList(
                                                 new Document("tagName", "pouet"),
                                                 new Document("tagName", "paf"))
                                 ))
         );
-    }
-
-    @Test
-    public void getObjectIdFromANode() throws Exception {
-        Document document = parseDocument("simpleDocumentWithInnerNodes.json");
-
-        JsonTreeNode treeNode = (JsonTreeNode) JsonTreeUtils.buildJsonTree(document);
-        JsonTreeNode objectIdNode = (JsonTreeNode) treeNode.getChildAt(0);
-        assertThat(objectIdNode.getDescriptor().getFormattedKey()).isEqualTo("\"_id\"");
-
-        assertThat(JsonTreeUtils.findObjectIdNode(treeNode)).isNull();
-        assertThat(JsonTreeUtils.findObjectIdNode((JsonTreeNode) treeNode.getChildAt(0))).isEqualTo(objectIdNode);
     }
 
     @NotNull
