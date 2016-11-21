@@ -1,6 +1,6 @@
 Version 0.10.0-SHAPSHOT
-    * [fix] #173: CodecConfigurationException when using DBRef
-    *
+    * [fix] #173 CodecConfigurationException when using DBRef
+    * [add] #133 Handle DBRef
     * [fix] Notification message when saving a document
 
 Version 0.9
