@@ -22,7 +22,6 @@ import com.intellij.execution.process.CapturingProcessHandler;
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.openapi.vfs.CharsetToolkit;
 import com.mongodb.AuthenticationMechanism;
-import org.apache.commons.lang.*;
 import org.bson.Document;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
@@ -50,29 +49,6 @@ public class MongoUtils {
                 commandLine.getCommandLineString());
         ProcessOutput result = handler.runProcess(15 * 1000);
         return result.getExitCode() == 0;
-    }
-
-    public static String buildMongoUrl(ServerConfiguration serverConfiguration, MongoDatabase database) {
-        return String.format("%s/%s", serverConfiguration.getServerUrls().get(0), database == null ? "test" : database.getName());
-    }
-
-    public static String stringifyList(List list) {
-        List<String> stringifiedObjects = new LinkedList<>();
-        for (Object object : list) {
-            if (object == null) {
-                stringifiedObjects.add("null");
-            } else if (object instanceof String) {
-                stringifiedObjects.add("\"" + object.toString() + "\"");
-            } else if (object instanceof Document) {
-                stringifiedObjects.add(((Document) object).toJson());
-            } else if (object instanceof List) {
-                stringifiedObjects.add(stringifyList(((List) object)));
-            } else {
-                stringifiedObjects.add(object.toString());
-            }
-        }
-
-        return "[" + org.apache.commons.lang.StringUtils.join(stringifiedObjects, ", ") + "]";
     }
 
     public static GeneralCommandLine buildCommandLine(String shellPath, ServerConfiguration serverConfiguration, MongoDatabase database) {
@@ -116,5 +92,28 @@ public class MongoUtils {
         }
 
         return commandLine;
+    }
+
+    static String buildMongoUrl(ServerConfiguration serverConfiguration, MongoDatabase database) {
+        return String.format("%s/%s", serverConfiguration.getServerUrls().get(0), database == null ? "test" : database.getName());
+    }
+
+    public static String stringifyList(List list) {
+        List<String> stringifiedObjects = new LinkedList<>();
+        for (Object object : list) {
+            if (object == null) {
+                stringifiedObjects.add("null");
+            } else if (object instanceof String) {
+                stringifiedObjects.add("\"" + object.toString() + "\"");
+            } else if (object instanceof Document) {
+                stringifiedObjects.add(((Document) object).toJson());
+            } else if (object instanceof List) {
+                stringifiedObjects.add(stringifyList(((List) object)));
+            } else {
+                stringifiedObjects.add(object.toString());
+            }
+        }
+
+        return "[" + org.apache.commons.lang.StringUtils.join(stringifiedObjects, ", ") + "]";
     }
 }

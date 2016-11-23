@@ -16,6 +16,9 @@
 
 package org.codinjutsu.tools.mongo.model;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -39,5 +42,15 @@ public class MongoDatabase {
 
     public void addCollection(MongoCollection mongoCollection) {
         collections.add(mongoCollection);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 }

@@ -16,6 +16,8 @@
 
 package org.codinjutsu.tools.mongo.model;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.jetbrains.annotations.NotNull;
 
 public class MongoCollection implements Comparable<MongoCollection> {
@@ -39,5 +41,15 @@ public class MongoCollection implements Comparable<MongoCollection> {
     @Override
     public int compareTo(@NotNull MongoCollection otherCollection) {
         return this.name.compareTo(otherCollection.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 }

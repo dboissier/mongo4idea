@@ -25,12 +25,16 @@ import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
+import org.codinjutsu.tools.mongo.model.MongoServer;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MongoManagerTest {
@@ -71,7 +75,22 @@ public class MongoManagerTest {
 
         mongoManager = new MongoManager();
         serverConfiguration = new ServerConfiguration();
-        serverConfiguration.setServerUrls(Collections.singletonList("localhost:27017"));
+        serverConfiguration.setServerUrls(singletonList("localhost:27017"));
+    }
+
+    @Test
+    public void loadServer() throws Exception {
+        ServerConfiguration configuration = ServerConfiguration.byDefault();
+        configuration.setUserDatabase("test");
+        MongoServer mongoServer = new MongoServer(configuration);
+        mongoManager.loadServer(mongoServer);
+
+        org.codinjutsu.tools.mongo.model.MongoDatabase expectedDatabase =
+                new org.codinjutsu.tools.mongo.model.MongoDatabase("test");
+        expectedDatabase.addCollection(new MongoCollection("people", "test"));
+        expectedDatabase.addCollection(new MongoCollection("system.indexes", "test"));
+
+        assertThat(mongoServer.getDatabases()).containsExactly(expectedDatabase);
     }
 
     @Test
@@ -145,16 +164,16 @@ public class MongoManagerTest {
     @Test
     public void loadCollectionsWithAggregateOperators() throws Exception {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
-        mongoQueryOptions.setOperations("[{'$match': {'price': 15}}, {'$project': {'label': 1, 'price': 1}}, {'$group': {'_id': '$label', 'total': {'$sum': '$price'}}}]");
+        mongoQueryOptions.setOperations("[{'$match': {'position': 'developer'}}, {'$project': {'name': 1, 'age': 1}}, {'$group': {'_id': '$name', 'total': {'$sum': '$age'}}}]");
         MongoCollectionResult mongoCollectionResult =
                 mongoManager.loadCollectionValues(serverConfiguration,
-                        new MongoCollection("dummyCollection", "test"), mongoQueryOptions);
+                        new MongoCollection("people", "test"), mongoQueryOptions);
 
         assertThat(mongoCollectionResult.getDocuments()).containsExactly(
-                new Document("_id", "tutu")
-                        .append("total", 15),
-                new Document("_id", "tata")
-                        .append("total", 15));
+                new Document("_id", "Melissa")
+                        .append("total", 26),
+                new Document("_id", "Paul")
+                        .append("total", 25));
     }
 
 
@@ -207,5 +226,30 @@ public class MongoManagerTest {
                         .append("age", 28));
     }
 
+
+    @Test
+    public void findMongoDocument() throws Exception {
+
+        Document actualDocument = mongoManager.findMongoDocument(
+                ServerConfiguration.byDefault(),
+                new MongoCollection("people", "test"),
+                new ObjectId("582ecee28feed271b9f54e59"));
+        assertThat(actualDocument).isEqualTo(
+                new Document()
+                        .append("_id", new ObjectId("582ecee28feed271b9f54e59"))
+                        .append("name", "Melissa")
+                        .append("position", "developer")
+                        .append("age", 26)
+        );
+    }
+
+    @Test
+    public void dropCollection() throws Exception {
+        mongoManager.dropCollection(ServerConfiguration.byDefault(),
+                new MongoCollection("people", "test"));
+
+        MongoDatabase testDatabase = new MongoClient("localhost:27017").getDatabase("test");
+        assertThat(testDatabase.listCollectionNames()).containsExactly("system.indexes");
+    }
 }
 

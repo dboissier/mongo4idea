@@ -16,7 +16,11 @@
 
 package org.codinjutsu.tools.mongo.utils;
 
+import com.intellij.execution.configurations.GeneralCommandLine;
+import com.mongodb.AuthenticationMechanism;
 import org.bson.Document;
+import org.codinjutsu.tools.mongo.ServerConfiguration;
+import org.codinjutsu.tools.mongo.model.MongoDatabase;
 import org.junit.Test;
 
 import java.util.LinkedList;
@@ -25,6 +29,39 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MongoUtilsTest {
+
+    @Test
+    public void buildCommandeLine() throws Exception {
+        ServerConfiguration serverConfiguration = ServerConfiguration.byDefault();
+        serverConfiguration.setUsername("john.doe");
+        serverConfiguration.setPassword("secretPassword");
+        serverConfiguration.setAuthenticationDatabase("users");
+        serverConfiguration.setAuthenticationMechanism(AuthenticationMechanism.SCRAM_SHA_1);
+
+        serverConfiguration.setShellWorkingDir("/tmp");
+        serverConfiguration.setShellArgumentsLine("--quiet --ipv6");
+
+        GeneralCommandLine commandLine = MongoUtils.buildCommandLine("/usr/bin/mongo", serverConfiguration, new MongoDatabase("mydatabase"));
+
+        assertThat(commandLine.getCommandLineString())
+                .isEqualTo("/usr/bin/mongo localhost:27017/mydatabase " +
+                        "--username john.doe --password secretPassword " +
+                        "--authenticationDatabase users --authenticationMechanism SCRAM-SHA-1 " +
+                        "--quiet --ipv6");
+    }
+
+    @Test
+    public void buildMongoUrl() throws Exception {
+        assertThat(MongoUtils.buildMongoUrl(ServerConfiguration.byDefault(), new MongoDatabase("mydatabase")))
+                .isEqualTo("localhost:27017/mydatabase");
+    }
+
+    @Test
+    public void buildMongoUrlWithoutDatabase() throws Exception {
+        assertThat(MongoUtils.buildMongoUrl(ServerConfiguration.byDefault(), null))
+                .isEqualTo("localhost:27017/test");
+
+    }
 
     @Test
     public void stringifyListOfSimpleObjects() throws Exception {

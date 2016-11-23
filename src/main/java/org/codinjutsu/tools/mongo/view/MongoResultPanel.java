@@ -31,6 +31,7 @@ import com.intellij.ui.treeStructure.treetable.TreeTableTree;
 import com.intellij.util.ui.tree.TreeUtil;
 import org.apache.commons.lang.StringUtils;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
@@ -186,7 +187,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
         if (descriptor instanceof MongoKeyValueDescriptor) {
             MongoKeyValueDescriptor keyValueDescriptor = (MongoKeyValueDescriptor) descriptor;
             if (StringUtils.equals(keyValueDescriptor.getKey(), "_id")) {
-                return mongoDocumentOperations.getMongoDocument(keyValueDescriptor.getValue());
+                return mongoDocumentOperations.getMongoDocument((ObjectId) keyValueDescriptor.getValue());
             }
         }
 

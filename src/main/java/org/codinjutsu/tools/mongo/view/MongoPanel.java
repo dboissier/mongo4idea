@@ -31,6 +31,7 @@ import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.NumberDocument;
 import com.intellij.ui.components.panels.NonOpaquePanel;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.logic.Notifier;
@@ -71,7 +72,7 @@ public class MongoPanel extends JPanel implements Disposable {
 
         resultPanel = createResultPanel(project, new MongoDocumentOperations() {
 
-            public Document getMongoDocument(Object _id) {
+            public Document getMongoDocument(ObjectId _id) {
                 return mongoManager.findMongoDocument(configuration, mongoCollection, _id);
             }
 
@@ -297,7 +298,7 @@ public class MongoPanel extends JPanel implements Disposable {
     }
 
     interface MongoDocumentOperations {
-        Document getMongoDocument(Object _id);
+        Document getMongoDocument(ObjectId _id);
 
         void deleteMongoDocument(Object mongoDocument);
 
