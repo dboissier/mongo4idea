@@ -35,7 +35,6 @@ import java.util.Locale;
 public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
     private static final String STRING_SURROUNDED = "\"%s\"";
-    private static final String TO_STRING_TEMPLATE = "\"%s\" : %s";
 
     final String key;
     Object value;
@@ -130,7 +129,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
     @Override
     public String toString() {
-        return String.format(TO_STRING_TEMPLATE, key, value);
+        return value.toString();
     }
 
     private static class MongoKeyNullValueDescriptor extends MongoKeyValueDescriptor {
@@ -143,11 +142,14 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
         public String getFormattedValue() {
             return "null";
         }
+
+        @Override
+        public String toString() {
+            return getFormattedValue();
+        }
     }
 
     private static class MongoKeyStringValueDescriptor extends MongoKeyValueDescriptor {
-
-        private static final String TO_STRING_FOR_STRING_VALUE_TEMPLATE = "\"%s\" : \"%s\"";
 
         private MongoKeyStringValueDescriptor(String key, String value) {
             super(key, value, StyleAttributesProvider.getStringAttribute());
@@ -160,15 +162,13 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
         @Override
         public String toString() {
-            return String.format(TO_STRING_FOR_STRING_VALUE_TEMPLATE, key, value);
+            return getFormattedValue();
         }
     }
 
     private static class MongoKeyDateValueDescriptor extends MongoKeyValueDescriptor {
 
         private static final DateFormat DATE_FORMAT = DateUtils.utcDateTime(Locale.getDefault());
-
-        private static final String TO_STRING_FOR_DATE_VALUE_TEMPLATE = "\"%s\" : \"%s\"";
 
         private MongoKeyDateValueDescriptor(String key, Date value) {
             super(key, value, StyleAttributesProvider.getStringAttribute());
@@ -181,7 +181,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
         @Override
         public String toString() {
-            return String.format(TO_STRING_FOR_DATE_VALUE_TEMPLATE, key, getFormattedDate());
+            return getFormattedDate();
         }
 
         private String getFormattedDate() {
@@ -203,7 +203,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
         @Override
         public String toString() {
-            return String.format(TO_STRING_TEMPLATE, key, getFormattedDocument());
+            return getFormattedDocument();
         }
 
         private String getFormattedDocument() {
@@ -225,11 +225,14 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
         @Override
         public String toString() {
-            return String.format(TO_STRING_TEMPLATE, key, value.toString());
+            return value.toString();
         }
     }
 
     private static class MongoKeyListValueDescriptor extends MongoKeyValueDescriptor {
+
+        private static final String TO_STRING_TEMPLATE = "\"%s\" : %s";
+
         MongoKeyListValueDescriptor(String key, Object value) {
             super(key, value, StyleAttributesProvider.getDocumentAttribute());
         }

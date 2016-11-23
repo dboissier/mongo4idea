@@ -241,11 +241,15 @@ public class MongoResultPanelTest {
 
         mongoResultPanel.resultTreeTableView.setRowSelectionInterval(2, 2);
         assertThat(mongoResultPanel.getSelectedNodeStringifiedValue())
-                .isEqualTo("\"label\" : \"toto\"");
+                .isEqualTo("toto");
+
+        mongoResultPanel.resultTreeTableView.setRowSelectionInterval(3, 3);
+        assertThat(mongoResultPanel.getSelectedNodeStringifiedValue())
+                .isEqualTo("false");
 
         mongoResultPanel.resultTreeTableView.setRowSelectionInterval(4, 4);
         assertThat(mongoResultPanel.getSelectedNodeStringifiedValue())
-                .isEqualTo("\"doc\" : { \"title\" : \"hello\", \"nbPages\" : 10, \"keyWords\" : [\"toto\", true, 10] }");
+                .isEqualTo("{ \"title\" : \"hello\", \"nbPages\" : 10, \"keyWords\" : [\"toto\", true, 10] }");
     }
 
     @Test

@@ -32,14 +32,17 @@ public class CopyResultAction extends AnAction implements DumbAware {
     private final MongoResultPanel mongoResultPanel;
 
     public CopyResultAction(MongoResultPanel mongoResultPanel) {
-        super("Copy", "Copy results to clipboard", AllIcons.Actions.Copy);
+        super("Copy Value", "Copy value to clipboard", AllIcons.Actions.Copy);
         this.mongoResultPanel = mongoResultPanel;
 
-        registerCustomShortcutSet(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), mongoResultPanel);
+        registerCustomShortcutSet(KeyEvent.VK_C,
+                Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(),
+                mongoResultPanel);
     }
 
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
-        CopyPasteManager.getInstance().setContents(new StringSelection(mongoResultPanel.getSelectedNodeStringifiedValue()));
+        CopyPasteManager.getInstance().setContents(
+                new StringSelection(mongoResultPanel.getSelectedNodeStringifiedValue()));
     }
 }
