@@ -92,7 +92,7 @@ public class MongoResultPanelTest {
     }
 
     @Test
-    public void testDisplayTreeWithASimpleDocument() throws Exception {
+    public void displayTreeWithASimpleDocument() throws Exception {
         mongoResultPanel.updateResultView(createCollectionResults("simpleDocument.json", "mycollec"));
 
         getResultTable().requireColumnCount(2)
@@ -106,7 +106,7 @@ public class MongoResultPanelTest {
     }
 
     @Test
-    public void testDisplayTreeWithAStructuredDocument() throws Exception {
+    public void displayTreeWithAStructuredDocument() throws Exception {
         MongoCollectionResult collectionResult = new MongoCollectionResult("mycollect");
         collectionResult.add(new Document("id", 0)
                 .append("label", "toto")
@@ -135,9 +135,8 @@ public class MongoResultPanelTest {
                 });
     }
 
-
     @Test
-    public void displayDBRef() throws  Exception {
+    public void displayDBRef() throws Exception {
         MongoCollectionResult collectionResult = new MongoCollectionResult("mycollect");
         collectionResult.add(new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
                 .append("creation", new DBRef(
@@ -147,7 +146,7 @@ public class MongoResultPanelTest {
 
         mongoResultPanel.updateResultView(collectionResult);
         TreeUtil.expandAll(mongoResultPanel.resultTreeTableView.getTree());
-        getResultTable().requireContents(new String[][] {
+        getResultTable().requireContents(new String[][]{
                 {"[0]", "{ \"_id\" : { \"$oid\" : \"50b8d63414f85401b9268b99\" }, \"creation\" : { \"$ref\"...d\" : { \"$oid\" : \"40c1e63414f85401b9268b01\" }, \"$db\" : \"anotherdatabase\" } }"},
                 {"\"_id\"", "50b8d63414f85401b9268b99"},
                 {"\"creation\"", "{ \"$ref\" : \"mycollection\", \"$id\" : \"40c1e63414f85401b9268b01, \"$db\" : \"anotherdatabase\" }"},
@@ -158,9 +157,32 @@ public class MongoResultPanelTest {
         });
     }
 
+    @Test
+    public void displayUTF8Char() throws Exception {
+        MongoCollectionResult collectionResult = new MongoCollectionResult("mycollect");
+        collectionResult.add(new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
+                .append("arabic", "العربية")
+                .append("hebrew", "עברית")
+                .append("japanese", "日本語")
+                .append("chinese", "汉语/漢語")
+                .append("russian", "ру́сский язы́к"));
+
+        mongoResultPanel.updateResultView(collectionResult);
+        TreeUtil.expandAll(mongoResultPanel.resultTreeTableView.getTree());
+
+        getResultTable().requireContents(new String[][]{
+                {"[0]", "{ \"_id\" : { \"$oid\" : \"50b8d63414f85401b9268b99\" }, \"arabic\" : \"العربية\",...ese\" : \"日本語\", \"chinese\" : \"汉语/漢語\", \"russian\" : \"ру\\u0301сский язы\\u0301к\" }"},
+                {"\"_id\"", "50b8d63414f85401b9268b99"},
+                {"\"arabic\"", "العربية"},
+                {"\"hebrew\"", "עברית"},
+                {"\"japanese\"", "日本語"},
+                {"\"chinese\"", "汉语/漢語"},
+                {"\"russian\"", "ру́сский язы́к"}
+        });
+    }
 
     @Test
-    public void testDisplayTreeWithAnArrayOfStructuredDocument() throws Exception {
+    public void displayTreeWithAnArrayOfStructuredDocument() throws Exception {
         MongoCollectionResult collectionResult = new MongoCollectionResult("mycollect");
         collectionResult.add(new Document("id", 0)
                 .append("label", "toto")

@@ -32,6 +32,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static org.codinjutsu.tools.mongo.utils.MongoUtils.DOCUMENT_CODEC;
+
 public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
     private static final String STRING_SURROUNDED = "\"%s\"";
@@ -198,7 +200,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
         @Override
         public String getFormattedValue() {
             Document document = (Document) this.value;
-            return StringUtils.abbreviateInCenter(document.toJson(), MAX_LENGTH);
+            return StringUtils.abbreviateInCenter(document.toJson(DOCUMENT_CODEC), MAX_LENGTH);
         }
 
         @Override
@@ -207,7 +209,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
         }
 
         private String getFormattedDocument() {
-            return ((Document) value).toJson();
+            return ((Document) value).toJson(DOCUMENT_CODEC);
         }
     }
 

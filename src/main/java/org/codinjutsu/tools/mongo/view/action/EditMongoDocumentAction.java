@@ -22,6 +22,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.view.MongoResultPanel;
 
+import java.awt.*;
+import java.awt.event.KeyEvent;
+
 public class EditMongoDocumentAction extends AnAction implements DumbAware {
 
     private final MongoResultPanel resultPanel;
@@ -29,6 +32,10 @@ public class EditMongoDocumentAction extends AnAction implements DumbAware {
     public EditMongoDocumentAction(MongoResultPanel resultPanel) {
         super("Edit", "Edit mongo document", AllIcons.Actions.Edit);
         this.resultPanel = resultPanel;
+
+        registerCustomShortcutSet(KeyEvent.VK_E,
+                Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(),
+                resultPanel);
     }
 
     @Override

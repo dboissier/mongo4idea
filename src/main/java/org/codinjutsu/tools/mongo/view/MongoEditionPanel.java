@@ -26,6 +26,7 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.tree.TreeUtil;
 import org.apache.commons.lang.StringUtils;
 import org.bson.Document;
+import org.codinjutsu.tools.mongo.utils.MongoUtils;
 import org.codinjutsu.tools.mongo.view.action.edition.AddKeyAction;
 import org.codinjutsu.tools.mongo.view.action.edition.AddValueAction;
 import org.codinjutsu.tools.mongo.view.action.edition.DeleteKeyAction;
@@ -43,6 +44,8 @@ import java.awt.event.ActionEvent;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+
+import static org.codinjutsu.tools.mongo.utils.MongoUtils.DOCUMENT_CODEC;
 
 public class MongoEditionPanel extends JPanel implements Disposable {
     private JButton saveButton;
@@ -80,7 +83,8 @@ public class MongoEditionPanel extends JPanel implements Disposable {
                 try {
                     Document mongoDocument = buildMongoDocument();
                     mongoDocumentOperations.updateMongoDocument(mongoDocument);
-                    actionCallback.onOperationSuccess("Document saved", "Document " + mongoDocument.toJson() + " saved...");
+                    actionCallback.onOperationSuccess("Document saved", "Document " +
+                            mongoDocument.toJson(DOCUMENT_CODEC) + " saved...");
 
                 } catch (Exception exception) {
                     actionCallback.onOperationFailure(exception);

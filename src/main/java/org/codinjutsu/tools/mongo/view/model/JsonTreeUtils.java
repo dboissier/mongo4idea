@@ -121,10 +121,15 @@ public class JsonTreeUtils {
             switch (formattedKey) {
                 case "\"$id\"":
                     objectId = (ObjectId) descriptor.getValue();
+                    break;
                 case "\"$ref\"":
                     collectionName = (String) descriptor.getValue();
+                    break;
                 case "\"$db\"":
                     databaseName = (String) descriptor.getValue();
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unexpected key: " + formattedKey);
             }
         }
         if (databaseName == null || collectionName == null || objectId == null) {

@@ -19,11 +19,7 @@ package org.codinjutsu.tools.mongo.view.nodedescriptor;
 import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
-import com.mongodb.MongoClient;
 import org.bson.Document;
-import org.bson.codecs.BsonTypeClassMap;
-import org.bson.codecs.DocumentCodec;
-import org.bson.codecs.configuration.CodecRegistries;
 import org.codinjutsu.tools.mongo.utils.DateUtils;
 import org.codinjutsu.tools.mongo.utils.MongoUtils;
 import org.codinjutsu.tools.mongo.utils.StringUtils;
@@ -33,6 +29,8 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import static org.codinjutsu.tools.mongo.utils.MongoUtils.DOCUMENT_CODEC;
 
 public class MongoValueDescriptor implements MongoNodeDescriptor {
 
@@ -165,10 +163,6 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
 
     private static class MongoDocumentValueDescriptor extends MongoValueDescriptor {
 
-        final DocumentCodec codec = new DocumentCodec(
-                CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry()),
-                new BsonTypeClassMap()
-        );
 
         public MongoDocumentValueDescriptor(int index, Object value) {
             super(index, value, StyleAttributesProvider.getDocumentAttribute());
@@ -178,12 +172,12 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
         @Override
         public String getFormattedValue() {
             Document document = (Document) value;
-            return String.format("%s", StringUtils.abbreviateInCenter(document.toJson(codec), MAX_LENGTH));
+            return String.format("%s", StringUtils.abbreviateInCenter(document.toJson(DOCUMENT_CODEC), MAX_LENGTH));
         }
 
         @Override
         public String toString() {
-            return ((Document) value).toJson(codec);
+            return ((Document) value).toJson(DOCUMENT_CODEC);
         }
     }
 

@@ -101,8 +101,8 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
             @Override
             public void onOperationFailure(Exception exception) {
-                notifier.notifyError("An error occured (see Event Log)");
-                GuiUtils.showNotification(MongoResultPanel.this.resultTreePanel, MessageType.ERROR, exception.getMessage(), Balloon.Position.above);
+                notifier.notifyError(exception.getMessage());
+                GuiUtils.showNotification(MongoResultPanel.this.mongoEditionPanel, MessageType.ERROR, "An error occured (see Event Log)", Balloon.Position.above);
             }
 
             @Override

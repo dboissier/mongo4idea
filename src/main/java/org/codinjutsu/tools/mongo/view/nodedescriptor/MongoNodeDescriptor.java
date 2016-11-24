@@ -18,11 +18,16 @@ package org.codinjutsu.tools.mongo.view.nodedescriptor;
 
 import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.ColoredTreeCellRenderer;
+import com.mongodb.MongoClient;
+import org.bson.codecs.BsonTypeClassMap;
+import org.bson.codecs.DocumentCodec;
+import org.bson.codecs.configuration.CodecRegistries;
 
 
 public interface MongoNodeDescriptor {
 
     int MAX_LENGTH = 150;
+
 
     void renderValue(ColoredTableCellRenderer cellRenderer, boolean isNodeExpanded);
 

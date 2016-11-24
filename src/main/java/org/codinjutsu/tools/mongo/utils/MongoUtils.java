@@ -22,7 +22,12 @@ import com.intellij.execution.process.CapturingProcessHandler;
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.openapi.vfs.CharsetToolkit;
 import com.mongodb.AuthenticationMechanism;
+import com.mongodb.DBRef;
+import com.mongodb.MongoClient;
 import org.bson.Document;
+import org.bson.codecs.BsonTypeClassMap;
+import org.bson.codecs.DocumentCodec;
+import org.bson.codecs.configuration.CodecRegistries;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
 
@@ -32,6 +37,11 @@ import java.util.List;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 public class MongoUtils {
+
+    public static final DocumentCodec DOCUMENT_CODEC = new DocumentCodec(
+            CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry()),
+            new BsonTypeClassMap()
+    );
 
     private MongoUtils() {
     }
@@ -106,7 +116,7 @@ public class MongoUtils {
             } else if (object instanceof String) {
                 stringifiedObjects.add("\"" + object.toString() + "\"");
             } else if (object instanceof Document) {
-                stringifiedObjects.add(((Document) object).toJson());
+                stringifiedObjects.add(((Document) object).toJson(DOCUMENT_CODEC));
             } else if (object instanceof List) {
                 stringifiedObjects.add(stringifyList(((List) object)));
             } else {
