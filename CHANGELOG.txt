@@ -1,6 +1,6 @@
 Version 0.10.0-SHAPSHOT
     * [fix] #173 CodecConfigurationException when using DBRef
-    * [add] #133 Handle DBRef (No navigation)
+    * [add] #133 Handle DBRef with View detail in a dialog
     * [fix] Notification message when saving a document
 
 Version 0.9
