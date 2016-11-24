@@ -82,8 +82,12 @@ public class MongoPanel extends JPanel implements Disposable {
             }
 
             @Override
-            public Document getReferenceDocument(MongoCollection mongoCollection, Object _id) {
-                return mongoManager.findMongoDocument(configuration, mongoCollection, _id);
+            public Document getReferenceDocument(String database, String collection, Object _id) {
+                return mongoManager.findMongoDocument(
+                        configuration,
+                        new MongoCollection(database != null ? database : mongoCollection.getDatabaseName(),
+                                collection),
+                        _id);
             }
 
             public void deleteMongoDocument(Object objectId) {
@@ -312,6 +316,6 @@ public class MongoPanel extends JPanel implements Disposable {
 
         void updateMongoDocument(Document mongoDocument);
 
-        Document getReferenceDocument(MongoCollection mongoCollection, Object _id);
+        Document getReferenceDocument(String database, String collection, Object _id);
     }
 }

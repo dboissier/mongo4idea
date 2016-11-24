@@ -317,7 +317,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
     public Document getReferencedDocument(DBRef selectedDBRef) {
         return mongoDocumentOperations.getReferenceDocument(
-                new MongoCollection(selectedDBRef.getCollectionName(), selectedDBRef.getDatabaseName()),
+                selectedDBRef.getCollectionName(), selectedDBRef.getDatabaseName(),
                 selectedDBRef.getId());
     }
 
