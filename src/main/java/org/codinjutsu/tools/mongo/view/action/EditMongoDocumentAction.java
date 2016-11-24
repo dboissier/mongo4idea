@@ -39,6 +39,6 @@ public class EditMongoDocumentAction extends AnAction implements DumbAware {
     @Override
     public void update(AnActionEvent event) {
         super.update(event);
-        event.getPresentation().setVisible(resultPanel.isSelectedNodeId());
+        event.getPresentation().setEnabled(resultPanel.isSelectedNodeId());
     }
 }

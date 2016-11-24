@@ -81,6 +81,11 @@ public class MongoPanel extends JPanel implements Disposable {
                 executeQuery();
             }
 
+            @Override
+            public Document getReferenceDocument(MongoCollection mongoCollection, Object _id) {
+                return mongoManager.findMongoDocument(configuration, mongoCollection, _id);
+            }
+
             public void deleteMongoDocument(Object objectId) {
                 mongoManager.delete(configuration, mongoCollection, objectId);
                 executeQuery();
@@ -249,7 +254,6 @@ public class MongoPanel extends JPanel implements Disposable {
 
     public void executeQuery() {
         executeQuery(false);
-
     }
 
     private void validateQuery() {
@@ -297,11 +301,17 @@ public class MongoPanel extends JPanel implements Disposable {
         executeQuery(true);
     }
 
+    public ServerConfiguration getConfiguration() {
+        return configuration;
+    }
+
     interface MongoDocumentOperations {
         Document getMongoDocument(ObjectId _id);
 
         void deleteMongoDocument(Object mongoDocument);
 
         void updateMongoDocument(Document mongoDocument);
+
+        Document getReferenceDocument(MongoCollection mongoCollection, Object _id);
     }
 }

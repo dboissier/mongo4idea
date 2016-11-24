@@ -19,7 +19,10 @@ package org.codinjutsu.tools.mongo.view.renderer;
 import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.treeStructure.treetable.TreeTable;
 import com.intellij.ui.treeStructure.treetable.TreeTableTree;
+import com.mongodb.DBRef;
+import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
+import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
@@ -34,6 +37,8 @@ public class MongoValueCellRenderer extends ColoredTableCellRenderer {
 
         final JsonTreeNode node = (JsonTreeNode) pathForRow.getLastPathComponent();
 
-        node.getDescriptor().renderValue(this, tree.isExpanded(pathForRow));
+        MongoNodeDescriptor descriptor = node.getDescriptor();
+        descriptor.renderValue(this, tree.isExpanded(pathForRow));
+
     }
 }

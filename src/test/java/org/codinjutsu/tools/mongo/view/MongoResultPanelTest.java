@@ -308,6 +308,36 @@ public class MongoResultPanelTest {
                         " ]");
     }
 
+
+    @Test
+    public void isDBRef() throws Exception {
+        MongoCollectionResult collectionResult = new MongoCollectionResult("mycollect");
+        collectionResult.add(new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
+                .append("creation", new DBRef(
+                        "anotherdatabase",
+                        "mycollection",
+                        new ObjectId("40c1e63414f85401b9268b01"))));
+
+        mongoResultPanel.updateResultView(collectionResult);
+        TreeUtil.expandAll(mongoResultPanel.resultTreeTableView.getTree());
+
+        mongoResultPanel.resultTreeTableView.setRowSelectionInterval(0, 0);
+        assertThat(mongoResultPanel.isSelectedDBRef()).isFalse();
+
+        mongoResultPanel.resultTreeTableView.setRowSelectionInterval(1, 1);
+        assertThat(mongoResultPanel.isSelectedDBRef()).isFalse();
+
+        mongoResultPanel.resultTreeTableView.setRowSelectionInterval(2, 2);
+        assertThat(mongoResultPanel.isSelectedDBRef()).isTrue();
+
+        mongoResultPanel.resultTreeTableView.setRowSelectionInterval(3, 3);
+        assertThat(mongoResultPanel.isSelectedDBRef()).isTrue();
+
+        mongoResultPanel.resultTreeTableView.setRowSelectionInterval(4, 4);
+        assertThat(mongoResultPanel.isSelectedDBRef()).isTrue();
+
+    }
+
     private MongoCollectionResult createCollectionResults(String data, String collectionName) throws IOException {
         Document jsonObject = Document.parse(IOUtils.toString(getClass().getResourceAsStream(data)));
 

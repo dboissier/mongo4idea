@@ -25,18 +25,22 @@ import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.ui.JBCardLayout;
 import com.intellij.ui.PopupHandler;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.treetable.TreeTableTree;
 import com.intellij.util.ui.tree.TreeUtil;
+import com.mongodb.DBRef;
 import org.apache.commons.lang.StringUtils;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.logic.Notifier;
+import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.CopyResultAction;
 import org.codinjutsu.tools.mongo.view.action.EditMongoDocumentAction;
+import org.codinjutsu.tools.mongo.view.action.GoToMongoDocumentAction;
 import org.codinjutsu.tools.mongo.view.model.JsonTableUtils;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeUtils;
@@ -81,7 +85,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
         mongoEditionPanel = createMongoEditionPanel();
 
-        containerPanel.setLayout(new BorderLayout());
+        containerPanel.setLayout(new JBCardLayout());
         containerPanel.add(splitter);
 
         Disposer.register(project, this);
@@ -151,6 +155,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
         if (ApplicationManager.getApplication() != null) {
             actionPopupGroup.add(new EditMongoDocumentAction(this));
             actionPopupGroup.add(new CopyResultAction(this));
+            actionPopupGroup.add(new GoToMongoDocumentAction(this));
         }
 
         PopupHandler.installPopupHandler(resultTreeTableView, actionPopupGroup, "POPUP", ActionManager.getInstance());
@@ -207,13 +212,36 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
         MongoNodeDescriptor descriptor = treeNode.getDescriptor();
         if (descriptor instanceof MongoKeyValueDescriptor) {
-            MongoKeyValueDescriptor keyValueDescriptor = (MongoKeyValueDescriptor) descriptor;
-            return StringUtils.equals(keyValueDescriptor.getKey(), "_id");
+            return descriptor.getValue() instanceof ObjectId;
         }
 
         return false;
     }
 
+
+    public boolean isSelectedDBRef() {
+        if (resultTreeTableView == null) {
+            return false;
+        }
+
+        TreeTableTree tree = resultTreeTableView.getTree();
+        JsonTreeNode treeNode = (JsonTreeNode) tree.getLastSelectedPathComponent();
+        if (treeNode == null) {
+            return false;
+        }
+
+        MongoNodeDescriptor descriptor = treeNode.getDescriptor();
+        if (descriptor instanceof MongoKeyValueDescriptor) {
+            if (descriptor.getValue() instanceof DBRef) {
+                return true;
+            } else {
+                JsonTreeNode parentNode = (JsonTreeNode) treeNode.getParent();
+                return parentNode.getDescriptor().getValue() instanceof DBRef;
+            }
+        }
+
+        return false;
+    }
 
     void expandAll() {
         TreeUtil.expandAll(resultTreeTableView.getTree());
@@ -236,6 +264,28 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
         return userObject.toString();
     }
+
+    public DBRef getSelectedDBRef() {
+        TreeTableTree tree = resultTreeTableView.getTree();
+        JsonTreeNode treeNode = (JsonTreeNode) tree.getLastSelectedPathComponent();
+
+        MongoNodeDescriptor descriptor = treeNode.getDescriptor();
+        DBRef selectedDBRef = null;
+        if (descriptor instanceof MongoKeyValueDescriptor) {
+            if (descriptor.getValue() instanceof DBRef) {
+                selectedDBRef = (DBRef) descriptor.getValue();
+            } else {
+                JsonTreeNode parentNode = (JsonTreeNode) treeNode.getParent();
+                MongoNodeDescriptor parentDescriptor = parentNode.getDescriptor();
+                if (parentDescriptor.getValue() instanceof DBRef) {
+                    selectedDBRef = (DBRef) parentDescriptor.getValue();
+                }
+            }
+        }
+
+        return selectedDBRef;
+    }
+
 
     private void hideEditionPanel() {
         splitter.setSecondComponent(null);
@@ -263,6 +313,12 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
     ViewMode getCurrentViewMode() {
         return currentViewMode;
+    }
+
+    public Document getReferencedDocument(DBRef selectedDBRef) {
+        return mongoDocumentOperations.getReferenceDocument(
+                new MongoCollection(selectedDBRef.getCollectionName(), selectedDBRef.getDatabaseName()),
+                selectedDBRef.getId());
     }
 
     interface ActionCallback {
