@@ -132,8 +132,8 @@ public class JsonTreeUtils {
                     throw new IllegalArgumentException("Unexpected key: " + formattedKey);
             }
         }
-        if (databaseName == null || collectionName == null || objectId == null) {
-            throw new IllegalArgumentException("When using DBRef, $ref, $id and $db should be set.");
+        if (collectionName == null || objectId == null) {
+            throw new IllegalArgumentException("When using DBRef, $ref and $id should be set.");
         }
         return new DBRef(databaseName, collectionName, objectId);
     }

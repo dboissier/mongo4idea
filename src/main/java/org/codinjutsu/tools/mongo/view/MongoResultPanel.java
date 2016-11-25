@@ -35,7 +35,6 @@ import org.apache.commons.lang.StringUtils;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.logic.Notifier;
-import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.CopyResultAction;
@@ -317,8 +316,8 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
     public Document getReferencedDocument(DBRef selectedDBRef) {
         return mongoDocumentOperations.getReferenceDocument(
-                selectedDBRef.getCollectionName(), selectedDBRef.getDatabaseName(),
-                selectedDBRef.getId());
+                selectedDBRef.getCollectionName(), selectedDBRef.getId(), selectedDBRef.getDatabaseName()
+        );
     }
 
     interface ActionCallback {
