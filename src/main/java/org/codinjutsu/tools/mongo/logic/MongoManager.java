@@ -22,6 +22,7 @@ import com.mongodb.*;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoIterable;
+import com.mongodb.client.model.FindOneAndReplaceOptions;
 import org.apache.commons.lang.StringUtils;
 import org.bson.Document;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
@@ -178,12 +179,14 @@ public class MongoManager {
                 com.mongodb.client.MongoDatabase database = mongoClient.getDatabase(databaseName);
                 com.mongodb.client.MongoCollection<Document> collection = database.getCollection(mongoCollection.getName());
 
+
                 if (!mongoDocument.containsKey("_id")) {
                     collection.insertOne(mongoDocument);
                 } else {
                     collection.findOneAndReplace(
-                            new Document("_id", mongoDocument.getObjectId("_id")),
-                            mongoDocument);
+                            new Document("_id", mongoDocument.get("_id")),
+                            mongoDocument,
+                            new FindOneAndReplaceOptions().upsert(true));
                 }
             }
         };

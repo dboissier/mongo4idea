@@ -84,7 +84,7 @@ public class MongoEditionPanel extends JPanel implements Disposable {
                     Document mongoDocument = buildMongoDocument();
                     mongoDocumentOperations.updateMongoDocument(mongoDocument);
                     actionCallback.onOperationSuccess("Document saved", "Document " +
-                            mongoDocument.toJson(DOCUMENT_CODEC) + " saved...");
+                            mongoDocument.toJson(DOCUMENT_CODEC) + " saved.");
 
                 } catch (Exception exception) {
                     actionCallback.onOperationFailure(exception);
@@ -98,7 +98,7 @@ public class MongoEditionPanel extends JPanel implements Disposable {
                 try {
                     Object documentId = getDocumentId();
                     mongoDocumentOperations.deleteMongoDocument(documentId);
-                    actionCallback.onOperationSuccess("Document deleted", "_id=" + documentId);
+                    actionCallback.onOperationSuccess("Document deleted", "Document with _id=" + documentId + " deleted.");
                 } catch (Exception exception) {
                     actionCallback.onOperationFailure(exception);
                 }

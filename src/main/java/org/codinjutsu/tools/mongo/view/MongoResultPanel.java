@@ -92,10 +92,10 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
     private MongoEditionPanel createMongoEditionPanel() {
         return new MongoEditionPanel().init(mongoDocumentOperations, new ActionCallback() {
-            public void onOperationSuccess(String label, String message) {
+            public void onOperationSuccess(String shortMessage, String detailedMessage) {
                 hideEditionPanel();
-                GuiUtils.showNotification(MongoResultPanel.this.resultTreePanel, MessageType.INFO, label, Balloon.Position.above);
-                notifier.notifyInfo(label + "\n" + message);
+                GuiUtils.showNotification(MongoResultPanel.this.resultTreePanel, MessageType.INFO, shortMessage, Balloon.Position.above);
+                notifier.notifyInfo(detailedMessage);
             }
 
             @Override
@@ -191,7 +191,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
         if (descriptor instanceof MongoKeyValueDescriptor) {
             MongoKeyValueDescriptor keyValueDescriptor = (MongoKeyValueDescriptor) descriptor;
             if (StringUtils.equals(keyValueDescriptor.getKey(), "_id")) {
-                return mongoDocumentOperations.getMongoDocument((ObjectId) keyValueDescriptor.getValue());
+                return mongoDocumentOperations.getMongoDocument(keyValueDescriptor.getValue());
             }
         }
 
@@ -211,7 +211,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
         MongoNodeDescriptor descriptor = treeNode.getDescriptor();
         if (descriptor instanceof MongoKeyValueDescriptor) {
-            return descriptor.getValue() instanceof ObjectId;
+            return "_id".equals(((MongoKeyValueDescriptor) descriptor).getKey());
         }
 
         return false;
