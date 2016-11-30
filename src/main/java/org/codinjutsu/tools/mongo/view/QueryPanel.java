@@ -43,6 +43,7 @@ import com.mongodb.util.JSON;
 import com.mongodb.util.JSONParseException;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
+import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.OperatorCompletionAction;
 
 import javax.swing.*;
@@ -323,24 +324,30 @@ public class QueryPanel extends JPanel implements Disposable {
 
         public abstract MongoQueryOptions buildQueryOptions(String rowLimit);
 
-        void notifyOnErrorForOperator(JComponent component, Exception ex) {
+        void notifyOnErrorForOperator(final JComponent component, Exception ex) {
             String message;
             if (ex instanceof JSONParseException) {
                 message = StringUtils.removeStart(ex.getMessage(), "\n");
             } else {
                 message = String.format("%s: %s", ex.getClass().getSimpleName(), ex.getMessage());
             }
-            NonOpaquePanel nonOpaquePanel = new NonOpaquePanel();
+
+            final NonOpaquePanel nonOpaquePanel = new NonOpaquePanel();
             JTextPane textPane = Messages.configureMessagePaneUi(new JTextPane(), message);
             textPane.setFont(COURIER_FONT);
             textPane.setBackground(MessageType.ERROR.getPopupBackground());
             nonOpaquePanel.add(textPane, BorderLayout.CENTER);
             nonOpaquePanel.add(new JLabel(MessageType.ERROR.getDefaultIcon()), BorderLayout.WEST);
 
-            JBPopupFactory.getInstance().createBalloonBuilder(nonOpaquePanel)
-                    .setFillColor(MessageType.ERROR.getPopupBackground())
-                    .createBalloon()
-                    .show(new RelativePoint(component, new Point(0, 0)), Balloon.Position.above);
+            GuiUtils.runInSwingThread(new Runnable() {
+                @Override
+                public void run() {
+                    JBPopupFactory.getInstance().createBalloonBuilder(nonOpaquePanel)
+                            .setFillColor(MessageType.ERROR.getPopupBackground())
+                            .createBalloon()
+                            .show(new RelativePoint(component, new Point(0, 0)), Balloon.Position.above);
+                }
+            });
         }
 
         Editor createEditor() {
