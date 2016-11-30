@@ -110,7 +110,7 @@ public class JsonTreeUtils {
     }
 
     private static DBRef buildDBRefObject(JsonTreeNode parentNode) {
-        ObjectId objectId = null;
+        Object _id = null;
         String collectionName = null;
         String databaseName = null;
         Enumeration children = parentNode.children();
@@ -120,7 +120,7 @@ public class JsonTreeUtils {
             String formattedKey = descriptor.getFormattedKey();
             switch (formattedKey) {
                 case "\"$id\"":
-                    objectId = (ObjectId) descriptor.getValue();
+                    _id = descriptor.getValue();
                     break;
                 case "\"$ref\"":
                     collectionName = (String) descriptor.getValue();
@@ -132,10 +132,10 @@ public class JsonTreeUtils {
                     throw new IllegalArgumentException("Unexpected key: " + formattedKey);
             }
         }
-        if (collectionName == null || objectId == null) {
+        if (collectionName == null || _id == null) {
             throw new IllegalArgumentException("When using DBRef, $ref and $id should be set.");
         }
-        return new DBRef(databaseName, collectionName, objectId);
+        return new DBRef(databaseName, collectionName, _id);
     }
 
     private static List buildObjectList(JsonTreeNode parentNode) {

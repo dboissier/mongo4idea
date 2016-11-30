@@ -41,6 +41,6 @@ public class ExecuteQuery extends AnAction {
 
     @Override
     public void update(AnActionEvent event) {
-        event.getPresentation().setEnabled(mongoPanel.getMongoCollection() != null);
+        event.getPresentation().setEnabled(mongoPanel.getCurrentWayPoint() != null);
     }
 }

@@ -22,7 +22,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileSystem;
 import com.intellij.util.LocalTimeCounter;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
-import org.codinjutsu.tools.mongo.model.MongoCollection;
+import org.codinjutsu.tools.mongo.view.model.navigation.Navigation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,23 +34,20 @@ public class MongoObjectFile extends VirtualFile {
 
     private final long myModStamp;
     private final ServerConfiguration configuration;
-    private final MongoCollection collection;
+    private final Navigation navigation;
     private final Project project;
-    private final String name;
 
-    public MongoObjectFile(Project project, ServerConfiguration configuration, MongoCollection collection) {
+    public MongoObjectFile(Project project, ServerConfiguration configuration, Navigation navigation) {
         this.project = project;
         this.configuration = configuration;
-        this.collection = collection;
-        this.name = String.format("%s/%s/%s", configuration.getLabel(), collection.getDatabaseName(), collection.getName());
+        this.navigation = navigation;
         this.myModStamp = LocalTimeCounter.currentTime();
-
     }
 
     @NotNull
     @Override
     public String getName() {
-        return name;
+        return String.format("%s/%s", configuration.getLabel(), navigation.getCurrentWayPoint().getLabel());
     }
 
     @NotNull
@@ -67,7 +64,7 @@ public class MongoObjectFile extends VirtualFile {
     @NotNull
     @Override
     public String getPath() {
-        return name;
+        return getName();
     }
 
     @Override
@@ -89,15 +86,15 @@ public class MongoObjectFile extends VirtualFile {
         return configuration;
     }
 
-    public MongoCollection getCollection() {
-        return collection;
+    public Navigation getNavigation() {
+        return navigation;
     }
 
     public Project getProject() {
         return project;
     }
 
-//    Unused methods
+    //    Unused methods
     @Override
     public VirtualFile getParent() {
         return null;

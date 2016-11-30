@@ -266,9 +266,9 @@ public class MongoManager {
     }
 
     private MongoCollectionResult find(MongoQueryOptions mongoQueryOptions, final MongoCollectionResult mongoCollectionResult, com.mongodb.client.MongoCollection<Document> collection) {
-        BasicDBObject filter = mongoQueryOptions.getFilter();
-        BasicDBObject projection = mongoQueryOptions.getProjection();
-        BasicDBObject sort = mongoQueryOptions.getSort();
+        Document filter = mongoQueryOptions.getFilter();
+        Document projection = mongoQueryOptions.getProjection();
+        Document sort = mongoQueryOptions.getSort();
 
         FindIterable<Document> cursor;
         if (projection == null) {

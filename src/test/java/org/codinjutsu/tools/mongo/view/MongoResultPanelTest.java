@@ -65,7 +65,6 @@ public class MongoResultPanelTest {
         mongoResultPanel = GuiActionRunner.execute(new GuiQuery<MongoResultPanel>() {
             protected MongoResultPanel executeInEDT() {
                 return new MongoResultPanel(DummyProject.getInstance(), mongoDocumentOperations, notifierMock) {
-                    @Override
                     void buildPopupMenu() {
                     }
                 };

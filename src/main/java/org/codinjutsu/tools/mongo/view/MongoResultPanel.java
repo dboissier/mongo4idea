@@ -33,7 +33,6 @@ import com.intellij.util.ui.tree.TreeUtil;
 import com.mongodb.DBRef;
 import org.apache.commons.lang.StringUtils;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
@@ -123,23 +122,11 @@ public class MongoResultPanel extends JPanel implements Disposable {
         resultTreeTableView = new JsonTreeTableView(JsonTreeUtils.buildJsonTree(mongoCollectionResult), JsonTreeTableView.COLUMNS_FOR_READING);
         resultTreeTableView.setName("resultTreeTable");
 
-        resultTreeTableView.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent mouseEvent) {
-                if (mouseEvent.getClickCount() == 2 && MongoResultPanel.this.isSelectedNodeId()) {
-                    MongoResultPanel.this.editSelectedMongoDocument();
-                }
-            }
-        });
-
-        buildPopupMenu();
-
         displayResult(resultTreeTableView);
     }
 
     private void updateResultTable(MongoCollectionResult mongoCollectionResult) {
-        JsonTableView resultTableView = new JsonTableView(JsonTableUtils.buildJsonTable(mongoCollectionResult));
-        displayResult(resultTableView);
+        displayResult(new JsonTableView(JsonTableUtils.buildJsonTable(mongoCollectionResult)));
     }
 
     private void displayResult(JComponent tableView) {
@@ -149,28 +136,14 @@ public class MongoResultPanel extends JPanel implements Disposable {
         resultTreePanel.validate();
     }
 
-    void buildPopupMenu() {
-        DefaultActionGroup actionPopupGroup = new DefaultActionGroup("MongoResultPopupGroup", true);
-        if (ApplicationManager.getApplication() != null) {
-            actionPopupGroup.add(new EditMongoDocumentAction(this));
-            actionPopupGroup.add(new CopyResultAction(this));
-            actionPopupGroup.add(new GoToMongoDocumentAction(this));
-        }
-
-        PopupHandler.installPopupHandler(resultTreeTableView, actionPopupGroup, "POPUP", ActionManager.getInstance());
-    }
-
 
     public void editSelectedMongoDocument() {
-
         Document mongoDocument = getSelectedMongoDocument();
-
         if (mongoDocument == null) {
             return;
         }
 
         mongoEditionPanel.updateEditionTree(mongoDocument);
-
         splitter.setSecondComponent(mongoEditionPanel);
     }
 

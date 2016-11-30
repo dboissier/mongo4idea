@@ -26,21 +26,28 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.LoadingDecorator;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.NumberDocument;
+import com.intellij.ui.PopupHandler;
 import com.intellij.ui.components.panels.NonOpaquePanel;
+import com.mongodb.DBRef;
 import org.bson.Document;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
+import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.*;
+import org.codinjutsu.tools.mongo.view.model.navigation.Navigation;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class MongoPanel extends JPanel implements Disposable {
 
@@ -55,14 +62,14 @@ public class MongoPanel extends JPanel implements Disposable {
 
     private final MongoManager mongoManager;
     private final ServerConfiguration configuration;
-    private final MongoCollection mongoCollection;
+    private final Navigation navigation;
     private MongoCollectionResult currentResults;
 
-    public MongoPanel(Project project, final MongoManager mongoManager, final ServerConfiguration configuration, final MongoCollection mongoCollection) {
+    public MongoPanel(Project project, final MongoManager mongoManager, final ServerConfiguration configuration, final Navigation navigation) {
         this.mongoManager = mongoManager;
-        this.mongoCollection = mongoCollection;
+        this.navigation = navigation;
         this.configuration = configuration;
-        this.currentResults = new MongoCollectionResult(mongoCollection.getName());
+        this.currentResults = new MongoCollectionResult(navigation.getCurrentWayPoint().getLabel());
 
         errorPanel.setLayout(new BorderLayout());
 
@@ -72,11 +79,11 @@ public class MongoPanel extends JPanel implements Disposable {
         resultPanel = createResultPanel(project, new MongoDocumentOperations() {
 
             public Document getMongoDocument(Object _id) {
-                return mongoManager.findMongoDocument(configuration, mongoCollection, _id);
+                return mongoManager.findMongoDocument(configuration, navigation.getCurrentWayPoint().getCollection(), _id);
             }
 
             public void updateMongoDocument(Document mongoDocument) {
-                mongoManager.update(configuration, mongoCollection, mongoDocument);
+                mongoManager.update(configuration, navigation.getCurrentWayPoint().getCollection(), mongoDocument);
                 executeQuery();
             }
 
@@ -84,12 +91,12 @@ public class MongoPanel extends JPanel implements Disposable {
             public Document getReferenceDocument(String collection, Object _id, String database) {
                 return mongoManager.findMongoDocument(
                         configuration,
-                        new MongoCollection(collection, database != null ? database : mongoCollection.getDatabaseName()),
+                        new MongoCollection(collection, database != null ? database : navigation.getCurrentWayPoint().getCollection().getDatabaseName()),
                         _id);
             }
 
             public void deleteMongoDocument(Object objectId) {
-                mongoManager.delete(configuration, mongoCollection, objectId);
+                mongoManager.delete(configuration, navigation.getCurrentWayPoint().getCollection(), objectId);
                 executeQuery();
             }
         }, Notifier.getInstance(project));
@@ -176,6 +183,7 @@ public class MongoPanel extends JPanel implements Disposable {
         actionResultGroup.addSeparator();
         actionResultGroup.add(expandAllAction);
         actionResultGroup.add(collapseAllAction);
+        actionResultGroup.add(new NavigateBackwardAction(this));
         actionResultGroup.add(new CloseFindEditorAction(this));
 
         ActionToolbar actionToolBar = ActionManager.getInstance().createActionToolbar("MongoResultGroupActions", actionResultGroup, true);
@@ -189,6 +197,7 @@ public class MongoPanel extends JPanel implements Disposable {
         DefaultActionGroup viewSelectGroup = new DefaultActionGroup("MongoViewSelectGroup", false);
         viewSelectGroup.add(new ViewAsTreeAction(this));
         viewSelectGroup.add(new ViewAsTableAction(this));
+        viewSelectGroup.add(new NavigateBackwardAction(this));
 
         ActionToolbar viewToolbar = ActionManager.getInstance().createActionToolbar("MongoViewSelectecActions", viewSelectGroup, true);
         viewToolbar.setLayoutPolicy(ActionToolbar.AUTO_LAYOUT_POLICY);
@@ -198,8 +207,8 @@ public class MongoPanel extends JPanel implements Disposable {
         toolBar.add(viewToolbarComponent, BorderLayout.EAST);
     }
 
-    public MongoCollection getMongoCollection() {
-        return mongoCollection;
+    public Navigation.WayPoint getCurrentWayPoint() {
+        return navigation.getCurrentWayPoint();
     }
 
 
@@ -207,7 +216,7 @@ public class MongoPanel extends JPanel implements Disposable {
         executeQuery();
     }
 
-    private void executeQuery(final boolean useCachedResults) {
+    private void executeQuery(final boolean useCachedResults, final Navigation.WayPoint wayPoint) {
         errorPanel.setVisible(false);
         validateQuery();
         ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
@@ -222,12 +231,16 @@ public class MongoPanel extends JPanel implements Disposable {
                     });
 
                     if (!useCachedResults) {
-                        currentResults = mongoManager.loadCollectionValues(configuration, mongoCollection, queryPanel.getQueryOptions(rowLimitField.getText()));
+                        currentResults = mongoManager.loadCollectionValues(
+                                configuration,
+                                wayPoint.getCollection(),
+                                wayPoint.getQueryOptions());
                     }
                     GuiUtils.runInSwingThread(new Runnable() {
                         @Override
                         public void run() {
                             resultPanel.updateResultView(currentResults);
+                            initActions(resultPanel.resultTreeTableView);
 
                         }
                     });
@@ -254,8 +267,30 @@ public class MongoPanel extends JPanel implements Disposable {
         });
     }
 
+    private void initActions(JsonTreeTableView resultTreeTableView) {
+        resultTreeTableView.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                if (mouseEvent.getClickCount() == 2 && resultPanel.isSelectedNodeId()) {
+                    resultPanel.editSelectedMongoDocument();
+                }
+            }
+        });
+
+        DefaultActionGroup actionPopupGroup = new DefaultActionGroup("MongoResultPopupGroup", true);
+        if (ApplicationManager.getApplication() != null) {
+            actionPopupGroup.add(new EditMongoDocumentAction(resultPanel));
+            actionPopupGroup.add(new CopyResultAction(resultPanel));
+            actionPopupGroup.add(new GoToMongoDocumentAction(this));
+        }
+
+        PopupHandler.installPopupHandler(resultTreeTableView, actionPopupGroup, "POPUP", ActionManager.getInstance());
+    }
+
     public void executeQuery() {
-        executeQuery(false);
+        Navigation.WayPoint currentWayPoint = navigation.getCurrentWayPoint();
+        currentWayPoint.setQueryOptions(queryPanel.getQueryOptions(rowLimitField.getText()));
+        executeQuery(false, currentWayPoint);
     }
 
     private void validateQuery() {
@@ -300,11 +335,38 @@ public class MongoPanel extends JPanel implements Disposable {
             return;
         }
         this.resultPanel.setCurrentViewMode(viewMode);
-        executeQuery(true);
+        executeQuery(true, navigation.getCurrentWayPoint());
     }
 
     public ServerConfiguration getConfiguration() {
         return configuration;
+    }
+
+    public void navigateBackward() {
+        navigation.moveBackward();
+        executeQuery(false, navigation.getCurrentWayPoint());
+    }
+
+    public boolean hasNavigationHistory() {
+        return navigation.getWayPoints().size() > 1;
+    }
+
+    public void goToReferencedDocument() {
+        DBRef selectedDBRef = resultPanel.getSelectedDBRef();
+
+        Document referencedDocument = resultPanel.getReferencedDocument(selectedDBRef);
+        if (referencedDocument == null) {
+            Messages.showErrorDialog(this, "Referenced document was not found");
+            return;
+        }
+
+        navigation.addNewWayPoint(
+                new MongoCollection(selectedDBRef.getCollectionName(), selectedDBRef.getDatabaseName() != null ? selectedDBRef.getDatabaseName() :
+                navigation.getCurrentWayPoint().getCollection().getDatabaseName()),
+                new MongoQueryOptions().setFilter(
+                        new Document("_id", selectedDBRef.getId())
+                ));
+        executeQuery(false, navigation.getCurrentWayPoint());
     }
 
     interface MongoDocumentOperations {

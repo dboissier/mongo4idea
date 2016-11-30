@@ -20,6 +20,7 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import org.apache.commons.lang.StringUtils;
+import org.bson.Document;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -28,12 +29,12 @@ public class MongoQueryOptions {
 
     private static final int DEFAULT_RESULT_LIMIT = 300;
 
-    private static final BasicDBObject EMPTY_FILTER = new BasicDBObject();
+    private static final Document EMPTY_FILTER = new Document();
     private final List<BasicDBObject> operations = new LinkedList<>();
 
-    private BasicDBObject filter = EMPTY_FILTER;
-    private BasicDBObject projection = null;
-    private BasicDBObject sort;
+    private Document filter = EMPTY_FILTER;
+    private Document projection = null;
+    private Document sort;
 
     private int resultLimit = DEFAULT_RESULT_LIMIT;
 
@@ -56,32 +57,37 @@ public class MongoQueryOptions {
 
     public void setFilter(String query) {
         if (!StringUtils.isBlank(query)) {
-            filter = (BasicDBObject) JSON.parse(query);
+            filter = Document.parse(query);
         }
     }
 
-    public BasicDBObject getFilter() {
+    public MongoQueryOptions setFilter(Document filter) {
+        this.filter = filter;
+        return this;
+    }
+
+    public Document getFilter() {
         return filter;
     }
 
+
     public void setProjection(String query) {
         if (!StringUtils.isBlank(query)) {
-            projection = (BasicDBObject) JSON.parse(query);
+            projection = Document.parse(query);
         }
     }
 
-
-    public BasicDBObject getProjection() {
+    public Document getProjection() {
         return projection;
     }
 
     public void setSort(String query) {
         if (!StringUtils.isBlank(query)) {
-            sort = (BasicDBObject) JSON.parse(query);
+            sort =  Document.parse(query);
         }
     }
 
-    public BasicDBObject getSort() {
+    public Document getSort() {
         return sort;
     }
 

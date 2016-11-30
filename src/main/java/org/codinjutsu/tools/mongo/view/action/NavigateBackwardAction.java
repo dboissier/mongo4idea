@@ -16,43 +16,26 @@
 
 package org.codinjutsu.tools.mongo.view.action;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.project.DumbAware;
-import com.intellij.openapi.ui.DialogBuilder;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.ui.components.JBScrollPane;
-import com.mongodb.DBRef;
-import org.bson.Document;
-import org.codinjutsu.tools.mongo.view.JsonTreeTableView;
 import org.codinjutsu.tools.mongo.view.MongoPanel;
-import org.codinjutsu.tools.mongo.view.model.JsonTreeUtils;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.KeyEvent;
-
-public class GoToMongoDocumentAction extends AnAction implements DumbAware {
-
+public class NavigateBackwardAction extends AnAction {
     private final MongoPanel mongoPanel;
 
-    public GoToMongoDocumentAction(MongoPanel mongoPanel) {
-        super("View reference");
+    public NavigateBackwardAction(MongoPanel mongoPanel) {
+        super("Navigate Backward", "Navigate Backward", AllIcons.Actions.Back);
         this.mongoPanel = mongoPanel;
-
-        registerCustomShortcutSet(KeyEvent.VK_B,
-                Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(),
-                this.mongoPanel);
     }
 
     @Override
-    public void actionPerformed(AnActionEvent anActionEvent) {
-        mongoPanel.goToReferencedDocument();
+    public void actionPerformed(AnActionEvent e) {
+        mongoPanel.navigateBackward();
     }
 
     @Override
     public void update(AnActionEvent event) {
-        event.getPresentation().setEnabled(mongoPanel.getResultPanel().getSelectedDBRef() != null);
+        event.getPresentation().setVisible(mongoPanel.hasNavigationHistory());
     }
-
 }
