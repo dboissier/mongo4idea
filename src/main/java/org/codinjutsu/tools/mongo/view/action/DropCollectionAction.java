@@ -23,6 +23,8 @@ import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
 
 public class DropCollectionAction extends AnAction implements DumbAware {
 
@@ -31,6 +33,8 @@ public class DropCollectionAction extends AnAction implements DumbAware {
     public DropCollectionAction(MongoExplorerPanel mongoExplorerPanel) {
         super("Drop collection", "Drop the selected collection", AllIcons.Actions.GC);
         this.mongoExplorerPanel = mongoExplorerPanel;
+
+        registerCustomShortcutSet(KeyEvent.VK_DELETE, 0, mongoExplorerPanel);
     }
 
     @Override

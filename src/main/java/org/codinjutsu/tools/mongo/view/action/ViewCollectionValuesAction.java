@@ -22,6 +22,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 
+import java.awt.*;
+import java.awt.event.KeyEvent;
+
 
 public class ViewCollectionValuesAction extends AnAction implements DumbAware {
 
@@ -30,6 +33,8 @@ public class ViewCollectionValuesAction extends AnAction implements DumbAware {
     public ViewCollectionValuesAction(MongoExplorerPanel mongoExplorerPanel) {
         super("View collection content", "View collection content", AllIcons.Nodes.DataSchema);
         this.mongoExplorerPanel = mongoExplorerPanel;
+
+        registerCustomShortcutSet(KeyEvent.VK_F4, 0, mongoExplorerPanel);
     }
 
     @Override
