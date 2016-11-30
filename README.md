@@ -6,8 +6,8 @@
 
 ## Current SNAPSHOT builds
 
-* [Build for Idea 15](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.10.0-SNAPSHOT-idea15-distribution.zip)
-* [Build for Idea 2016](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.10.0-SNAPSHOT-idea2016-distribution.zip)
+* [Build for Idea 15](https://github.com/dboissier/mongo4idea/raw/navigation/snapshot/mongo4idea-0.10.0-SNAPSHOT-idea2016-distribution.zip)
+* [Build for Idea 2016](https://github.com/dboissier/mongo4idea/raw/navigation/snapshot/mongo4idea-0.10.0-SNAPSHOT-idea2016-distribution.zip)
 
 
 ## Description
