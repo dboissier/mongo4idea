@@ -1,4 +1,5 @@
 Version 0.10.0-SHAPSHOT
+    * [fix] #163 and #177 Malformed filter causes IDE freezing
     * [fix] #176 _id can be primitive type excepting Array
     * [fix] #173 CodecConfigurationException when using DBRef
     * [add] #133 Handle DBRef with View detail in a dialog
