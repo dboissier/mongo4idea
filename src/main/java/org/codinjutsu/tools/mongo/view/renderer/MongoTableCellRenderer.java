@@ -32,19 +32,17 @@ public class MongoTableCellRenderer extends ColoredTableCellRenderer {
         if (value == null) {
             append("null", StyleAttributesProvider.getNullAttribute());
         } else {
-            SimpleTextAttributes styleAttribute;
             if (value instanceof Number) {
-                styleAttribute = StyleAttributesProvider.getNumberAttribute();
+                append(String.valueOf(value), StyleAttributesProvider.getNumberAttribute());
             } else if (value instanceof Boolean) {
-                styleAttribute = StyleAttributesProvider.getBooleanAttribute();
+                append(String.valueOf(value), StyleAttributesProvider.getBooleanAttribute());
             } else if (value instanceof Document) {
-                styleAttribute = StyleAttributesProvider.getDocumentAttribute();
+                append(((Document) value).toJson(), StyleAttributesProvider.getDocumentAttribute());
             } else if (value instanceof ObjectId) {
-                styleAttribute = StyleAttributesProvider.getObjectIdAttribute();
+                append(String.valueOf(value), StyleAttributesProvider.getObjectIdAttribute());
             } else {
-                styleAttribute = StyleAttributesProvider.getStringAttribute();
+                append(String.valueOf(value), StyleAttributesProvider.getStringAttribute());
             }
-            append(String.valueOf(value), styleAttribute);
         }
     }
 }
