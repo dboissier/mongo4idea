@@ -47,6 +47,9 @@ When you open the Mongo explorer, you will see a panel:
 
 * If you need to use a SSH tunnel, click on the SSH tab and then enter the corresponding settings
 
+![ServerConfigurationSSHTab](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea_serverConfigurationSSHTab.png)
+
+
 When you are done, click on the **Test Connection** button to check the server configuration.
 
 Additionaly:
@@ -129,7 +132,6 @@ When your document has a DBRef field, you can view the referenced document by ri
 The referenced document will be displayed in the same tab. A **Back** button will appear and allow you to go back to the navigation history.
 
 
-
 ### Mongo shell integration
 
 If you set the mongo client path (e.g., `/usr/bin/mongo`), you can run the console by selecting a database under your mongo server node and click on the button **Mongo Shell** on the toolbar of the Mongo explorer.
@@ -138,7 +140,7 @@ If you set the mongo client path (e.g., `/usr/bin/mongo`), you can run the conso
 
 ### Run a file
 
-If you need to run a JavaScript file on your mongo server, just type `CTRL+SHIFT+F10` (or right-click in your file and select Run `myscript.js` file)
+If you need to run a JavaScript file on your mongo server, just type `CTRL+SHIFT+F10` (or right-click in your file and select Run `myscript.js file)
 
 ![Document edition](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea-runAFile.png)
 
