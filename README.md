@@ -82,7 +82,7 @@ If you want to see the results in a table view instead, click on the **Table** i
 
 #### Querying
 
-If you want to run a *find* query, click on the Magnifying glass icon or use the `CTRL+F shortcut.
+If you want to run a *find* query, click on the Magnifying glass icon or use the `CTRL+F` shortcut.
 
 The query panel will appear at the top.
 
@@ -98,7 +98,7 @@ If you want to run some aggregate queries, type your pipeline as follows:
 
 ![Aggregate query view](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea-queryAggregate.png)
 
-Typing **CTRL+SPACE** displays a popup that allows you to select a query operator.
+Typing `CTRL+SPACE` displays a popup that allows you to select a query operator.
 
 Additionally, you can set a row limit.
 
@@ -107,7 +107,7 @@ When you are done, click on the Run button (or type `CTRL+ENTER` shortcut) to se
 
 ## Document editing
 
-Any document can be edited by double-clicking on the **object id** (or by right-clicking). A panel will open at the bottom.
+Any document can be edited by double-clicking on the **object id** (or by right-clicking and select **Edit document**). A panel will open at the bottom.
 
 ![Document edition](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea-documentEdition.png)
 
@@ -132,13 +132,13 @@ The referenced document will be displayed in the same tab. A **Back** button wil
 
 ### Mongo shell integration
 
-If you set the mongo client path (e.g., /usr/bin/mongo), you can run the console by selecting a database under your mongo server node and click on the button **Mongo Shell** on the toolbar of the Mongo explorer.
+If you set the mongo client path (e.g., `/usr/bin/mongo`), you can run the console by selecting a database under your mongo server node and click on the button **Mongo Shell** on the toolbar of the Mongo explorer.
 
 ![Browser](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea-shell.png)
 
 ### Run a file
 
-If you need to run a JavaScript file on your mongo server, just type `CTRL+SHIFT+F10` (or right-click in your file and select Run `myscript.js file)
+If you need to run a JavaScript file on your mongo server, just type `CTRL+SHIFT+F10` (or right-click in your file and select Run `myscript.js` file)
 
 ![Document edition](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea-runAFile.png)
 
