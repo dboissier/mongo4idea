@@ -43,6 +43,7 @@ import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.*;
 import org.codinjutsu.tools.mongo.view.model.navigation.Navigation;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -76,7 +77,21 @@ public class MongoPanel extends JPanel implements Disposable {
         queryPanel = new QueryPanel(project);
         queryPanel.setVisible(false);
 
-        resultPanel = createResultPanel(project, new MongoDocumentOperations() {
+        resultPanel = createResultPanel(project, Notifier.getInstance(project));
+
+        loadingDecorator = new LoadingDecorator(resultPanel, this, 0);
+        splitter.setOrientation(true);
+        splitter.setProportion(0.2f);
+        splitter.setSecondComponent(loadingDecorator.getComponent());
+
+        setLayout(new BorderLayout());
+        add(rootPanel);
+
+        initToolBar();
+    }
+
+    private MongoResultPanel createResultPanel(Project project, Notifier notifier) {
+        return new MongoResultPanel(project, new MongoDocumentOperations() {
 
             public Document getMongoDocument(Object _id) {
                 return mongoManager.findMongoDocument(configuration, navigation.getCurrentWayPoint().getCollection(), _id);
@@ -99,24 +114,24 @@ public class MongoPanel extends JPanel implements Disposable {
                 mongoManager.delete(configuration, navigation.getCurrentWayPoint().getCollection(), objectId);
                 executeQuery();
             }
-        }, Notifier.getInstance(project));
-
-        loadingDecorator = new LoadingDecorator(resultPanel, this, 0);
-
-
-        splitter.setOrientation(true);
-        splitter.setProportion(0.2f);
-        splitter.setSecondComponent(loadingDecorator.getComponent());
-
-        setLayout(new BorderLayout());
-        add(rootPanel);
-
-        initToolBar();
+        }, notifier);
     }
 
     private void initToolBar() {
         toolBar.setLayout(new BorderLayout());
 
+        JPanel rowLimitPanel = createRowLimitComponent();
+        toolBar.add(rowLimitPanel, BorderLayout.WEST);
+
+        JComponent actionToolBarComponent = createResultActionsComponent();
+        toolBar.add(actionToolBarComponent, BorderLayout.CENTER);
+
+        JComponent viewToolbarComponent = createSelectViewActionsComponent();
+        toolBar.add(viewToolbarComponent, BorderLayout.EAST);
+    }
+
+    @NotNull
+    private JPanel createRowLimitComponent() {
         rowLimitField.setColumns(5);
         rowLimitField.setDocument(new NumberDocument());
 
@@ -124,27 +139,49 @@ public class MongoPanel extends JPanel implements Disposable {
         rowLimitPanel.add(new JLabel("Row limit:"), BorderLayout.WEST);
         rowLimitPanel.add(rowLimitField, BorderLayout.CENTER);
         rowLimitPanel.add(Box.createHorizontalStrut(5), BorderLayout.EAST);
-        toolBar.add(rowLimitPanel, BorderLayout.WEST);
-
-        installResultPanelActions();
-    }
-
-    private MongoResultPanel createResultPanel(Project project, MongoDocumentOperations mongoDocumentOperations, Notifier notifier) {
-        return new MongoResultPanel(project, mongoDocumentOperations, notifier);
+        return rowLimitPanel;
     }
 
 
-    private void installResultPanelActions() {
+    @NotNull
+    private JComponent createResultActionsComponent() {
         DefaultActionGroup actionResultGroup = new DefaultActionGroup("MongoResultGroup", true);
-        if (ApplicationManager.getApplication() != null) {
-            actionResultGroup.add(new ExecuteQuery(this));
-            actionResultGroup.add(new OpenFindAction(this));
-            actionResultGroup.add(new EnableAggregateAction(queryPanel));
-            actionResultGroup.addSeparator();
-            actionResultGroup.add(new AddMongoDocumentAction(resultPanel));
-            actionResultGroup.add(new EditMongoDocumentAction(resultPanel));
-            actionResultGroup.add(new CopyResultAction(resultPanel));
-        }
+        actionResultGroup.add(new ExecuteQuery(this));
+        actionResultGroup.add(new OpenFindAction(this));
+        actionResultGroup.add(new EnableAggregateAction(queryPanel));
+        actionResultGroup.addSeparator();
+        actionResultGroup.add(new AddMongoDocumentAction(resultPanel));
+        actionResultGroup.add(new EditMongoDocumentAction(resultPanel));
+        actionResultGroup.add(new CopyResultAction(resultPanel));
+        actionResultGroup.addSeparator();
+        actionResultGroup.add(new NavigateBackwardAction(this));
+
+        addBasicTreeActions(actionResultGroup);
+        actionResultGroup.add(new CloseFindEditorAction(this));
+
+        ActionToolbar actionToolBar = ActionManager.getInstance().createActionToolbar("MongoResultGroupActions", actionResultGroup, true);
+        actionToolBar.setLayoutPolicy(ActionToolbar.AUTO_LAYOUT_POLICY);
+        JComponent actionToolBarComponent = actionToolBar.getComponent();
+        actionToolBarComponent.setBorder(null);
+        actionToolBarComponent.setOpaque(false);
+        return actionToolBarComponent;
+    }
+
+    @NotNull
+    private JComponent createSelectViewActionsComponent() {
+        DefaultActionGroup viewSelectGroup = new DefaultActionGroup("MongoViewSelectGroup", false);
+        viewSelectGroup.add(new ViewAsTreeAction(this));
+        viewSelectGroup.add(new ViewAsTableAction(this));
+
+        ActionToolbar viewToolbar = ActionManager.getInstance().createActionToolbar("MongoViewSelectedActions", viewSelectGroup, true);
+        viewToolbar.setLayoutPolicy(ActionToolbar.AUTO_LAYOUT_POLICY);
+        JComponent viewToolbarComponent = viewToolbar.getComponent();
+        viewToolbarComponent.setBorder(null);
+        viewToolbarComponent.setOpaque(false);
+        return viewToolbarComponent;
+    }
+
+    private void addBasicTreeActions(DefaultActionGroup actionResultGroup) {
         final TreeExpander treeExpander = new TreeExpander() {
             @Override
             public void expandAll() {
@@ -168,7 +205,6 @@ public class MongoPanel extends JPanel implements Disposable {
         };
 
         CommonActionsManager actionsManager = CommonActionsManager.getInstance();
-
         final AnAction expandAllAction = actionsManager.createExpandAllAction(treeExpander, resultPanel);
         final AnAction collapseAllAction = actionsManager.createCollapseAllAction(treeExpander, resultPanel);
 
@@ -180,37 +216,15 @@ public class MongoPanel extends JPanel implements Disposable {
             }
         });
 
+
         actionResultGroup.addSeparator();
         actionResultGroup.add(expandAllAction);
         actionResultGroup.add(collapseAllAction);
-        actionResultGroup.add(new NavigateBackwardAction(this));
-        actionResultGroup.add(new CloseFindEditorAction(this));
-
-        ActionToolbar actionToolBar = ActionManager.getInstance().createActionToolbar("MongoResultGroupActions", actionResultGroup, true);
-        actionToolBar.setLayoutPolicy(ActionToolbar.AUTO_LAYOUT_POLICY);
-        JComponent actionToolBarComponent = actionToolBar.getComponent();
-        actionToolBarComponent.setBorder(null);
-        actionToolBarComponent.setOpaque(false);
-
-        toolBar.add(actionToolBarComponent, BorderLayout.CENTER);
-
-        DefaultActionGroup viewSelectGroup = new DefaultActionGroup("MongoViewSelectGroup", false);
-        viewSelectGroup.add(new ViewAsTreeAction(this));
-        viewSelectGroup.add(new ViewAsTableAction(this));
-        viewSelectGroup.add(new NavigateBackwardAction(this));
-
-        ActionToolbar viewToolbar = ActionManager.getInstance().createActionToolbar("MongoViewSelectecActions", viewSelectGroup, true);
-        viewToolbar.setLayoutPolicy(ActionToolbar.AUTO_LAYOUT_POLICY);
-        JComponent viewToolbarComponent = viewToolbar.getComponent();
-        viewToolbarComponent.setBorder(null);
-        viewToolbarComponent.setOpaque(false);
-        toolBar.add(viewToolbarComponent, BorderLayout.EAST);
     }
 
     public Navigation.WayPoint getCurrentWayPoint() {
         return navigation.getCurrentWayPoint();
     }
-
 
     public void showResults() {
         executeQuery();
@@ -362,7 +376,7 @@ public class MongoPanel extends JPanel implements Disposable {
 
         navigation.addNewWayPoint(
                 new MongoCollection(selectedDBRef.getCollectionName(), selectedDBRef.getDatabaseName() != null ? selectedDBRef.getDatabaseName() :
-                navigation.getCurrentWayPoint().getCollection().getDatabaseName()),
+                        navigation.getCurrentWayPoint().getCollection().getDatabaseName()),
                 new MongoQueryOptions().setFilter(
                         new Document("_id", selectedDBRef.getId())
                 ));

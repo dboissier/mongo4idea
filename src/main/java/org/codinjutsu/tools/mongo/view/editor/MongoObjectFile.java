@@ -36,12 +36,14 @@ public class MongoObjectFile extends VirtualFile {
     private final ServerConfiguration configuration;
     private final Navigation navigation;
     private final Project project;
+    private final String path;
 
     public MongoObjectFile(Project project, ServerConfiguration configuration, Navigation navigation) {
         this.project = project;
         this.configuration = configuration;
         this.navigation = navigation;
         this.myModStamp = LocalTimeCounter.currentTime();
+        this.path = getName();
     }
 
     @NotNull
@@ -64,7 +66,7 @@ public class MongoObjectFile extends VirtualFile {
     @NotNull
     @Override
     public String getPath() {
-        return getName();
+        return path;
     }
 
     @Override
