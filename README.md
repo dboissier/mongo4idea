@@ -140,7 +140,7 @@ If you set the mongo client path (e.g., /usr/bin/mongo), you can run the console
 
 If you need to run a JavaScript file on your mongo server, just type `CTRL+SHIFT+F10` (or right-click in your file and select Run `myscript.js file)
 
-![Document edition](https://github.com/dboissier/mongo4idea/eaw/master/doc/mongo4idea-runAFile.png)
+![Document edition](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea-runAFile.png)
 
 Select your server and your database then click on the run button.
 
