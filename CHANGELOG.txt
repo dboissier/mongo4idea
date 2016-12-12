@@ -1,3 +1,6 @@
+Version 0.11.0-SNAPSHOT
+    * TODO
+
 Version 0.10.0
     $ [fix] #174 add shortcuts on some actions
     * [fix] #163 and #177 Malformed filter causes IDE freezing
