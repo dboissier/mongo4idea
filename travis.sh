@@ -5,7 +5,9 @@ export IDEA_HOME=$(pwd)
 cd ..
 
 # Run the tests
-xvfb-run -a mvn clean install
+export DISPLAY=:99.0
+/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16 +extension RANDR
+mvn clean install
 
 # Was our build successful?
 stat=$?
