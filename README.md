@@ -1,14 +1,12 @@
 # Mongo Plugin for IntelliJ IDEA version 0.10.0
 
-* [Download](https://plugins.jetbrains.com/plugin/download?pr=idea&updateId=22433)
+* [Jetbrains plugin page](https://plugins.jetbrains.com/idea/plugin/7141)
 * [Changelog](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)
 
+## Current builds
 
-## Current SNAPSHOT builds
-
-* [Build for Idea 15](https://github.com/dboissier/mongo4idea/raw/navigation/snapshot/mongo4idea-0.10.0-SNAPSHOT-idea2016-distribution.zip)
-* [Build for Idea 2016](https://github.com/dboissier/mongo4idea/raw/navigation/snapshot/mongo4idea-0.10.0-SNAPSHOT-idea2016-distribution.zip)
-
+* [0.10.0 Build for Idea 15](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.10.15-distribution.zip)
+* [0.10.0 Build for Idea 2016](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.10.2016-distribution.zip)
 
 ## Description
 This plugin integrates MongoDB Servers with database/collections tree, Query Runner and Shell console.
