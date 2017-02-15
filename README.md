@@ -1,4 +1,4 @@
-# Mongo Plugin for IntelliJ IDEA version 0.9.0
+# Mongo Plugin for IntelliJ IDEA version 0.10.0
 
 * [Download](https://plugins.jetbrains.com/plugin/download?pr=idea&updateId=22433)
 * [Changelog](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)
