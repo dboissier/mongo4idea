@@ -24,19 +24,18 @@ import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.awt.*;
 
-class ConfigurationDialog extends DialogWrapper {
+public class ConfigurationDialog extends DialogWrapper {
 
     private final Project project;
     private final MongoManager mongoManager;
     private final ServerConfiguration configuration;
     private ServerConfigurationPanel serverConfigurationPanel;
 
-    ConfigurationDialog(Project project, Component parent, MongoManager mongoManager, ServerConfiguration configuration) {
+    public ConfigurationDialog(Project project, MongoExplorerPanel parent, ServerConfiguration configuration) {
         super(parent, true);
         this.project = project;
-        this.mongoManager = mongoManager;
+        this.mongoManager = parent.getMongoManager();
         this.configuration = configuration;
 
         init();

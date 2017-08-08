@@ -17,7 +17,6 @@
 package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.execution.ExecutionException;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.options.BaseConfigurable;
 import com.intellij.openapi.options.ConfigurationException;
@@ -26,42 +25,28 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
-import com.intellij.ui.*;
-import com.intellij.ui.table.JBTable;
-import com.intellij.util.PlatformIcons;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
-import org.codinjutsu.tools.mongo.ServerConfiguration;
-import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.utils.MongoUtils;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.LinkedList;
-import java.util.List;
 
 
 public class MongoConfigurable extends BaseConfigurable implements SearchableConfigurable {
 
 
-    public static final String PLUGIN_SETTINGS_NAME = "Mongo Servers";
+    public static final String PLUGIN_SETTINGS_NAME = "Mongo Settings";
     private final Project project;
 
     private final MongoConfiguration configuration;
-    private final MongoManager mongoManager;
-
-    private final List<ServerConfiguration> configurations;
 
     private JPanel mainPanel;
-    private JBTable table;
-    private final MongoServerTableModel tableModel;
     private LabeledComponent<TextFieldWithBrowseButton> shellPathField;
     private JLabel testMongoPathFeedbackLabel;
 
@@ -69,9 +54,6 @@ public class MongoConfigurable extends BaseConfigurable implements SearchableCon
     public MongoConfigurable(Project project) {
         this.project = project;
         this.configuration = MongoConfiguration.getInstance(project);
-        this.mongoManager = MongoManager.getInstance(project);
-        configurations = new LinkedList<>(this.configuration.getServerConfigurations());
-        tableModel = new MongoServerTableModel(configurations);
         mainPanel = new JPanel(new BorderLayout());
     }
 
@@ -99,121 +81,6 @@ public class MongoConfigurable extends BaseConfigurable implements SearchableCon
         mongoShellOptionsPanel.add(createFeedbackLabel());
 
         mainPanel.add(mongoShellOptionsPanel, BorderLayout.NORTH);
-
-
-        PanelWithButtons panelWithButtons = new PanelWithButtons() {
-
-            {
-                initPanel();
-            }
-
-            @Nullable
-            @Override
-            protected String getLabelText() {
-                return "Servers";
-            }
-
-            @Override
-            protected JButton[] createButtons() {
-                return new JButton[]{};
-            }
-
-            @Override
-            protected JComponent createMainComponent() {
-                table = new JBTable(tableModel);
-                table.getEmptyText().setText("No server configuration set");
-                table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-                TableColumn autoConnectColumn = table.getColumnModel().getColumn(2);
-                int width = table.getFontMetrics(table.getFont()).stringWidth(table.getColumnName(2)) + 10;
-                autoConnectColumn.setPreferredWidth(width);
-                autoConnectColumn.setMaxWidth(width);
-                autoConnectColumn.setMinWidth(width);
-
-                return ToolbarDecorator.createDecorator(table)
-                        .setAddAction(new AnActionButtonRunnable() {
-                            @Override
-                            public void run(AnActionButton button) {
-                                stopEditing();
-
-                                ServerConfiguration serverConfiguration = ServerConfiguration.byDefault();
-
-                                ConfigurationDialog dialog = new ConfigurationDialog(project, mainPanel, mongoManager, serverConfiguration);
-                                dialog.setTitle("Add a Mongo Server");
-                                dialog.show();
-                                if (!dialog.isOK()) {
-                                    return;
-                                }
-
-                                configurations.add(serverConfiguration);
-                                int index = configurations.size() - 1;
-                                tableModel.fireTableRowsInserted(index, index);
-                                table.getSelectionModel().setSelectionInterval(index, index);
-                                table.scrollRectToVisible(table.getCellRect(index, 0, true));
-                            }
-                        })
-                        .setAddActionName("addServer")
-                        .setEditAction(new AnActionButtonRunnable() {
-                            @Override
-                            public void run(AnActionButton button) {
-                                stopEditing();
-
-                                int selectedIndex = table.getSelectedRow();
-                                if (selectedIndex < 0 || selectedIndex >= tableModel.getRowCount()) {
-                                    return;
-                                }
-                                ServerConfiguration sourceConfiguration = configurations.get(selectedIndex);
-                                ServerConfiguration copiedConfiguration = sourceConfiguration.clone();
-
-
-                                ConfigurationDialog dialog = new ConfigurationDialog(project, mainPanel, mongoManager, copiedConfiguration);
-                                dialog.setTitle("Edit a Mongo Server");
-                                dialog.show();
-                                if (!dialog.isOK()) {
-                                    return;
-                                }
-
-                                configurations.set(selectedIndex, copiedConfiguration);
-                                tableModel.fireTableRowsUpdated(selectedIndex, selectedIndex);
-                                table.getSelectionModel().setSelectionInterval(selectedIndex, selectedIndex);
-                            }
-                        })
-                        .setEditActionName("editServer")
-                        .setRemoveAction(new AnActionButtonRunnable() {
-                            @Override
-                            public void run(AnActionButton button) {
-                                stopEditing();
-
-                                int selectedIndex = table.getSelectedRow();
-                                if (selectedIndex < 0 || selectedIndex >= tableModel.getRowCount()) {
-                                    return;
-                                }
-                                TableUtil.removeSelectedItems(table);
-                            }
-                        })
-                        .setRemoveActionName("removeServer")
-                        .disableUpDownActions()
-                        .addExtraAction(new AnActionButton("copyServer", PlatformIcons.COPY_ICON) {
-                            @Override
-                            public void actionPerformed(@NotNull AnActionEvent e) {
-                                int selectedIndex = table.getSelectedRow();
-                                ServerConfiguration sourceConfiguration = configurations.get(selectedIndex);
-                                ServerConfiguration copiedConfiguration = sourceConfiguration.clone();
-
-                                copiedConfiguration.setPassword("");
-
-                                configurations.add(copiedConfiguration);
-                                int index = configurations.size() - 1;
-                                tableModel.fireTableRowsInserted(index, index);
-                                table.getSelectionModel().setSelectionInterval(index, index);
-                                table.scrollRectToVisible(table.getCellRect(index, 0, true));
-                            }
-                        })
-                        .createPanel();
-            }
-        };
-
-        mainPanel.add(panelWithButtons, BorderLayout.CENTER);
 
         return mainPanel;
     }
@@ -261,16 +128,11 @@ public class MongoConfigurable extends BaseConfigurable implements SearchableCon
     }
 
     public boolean isModified() {
-        return areConfigurationsModified() || isShellPathModified();
+        return isShellPathModified();
     }
 
     @Override
     public void apply() throws ConfigurationException {
-        stopEditing();
-        if (areConfigurationsModified()) {
-            configuration.setServerConfigurations(configurations);
-        }
-
         if (isShellPathModified()) {
             configuration.setShellPath(getShellPath());
         }
@@ -284,21 +146,6 @@ public class MongoConfigurable extends BaseConfigurable implements SearchableCon
         return !StringUtils.equals(existingShellPath, getShellPath());
     }
 
-    private boolean areConfigurationsModified() {
-        List<ServerConfiguration> existingConfigurations = MongoConfiguration.getInstance(project).getServerConfigurations();
-
-        if (configurations.size() != existingConfigurations.size()) {
-            return true;
-        }
-
-        for (ServerConfiguration existingConfiguration : existingConfigurations) {
-            if (!configurations.contains(existingConfiguration)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 
     private String getShellPath() {
         String shellPath = shellPathField.getComponent().getText();
@@ -316,19 +163,7 @@ public class MongoConfigurable extends BaseConfigurable implements SearchableCon
     @Override
     public void disposeUIResources() {
         mainPanel = null;
-        tableModel.removeTableModelListener(table);
         shellPathField = null;
-        table = null;
-    }
-
-
-    private void stopEditing() {
-        if (table.isEditing()) {
-            TableCellEditor editor = table.getCellEditor();
-            if (editor != null) {
-                editor.stopCellEditing();
-            }
-        }
     }
 
     @NotNull

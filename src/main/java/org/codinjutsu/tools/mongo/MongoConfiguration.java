@@ -63,4 +63,33 @@ public class MongoConfiguration implements PersistentStateComponent<MongoConfigu
     public void setShellPath(String shellPath) {
         this.shellPath = shellPath;
     }
+
+    public void addServerConfiguration(ServerConfiguration serverConfiguration) {
+        serverConfigurations.add(serverConfiguration);
+    }
+
+    public void updateServerConfiguration(ServerConfiguration previousConfiguration, ServerConfiguration updatedConfiguration) {
+        if (previousConfiguration.equals(updatedConfiguration)) {
+            return;
+        }
+
+        int index = getServerConfigurationIndex(previousConfiguration);
+        serverConfigurations.set(index, updatedConfiguration);
+    }
+
+    private int getServerConfigurationIndex(ServerConfiguration configuration) {
+        int index = 0;
+        for (ServerConfiguration serverConfiguration : serverConfigurations) {
+            if (serverConfiguration.equals(configuration)) {
+                return index;
+            }
+            index++;
+        }
+
+        throw new IllegalArgumentException("Unable to find the configuration to updated");
+    }
+
+    public void removeServerConfiguration(ServerConfiguration configuration) {
+        serverConfigurations.remove(configuration);
+    }
 }

@@ -2,27 +2,29 @@
 # original file from https://github.com/go-lang-plugin-org/go-lang-idea-plugin
 # thanks zolotov :)
 
-ideaVersion='15.0.6'
-ideaVersionForMaven='15.0'
+ideaVersion='2017.2.4'
+ideaVersionForMaven='2017'
 
-rm -rf ./idea-IC
+#rm -rf ./idea-IC
 
 # Get our IDEA dependency
-wget http://download.jetbrains.com/idea/ideaIC-${ideaVersion}.tar.gz
+#wget http://download.jetbrains.com/idea/ideaIC-${ideaVersion}.tar.gz
+# https://download.jetbrains.com/idea/ideaIC-2017.2.4-no-jdk.tar.gz
+# https://download.jetbrains.com/idea/ideaIC-2016.3.7-no-jdk.tar.gz
 
 # Unzip IDEA
-tar -xzf ideaIC-${ideaVersion}.tar.gz
-rm -rf ideaIC-${ideaVersion}.tar.gz
+#tar -xzf ideaIC-${ideaVersion}.tar.gz
+#rm -rf ideaIC-${ideaVersion}.tar.gz
 
 # Move the versioned IDEA folder to a known location
-ideaPath=$(find . -name 'idea-IC*' | head -n 1)
-echo 'Found Intellij path:' + ${ideaPath}
-mv ${ideaPath} ./idea-IC
-cd ./idea-IC
+#ideaPath=$(find . -name 'idea-IC*' | head -n 1)
+#echo 'Found Intellij path:' + ${ideaPath}
+#mv ${ideaPath} ./idea-IC
+#cd ./idea-IC
 
 # install IDEA dependencies 
 IDEA_HOME=$(pwd)
-libs=( 'forms_rt' 'openapi' 'util' 'idea' 'resources' 'resources_en' 'swingx-core-1.6.2' 'annotations' 'extensions' 'jna' 'jdom' 'icons', 'jsch-0.1.52')
+libs=( 'forms_rt' 'openapi' 'util' 'idea' 'resources' 'resources_en' 'swingx-core-1.6.2' 'annotations' 'extensions' 'jna' 'jdom' 'icons' 'jsch-0.1.54')
 for lib in "${libs[@]}"
 do
     mvn install:install-file -Dfile=${IDEA_HOME}/lib/${lib}.jar -DgroupId=com.intellij -DartifactId=${lib} -Dversion=${ideaVersionForMaven} -Dpackaging=jar

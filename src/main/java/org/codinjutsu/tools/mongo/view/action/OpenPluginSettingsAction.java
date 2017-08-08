@@ -30,7 +30,7 @@ public class OpenPluginSettingsAction extends AnAction implements DumbAware {
 
 
     public OpenPluginSettingsAction() {
-        super("Mongo Settings", "Edit the Mongo settings for the current project", AllIcons.General.Settings);
+        super("Mongo General Settings", "Edit the Mongo settings for the current project", AllIcons.General.Settings);
     }
 
     @Override

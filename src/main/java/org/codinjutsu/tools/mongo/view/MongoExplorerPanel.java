@@ -16,6 +16,7 @@
 
 package org.codinjutsu.tools.mongo.view;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.ide.CommonActionsManager;
 import com.intellij.ide.TreeExpander;
 import com.intellij.openapi.Disposable;
@@ -31,7 +32,6 @@ import com.intellij.ui.PopupHandler;
 import com.intellij.ui.TreeSpeedSearch;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
-import com.intellij.util.containers.ArrayListSet;
 import com.intellij.util.containers.Convertor;
 import com.intellij.util.ui.tree.TreeUtil;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
@@ -47,6 +47,7 @@ import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.*;
 import org.codinjutsu.tools.mongo.view.editor.MongoFileSystem;
 import org.codinjutsu.tools.mongo.view.editor.MongoObjectFile;
+import org.codinjutsu.tools.mongo.view.model.JsonTreeUtils;
 import org.codinjutsu.tools.mongo.view.model.navigation.Navigation;
 
 import javax.swing.*;
@@ -58,14 +59,14 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.codinjutsu.tools.mongo.utils.GuiUtils.showNotification;
 
 public class MongoExplorerPanel extends JPanel implements Disposable {
 
-    private static final URL pluginSettingsUrl = GuiUtils.isUnderDarcula() ? GuiUtils.getIconResource("pluginSettings_dark.png") : GuiUtils.getIconResource("pluginSettings.png");
+    private static final URL pluginSettingsUrl =  GuiUtils.class.getResource("/general/add.png");
 
     private JPanel rootPanel;
 
@@ -118,15 +119,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
         mongoTree.setModel(new DefaultTreeModel(rootNode));
 
-        for (ServerConfiguration serverConfiguration : serverConfigurations) {
-            MongoServer mongoServer = new MongoServer(serverConfiguration);
-            this.mongoManager.registerServer(mongoServer);
-            DefaultMutableTreeNode serverNode = new DefaultMutableTreeNode(mongoServer);
-            rootNode.add(serverNode);
-            if (serverConfiguration.isConnectOnIdeStartup()) {
-                this.reloadServerConfiguration(serverNode, false);
-            }
-        }
+        createServerTreeNodes(serverConfigurations, rootNode);
 
         new TreeSpeedSearch(mongoTree, new Convertor<TreePath, String>() {
 
@@ -145,6 +138,18 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         });
 
         TreeUtil.expand(mongoTree, 2);
+    }
+
+    private void createServerTreeNodes(List<ServerConfiguration> serverConfigurations, DefaultMutableTreeNode rootNode) {
+        for (ServerConfiguration serverConfiguration : serverConfigurations) {
+            MongoServer mongoServer = new MongoServer(serverConfiguration);
+            this.mongoManager.registerServer(mongoServer);
+            DefaultMutableTreeNode serverNode = new DefaultMutableTreeNode(mongoServer);
+            rootNode.add(serverNode);
+            if (serverConfiguration.isConnectOnIdeStartup()) {
+                this.reloadServerConfiguration(serverNode, false);
+            }
+        }
     }
 
 
@@ -251,7 +256,10 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         DefaultActionGroup actionGroup = new DefaultActionGroup("MongoExplorerGroup", false);
         ViewCollectionValuesAction viewCollectionValuesAction = new ViewCollectionValuesAction(this);
         RefreshServerAction refreshServerAction = new RefreshServerAction(this);
+        AddMongoServerAction addMongoServerAction = new AddMongoServerAction(this);
         if (ApplicationManager.getApplication() != null) {
+            actionGroup.add(addMongoServerAction);
+            actionGroup.addSeparator();
             actionGroup.add(refreshServerAction);
             actionGroup.add(new MongoConsoleAction(this));
             actionGroup.add(viewCollectionValuesAction);
@@ -266,6 +274,9 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         DefaultActionGroup actionPopupGroup = new DefaultActionGroup("MongoExplorerPopupGroup", true);
         if (ApplicationManager.getApplication() != null) {
             actionPopupGroup.add(refreshServerAction);
+            actionPopupGroup.add(new EditMongoServerAction(this));
+            actionPopupGroup.add(new DeleteMongoServerAction(this));
+            actionPopupGroup.addSeparator();
             actionPopupGroup.add(viewCollectionValuesAction);
             actionPopupGroup.add(new DropCollectionAction(this));
             actionPopupGroup.add(new DropDatabaseAction(this));
@@ -314,16 +325,24 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) mongoTree.getLastSelectedPathComponent();
         if (treeNode != null) {
             Object userObject = treeNode.getUserObject();
+
+            if (userObject instanceof MongoServer) {
+                return treeNode;
+            }
+        }
+        return null;
+    }
+
+    public DefaultMutableTreeNode getParentServerNode() {
+        DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) mongoTree.getLastSelectedPathComponent();
+        if (treeNode != null) {
+            Object userObject = treeNode.getUserObject();
             if (userObject instanceof MongoCollection) {
                 return (DefaultMutableTreeNode) treeNode.getParent().getParent();
             }
 
             if (userObject instanceof MongoDatabase) {
                 return (DefaultMutableTreeNode) treeNode.getParent();
-            }
-
-            if (userObject instanceof MongoServer) {
-                return treeNode;
             }
         }
         return null;
@@ -334,10 +353,6 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) mongoTree.getLastSelectedPathComponent();
         if (treeNode != null) {
             Object userObject = treeNode.getUserObject();
-//            if (userObject instanceof MongoCollection) {
-//                return (DefaultMutableTreeNode) treeNode.getParent();
-//            }
-
             if (userObject instanceof MongoDatabase) {
                 return treeNode;
             }
@@ -386,6 +401,8 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         return (MongoCollection) collectionNode.getUserObject();
     }
 
+
+
     public void loadSelectedCollectionValues() {
         Navigation navigation = new Navigation();
         navigation.addNewWayPoint(getSelectedCollection(), new MongoQueryOptions());
@@ -393,12 +410,28 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         MongoFileSystem.getInstance().openEditor(new MongoObjectFile(project, getConfiguration(), navigation));
     }
 
+    public boolean removeSelectedServerNode() {
+        DefaultMutableTreeNode serverNode = getSelectedServerNode();
+        if (serverNode == null) {
+            return false;
+        }
+
+        TreeUtil.removeSelected(mongoTree);
+
+        return true;
+    }
+
+    public void addServerNode(ServerConfiguration serverConfiguration) {
+        createServerTreeNodes(Collections.singletonList(serverConfiguration),
+                (DefaultMutableTreeNode) mongoTree.getModel().getRoot());
+    }
+
     public void dropCollection() {
         MongoCollection selectedCollection = getSelectedCollection();
         mongoManager.dropCollection(getConfiguration(), selectedCollection);
         notifier.notifyInfo("Collection " + selectedCollection.getName() + " dropped");
 
-        reloadServerConfiguration(getSelectedServerNode(), true);
+        reloadServerConfiguration(getParentServerNode(), true);
     }
 
     public void dropDatabase() {
@@ -406,7 +439,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         mongoManager.dropDatabase(getConfiguration(), selectedDatabase);
         notifier.notifyInfo("Datatabase " + selectedDatabase.getName() + " dropped");
 
-        reloadServerConfiguration(getSelectedServerNode(), true);
+        reloadServerConfiguration(getParentServerNode(), true);
     }
 
     private Tree createTree() {
@@ -443,5 +476,9 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
         return tree;
+    }
+
+    public MongoManager getMongoManager() {
+        return mongoManager;
     }
 }

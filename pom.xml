@@ -71,6 +71,16 @@
             <artifactId>util</artifactId>
             <version>${intellij.sdk.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>kotlin-reflect</artifactId>
+            <version>${intellij.sdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>kotlin-runtime</artifactId>
+            <version>${intellij.sdk.version}</version>
+        </dependency>
 
         <!-- Test dependencies -->
         <dependency>
@@ -93,14 +103,8 @@
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>2.2.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
             <artifactId>assertj-swing-junit</artifactId>
-            <version>2.2.0</version>
+            <version>3.8.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -236,18 +240,6 @@
     </build>
     <profiles>
         <profile>
-            <id>idea-15</id>
-            <properties>
-                <maven.compiler.source>1.8</maven.compiler.source>
-                <maven.compiler.target>1.8</maven.compiler.target>
-                <intellij.sdk.name>143.2332.3</intellij.sdk.name>
-                <intellij.sdk.version>15.0</intellij.sdk.version>
-                <intellij.lib.path>/Users/dboissier/dev/IntellijSDK/idea-IC-${intellij.sdk.name}/lib</intellij.lib.path>
-                <plugin.min.version>143.0</plugin.min.version>
-                <plugin.max.version>143.9999</plugin.max.version>
-            </properties>
-        </profile>
-        <profile>
             <id>idea-2016</id>
             <properties>
                 <maven.compiler.source>1.7</maven.compiler.source>
@@ -257,6 +249,18 @@
                 <intellij.lib.path>/Users/dboissier/dev/IntellijSDK/idea-IC-${intellij.sdk.name}/lib</intellij.lib.path>
                 <plugin.min.version>145.0</plugin.min.version>
                 <plugin.max.version>149.9999</plugin.max.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>idea-2017</id>
+            <properties>
+                <maven.compiler.source>1.8</maven.compiler.source>
+                <maven.compiler.target>1.8</maven.compiler.target>
+                <intellij.sdk.name>172.4155.36</intellij.sdk.name>
+                <intellij.sdk.version>2017</intellij.sdk.version>
+                <intellij.lib.path>/Users/dboissier/dev/IntellijSDK/idea-IC-${intellij.sdk.name}/lib</intellij.lib.path>
+                <plugin.min.version>170.0</plugin.min.version>
+                <plugin.max.version>179.9999</plugin.max.version>
             </properties>
         </profile>
     </profiles>
