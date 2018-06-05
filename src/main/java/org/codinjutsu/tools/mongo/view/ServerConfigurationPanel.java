@@ -20,14 +20,12 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.ComponentWithBrowseButton;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.ui.TextComponentAccessor;
-import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.openapi.ui.*;
 import com.intellij.openapi.util.Ref;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.RawCommandLineEditor;
+import com.intellij.ui.components.JBPasswordField;
 import com.mongodb.AuthenticationMechanism;
 import com.mongodb.ReadPreference;
 import org.apache.commons.lang.StringUtils;
@@ -35,6 +33,7 @@ import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.SshTunnelingConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
+import org.codinjutsu.tools.mongo.logic.ssh.AuthenticationMethod;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,6 +41,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -85,8 +86,9 @@ public class ServerConfigurationPanel extends JPanel {
     private JTextField sshProxyHostField;
     private JTextField sshProxyPortField;
     private JTextField sshProxyUserField;
-    private JPasswordField sshProxyPasswordField;
     private JTabbedPane settingTabbedPane;
+    private JComboBox sshAuthenticationMethodComboBox;
+    private JBPasswordField sshProxyPasswordField;
 
     private final MongoManager mongoManager;
 
@@ -146,11 +148,18 @@ public class ServerConfigurationPanel extends JPanel {
 
         readPreferenceComboBox.setSelectedItem(ReadPreference.primary());
 
-
         ButtonGroup authMethodGroup = new ButtonGroup();
         authMethodGroup.add(mongoCRAuthRadioButton);
         authMethodGroup.add(scramSHA1AuthRadioButton);
         authMethodGroup.add(defaultAuthMethodRadioButton);
+
+        sshAuthenticationMethodComboBox.setName("sshAuthenticationMethodComboBox");
+        sshAuthenticationMethodComboBox.setModel(new DefaultComboBoxModel<>(
+                AuthenticationMethod.values()
+        ));
+
+        sshAuthenticationMethodComboBox.setSelectedItem(AuthenticationMethod.PASSWORD);
+
 
         defaultAuthMethodRadioButton.setSelected(true);
         defaultAuthMethodRadioButton.setToolTipText("Let the driver resolves the auth. mechanism");
@@ -199,7 +208,7 @@ public class ServerConfigurationPanel extends JPanel {
         configuration.setPassword(getPassword());
         configuration.setAuthenticationDatabase(getAuthenticationDatabase());
         configuration.setUserDatabase(getUserDatabase());
-        configuration.setAuthenticationMechanism(getAuthenticationMethod());
+        configuration.setAuthenticationMechanism(getAuthenticationMecanism());
         configuration.setSslConnection(isSslConnection());
 
         configuration.setSshTunnelingConfiguration(isSshTunneling() ? createSshTunnelingSettings() : SshTunnelingConfiguration.EMPTY);
@@ -243,13 +252,13 @@ public class ServerConfigurationPanel extends JPanel {
         configuration.setShellArgumentsLine(getShellArgumentsLine());
         configuration.setShellWorkingDir(getShellWorkingDir());
         configuration.setConnectOnIdeStartup(isAutoConnect());
-        configuration.setAuthenticationMechanism(getAuthenticationMethod());
+        configuration.setAuthenticationMechanism(getAuthenticationMecanism());
 
         configuration.setSshTunnelingConfiguration(isSshTunneling() ? createSshTunnelingSettings() : SshTunnelingConfiguration.EMPTY);
     }
 
     private SshTunnelingConfiguration createSshTunnelingSettings() {
-        return new SshTunnelingConfiguration(getSshProxyHost(), getSshProxyPort(), getSshProxyUser(), getSshProxyPassword());
+        return new SshTunnelingConfiguration(getSshProxyHost(), getSshProxyPort(), getSshProxyUser(), getSshAuthMethod(), getSshProxyPassword());
     }
 
     public void loadConfigurationData(ServerConfiguration configuration) {
@@ -383,6 +392,14 @@ public class ServerConfigurationPanel extends JPanel {
         return null;
     }
 
+    private AuthenticationMethod getSshAuthMethod() {
+        AuthenticationMethod selectedAuthMethod = (AuthenticationMethod) sshAuthenticationMethodComboBox.getSelectedItem();
+        if (selectedAuthMethod != null) {
+            return selectedAuthMethod;
+        }
+        return AuthenticationMethod.PASSWORD;
+    }
+
     private String getSshProxyPassword() {
         String proxyUser = String.valueOf(sshProxyPasswordField.getPassword());
         if (StringUtils.isNotBlank(proxyUser)) {
@@ -391,7 +408,7 @@ public class ServerConfigurationPanel extends JPanel {
         return null;
     }
 
-    private AuthenticationMechanism getAuthenticationMethod() {
+    private AuthenticationMechanism getAuthenticationMecanism() {
         if (mongoCRAuthRadioButton.isSelected()) {
             return AuthenticationMechanism.MONGODB_CR;
         } else if (scramSHA1AuthRadioButton.isSelected()) {

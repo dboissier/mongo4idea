@@ -7,3 +7,6 @@
 target/
 META-INF/
 .idea/
+.gradle/
+build/
+

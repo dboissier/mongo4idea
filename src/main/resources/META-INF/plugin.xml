@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<idea-plugin version="2">
+<idea-plugin>
     <name>Mongo Plugin</name>
     <description>Mongo integration for Intellij</description>
     <version>0.11.0</version>
@@ -34,7 +34,8 @@
                         serviceImplementation="org.codinjutsu.tools.mongo.logic.MongoManager"/>
         <projectService serviceInterface="org.codinjutsu.tools.mongo.logic.Notifier"
                         serviceImplementation="org.codinjutsu.tools.mongo.logic.Notifier"/>
-        <projectConfigurable instance="org.codinjutsu.tools.mongo.view.MongoConfigurable"
+        <projectConfigurable groupId="Tools" parentId="Tools"
+                             instance="org.codinjutsu.tools.mongo.view.MongoConfigurable"
                              id="preferences.mongoOptions"/>
         <configurationType implementation="org.codinjutsu.tools.mongo.runner.MongoRunConfigurationType"/>
         <configurationProducer implementation="org.codinjutsu.tools.mongo.runner.MongoScriptRunConfigurationProducer"/>
@@ -59,8 +60,6 @@
             <implementation-class>org.codinjutsu.tools.mongo.view.editor.MongoFileSystem</implementation-class>
         </component>
     </application-components>
-
-    <applicationConfigurable groupId="tools" instance="org.codinjutsu.tools.mongo.view.MongoConfigurable" id="preferences.mongoOptions"/>
 
     <actions>
         <action id="Mongo.Shell.Execute" class="com.intellij.openapi.actionSystem.EmptyAction"

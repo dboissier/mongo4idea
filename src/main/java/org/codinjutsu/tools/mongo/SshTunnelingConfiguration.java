@@ -16,6 +16,10 @@
 
 package org.codinjutsu.tools.mongo;
 
+import org.codinjutsu.tools.mongo.logic.ssh.AuthenticationMethod;
+
+import java.util.Objects;
+
 public class SshTunnelingConfiguration implements Cloneable {
 
     public static final SshTunnelingConfiguration EMPTY = new SshTunnelingConfiguration();
@@ -23,20 +27,23 @@ public class SshTunnelingConfiguration implements Cloneable {
     private String proxyHost;
     private Integer proxyPort;
     private String proxyUser;
+    private AuthenticationMethod authenticationMethod;
     private String proxyPassword;
 
     private SshTunnelingConfiguration() {
         proxyHost = null;
         proxyPort = null;
         proxyUser = null;
+        authenticationMethod = AuthenticationMethod.PASSWORD;
         proxyPassword = null;
     }
 
-    public SshTunnelingConfiguration(String sshProxyHost, Integer sshProxyPort, String sshProxyUser, String sshProxyPassword) {
-        proxyHost = sshProxyHost;
-        proxyPort = sshProxyPort;
-        proxyUser = sshProxyUser;
-        proxyPassword = sshProxyPassword;
+    public SshTunnelingConfiguration(String proxyHost, Integer proxyPort, String proxyUser, AuthenticationMethod authenticationMethod,  String proxyPassword) {
+        this.proxyHost = proxyHost;
+        this.proxyPort = proxyPort;
+        this.proxyUser = proxyUser;
+        this.authenticationMethod = authenticationMethod;
+        this.proxyPassword = proxyPassword;
     }
 
 
@@ -64,6 +71,14 @@ public class SshTunnelingConfiguration implements Cloneable {
         this.proxyUser = proxyUser;
     }
 
+    public AuthenticationMethod getAuthenticationMethod() {
+        return authenticationMethod;
+    }
+
+    public void setAuthenticationMethod(AuthenticationMethod authenticationMethod) {
+        this.authenticationMethod = authenticationMethod;
+    }
+
     public String getProxyPassword() {
         return proxyPassword;
     }
@@ -76,27 +91,22 @@ public class SshTunnelingConfiguration implements Cloneable {
         return sshTunnelingConfiguration == null || EMPTY.equals(sshTunnelingConfiguration);
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
+        if (!(o instanceof SshTunnelingConfiguration)) return false;
         SshTunnelingConfiguration that = (SshTunnelingConfiguration) o;
-
-        if (proxyHost != null ? !proxyHost.equals(that.proxyHost) : that.proxyHost != null) return false;
-        if (proxyPort != null ? !proxyPort.equals(that.proxyPort) : that.proxyPort != null) return false;
-        if (proxyUser != null ? !proxyUser.equals(that.proxyUser) : that.proxyUser != null) return false;
-        return proxyPassword != null ? proxyPassword.equals(that.proxyPassword) : that.proxyPassword == null;
-
+        return Objects.equals(proxyHost, that.proxyHost) &&
+                Objects.equals(proxyPort, that.proxyPort) &&
+                Objects.equals(proxyUser, that.proxyUser) &&
+                authenticationMethod == that.authenticationMethod &&
+                Objects.equals(proxyPassword, that.proxyPassword);
     }
 
     @Override
     public int hashCode() {
-        int result = proxyHost != null ? proxyHost.hashCode() : 0;
-        result = 31 * result + (proxyPort != null ? proxyPort.hashCode() : 0);
-        result = 31 * result + (proxyUser != null ? proxyUser.hashCode() : 0);
-        result = 31 * result + (proxyPassword != null ? proxyPassword.hashCode() : 0);
-        return result;
+        return Objects.hash(proxyHost, proxyPort, proxyUser, authenticationMethod, proxyPassword);
     }
 
     public ServerConfiguration clone() {

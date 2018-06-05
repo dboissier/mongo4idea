@@ -19,14 +19,17 @@ package org.codinjutsu.tools.mongo.view;
 import com.intellij.openapi.command.impl.DummyProject;
 import com.mongodb.AuthenticationMechanism;
 import com.mongodb.ReadPreference;
+import org.assertj.swing.cell.JComboBoxCellReader;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.edt.GuiQuery;
 import org.assertj.swing.fixture.Containers;
 import org.assertj.swing.fixture.FrameFixture;
+import org.assertj.swing.fixture.JComboBoxFixture;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.SshTunnelingConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
+import org.codinjutsu.tools.mongo.logic.ssh.AuthenticationMethod;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,6 +37,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
+import javax.swing.*;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +53,7 @@ public class ServerConfigurationPanelTest {
     private FrameFixture frameFixture;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mongoManager = Mockito.spy(new MongoManager());
         configurationPanel = GuiActionRunner.execute(new GuiQuery<ServerConfigurationPanel>() {
             protected ServerConfigurationPanel executeInEDT() {
@@ -66,15 +70,18 @@ public class ServerConfigurationPanelTest {
     }
 
     @Test
-    public void validateFormWithOneServerUrl() throws Exception {
+    public void validateFormWithOneServerUrl() {
 
         frameFixture.textBox("labelField").setText("MyServer");
         frameFixture.checkBox("autoConnectField").check();
 
         frameFixture.textBox("serverUrlsField").setText("localhost:25");
         frameFixture.checkBox("sslConnectionField").check();
-        frameFixture.comboBox("readPreferenceComboBox").requireSelection("primary");
-        frameFixture.comboBox("readPreferenceComboBox").selectItem("secondary");
+
+        JComboBoxFixture readPreferenceComboBox = frameFixture.comboBox("readPreferenceComboBox");
+        readPreferenceComboBox.replaceCellReader(new ReadPreferenceComboBoxCellReader());
+        readPreferenceComboBox.requireSelection("primary");
+        readPreferenceComboBox.selectItem("secondary");
         frameFixture.textBox("userDatabaseField").setText("mydatabase");
 
         frameFixture.tabbedPane("tabbedSettings")
@@ -101,7 +108,7 @@ public class ServerConfigurationPanelTest {
     }
 
     @Test
-    public void validateFormWithSSHTunneling() throws Exception {
+    public void validateFormWithSSHTunneling() {
         frameFixture.textBox("labelField").setText("MyServer");
         frameFixture.textBox("serverUrlsField").setText("localhost:25");
 
@@ -109,6 +116,7 @@ public class ServerConfigurationPanelTest {
                 .selectTab("SSH");
         frameFixture.textBox("sshProxyHostField").setText("remotehost");
         frameFixture.textBox("sshProxyPortField").setText("22");
+        frameFixture.comboBox("sshAuthenticationMethodComboBox").selectItem("Passphrase");
         frameFixture.textBox("sshProxyUsernameField").setText("john.doe");
         frameFixture.textBox("sshProxyPasswordField").setText("mySecuredPassword");
 
@@ -121,12 +129,13 @@ public class ServerConfigurationPanelTest {
         assertThat(sshTunnelingConfiguration).isNotNull();
         assertThat(sshTunnelingConfiguration.getProxyHost()).isEqualTo("remotehost");
         assertThat(sshTunnelingConfiguration.getProxyPort()).isEqualTo(22);
+        assertThat(sshTunnelingConfiguration.getAuthenticationMethod()).isEqualTo(AuthenticationMethod.PASSPHRASE);
         assertThat(sshTunnelingConfiguration.getProxyUser()).isEqualTo("john.doe");
         assertThat(sshTunnelingConfiguration.getProxyPassword()).isEqualTo("mySecuredPassword");
     }
 
     @Test
-    public void loadFormWithOneServerUrl() throws Exception {
+    public void loadFormWithOneServerUrl() {
         ServerConfiguration configuration = ServerConfiguration.byDefault();
         configuration.setUsername("john");
         configuration.setPassword("johnpassword");
@@ -135,7 +144,9 @@ public class ServerConfigurationPanelTest {
         configurationPanel.loadConfigurationData(configuration);
 
         frameFixture.textBox("serverUrlsField").requireText("localhost:27017");
-        frameFixture.comboBox("readPreferenceComboBox").requireSelection("nearest");
+        JComboBoxFixture readPreferenceComboBox = frameFixture.comboBox("readPreferenceComboBox");
+        readPreferenceComboBox.replaceCellReader(new ReadPreferenceComboBoxCellReader());
+        readPreferenceComboBox.requireSelection("nearest");
 
         frameFixture.tabbedPane("tabbedSettings")
                 .selectTab("Authentication");
@@ -152,10 +163,10 @@ public class ServerConfigurationPanelTest {
     }
 
     @Test
-    public void loadFormWithSSHTunneling() throws Exception {
+    public void loadFormWithSSHTunneling() {
         ServerConfiguration configuration = ServerConfiguration.byDefault();
         configuration.setSshTunnelingConfiguration(
-                new SshTunnelingConfiguration("remotehost", 22, "john.doe", "mySecuredPassword"));
+                new SshTunnelingConfiguration("remotehost", 22, "john.doe", AuthenticationMethod.PASSWORD, "mySecuredPassword"));
         configurationPanel.loadConfigurationData(configuration);
 
         frameFixture.tabbedPane("tabbedSettings")
@@ -163,6 +174,7 @@ public class ServerConfigurationPanelTest {
         frameFixture.textBox("sshProxyHostField").requireText("remotehost");
         frameFixture.textBox("sshProxyPortField").requireText("22");
         frameFixture.textBox("sshProxyUsernameField").requireText("john.doe");
+        frameFixture.comboBox("sshAuthenticationMethodComboBox").requireSelection("Password");
         frameFixture.textBox("sshProxyPasswordField").requireText("mySecuredPassword");
     }
 
@@ -209,7 +221,7 @@ public class ServerConfigurationPanelTest {
 
 
     @Test
-    public void validateFormWithReplicatSet() throws Exception {
+    public void validateFormWithReplicatSet() {
 
         frameFixture.textBox("serverUrlsField").setText(" localhost:25, localhost:26 ");
 
@@ -221,12 +233,20 @@ public class ServerConfigurationPanelTest {
     }
 
     @Test
-    public void loadFormWithReplicatSet() throws Exception {
+    public void loadFormWithReplicatSet() {
         ServerConfiguration configuration = new ServerConfiguration();
         configuration.setServerUrls(Arrays.asList("localhost:25", "localhost:26"));
 
         configurationPanel.loadConfigurationData(configuration);
 
         frameFixture.textBox("serverUrlsField").requireText("localhost:25,localhost:26");
+    }
+
+    private static class ReadPreferenceComboBoxCellReader implements JComboBoxCellReader {
+        @Override
+        public String valueAt(JComboBox<?> jComboBox, int i) {
+            ReadPreference readPreference = (ReadPreference) jComboBox.getModel().getElementAt(i);
+            return readPreference.getName();
+        }
     }
 }

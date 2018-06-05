@@ -148,7 +148,7 @@ public class MongoResultPanelTest {
         getResultTable().requireContents(new String[][]{
                 {"[0]", "{ \"_id\" : { \"$oid\" : \"50b8d63414f85401b9268b99\" }, \"creation\" : { \"$ref\"...d\" : { \"$oid\" : \"40c1e63414f85401b9268b01\" }, \"$db\" : \"anotherdatabase\" } }"},
                 {"\"_id\"", "50b8d63414f85401b9268b99"},
-                {"\"creation\"", "{ \"$ref\" : \"mycollection\", \"$id\" : \"40c1e63414f85401b9268b01, \"$db\" : \"anotherdatabase\" }"},
+                {"\"creation\"", "{ \"$ref\" : \"mycollection\", \"$id\" : \"40c1e63414f85401b9268b01\", \"$db\" : \"anotherdatabase\" }"},
                 {"\"$ref\"", "mycollection"},
                 {"\"$id\"", "40c1e63414f85401b9268b01"},
                 {"\"$db\"", "anotherdatabase"},
