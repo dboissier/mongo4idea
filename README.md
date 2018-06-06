@@ -146,42 +146,9 @@ Select your server and your database then click on the run button.
 
 ## How to build
 
-This project is built with maven and use profile to manage all compatible version of Intellij `mvn clean install -P[idea-15|idea-2016]`.
-
-However, you need to import an Intellij Community Edition matching with the target version you want to build for. The script `fetchIdea.sh` allows downloading and installing the required IntelliJ librairies in your maven repository.
-You have to set 2 variables in it:
-* `ideaVersion='15.0.6' # this is the version of the ZIP distribution to be downloaded from jetbrains`
-* `ideaVersionForMaven='15.0' # this is the version used in maven dependency, should match with profile/properties/intellij.sdk.version node in the pom.xml`
-
-Run it once and then run the first maven command described above with the target profile.
+This project is now built with Gradle with [Intellij plugin](https://github.com/JetBrains/gradle-intellij-plugin).
 
 ### Open the plugin source in Intellij
-
-You can use the command `mvn idea:idea`. However you will have to change some entries in the Project configuration panel.
-* If needed import JDK 7 (and JDK 8 for Idea 2016)
-* Import an Intellij SDK, precise JDK7 or 8 and then select it for the project
-* Remove Intellij dependencies from `Modules -> mongo4idea -> Dependencies`:
-```
-- forms_rt
-- openapi
-- util
-- idea
-- resources
-- resources_en
-- swingx-core-1.6.2
-- annotations
-- extensions
-- jna
-- jdom
-- icons
-```
-At last, build it to check whether everything is ok.
-
-
-### Run Intellij from IntelliJ
-
-Create a plugin Run configuration and just run it.
-
 
 ## Thanks
 
@@ -198,18 +165,3 @@ I would like to thank:
 * My wife and my daughters who support me to have fun in software development and also remind me my husband/father duty ;).
 
 
-## FAQ
-
-
-### The plugin does not work.
-
-Some bugs were reported when installing the SNAPSHOT version of the plugin. Mainly some `ClassNotFoundDefException`. This could happen whenever you have a previous version of the plugin already installed in the IDE.
-To fix it, the steps should be as follow:
-
-* Locate the IDE working directory. For WebStorm, it is `.WebStorm` and for Intellij, it is `.IntelliJIdea`
-* In it, remove the snapshot and the stable versions from `<working_dir>/config/plugins`
-* Download again the right version for your target IDE
-* Deflate the archive in the same folder
-* You should have one instance of the plugin: `<working_dir>/config/plugins/mongo4idea-0.X.Y-SNAPSHOT`
-
-Restart your IDE and it should be ok :).

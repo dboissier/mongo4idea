@@ -89,6 +89,9 @@ public class ServerConfigurationPanel extends JPanel {
     private JTabbedPane settingTabbedPane;
     private JComboBox sshAuthenticationMethodComboBox;
     private JBPasswordField sshProxyPasswordField;
+    private JLabel privateKeyPathLabel;
+    private TextFieldWithBrowseButton privateKeyPathField;
+    private JLabel passLabel;
 
     private final MongoManager mongoManager;
 
@@ -158,8 +161,31 @@ public class ServerConfigurationPanel extends JPanel {
                 AuthenticationMethod.values()
         ));
 
-        sshAuthenticationMethodComboBox.setSelectedItem(AuthenticationMethod.PASSWORD);
+        passLabel.setName("passLabel");
+        sshAuthenticationMethodComboBox.setSelectedItem(AuthenticationMethod.PASSPHRASE);
+        sshAuthenticationMethodComboBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                AuthenticationMethod selectedAuthMethod = (AuthenticationMethod) sshAuthenticationMethodComboBox.getSelectedItem();
+                boolean shouldUsePrivateKey = false;
+                if (AuthenticationMethod.PASSPHRASE.equals(selectedAuthMethod)) {
+                    shouldUsePrivateKey = true;
+                }
 
+                privateKeyPathLabel.setVisible(shouldUsePrivateKey);
+                privateKeyPathField.setVisible(shouldUsePrivateKey);
+                if (!shouldUsePrivateKey) {
+                    passLabel.setLabelFor(sshProxyPasswordField);
+                    passLabel.setText("Password:");
+                    privateKeyPathField.setText(null);
+                } else {
+                    passLabel.setText("Passphrase:");
+                }
+            }
+        });
+
+        privateKeyPathField.setName("sshPrivateKeyPathComponent");
+        privateKeyPathField.getTextField().setName("sshPrivateKeyPathField");
 
         defaultAuthMethodRadioButton.setSelected(true);
         defaultAuthMethodRadioButton.setToolTipText("Let the driver resolves the auth. mechanism");
@@ -258,7 +284,9 @@ public class ServerConfigurationPanel extends JPanel {
     }
 
     private SshTunnelingConfiguration createSshTunnelingSettings() {
-        return new SshTunnelingConfiguration(getSshProxyHost(), getSshProxyPort(), getSshProxyUser(), getSshAuthMethod(), getSshProxyPassword());
+        return new SshTunnelingConfiguration(
+                getSshProxyHost(), getSshProxyPort(), getSshProxyUser(),
+                getSshAuthMethod(), getSshPrivateKeyPath(), getSshProxyPassword());
     }
 
     public void loadConfigurationData(ServerConfiguration configuration) {
@@ -279,6 +307,10 @@ public class ServerConfigurationPanel extends JPanel {
         if (!SshTunnelingConfiguration.isEmpty(sshTunnelingConfiguration)) {
             sshProxyHostField.setText(sshTunnelingConfiguration.getProxyHost());
             sshProxyPortField.setText(String.valueOf(sshTunnelingConfiguration.getProxyPort()));
+            sshAuthenticationMethodComboBox.setSelectedItem(sshTunnelingConfiguration.getAuthenticationMethod());
+            if (AuthenticationMethod.PASSPHRASE.equals(sshTunnelingConfiguration.getAuthenticationMethod())) {
+                privateKeyPathField.setText(sshTunnelingConfiguration.getPrivateKeyPath());
+            }
             sshProxyUserField.setText(sshTunnelingConfiguration.getProxyUser());
             sshProxyPasswordField.setText(sshTunnelingConfiguration.getProxyPassword());
         }
@@ -417,6 +449,15 @@ public class ServerConfigurationPanel extends JPanel {
         return null;
     }
 
+    private String getSshPrivateKeyPath() {
+        String shellPath = privateKeyPathField.getText();
+        if (StringUtils.isNotBlank(shellPath)) {
+            return shellPath;
+        }
+
+        return null;
+    }
+
     private String getShellArgumentsLine() {
         String shellArgumentsLine = shellArgumentsLineField.getText();
         if (StringUtils.isNotBlank(shellArgumentsLine)) {
@@ -451,6 +492,17 @@ public class ServerConfigurationPanel extends JPanel {
                         TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT);
         shellWorkingDirField.addBrowseFolderListener(null, browseFolderActionListener, false);
         shellWorkingDirField.setName("shellWorkingDirField");
+
+        privateKeyPathField = new TextFieldWithBrowseButton();
+        ComponentWithBrowseButton.BrowseFolderActionListener<JTextField> privateKeyBrowseFolderActionListener =
+                new ComponentWithBrowseButton.BrowseFolderActionListener<>("Mongo shell working directory",
+                        null,
+                        privateKeyPathField,
+                        null,
+                        fileChooserDescriptor,
+                        TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT);
+        privateKeyPathField.addBrowseFolderListener(null, privateKeyBrowseFolderActionListener, false);
+
     }
 
     public void setErrorMessage(String message) {

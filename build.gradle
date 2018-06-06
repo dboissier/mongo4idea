@@ -21,7 +21,7 @@ plugins {
 apply plugin: 'org.jetbrains.intellij'
 
 intellij {
-    version '2016.1'
+    version '2018.1'
     updateSinceUntilBuild false
     pluginName 'mongo4idea'
 }

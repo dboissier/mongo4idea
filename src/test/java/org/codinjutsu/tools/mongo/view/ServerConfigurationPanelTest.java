@@ -17,9 +17,12 @@
 package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.openapi.command.impl.DummyProject;
+import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.mongodb.AuthenticationMechanism;
 import com.mongodb.ReadPreference;
+import org.apache.commons.lang.StringUtils;
 import org.assertj.swing.cell.JComboBoxCellReader;
+import org.assertj.swing.core.GenericTypeMatcher;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.edt.GuiQuery;
 import org.assertj.swing.fixture.Containers;
@@ -108,7 +111,7 @@ public class ServerConfigurationPanelTest {
     }
 
     @Test
-    public void validateFormWithSSHTunneling() {
+    public void validateFormWithSSHTunnelingAndPassphraseAuthMethod() {
         frameFixture.textBox("labelField").setText("MyServer");
         frameFixture.textBox("serverUrlsField").setText("localhost:25");
 
@@ -116,9 +119,11 @@ public class ServerConfigurationPanelTest {
                 .selectTab("SSH");
         frameFixture.textBox("sshProxyHostField").setText("remotehost");
         frameFixture.textBox("sshProxyPortField").setText("22");
-        frameFixture.comboBox("sshAuthenticationMethodComboBox").selectItem("Passphrase");
+        frameFixture.comboBox("sshAuthenticationMethodComboBox").requireSelection("Passphrase");
+        frameFixture.label("passLabel").requireText("Passphrase:");
+        frameFixture.textBox("sshPrivateKeyPathField").setText("/Users/myself/.ssh/id_rsa");
         frameFixture.textBox("sshProxyUsernameField").setText("john.doe");
-        frameFixture.textBox("sshProxyPasswordField").setText("mySecuredPassword");
+        frameFixture.textBox("sshProxyPasswordField").setText("mySecuredPassphrase");
 
         ServerConfiguration configuration = new ServerConfiguration();
         configurationPanel.applyConfigurationData(configuration);
@@ -130,12 +135,43 @@ public class ServerConfigurationPanelTest {
         assertThat(sshTunnelingConfiguration.getProxyHost()).isEqualTo("remotehost");
         assertThat(sshTunnelingConfiguration.getProxyPort()).isEqualTo(22);
         assertThat(sshTunnelingConfiguration.getAuthenticationMethod()).isEqualTo(AuthenticationMethod.PASSPHRASE);
+        assertThat(sshTunnelingConfiguration.getPrivateKeyPath()).isEqualTo("/Users/myself/.ssh/id_rsa");
         assertThat(sshTunnelingConfiguration.getProxyUser()).isEqualTo("john.doe");
-        assertThat(sshTunnelingConfiguration.getProxyPassword()).isEqualTo("mySecuredPassword");
+        assertThat(sshTunnelingConfiguration.getProxyPassword()).isEqualTo("mySecuredPassphrase");
     }
 
     @Test
-    public void loadFormWithOneServerUrl() {
+    public void validateFormWithSSHTunnelingAndPasswordAuthMethod() throws Exception {
+        frameFixture.textBox("labelField").setText("MyServer");
+        frameFixture.textBox("serverUrlsField").setText("localhost:25");
+
+        frameFixture.tabbedPane("tabbedSettings")
+                .selectTab("SSH");
+        frameFixture.textBox("sshProxyHostField").setText("remotehost");
+        frameFixture.textBox("sshProxyPortField").setText("22");
+        frameFixture.comboBox("sshAuthenticationMethodComboBox").selectItem("Password");
+        frameFixture.label("passLabel").requireText("Password:");
+        frameFixture.panel(new TextFieldWithBrowseButtonGenericTypeMatcher("sshPrivateKeyPathComponent")).requireNotVisible();
+        frameFixture.textBox("sshProxyUsernameField").setText("john.doe");
+        frameFixture.textBox("sshProxyPasswordField").setText("myPassword");
+
+        ServerConfiguration configuration = new ServerConfiguration();
+        configurationPanel.applyConfigurationData(configuration);
+
+        assertThat(configuration.getServerUrls()).containsExactly("localhost:25");
+
+        SshTunnelingConfiguration sshTunnelingConfiguration = configuration.getSshTunnelingConfiguration();
+        assertThat(sshTunnelingConfiguration).isNotNull();
+        assertThat(sshTunnelingConfiguration.getProxyHost()).isEqualTo("remotehost");
+        assertThat(sshTunnelingConfiguration.getProxyPort()).isEqualTo(22);
+        assertThat(sshTunnelingConfiguration.getAuthenticationMethod()).isEqualTo(AuthenticationMethod.PASSWORD);
+        assertThat(sshTunnelingConfiguration.getProxyUser()).isEqualTo("john.doe");
+        assertThat(sshTunnelingConfiguration.getPrivateKeyPath()).isNull();
+        assertThat(sshTunnelingConfiguration.getProxyPassword()).isEqualTo("myPassword");
+    }
+
+    @Test
+    public void loadFormWithEmptyConfiguration() {
         ServerConfiguration configuration = ServerConfiguration.byDefault();
         configuration.setUsername("john");
         configuration.setPassword("johnpassword");
@@ -157,6 +193,8 @@ public class ServerConfigurationPanelTest {
                 .selectTab("SSH");
         frameFixture.textBox("sshProxyHostField").requireEmpty();
         frameFixture.textBox("sshProxyPortField").requireEmpty();
+        frameFixture.comboBox("sshAuthenticationMethodComboBox").requireSelection("Passphrase");
+        frameFixture.textBox("sshPrivateKeyPathField").requireEmpty();
         frameFixture.textBox("sshProxyUsernameField").requireEmpty();
         frameFixture.textBox("sshProxyPasswordField").requireEmpty();
 
@@ -166,7 +204,7 @@ public class ServerConfigurationPanelTest {
     public void loadFormWithSSHTunneling() {
         ServerConfiguration configuration = ServerConfiguration.byDefault();
         configuration.setSshTunnelingConfiguration(
-                new SshTunnelingConfiguration("remotehost", 22, "john.doe", AuthenticationMethod.PASSWORD, "mySecuredPassword"));
+                new SshTunnelingConfiguration("remotehost", 22, "john.doe", AuthenticationMethod.PASSWORD, "", "mySecuredPassword"));
         configurationPanel.loadConfigurationData(configuration);
 
         frameFixture.tabbedPane("tabbedSettings")
@@ -247,6 +285,20 @@ public class ServerConfigurationPanelTest {
         public String valueAt(JComboBox<?> jComboBox, int i) {
             ReadPreference readPreference = (ReadPreference) jComboBox.getModel().getElementAt(i);
             return readPreference.getName();
+        }
+    }
+
+    private static class TextFieldWithBrowseButtonGenericTypeMatcher extends GenericTypeMatcher<TextFieldWithBrowseButton> {
+        private final String name;
+
+        public TextFieldWithBrowseButtonGenericTypeMatcher(String name) {
+            super(TextFieldWithBrowseButton.class);
+            this.name = name;
+        }
+
+        @Override
+        protected boolean isMatching(TextFieldWithBrowseButton jPanel) {
+            return StringUtils.equals(name, jPanel.getName());
         }
     }
 }

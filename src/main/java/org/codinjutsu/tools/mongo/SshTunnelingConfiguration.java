@@ -29,20 +29,26 @@ public class SshTunnelingConfiguration implements Cloneable {
     private String proxyUser;
     private AuthenticationMethod authenticationMethod;
     private String proxyPassword;
+    private String privateKeyPath;
 
     private SshTunnelingConfiguration() {
         proxyHost = null;
         proxyPort = null;
         proxyUser = null;
-        authenticationMethod = AuthenticationMethod.PASSWORD;
+        authenticationMethod = AuthenticationMethod.PASSPHRASE;
+        privateKeyPath = null;
         proxyPassword = null;
     }
 
-    public SshTunnelingConfiguration(String proxyHost, Integer proxyPort, String proxyUser, AuthenticationMethod authenticationMethod,  String proxyPassword) {
+    public SshTunnelingConfiguration(String proxyHost, Integer proxyPort, String proxyUser,
+                                     AuthenticationMethod authenticationMethod,
+                                     String privateKeyPath,
+                                     String proxyPassword) {
         this.proxyHost = proxyHost;
         this.proxyPort = proxyPort;
         this.proxyUser = proxyUser;
         this.authenticationMethod = authenticationMethod;
+        this.privateKeyPath = privateKeyPath;
         this.proxyPassword = proxyPassword;
     }
 
@@ -79,6 +85,14 @@ public class SshTunnelingConfiguration implements Cloneable {
         this.authenticationMethod = authenticationMethod;
     }
 
+    public String getPrivateKeyPath() {
+        return privateKeyPath;
+    }
+
+    public void setPrivateKeyPath(String privateKeyPath) {
+        this.privateKeyPath = privateKeyPath;
+    }
+
     public String getProxyPassword() {
         return proxyPassword;
     }
@@ -91,7 +105,6 @@ public class SshTunnelingConfiguration implements Cloneable {
         return sshTunnelingConfiguration == null || EMPTY.equals(sshTunnelingConfiguration);
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -101,12 +114,13 @@ public class SshTunnelingConfiguration implements Cloneable {
                 Objects.equals(proxyPort, that.proxyPort) &&
                 Objects.equals(proxyUser, that.proxyUser) &&
                 authenticationMethod == that.authenticationMethod &&
-                Objects.equals(proxyPassword, that.proxyPassword);
+                Objects.equals(proxyPassword, that.proxyPassword) &&
+                Objects.equals(privateKeyPath, that.privateKeyPath);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(proxyHost, proxyPort, proxyUser, authenticationMethod, proxyPassword);
+        return Objects.hash(proxyHost, proxyPort, proxyUser, authenticationMethod, proxyPassword, privateKeyPath);
     }
 
     public ServerConfiguration clone() {
