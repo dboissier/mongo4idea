@@ -119,7 +119,7 @@ public class ServerConfigurationPanelTest {
                 .selectTab("SSH");
         frameFixture.textBox("sshProxyHostField").setText("remotehost");
         frameFixture.textBox("sshProxyPortField").setText("22");
-        frameFixture.comboBox("sshAuthenticationMethodComboBox").requireSelection("Passphrase");
+        frameFixture.comboBox("sshAuthenticationMethodComboBox").requireSelection("Private key");
         frameFixture.label("passLabel").requireText("Passphrase:");
         frameFixture.textBox("sshPrivateKeyPathField").setText("/Users/myself/.ssh/id_rsa");
         frameFixture.textBox("sshProxyUsernameField").setText("john.doe");
@@ -134,7 +134,7 @@ public class ServerConfigurationPanelTest {
         assertThat(sshTunnelingConfiguration).isNotNull();
         assertThat(sshTunnelingConfiguration.getProxyHost()).isEqualTo("remotehost");
         assertThat(sshTunnelingConfiguration.getProxyPort()).isEqualTo(22);
-        assertThat(sshTunnelingConfiguration.getAuthenticationMethod()).isEqualTo(AuthenticationMethod.PASSPHRASE);
+        assertThat(sshTunnelingConfiguration.getAuthenticationMethod()).isEqualTo(AuthenticationMethod.PRIVATE_KEY);
         assertThat(sshTunnelingConfiguration.getPrivateKeyPath()).isEqualTo("/Users/myself/.ssh/id_rsa");
         assertThat(sshTunnelingConfiguration.getProxyUser()).isEqualTo("john.doe");
         assertThat(sshTunnelingConfiguration.getProxyPassword()).isEqualTo("mySecuredPassphrase");
@@ -193,7 +193,7 @@ public class ServerConfigurationPanelTest {
                 .selectTab("SSH");
         frameFixture.textBox("sshProxyHostField").requireEmpty();
         frameFixture.textBox("sshProxyPortField").requireEmpty();
-        frameFixture.comboBox("sshAuthenticationMethodComboBox").requireSelection("Passphrase");
+        frameFixture.comboBox("sshAuthenticationMethodComboBox").requireSelection("Private key");
         frameFixture.textBox("sshPrivateKeyPathField").requireEmpty();
         frameFixture.textBox("sshProxyUsernameField").requireEmpty();
         frameFixture.textBox("sshProxyPasswordField").requireEmpty();

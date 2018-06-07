@@ -24,6 +24,7 @@ import org.codinjutsu.tools.mongo.SshTunnelingConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 
 import java.io.Closeable;
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -52,7 +53,6 @@ public class SshConnection implements Closeable {
         for (String serverUrl : serverUrls) {
             Session session = createSshSession(sshTunnelingConfiguration, ServerConfiguration.extractHostAndPort(serverUrl), localPort++);
             sshSessions.add(session);
-
         }
     }
 
@@ -63,10 +63,17 @@ public class SshConnection implements Closeable {
 
             String proxyHost = sshTunnelingConfiguration.getProxyHost();
             int proxyPort = sshTunnelingConfiguration.getProxyPort();
+            AuthenticationMethod authenticationMethod = sshTunnelingConfiguration.getAuthenticationMethod();
             String proxyUser = sshTunnelingConfiguration.getProxyUser();
             String password = sshTunnelingConfiguration.getProxyPassword();
             Session session = jsch.getSession(proxyUser, proxyHost, proxyPort);
-            session.setPassword(password);
+            if (AuthenticationMethod.PRIVATE_KEY.equals(authenticationMethod)) {
+                jsch.addIdentity(
+                        new File(sshTunnelingConfiguration.getPrivateKeyPath()).getAbsolutePath(),
+                        sshTunnelingConfiguration.getProxyPassword());
+            } else {
+                session.setPassword(password);
+            }
 
             java.util.Properties config = new java.util.Properties();
             config.put("StrictHostKeyChecking", "no");

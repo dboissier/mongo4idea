@@ -18,7 +18,7 @@ package org.codinjutsu.tools.mongo.logic.ssh;
 
 public enum AuthenticationMethod {
 
-    PASSWORD("Password"), PASSPHRASE("Passphrase");
+    PASSWORD("Password"), PRIVATE_KEY("Private key");
 
     private final String label;
 

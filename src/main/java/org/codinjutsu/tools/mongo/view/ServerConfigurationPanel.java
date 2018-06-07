@@ -162,13 +162,13 @@ public class ServerConfigurationPanel extends JPanel {
         ));
 
         passLabel.setName("passLabel");
-        sshAuthenticationMethodComboBox.setSelectedItem(AuthenticationMethod.PASSPHRASE);
+        sshAuthenticationMethodComboBox.setSelectedItem(AuthenticationMethod.PRIVATE_KEY);
         sshAuthenticationMethodComboBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 AuthenticationMethod selectedAuthMethod = (AuthenticationMethod) sshAuthenticationMethodComboBox.getSelectedItem();
                 boolean shouldUsePrivateKey = false;
-                if (AuthenticationMethod.PASSPHRASE.equals(selectedAuthMethod)) {
+                if (AuthenticationMethod.PRIVATE_KEY.equals(selectedAuthMethod)) {
                     shouldUsePrivateKey = true;
                 }
 
@@ -308,7 +308,7 @@ public class ServerConfigurationPanel extends JPanel {
             sshProxyHostField.setText(sshTunnelingConfiguration.getProxyHost());
             sshProxyPortField.setText(String.valueOf(sshTunnelingConfiguration.getProxyPort()));
             sshAuthenticationMethodComboBox.setSelectedItem(sshTunnelingConfiguration.getAuthenticationMethod());
-            if (AuthenticationMethod.PASSPHRASE.equals(sshTunnelingConfiguration.getAuthenticationMethod())) {
+            if (AuthenticationMethod.PRIVATE_KEY.equals(sshTunnelingConfiguration.getAuthenticationMethod())) {
                 privateKeyPathField.setText(sshTunnelingConfiguration.getPrivateKeyPath());
             }
             sshProxyUserField.setText(sshTunnelingConfiguration.getProxyUser());

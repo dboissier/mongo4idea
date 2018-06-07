@@ -35,7 +35,7 @@ public class SshTunnelingConfiguration implements Cloneable {
         proxyHost = null;
         proxyPort = null;
         proxyUser = null;
-        authenticationMethod = AuthenticationMethod.PASSPHRASE;
+        authenticationMethod = AuthenticationMethod.PRIVATE_KEY;
         privateKeyPath = null;
         proxyPassword = null;
     }

@@ -25,7 +25,6 @@ import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.process.ProcessTerminatedListener;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import org.apache.commons.lang.StringUtils;
-import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.utils.MongoUtils;
 import org.jetbrains.annotations.NotNull;
 
