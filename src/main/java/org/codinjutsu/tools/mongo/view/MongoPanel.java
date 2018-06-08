@@ -57,7 +57,7 @@ public class MongoPanel extends JPanel implements Disposable {
     private Splitter splitter;
     private JPanel toolBar;
     private JPanel errorPanel;
-    private final JTextField rowLimitField = new JTextField("");
+    private final JTextField rowLimitField = new JTextField(Integer.toString(MongoQueryOptions.DEFAULT_RESULT_LIMIT));
     private final MongoResultPanel resultPanel;
     private final QueryPanel queryPanel;
 

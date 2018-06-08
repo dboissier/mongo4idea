@@ -27,7 +27,7 @@ import java.util.List;
 
 public class MongoQueryOptions {
 
-    private static final int DEFAULT_RESULT_LIMIT = 300;
+    public static final int DEFAULT_RESULT_LIMIT = 300;
 
     private static final Document EMPTY_FILTER = new Document();
     private final List<BasicDBObject> operations = new LinkedList<>();
