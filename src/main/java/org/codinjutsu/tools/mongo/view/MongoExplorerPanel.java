@@ -326,6 +326,14 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         if (treeNode != null) {
             Object userObject = treeNode.getUserObject();
 
+            if (userObject instanceof MongoCollection) {
+                return (DefaultMutableTreeNode) treeNode.getParent().getParent();
+            }
+
+            if (userObject instanceof MongoDatabase) {
+                return (DefaultMutableTreeNode) treeNode.getParent();
+            }
+
             if (userObject instanceof MongoServer) {
                 return treeNode;
             }
