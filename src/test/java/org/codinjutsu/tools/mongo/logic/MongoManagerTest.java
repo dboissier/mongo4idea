@@ -41,7 +41,7 @@ public class MongoManagerTest {
     private com.mongodb.client.MongoCollection<Document> peopleCollection;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MongoClient mongo = new MongoClient("localhost:27017");
         MongoDatabase database = mongo.getDatabase("test");
 
@@ -76,7 +76,7 @@ public class MongoManagerTest {
     }
 
     @Test
-    public void loadServer() throws Exception {
+    public void loadServer() {
         ServerConfiguration configuration = ServerConfiguration.byDefault();
         configuration.setUserDatabase("test");
         MongoServer mongoServer = new MongoServer(configuration);
@@ -91,7 +91,7 @@ public class MongoManagerTest {
     }
 
     @Test
-    public void loadCollectionsWithEmptyFilterAndLimitToThreeDocuments() throws Exception {
+    public void loadCollectionsWithEmptyFilterAndLimitToThreeDocuments() {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
         mongoQueryOptions.setResultLimit(3);
 
@@ -119,7 +119,7 @@ public class MongoManagerTest {
     }
 
     @Test
-    public void loadCollectionsWithFilterAndProjection() throws Exception {
+    public void loadCollectionsWithFilterAndProjection() {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
         mongoQueryOptions.setFilter(
                 new Document("position", "developer").toJson());
@@ -139,7 +139,7 @@ public class MongoManagerTest {
     }
 
     @Test
-    public void loadCollectionsWithFilterAndProjectionAndSort() throws Exception {
+    public void loadCollectionsWithFilterAndProjectionAndSort() {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
         mongoQueryOptions.setFilter("{'position': 'developer'}");
         mongoQueryOptions.setProjection("{'name': 1, 'age': 1, '_id': 0}");
@@ -157,9 +157,8 @@ public class MongoManagerTest {
                                 .append("age", 25));
     }
 
-
     @Test
-    public void loadCollectionsWithAggregateOperators() throws Exception {
+    public void loadCollectionsWithAggregateOperators() {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
         mongoQueryOptions.setOperations("[{'$match': {'position': 'developer'}}, {'$project': {'name': 1, 'age': 1}}, {'$group': {'_id': '$name', 'total': {'$sum': '$age'}}}]");
         MongoCollectionResult mongoCollectionResult =
@@ -173,9 +172,8 @@ public class MongoManagerTest {
                         .append("total", 25));
     }
 
-
     @Test
-    public void updateMongoDocument() throws Exception {
+    public void updateMongoDocument() {
         Document documentToUpdate = peopleCollection.find(new Document("name", "Paul")).first();
 
         documentToUpdate.put("surname", "Paulo les Gaz");
@@ -204,7 +202,7 @@ public class MongoManagerTest {
     }
 
     @Test
-    public void deleteMongoDocument() throws Exception {
+    public void deleteMongoDocument() {
         MongoCollection mongoCollection = new MongoCollection("people", "test");
         Document documentToDelete = peopleCollection.find(new Document("name", "Roger")).first();
         mongoManager.delete(serverConfiguration, mongoCollection, documentToDelete.get("_id"));
@@ -225,7 +223,7 @@ public class MongoManagerTest {
 
 
     @Test
-    public void findMongoDocument() throws Exception {
+    public void findMongoDocument() {
 
         Document actualDocument = mongoManager.findMongoDocument(
                 ServerConfiguration.byDefault(),
@@ -241,7 +239,7 @@ public class MongoManagerTest {
     }
 
     @Test
-    public void dropCollection() throws Exception {
+    public void dropCollection() {
         mongoManager.dropCollection(ServerConfiguration.byDefault(),
                 new MongoCollection("people", "test"));
 

@@ -41,4 +41,8 @@ public class MongoCollectionResult {
     public String getCollectionName() {
         return collectionName;
     }
+
+    public int getTotalDocumentNumber() {
+        return mongoObjects.size();
+    }
 }

@@ -17,10 +17,7 @@
 package org.codinjutsu.tools.mongo.view.model;
 
 import com.mongodb.DBRef;
-import org.apache.commons.lang.StringUtils;
 import org.bson.Document;
-import org.bson.types.ObjectId;
-import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoResultDescriptor;
@@ -33,12 +30,11 @@ import java.util.List;
 
 public class JsonTreeUtils {
 
-    public static TreeNode buildJsonTree(MongoCollectionResult mongoCollectionResult) {
-        JsonTreeNode rootNode = new JsonTreeNode(new MongoResultDescriptor(mongoCollectionResult.getCollectionName()));
+    public static TreeNode buildJsonTree(String collectionName, List<Document> documents, int startIndex) {
+        JsonTreeNode rootNode = new JsonTreeNode(new MongoResultDescriptor(collectionName));
 
-        List<Document> mongoObjects = mongoCollectionResult.getDocuments();
-        int i = 0;
-        for (Document document : mongoObjects) {
+        int i = startIndex;
+        for (Document document : documents) {
             JsonTreeNode currentNode = new JsonTreeNode(MongoValueDescriptor.createDescriptor(i++, document));
             processDocument(currentNode, document);
             rootNode.add(currentNode);

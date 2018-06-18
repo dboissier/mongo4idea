@@ -29,6 +29,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
+import org.codinjutsu.tools.mongo.view.model.Pagination;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.Before;
@@ -59,7 +60,7 @@ public class MongoResultPanelTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(MongoResultPanelTest.class);
 
         mongoResultPanel = GuiActionRunner.execute(new GuiQuery<MongoResultPanel>() {
@@ -75,11 +76,11 @@ public class MongoResultPanelTest {
     }
 
     @Test
-    public void displayTreeWithASimpleArray() throws Exception {
+    public void displayTreeWithASimpleArray() {
         MongoCollectionResult collectionResult = new MongoCollectionResult("mycollec");
         collectionResult.add(new Document("label", "a1"));
         collectionResult.add(new Document("label", "a2"));
-        mongoResultPanel.updateResultView(collectionResult);
+        mongoResultPanel.updateResultView(collectionResult, new Pagination());
 
         getResultTable().requireColumnCount(2)
                 .requireContents(new String[][]{
@@ -92,7 +93,7 @@ public class MongoResultPanelTest {
 
     @Test
     public void displayTreeWithASimpleDocument() throws Exception {
-        mongoResultPanel.updateResultView(createCollectionResults("simpleDocument.json", "mycollec"));
+        mongoResultPanel.updateResultView(createCollectionResults("simpleDocument.json", "mycollec"), new Pagination());
 
         getResultTable().requireColumnCount(2)
                 .requireContents(new String[][]{
@@ -105,7 +106,7 @@ public class MongoResultPanelTest {
     }
 
     @Test
-    public void displayTreeWithAStructuredDocument() throws Exception {
+    public void displayTreeWithAStructuredDocument() {
         MongoCollectionResult collectionResult = new MongoCollectionResult("mycollect");
         collectionResult.add(new Document("id", 0)
                 .append("label", "toto")
@@ -116,7 +117,7 @@ public class MongoResultPanelTest {
                                 "toto", true, 10
                         )))
         );
-        mongoResultPanel.updateResultView(collectionResult);
+        mongoResultPanel.updateResultView(collectionResult, new Pagination());
         TreeUtil.expandAll(mongoResultPanel.resultTreeTableView.getTree());
         getResultTable().requireColumnCount(2)
                 .requireContents(new String[][]{
@@ -135,7 +136,7 @@ public class MongoResultPanelTest {
     }
 
     @Test
-    public void displayDBRef() throws Exception {
+    public void displayDBRef() {
         MongoCollectionResult collectionResult = new MongoCollectionResult("mycollect");
         collectionResult.add(new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
                 .append("creation", new DBRef(
@@ -143,7 +144,7 @@ public class MongoResultPanelTest {
                         "mycollection",
                         new ObjectId("40c1e63414f85401b9268b01"))));
 
-        mongoResultPanel.updateResultView(collectionResult);
+        mongoResultPanel.updateResultView(collectionResult, new Pagination());
         TreeUtil.expandAll(mongoResultPanel.resultTreeTableView.getTree());
         getResultTable().requireContents(new String[][]{
                 {"[0]", "{ \"_id\" : { \"$oid\" : \"50b8d63414f85401b9268b99\" }, \"creation\" : { \"$ref\"...d\" : { \"$oid\" : \"40c1e63414f85401b9268b01\" }, \"$db\" : \"anotherdatabase\" } }"},
@@ -157,7 +158,7 @@ public class MongoResultPanelTest {
     }
 
     @Test
-    public void displayUTF8Char() throws Exception {
+    public void displayUTF8Char() {
         MongoCollectionResult collectionResult = new MongoCollectionResult("mycollect");
         collectionResult.add(new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
                 .append("arabic", "العربية")
@@ -166,7 +167,7 @@ public class MongoResultPanelTest {
                 .append("chinese", "汉语/漢語")
                 .append("russian", "ру́сский язы́к"));
 
-        mongoResultPanel.updateResultView(collectionResult);
+        mongoResultPanel.updateResultView(collectionResult, new Pagination());
         TreeUtil.expandAll(mongoResultPanel.resultTreeTableView.getTree());
 
         getResultTable().requireContents(new String[][]{
@@ -181,7 +182,7 @@ public class MongoResultPanelTest {
     }
 
     @Test
-    public void displayTreeWithAnArrayOfStructuredDocument() throws Exception {
+    public void displayTreeWithAnArrayOfStructuredDocument() {
         MongoCollectionResult collectionResult = new MongoCollectionResult("mycollect");
         collectionResult.add(new Document("id", 0)
                 .append("label", "toto")
@@ -202,7 +203,7 @@ public class MongoResultPanelTest {
                         )))
         );
 
-        mongoResultPanel.updateResultView(collectionResult);
+        mongoResultPanel.updateResultView(collectionResult, new Pagination());
 
         TreeUtil.expandAll(mongoResultPanel.resultTreeTableView.getTree());
         getResultTable().requireContents(new String[][]{
@@ -233,7 +234,7 @@ public class MongoResultPanelTest {
     }
 
     @Test
-    public void copyMongoObjectNodeValue() throws Exception {
+    public void copyMongoObjectNodeValue() {
         MongoCollectionResult collectionResult = new MongoCollectionResult("mycollect");
         collectionResult.add(new Document("id", 0)
                 .append("label", "toto")
@@ -253,7 +254,7 @@ public class MongoResultPanelTest {
                                 "tutu", false, 10
                         )))
         );
-        mongoResultPanel.updateResultView(collectionResult);
+        mongoResultPanel.updateResultView(collectionResult, new Pagination());
         TreeUtil.expandAll(mongoResultPanel.resultTreeTableView.getTree());
 
         mongoResultPanel.resultTreeTableView.setRowSelectionInterval(0, 0);
@@ -274,7 +275,7 @@ public class MongoResultPanelTest {
     }
 
     @Test
-    public void copyMongoResults() throws Exception {
+    public void copyMongoResults() {
         MongoCollectionResult collectionResult = new MongoCollectionResult("mycollect");
         collectionResult.add(new Document("id", 0)
                 .append("label", "toto")
@@ -294,7 +295,7 @@ public class MongoResultPanelTest {
                                 "tutu", false, 10
                         )))
         );
-        mongoResultPanel.updateResultView(collectionResult);
+        mongoResultPanel.updateResultView(collectionResult, new Pagination());
 
         TreeUtil.expandAll(mongoResultPanel.resultTreeTableView.getTree());
 
@@ -331,7 +332,7 @@ public class MongoResultPanelTest {
 
 
     @Test
-    public void isDBRef() throws Exception {
+    public void isDBRef() {
         MongoCollectionResult collectionResult = new MongoCollectionResult("mycollect");
         collectionResult.add(new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
                 .append("creation", new DBRef(
@@ -339,7 +340,7 @@ public class MongoResultPanelTest {
                         "mycollection",
                         new ObjectId("40c1e63414f85401b9268b01"))));
 
-        mongoResultPanel.updateResultView(collectionResult);
+        mongoResultPanel.updateResultView(collectionResult, new Pagination());
         TreeUtil.expandAll(mongoResultPanel.resultTreeTableView.getTree());
 
         mongoResultPanel.resultTreeTableView.setRowSelectionInterval(0, 0);

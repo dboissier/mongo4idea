@@ -27,14 +27,15 @@ import java.util.List;
 
 public class MongoQueryOptions {
 
+    public static final int NO_LIMIT = 0;
     public static final int DEFAULT_RESULT_LIMIT = 300;
 
-    private static final Document EMPTY_FILTER = new Document();
+    public static final Document EMPTY_DOCUMENT = new Document();
     private final List<BasicDBObject> operations = new LinkedList<>();
 
-    private Document filter = EMPTY_FILTER;
-    private Document projection = null;
-    private Document sort;
+    private Document filter = EMPTY_DOCUMENT;
+    private Document projection = EMPTY_DOCUMENT;
+    private Document sort = EMPTY_DOCUMENT;
 
     private int resultLimit = DEFAULT_RESULT_LIMIT;
 
@@ -83,7 +84,7 @@ public class MongoQueryOptions {
 
     public void setSort(String query) {
         if (!StringUtils.isBlank(query)) {
-            sort =  Document.parse(query);
+            sort = Document.parse(query);
         }
     }
 

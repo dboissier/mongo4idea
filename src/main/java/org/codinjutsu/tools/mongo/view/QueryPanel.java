@@ -272,6 +272,8 @@ public class QueryPanel extends JPanel implements Disposable {
 
             if (StringUtils.isNotBlank(rowLimit)) {
                 mongoQueryOptions.setResultLimit(Integer.parseInt(rowLimit));
+            } else {
+                mongoQueryOptions.setResultLimit(MongoQueryOptions.NO_LIMIT);
             }
 
             return mongoQueryOptions;

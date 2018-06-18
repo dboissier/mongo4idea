@@ -19,18 +19,19 @@ package org.codinjutsu.tools.mongo.view;
 import com.intellij.ide.CommonActionsManager;
 import com.intellij.ide.TreeExpander;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.LoadingDecorator;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.NumberDocument;
 import com.intellij.ui.PopupHandler;
+import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.panels.NonOpaquePanel;
 import com.mongodb.DBRef;
 import org.bson.Document;
@@ -40,8 +41,11 @@ import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
+import org.codinjutsu.tools.mongo.model.NbPerPage;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.*;
+import org.codinjutsu.tools.mongo.view.action.pagination.PaginationAction;
+import org.codinjutsu.tools.mongo.view.model.Pagination;
 import org.codinjutsu.tools.mongo.view.model.navigation.Navigation;
 import org.jetbrains.annotations.NotNull;
 
@@ -57,7 +61,12 @@ public class MongoPanel extends JPanel implements Disposable {
     private Splitter splitter;
     private JPanel toolBar;
     private JPanel errorPanel;
-    private final JTextField rowLimitField = new JTextField(Integer.toString(MongoQueryOptions.DEFAULT_RESULT_LIMIT));
+    private JPanel paginationPanel;
+
+    private final JTextField rowLimitField = new JTextField();
+    private final JBLabel rowCountLabel = new JBLabel();
+    private JBLabel pageNumberLabel = new JBLabel();
+
     private final MongoResultPanel resultPanel;
     private final QueryPanel queryPanel;
 
@@ -66,10 +75,14 @@ public class MongoPanel extends JPanel implements Disposable {
     private final Navigation navigation;
     private MongoCollectionResult currentResults;
 
+    private Pagination pagination;
+
     public MongoPanel(Project project, final MongoManager mongoManager, final ServerConfiguration configuration, final Navigation navigation) {
         this.mongoManager = mongoManager;
         this.navigation = navigation;
         this.configuration = configuration;
+        this.pagination = new Pagination();
+
         this.currentResults = new MongoCollectionResult(navigation.getCurrentWayPoint().getLabel());
 
         errorPanel.setLayout(new BorderLayout());
@@ -88,6 +101,23 @@ public class MongoPanel extends JPanel implements Disposable {
         add(rootPanel);
 
         initToolBar();
+        initPaginationPanel();
+
+        pagination.addSetPageListener(() -> showResults(true));
+        pagination.addSetPageListener(() -> {
+                    pagination.setTotalDocuments(currentResults.getTotalDocumentNumber());
+                    if (NbPerPage.ALL.equals(pagination.getNbPerPage())) {
+                        pageNumberLabel.setVisible(false);
+                    } else {
+                        pageNumberLabel.setText(
+                                String.format("Page %d/%d",
+                                        pagination.getPageNumber(),
+                                        pagination.getTotalPageNumber())
+                        );
+                        pageNumberLabel.setVisible(true);
+                    }
+                }
+        );
     }
 
     private MongoResultPanel createResultPanel(Project project, Notifier notifier) {
@@ -120,7 +150,7 @@ public class MongoPanel extends JPanel implements Disposable {
     private void initToolBar() {
         toolBar.setLayout(new BorderLayout());
 
-        JPanel rowLimitPanel = createRowLimitComponent();
+        JPanel rowLimitPanel = createNavigationComponent();
         toolBar.add(rowLimitPanel, BorderLayout.WEST);
 
         JComponent actionToolBarComponent = createResultActionsComponent();
@@ -130,10 +160,26 @@ public class MongoPanel extends JPanel implements Disposable {
         toolBar.add(viewToolbarComponent, BorderLayout.EAST);
     }
 
+    private void initPaginationPanel() {
+        paginationPanel.setLayout(new BorderLayout());
+
+        JComponent actionToolbarComponent = createPaginationActionsComponent();
+        paginationPanel.add(actionToolbarComponent, BorderLayout.CENTER);
+
+        JPanel panel = new JPanel();
+        panel.add(pageNumberLabel);
+        panel.add(com.intellij.ui.GuiUtils.createVerticalStrut());
+        panel.add(rowCountLabel);
+
+        paginationPanel.add(panel, BorderLayout.EAST);
+    }
+
     @NotNull
-    private JPanel createRowLimitComponent() {
+    private JPanel createNavigationComponent() {
+        rowLimitField.setText(Integer.toString(MongoQueryOptions.DEFAULT_RESULT_LIMIT));
         rowLimitField.setColumns(5);
         rowLimitField.setDocument(new NumberDocument());
+        rowLimitField.setText(Integer.toString(MongoQueryOptions.DEFAULT_RESULT_LIMIT));
 
         JPanel rowLimitPanel = new NonOpaquePanel();
         rowLimitPanel.add(new JLabel("Row limit:"), BorderLayout.WEST);
@@ -141,7 +187,6 @@ public class MongoPanel extends JPanel implements Disposable {
         rowLimitPanel.add(Box.createHorizontalStrut(5), BorderLayout.EAST);
         return rowLimitPanel;
     }
-
 
     @NotNull
     private JComponent createResultActionsComponent() {
@@ -158,8 +203,24 @@ public class MongoPanel extends JPanel implements Disposable {
 
         addBasicTreeActions(actionResultGroup);
         actionResultGroup.add(new CloseFindEditorAction(this));
-
+//TODO Duplicate
         ActionToolbar actionToolBar = ActionManager.getInstance().createActionToolbar("MongoResultGroupActions", actionResultGroup, true);
+        actionToolBar.setLayoutPolicy(ActionToolbar.AUTO_LAYOUT_POLICY);
+        JComponent actionToolBarComponent = actionToolBar.getComponent();
+        actionToolBarComponent.setBorder(null);
+        actionToolBarComponent.setOpaque(false);
+        return actionToolBarComponent;
+    }
+
+    @NotNull
+    private JComponent createPaginationActionsComponent() {
+        DefaultActionGroup actionResultGroup = new DefaultActionGroup("MongoPaginationGroup", false);
+        actionResultGroup.add(new ChangeNbPerPageActionComponent(() -> new PaginationPopupComponent(pagination).initUi()));
+        actionResultGroup.add(new PaginationAction.Previous(pagination));
+        actionResultGroup.add(new PaginationAction.Next(pagination));
+
+//TODO Duplicate
+        ActionToolbar actionToolBar = ActionManager.getInstance().createActionToolbar("MongoPaginationGroupActions", actionResultGroup, true);
         actionToolBar.setLayoutPolicy(ActionToolbar.AUTO_LAYOUT_POLICY);
         JComponent actionToolBarComponent = actionToolBar.getComponent();
         actionToolBarComponent.setBorder(null);
@@ -173,7 +234,9 @@ public class MongoPanel extends JPanel implements Disposable {
         viewSelectGroup.add(new ViewAsTreeAction(this));
         viewSelectGroup.add(new ViewAsTableAction(this));
 
+//TODO Duplicate
         ActionToolbar viewToolbar = ActionManager.getInstance().createActionToolbar("MongoViewSelectedActions", viewSelectGroup, true);
+
         viewToolbar.setLayoutPolicy(ActionToolbar.AUTO_LAYOUT_POLICY);
         JComponent viewToolbarComponent = viewToolbar.getComponent();
         viewToolbarComponent.setBorder(null);
@@ -208,12 +271,9 @@ public class MongoPanel extends JPanel implements Disposable {
         final AnAction expandAllAction = actionsManager.createExpandAllAction(treeExpander, resultPanel);
         final AnAction collapseAllAction = actionsManager.createCollapseAllAction(treeExpander, resultPanel);
 
-        Disposer.register(this, new Disposable() {
-            @Override
-            public void dispose() {
-                collapseAllAction.unregisterCustomShortcutSet(resultPanel);
-                expandAllAction.unregisterCustomShortcutSet(resultPanel);
-            }
+        Disposer.register(this, () -> {
+            collapseAllAction.unregisterCustomShortcutSet(resultPanel);
+            expandAllAction.unregisterCustomShortcutSet(resultPanel);
         });
 
 
@@ -227,56 +287,53 @@ public class MongoPanel extends JPanel implements Disposable {
     }
 
     public void showResults() {
-        executeQuery();
+        showResults(false);
     }
 
+    private void showResults(boolean cached) {
+        executeQuery(cached, navigation.getCurrentWayPoint());
+    }
+
+    //TODO refactor
+    public void executeQuery() {
+        Navigation.WayPoint currentWayPoint = navigation.getCurrentWayPoint();
+        currentWayPoint.setQueryOptions(queryPanel.getQueryOptions(rowLimitField.getText()));
+        MongoQueryOptions queryOptions = queryPanel.getQueryOptions(rowLimitField.getText());
+        currentWayPoint.setQueryOptions(queryOptions);
+        executeQuery(false, currentWayPoint);
+    }
+
+    //TODO refactor
     private void executeQuery(final boolean useCachedResults, final Navigation.WayPoint wayPoint) {
         errorPanel.setVisible(false);
         validateQuery();
-        ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    GuiUtils.runInSwingThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            loadingDecorator.startLoading(false);
-                        }
-                    });
+        ApplicationManager.getApplication().executeOnPooledThread(() -> {
+            try {
+                GuiUtils.runInSwingThread(() -> loadingDecorator.startLoading(false));
 
-                    if (!useCachedResults) {
-                        currentResults = mongoManager.loadCollectionValues(
-                                configuration,
-                                wayPoint.getCollection(),
-                                wayPoint.getQueryOptions());
-                    }
-                    GuiUtils.runInSwingThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            resultPanel.updateResultView(currentResults);
-                            initActions(resultPanel.resultTreeTableView);
-
-                        }
-                    });
-                } catch (final Exception ex) {
-                    GuiUtils.runInSwingThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            errorPanel.invalidate();
-                            errorPanel.removeAll();
-                            errorPanel.add(new ErrorPanel(ex), BorderLayout.CENTER);
-                            errorPanel.validate();
-                            errorPanel.setVisible(true);
-                        }
-                    });
-                } finally {
-                    GuiUtils.runInSwingThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            loadingDecorator.stopLoading();
-                        }
-                    });
+                final MongoQueryOptions queryOptions = wayPoint.getQueryOptions();
+                if (!useCachedResults) {
+                    currentResults = mongoManager.loadCollectionValues(
+                            configuration,
+                            wayPoint.getCollection(),
+                            queryOptions);
                 }
+                GuiUtils.runInSwingThread(() -> {
+                    resultPanel.updateResultView(currentResults, pagination);
+                    rowCountLabel.setText(String.format("%s documents", currentResults.getDocuments().size()));
+                    initActions(resultPanel.resultTreeTableView);
+
+                });
+            } catch (final Exception ex) {
+                GuiUtils.runInSwingThread(() -> {
+                    errorPanel.invalidate();
+                    errorPanel.removeAll();
+                    errorPanel.add(new ErrorPanel(ex), BorderLayout.CENTER);
+                    errorPanel.validate();
+                    errorPanel.setVisible(true);
+                });
+            } finally {
+                GuiUtils.runInSwingThread(loadingDecorator::stopLoading);
             }
         });
     }
@@ -301,12 +358,6 @@ public class MongoPanel extends JPanel implements Disposable {
         PopupHandler.installPopupHandler(resultTreeTableView, actionPopupGroup, "POPUP", ActionManager.getInstance());
     }
 
-    public void executeQuery() {
-        Navigation.WayPoint currentWayPoint = navigation.getCurrentWayPoint();
-        currentWayPoint.setQueryOptions(queryPanel.getQueryOptions(rowLimitField.getText()));
-        executeQuery(false, currentWayPoint);
-    }
-
     private void validateQuery() {
         queryPanel.validateQuery();
     }
@@ -323,12 +374,7 @@ public class MongoPanel extends JPanel implements Disposable {
     public void openFindEditor() {
         queryPanel.setVisible(true);
         splitter.setFirstComponent(queryPanel);
-        GuiUtils.runInSwingThread(new Runnable() {
-            @Override
-            public void run() {
-                focusOnEditor();
-            }
-        });
+        GuiUtils.runInSwingThread(this::focusOnEditor);
     }
 
     public void closeFindEditor() {
@@ -382,6 +428,26 @@ public class MongoPanel extends JPanel implements Disposable {
                 ));
         executeQuery(false, navigation.getCurrentWayPoint());
     }
+
+    private static class ChangeNbPerPageActionComponent extends DumbAwareAction implements CustomComponentAction {
+
+        @NotNull
+        private final Computable<JComponent> myComponentCreator;
+
+        ChangeNbPerPageActionComponent(@NotNull Computable<JComponent> componentCreator) {
+            myComponentCreator = componentCreator;
+        }
+
+        @Override
+        public JComponent createCustomComponent(Presentation presentation) {
+            return myComponentCreator.compute();
+        }
+
+        @Override
+        public void actionPerformed(@NotNull AnActionEvent e) {
+        }
+    }
+
 
     interface MongoDocumentOperations {
         Document getMongoDocument(Object _id);

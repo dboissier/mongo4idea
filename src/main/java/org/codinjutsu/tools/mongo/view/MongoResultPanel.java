@@ -17,16 +17,12 @@
 package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.JBCardLayout;
-import com.intellij.ui.PopupHandler;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.treetable.TreeTableTree;
 import com.intellij.util.ui.tree.TreeUtil;
@@ -35,24 +31,24 @@ import org.apache.commons.lang.StringUtils;
 import org.bson.Document;
 import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
+import org.codinjutsu.tools.mongo.model.NbPerPage;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
-import org.codinjutsu.tools.mongo.view.action.CopyResultAction;
-import org.codinjutsu.tools.mongo.view.action.EditMongoDocumentAction;
-import org.codinjutsu.tools.mongo.view.action.GoToMongoDocumentAction;
 import org.codinjutsu.tools.mongo.view.model.JsonTableUtils;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeUtils;
+import org.codinjutsu.tools.mongo.view.model.Pagination;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoResultDescriptor;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class MongoResultPanel extends JPanel implements Disposable {
 
@@ -110,19 +106,33 @@ public class MongoResultPanel extends JPanel implements Disposable {
         });
     }
 
-    void updateResultView(MongoCollectionResult mongoCollectionResult) {
+    void updateResultView(MongoCollectionResult mongoCollectionResult, Pagination pagination) {
         if (ViewMode.TREE.equals(currentViewMode)) {
-            updateResultTreeTable(mongoCollectionResult);
+            updateResultTreeTable(mongoCollectionResult, pagination);
         } else {
             updateResultTable(mongoCollectionResult);
         }
     }
 
-    private void updateResultTreeTable(MongoCollectionResult mongoCollectionResult) {
-        resultTreeTableView = new JsonTreeTableView(JsonTreeUtils.buildJsonTree(mongoCollectionResult), JsonTreeTableView.COLUMNS_FOR_READING);
+    private void updateResultTreeTable(MongoCollectionResult mongoCollectionResult, Pagination pagination) {
+        resultTreeTableView = new JsonTreeTableView(JsonTreeUtils.buildJsonTree(mongoCollectionResult.getCollectionName(),
+                extractDocuments(pagination, mongoCollectionResult.getDocuments()), pagination.getStartIndex()),
+                JsonTreeTableView.COLUMNS_FOR_READING);
         resultTreeTableView.setName("resultTreeTable");
 
         displayResult(resultTreeTableView);
+    }
+
+    private static List<Document> extractDocuments(Pagination pagination, List<Document> documents) {
+        if (NbPerPage.ALL.equals(pagination.getNbPerPage())) {
+            return documents;
+        }
+        int startIndex = pagination.getStartIndex();
+        int endIndex = startIndex + pagination.getNbDocumentsPerPage();
+
+        return IntStream.range(startIndex, endIndex)
+                .mapToObj(documents::get)
+                .collect(Collectors.toCollection(LinkedList::new));
     }
 
     private void updateResultTable(MongoCollectionResult mongoCollectionResult) {
@@ -305,4 +315,5 @@ public class MongoResultPanel extends JPanel implements Disposable {
     public enum ViewMode {
         TREE, TABLE
     }
+
 }
