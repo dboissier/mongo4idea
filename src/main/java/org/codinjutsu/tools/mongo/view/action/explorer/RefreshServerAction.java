@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.view.action;
+package org.codinjutsu.tools.mongo.view.action.explorer;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -59,7 +59,7 @@ public class RefreshServerAction extends AnAction implements DumbAware {
         event.getPresentation().setEnabled(!isLoading);
 
         boolean isConnected = selectedServerNode.getChildCount() > 0;
-        event.getPresentation().setIcon(isConnected ? REFRESH_ICON  : CONNECT_ICON);
+        event.getPresentation().setIcon(isConnected ? REFRESH_ICON : CONNECT_ICON);
         event.getPresentation().setText(isConnected ? REFRESH_TEXT : CONNECT_TEXT);
     }
 }

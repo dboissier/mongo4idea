@@ -14,45 +14,38 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.view.action;
+package org.codinjutsu.tools.mongo.view.action.result;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
-import com.intellij.openapi.ui.DialogBuilder;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.ui.components.JBScrollPane;
-import com.mongodb.DBRef;
-import org.bson.Document;
-import org.codinjutsu.tools.mongo.view.JsonTreeTableView;
-import org.codinjutsu.tools.mongo.view.MongoPanel;
-import org.codinjutsu.tools.mongo.view.model.JsonTreeUtils;
+import org.codinjutsu.tools.mongo.view.MongoResultPanel;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-public class GoToMongoDocumentAction extends AnAction implements DumbAware {
+public class EditMongoDocumentAction extends AnAction implements DumbAware {
 
-    private final MongoPanel mongoPanel;
+    private final MongoResultPanel resultPanel;
 
-    public GoToMongoDocumentAction(MongoPanel mongoPanel) {
-        super("View reference");
-        this.mongoPanel = mongoPanel;
+    public EditMongoDocumentAction(MongoResultPanel resultPanel) {
+        super("Edit", "Edit mongo document", AllIcons.Actions.Edit);
+        this.resultPanel = resultPanel;
 
-        registerCustomShortcutSet(KeyEvent.VK_B,
+        registerCustomShortcutSet(KeyEvent.VK_E,
                 Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(),
-                this.mongoPanel);
+                resultPanel);
     }
 
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
-        mongoPanel.goToReferencedDocument();
+        resultPanel.editSelectedMongoDocument();
     }
 
     @Override
     public void update(AnActionEvent event) {
-        event.getPresentation().setEnabled(mongoPanel.getResultPanel().getSelectedDBRef() != null);
+        super.update(event);
+        event.getPresentation().setEnabled(resultPanel.isSelectedNodeId());
     }
-
 }

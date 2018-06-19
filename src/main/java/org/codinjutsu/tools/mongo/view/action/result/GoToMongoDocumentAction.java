@@ -14,38 +14,37 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.view.action;
+package org.codinjutsu.tools.mongo.view.action.result;
 
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
-import org.codinjutsu.tools.mongo.view.MongoResultPanel;
+import org.codinjutsu.tools.mongo.view.MongoPanel;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-public class EditMongoDocumentAction extends AnAction implements DumbAware {
+public class GoToMongoDocumentAction extends AnAction implements DumbAware {
 
-    private final MongoResultPanel resultPanel;
+    private final MongoPanel mongoPanel;
 
-    public EditMongoDocumentAction(MongoResultPanel resultPanel) {
-        super("Edit", "Edit mongo document", AllIcons.Actions.Edit);
-        this.resultPanel = resultPanel;
+    public GoToMongoDocumentAction(MongoPanel mongoPanel) {
+        super("View reference");
+        this.mongoPanel = mongoPanel;
 
-        registerCustomShortcutSet(KeyEvent.VK_E,
+        registerCustomShortcutSet(KeyEvent.VK_B,
                 Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(),
-                resultPanel);
+                this.mongoPanel);
     }
 
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
-        resultPanel.editSelectedMongoDocument();
+        mongoPanel.goToReferencedDocument();
     }
 
     @Override
     public void update(AnActionEvent event) {
-        super.update(event);
-        event.getPresentation().setEnabled(resultPanel.isSelectedNodeId());
+        event.getPresentation().setEnabled(mongoPanel.getResultPanel().getSelectedDBRef() != null);
     }
+
 }

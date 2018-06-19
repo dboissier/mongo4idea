@@ -14,35 +14,35 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.view.action;
+package org.codinjutsu.tools.mongo.view.action.explorer;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.DumbAware;
-import org.codinjutsu.tools.mongo.view.MongoResultPanel;
+import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 
-import java.awt.*;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 
-public class CopyResultAction extends AnAction implements DumbAware {
 
-    private final MongoResultPanel mongoResultPanel;
+public class ViewCollectionValuesAction extends AnAction implements DumbAware {
 
-    public CopyResultAction(MongoResultPanel mongoResultPanel) {
-        super("Copy Value", "Copy value to clipboard", AllIcons.Actions.Copy);
-        this.mongoResultPanel = mongoResultPanel;
+    private final MongoExplorerPanel mongoExplorerPanel;
 
-        registerCustomShortcutSet(KeyEvent.VK_C,
-                Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(),
-                mongoResultPanel);
+    public ViewCollectionValuesAction(MongoExplorerPanel mongoExplorerPanel) {
+        super("View collection content", "View collection content", AllIcons.Nodes.DataSchema);
+        this.mongoExplorerPanel = mongoExplorerPanel;
+
+        registerCustomShortcutSet(KeyEvent.VK_F4, 0, mongoExplorerPanel);
     }
 
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
-        CopyPasteManager.getInstance().setContents(
-                new StringSelection(mongoResultPanel.getSelectedNodeStringifiedValue()));
+        mongoExplorerPanel.loadSelectedCollectionValues();
+    }
+
+    @Override
+    public void update(AnActionEvent event) {
+        event.getPresentation().setVisible(mongoExplorerPanel.getSelectedCollection() != null);
     }
 }

@@ -14,31 +14,24 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.view.action;
+package org.codinjutsu.tools.mongo.view.action.result;
 
 import com.intellij.icons.AllIcons;
-import com.intellij.ide.actions.CloseTabToolbarAction;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.codinjutsu.tools.mongo.view.MongoPanel;
+import org.codinjutsu.tools.mongo.view.MongoResultPanel;
 
-import java.awt.event.KeyEvent;
-
-public class CloseFindEditorAction extends CloseTabToolbarAction {
+public class ViewAsTableAction extends AnAction {
     private final MongoPanel mongoPanel;
 
-    public CloseFindEditorAction(MongoPanel mongoPanel) {
-        getTemplatePresentation().setIcon(AllIcons.Actions.Close);
-        registerCustomShortcutSet(KeyEvent.VK_ESCAPE, 0, mongoPanel);
+    public ViewAsTableAction(MongoPanel mongoPanel) {
+        super("View as table", "See results as table", AllIcons.Nodes.DataTables);
         this.mongoPanel = mongoPanel;
     }
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        mongoPanel.closeFindEditor();
-    }
-
-    @Override
-    public void update(AnActionEvent event) {
-        event.getPresentation().setVisible(false);
+        mongoPanel.setViewMode(MongoResultPanel.ViewMode.TABLE);
     }
 }

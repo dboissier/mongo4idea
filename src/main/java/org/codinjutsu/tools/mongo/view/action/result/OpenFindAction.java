@@ -14,34 +14,32 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.view.action;
+package org.codinjutsu.tools.mongo.view.action.result;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
-import com.intellij.openapi.util.SystemInfo;
-import org.codinjutsu.tools.mongo.view.MongoResultPanel;
+import org.codinjutsu.tools.mongo.view.MongoPanel;
 
 import java.awt.event.KeyEvent;
 
-public class AddMongoDocumentAction extends AnAction implements DumbAware {
+public class OpenFindAction extends AnAction implements DumbAware {
+    private final MongoPanel mongoPanel;
 
-    private final MongoResultPanel resultPanel;
-
-    public AddMongoDocumentAction(MongoResultPanel resultPanel) {
-        super("Add", "Add mongo document", AllIcons.General.Add);
-
-        if (SystemInfo.isMac) {
-            registerCustomShortcutSet(KeyEvent.VK_N, KeyEvent.CTRL_MASK, resultPanel);
-        } else {
-            registerCustomShortcutSet(KeyEvent.VK_INSERT, KeyEvent.ALT_MASK, resultPanel);
-        }
-        this.resultPanel = resultPanel;
+    public OpenFindAction(MongoPanel mongoPanel) {
+        super("Find", "Open Find editor", AllIcons.Actions.Find);
+        this.mongoPanel = mongoPanel;
+        registerCustomShortcutSet(KeyEvent.VK_F, KeyEvent.CTRL_MASK, mongoPanel);
     }
 
+
     @Override
-    public void actionPerformed(AnActionEvent anActionEvent) {
-        resultPanel.addMongoDocument();
+    public void actionPerformed(AnActionEvent e) {
+        if (!mongoPanel.isFindEditorOpened()) {
+            mongoPanel.openFindEditor();
+        } else {
+            mongoPanel.focusOnEditor();
+        }
     }
 }

@@ -14,33 +14,31 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.view.action;
+package org.codinjutsu.tools.mongo.view.action.result;
 
 import com.intellij.icons.AllIcons;
-import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.ide.actions.CloseTabToolbarAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.codinjutsu.tools.mongo.view.MongoPanel;
 
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
-public class ExecuteQuery extends AnAction {
+public class CloseFindEditorAction extends CloseTabToolbarAction {
     private final MongoPanel mongoPanel;
 
-    public ExecuteQuery(MongoPanel mongoPanel) {
-        super("Execute query", "Execute query with options", AllIcons.Actions.Execute);
+    public CloseFindEditorAction(MongoPanel mongoPanel) {
+        getTemplatePresentation().setIcon(AllIcons.Actions.Close);
+        registerCustomShortcutSet(KeyEvent.VK_ESCAPE, 0, mongoPanel);
         this.mongoPanel = mongoPanel;
-
-        registerCustomShortcutSet(KeyEvent.VK_ENTER, InputEvent.CTRL_MASK, mongoPanel);
     }
 
     @Override
-    public void actionPerformed(AnActionEvent anActionEvent) {
-        mongoPanel.executeQuery();
+    public void actionPerformed(AnActionEvent e) {
+        mongoPanel.closeFindEditor();
     }
 
     @Override
     public void update(AnActionEvent event) {
-        event.getPresentation().setEnabled(mongoPanel.getCurrentWayPoint() != null);
+        event.getPresentation().setVisible(false);
     }
 }

@@ -44,7 +44,7 @@ import com.mongodb.util.JSONParseException;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
-import org.codinjutsu.tools.mongo.view.action.OperatorCompletionAction;
+import org.codinjutsu.tools.mongo.view.action.result.OperatorCompletionAction;
 
 import javax.swing.*;
 import java.awt.*;

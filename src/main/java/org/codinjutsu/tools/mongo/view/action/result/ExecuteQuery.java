@@ -14,24 +14,33 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.view.action;
+package org.codinjutsu.tools.mongo.view.action.result;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.codinjutsu.tools.mongo.view.MongoPanel;
-import org.codinjutsu.tools.mongo.view.MongoResultPanel;
 
-public class ViewAsTreeAction extends AnAction {
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+
+public class ExecuteQuery extends AnAction {
     private final MongoPanel mongoPanel;
 
-    public ViewAsTreeAction(MongoPanel mongoPanel) {
-        super("View as tree", "See results as tree", AllIcons.Actions.ShowAsTree);
+    public ExecuteQuery(MongoPanel mongoPanel) {
+        super("Execute query", "Execute query with options", AllIcons.Actions.Execute);
         this.mongoPanel = mongoPanel;
+
+        registerCustomShortcutSet(KeyEvent.VK_ENTER, InputEvent.CTRL_MASK, mongoPanel);
     }
 
     @Override
-    public void actionPerformed(AnActionEvent e) {
-        mongoPanel.setViewMode(MongoResultPanel.ViewMode.TREE);
+    public void actionPerformed(AnActionEvent anActionEvent) {
+        mongoPanel.executeQuery();
+    }
+
+    @Override
+    public void update(AnActionEvent event) {
+        event.getPresentation().setEnabled(mongoPanel.getCurrentWayPoint() != null);
     }
 }

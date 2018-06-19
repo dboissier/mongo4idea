@@ -14,24 +14,28 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.view.action;
+package org.codinjutsu.tools.mongo.view.action.result;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.codinjutsu.tools.mongo.view.MongoPanel;
-import org.codinjutsu.tools.mongo.view.MongoResultPanel;
 
-public class ViewAsTableAction extends AnAction {
+public class NavigateBackwardAction extends AnAction {
     private final MongoPanel mongoPanel;
 
-    public ViewAsTableAction(MongoPanel mongoPanel) {
-        super("View as table", "See results as table", AllIcons.Nodes.DataTables);
+    public NavigateBackwardAction(MongoPanel mongoPanel) {
+        super("Navigate Backward", "Navigate Backward", AllIcons.Actions.Back);
         this.mongoPanel = mongoPanel;
     }
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        mongoPanel.setViewMode(MongoResultPanel.ViewMode.TABLE);
+        mongoPanel.navigateBackward();
+    }
+
+    @Override
+    public void update(AnActionEvent event) {
+        event.getPresentation().setVisible(mongoPanel.hasNavigationHistory());
     }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.view.action;
+package org.codinjutsu.tools.mongo.view.action.explorer;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -22,28 +22,32 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 
-import java.awt.*;
+import javax.swing.*;
 import java.awt.event.KeyEvent;
 
-
-public class ViewCollectionValuesAction extends AnAction implements DumbAware {
+public class DropDatabaseAction extends AnAction implements DumbAware {
 
     private final MongoExplorerPanel mongoExplorerPanel;
 
-    public ViewCollectionValuesAction(MongoExplorerPanel mongoExplorerPanel) {
-        super("View collection content", "View collection content", AllIcons.Nodes.DataSchema);
+    public DropDatabaseAction(MongoExplorerPanel mongoExplorerPanel) {
+        super("Drop Database", "Drop the selected database", AllIcons.Actions.GC);
         this.mongoExplorerPanel = mongoExplorerPanel;
 
-        registerCustomShortcutSet(KeyEvent.VK_F4, 0, mongoExplorerPanel);
+        registerCustomShortcutSet(KeyEvent.VK_DELETE, 0, mongoExplorerPanel);
     }
 
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
-        mongoExplorerPanel.loadSelectedCollectionValues();
+        int result = JOptionPane.showConfirmDialog(null, String.format("Do you REALLY want to drop the '%s' database?", mongoExplorerPanel.getSelectedDatabase().getName()), "Warning", JOptionPane.YES_NO_OPTION);
+
+        if (result == JOptionPane.YES_OPTION) {
+            mongoExplorerPanel.dropDatabase();
+        }
     }
+
 
     @Override
     public void update(AnActionEvent event) {
-        event.getPresentation().setVisible(mongoExplorerPanel.getSelectedCollection() != null);
+        event.getPresentation().setVisible(mongoExplorerPanel.getSelectedDatabase() != null);
     }
 }
