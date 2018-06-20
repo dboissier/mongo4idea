@@ -16,21 +16,18 @@
 
 package org.codinjutsu.tools.mongo.view.model;
 
-import org.apache.commons.io.IOUtils;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.jetbrains.annotations.NotNull;
+import org.codinjutsu.tools.mongo.view.BsonTest;
 import org.junit.Test;
-
-import java.io.IOException;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JsonTreeUtilsTest {
+public class JsonTreeUtilsTest implements BsonTest {
 
     @Test
-    public void buildDocumentFromSimpleTree() throws Exception {
+    public void buildDocumentFromSimpleTree() {
         Document originalDocument =
                 new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
                         .append("label", "toto")
@@ -49,7 +46,7 @@ public class JsonTreeUtilsTest {
     }
 
     @Test
-    public void buildDocumentFromTreeWithSubNodes() throws Exception {
+    public void buildDocumentFromTreeWithSubNodes() {
         Document originalDocument =
                 new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
                         .append("label", "toto")
@@ -78,7 +75,7 @@ public class JsonTreeUtilsTest {
 
     @Test
     public void buildDocumentFromTreeWithSubList() throws Exception {
-        Document document = parseDocument("simpleDocumentWithSubList.json");
+        Document document = buildDocument("simpleDocumentWithSubList.json");
 
         JsonTreeNode treeNode = (JsonTreeNode) JsonTreeUtils.buildJsonTree(document);
         JsonTreeNode tagsNode = (JsonTreeNode) treeNode.getChildAt(2);
@@ -100,13 +97,5 @@ public class JsonTreeUtilsTest {
                                                 new Document("tagName", "paf"))
                                 ))
         );
-    }
-
-    @NotNull
-    private Document parseDocument(String fileName) throws IOException {
-        Document document = Document.parse(IOUtils.toString(getClass().getResourceAsStream(fileName)));
-//        Hack to convert _id from string to ObjectId
-        document.put("_id", new ObjectId(String.valueOf(document.get("_id"))));
-        return document;
     }
 }

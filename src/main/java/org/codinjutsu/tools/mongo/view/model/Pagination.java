@@ -1,7 +1,6 @@
 package org.codinjutsu.tools.mongo.view.model;
 
 import com.intellij.util.containers.ContainerUtil;
-import org.codinjutsu.tools.mongo.model.NbPerPage;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;

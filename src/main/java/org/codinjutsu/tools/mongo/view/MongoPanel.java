@@ -41,7 +41,7 @@ import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
-import org.codinjutsu.tools.mongo.model.NbPerPage;
+import org.codinjutsu.tools.mongo.view.model.NbPerPage;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.pagination.PaginationAction;
 import org.codinjutsu.tools.mongo.view.action.result.*;
@@ -65,7 +65,7 @@ public class MongoPanel extends JPanel implements Disposable {
 
     private final JTextField rowLimitField = new JTextField();
     private final JBLabel rowCountLabel = new JBLabel();
-    private JBLabel pageNumberLabel = new JBLabel();
+    private final JBLabel pageNumberLabel = new JBLabel();
 
     private final MongoResultPanel resultPanel;
     private final QueryPanel queryPanel;
@@ -75,7 +75,7 @@ public class MongoPanel extends JPanel implements Disposable {
     private final Navigation navigation;
     private MongoCollectionResult currentResults;
 
-    private Pagination pagination;
+    private final Pagination pagination;
 
     public MongoPanel(Project project, final MongoManager mongoManager, final ServerConfiguration configuration, final Navigation navigation) {
         this.mongoManager = mongoManager;

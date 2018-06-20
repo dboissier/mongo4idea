@@ -341,15 +341,10 @@ public class QueryPanel extends JPanel implements Disposable {
             nonOpaquePanel.add(textPane, BorderLayout.CENTER);
             nonOpaquePanel.add(new JLabel(MessageType.ERROR.getDefaultIcon()), BorderLayout.WEST);
 
-            GuiUtils.runInSwingThread(new Runnable() {
-                @Override
-                public void run() {
-                    JBPopupFactory.getInstance().createBalloonBuilder(nonOpaquePanel)
-                            .setFillColor(MessageType.ERROR.getPopupBackground())
-                            .createBalloon()
-                            .show(new RelativePoint(component, new Point(0, 0)), Balloon.Position.above);
-                }
-            });
+            GuiUtils.runInSwingThread(() -> JBPopupFactory.getInstance().createBalloonBuilder(nonOpaquePanel)
+                    .setFillColor(MessageType.ERROR.getPopupBackground())
+                    .createBalloon()
+                    .show(new RelativePoint(component, new Point(0, 0)), Balloon.Position.above));
         }
 
         Editor createEditor() {

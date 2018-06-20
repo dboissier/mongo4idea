@@ -24,9 +24,9 @@ import java.util.List;
 
 public class Navigation {
 
-    List<WayPoint> wayPoints = new ArrayList<>();
+    private List<WayPoint> wayPoints = new ArrayList<>();
 
-    WayPoint currentWayPoint = null;
+    private WayPoint currentWayPoint = null;
 
     public void addNewWayPoint(MongoCollection collection, MongoQueryOptions mongoQueryOptions) {
         currentWayPoint = new WayPoint(collection, mongoQueryOptions);
@@ -41,7 +41,7 @@ public class Navigation {
         return wayPoints;
     }
 
-    public WayPoint moveBackward() {
+    public void moveBackward() {
         if (currentWayPoint != null) {
             int currentWayPointIndex = wayPoints.indexOf(currentWayPoint);
             if (currentWayPointIndex > 0) {
@@ -49,26 +49,13 @@ public class Navigation {
                 wayPoints.remove(currentWayPointIndex);
             }
         }
-
-        return currentWayPoint;
-    }
-
-    public WayPoint moveForward() {
-        if (currentWayPoint != null) {
-            int currentWayPointIndex = wayPoints.indexOf(currentWayPoint);
-            if (currentWayPointIndex < (wayPoints.size() - 1) ) {
-                currentWayPoint = wayPoints.get(currentWayPointIndex + 1);
-            }
-        }
-
-        return currentWayPoint;
     }
 
     public static class WayPoint {
         private final MongoCollection collection;
         private MongoQueryOptions queryOptions;
 
-        public WayPoint(MongoCollection collection, MongoQueryOptions queryOptions) {
+        WayPoint(MongoCollection collection, MongoQueryOptions queryOptions) {
             this.collection = collection;
             this.queryOptions = queryOptions;
         }

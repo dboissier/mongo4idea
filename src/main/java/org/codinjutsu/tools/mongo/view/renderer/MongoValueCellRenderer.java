@@ -19,8 +19,6 @@ package org.codinjutsu.tools.mongo.view.renderer;
 import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.treeStructure.treetable.TreeTable;
 import com.intellij.ui.treeStructure.treetable.TreeTableTree;
-import com.mongodb.DBRef;
-import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 

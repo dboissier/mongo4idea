@@ -12,7 +12,7 @@ import com.intellij.ui.ClickListener;
 import com.intellij.ui.RoundedLineBorder;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
-import org.codinjutsu.tools.mongo.model.NbPerPage;
+import org.codinjutsu.tools.mongo.view.model.NbPerPage;
 import org.codinjutsu.tools.mongo.view.model.Pagination;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +29,7 @@ public class PaginationPopupComponent extends JPanel {
     private static final int BORDER_SIZE = 2;
 
     private final Pagination pagination;
-    @NotNull private JLabel myValueLabel;
+    private JLabel myValueLabel;
 
     public PaginationPopupComponent(Pagination pagination) {
         this.pagination = pagination;

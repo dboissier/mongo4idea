@@ -30,7 +30,6 @@ import javax.swing.*;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.net.URL;
 import java.util.Enumeration;
 
 public class GuiUtils {
@@ -49,10 +48,6 @@ public class GuiUtils {
             iconPath += iconFilename;
         }
         return IconLoader.findIcon(iconPath);
-    }
-
-    public static URL getIconResource(String iconFilename) {
-        return GuiUtils.class.getResource(ICON_FOLDER + iconFilename);
     }
 
     public static void installActionGroupInToolBar(DefaultActionGroup actionGroup, JPanel toolBarPanel, ActionManager actionManager, String toolbarName, boolean horizontal) {
@@ -89,14 +84,9 @@ public class GuiUtils {
     }
 
     public static void showNotification(final JComponent component, final MessageType info, final String message, final Balloon.Position position) {
-        runInSwingThread(new Runnable() {
-            @Override
-            public void run() {
-                JBPopupFactory.getInstance().createBalloonBuilder(new JLabel(message))
-                        .setFillColor(info.getPopupBackground())
-                        .createBalloon()
-                        .show(new RelativePoint(component, new Point(0, 0)), position);
-            }
-        });
+        runInSwingThread(() -> JBPopupFactory.getInstance().createBalloonBuilder(new JLabel(message))
+                .setFillColor(info.getPopupBackground())
+                .createBalloon()
+                .show(new RelativePoint(component, new Point(0, 0)), position));
     }
 }

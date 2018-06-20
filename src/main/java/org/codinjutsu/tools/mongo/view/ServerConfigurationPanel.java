@@ -163,24 +163,21 @@ public class ServerConfigurationPanel extends JPanel {
 
         passLabel.setName("passLabel");
         sshAuthenticationMethodComboBox.setSelectedItem(AuthenticationMethod.PRIVATE_KEY);
-        sshAuthenticationMethodComboBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                AuthenticationMethod selectedAuthMethod = (AuthenticationMethod) sshAuthenticationMethodComboBox.getSelectedItem();
-                boolean shouldUsePrivateKey = false;
-                if (AuthenticationMethod.PRIVATE_KEY.equals(selectedAuthMethod)) {
-                    shouldUsePrivateKey = true;
-                }
+        sshAuthenticationMethodComboBox.addItemListener(e -> {
+            AuthenticationMethod selectedAuthMethod = (AuthenticationMethod) sshAuthenticationMethodComboBox.getSelectedItem();
+            boolean shouldUsePrivateKey = false;
+            if (AuthenticationMethod.PRIVATE_KEY.equals(selectedAuthMethod)) {
+                shouldUsePrivateKey = true;
+            }
 
-                privateKeyPathLabel.setVisible(shouldUsePrivateKey);
-                privateKeyPathField.setVisible(shouldUsePrivateKey);
-                if (!shouldUsePrivateKey) {
-                    passLabel.setLabelFor(sshProxyPasswordField);
-                    passLabel.setText("Password:");
-                    privateKeyPathField.setText(null);
-                } else {
-                    passLabel.setText("Passphrase:");
-                }
+            privateKeyPathLabel.setVisible(shouldUsePrivateKey);
+            privateKeyPathField.setVisible(shouldUsePrivateKey);
+            if (!shouldUsePrivateKey) {
+                passLabel.setLabelFor(sshProxyPasswordField);
+                passLabel.setText("Password:");
+                privateKeyPathField.setText(null);
+            } else {
+                passLabel.setText("Passphrase:");
             }
         });
 
@@ -194,34 +191,27 @@ public class ServerConfigurationPanel extends JPanel {
     }
 
     private void initListeners() {
-        testConnectionButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                final Ref<Exception> excRef = new Ref<>();
-                final ProgressManager progressManager = ProgressManager.getInstance();
-                progressManager.runProcessWithProgressSynchronously(new Runnable() {
-                    @Override
-                    public void run() {
-                        ServerConfiguration configuration = createServerConfigurationForTesting();
+        testConnectionButton.addActionListener(actionEvent -> {
+            final Ref<Exception> excRef = new Ref<>();
+            final ProgressManager progressManager = ProgressManager.getInstance();
+            progressManager.runProcessWithProgressSynchronously(() -> {
+                ServerConfiguration configuration = createServerConfigurationForTesting();
 
-                        final ProgressIndicator progressIndicator = progressManager.getProgressIndicator();
-                        if (progressIndicator != null) {
-                            progressIndicator.setText("Connecting to Mongo server...");
-                        }
-                        try {
-                            mongoManager.connect(configuration);
-                        } catch (Exception ex) {
-                            excRef.set(ex);
-                        }
-                    }
-
-                }, "Testing Connection", true, ServerConfigurationPanel.this.project);
-
-                if (!excRef.isNull()) {
-                    Messages.showErrorDialog(rootPanel, excRef.get().getMessage(), "Connection Test Failed");
-                } else {
-                    Messages.showInfoMessage(rootPanel, "Connection test successful", "Connection Test Successful");
+                final ProgressIndicator progressIndicator = progressManager.getProgressIndicator();
+                if (progressIndicator != null) {
+                    progressIndicator.setText("Connecting to Mongo server...");
                 }
+                try {
+                    mongoManager.connect(configuration);
+                } catch (Exception ex) {
+                    excRef.set(ex);
+                }
+            }, "Testing Connection", true, ServerConfigurationPanel.this.project);
+
+            if (!excRef.isNull()) {
+                Messages.showErrorDialog(rootPanel, excRef.get().getMessage(), "Connection Test Failed");
+            } else {
+                Messages.showInfoMessage(rootPanel, "Connection test successful", "Connection Test Successful");
             }
         });
     }
@@ -484,7 +474,7 @@ public class ServerConfigurationPanel extends JPanel {
         shellWorkingDirField = new TextFieldWithBrowseButton();
         FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(false, true, false, false, false, false);
         ComponentWithBrowseButton.BrowseFolderActionListener<JTextField> browseFolderActionListener =
-                new ComponentWithBrowseButton.BrowseFolderActionListener<>("Mongo shell working directory",
+                new ComponentWithBrowseButton.BrowseFolderActionListener<>("Mongo Shell Working Directory",
                         null,
                         shellWorkingDirField,
                         null,
@@ -495,7 +485,7 @@ public class ServerConfigurationPanel extends JPanel {
 
         privateKeyPathField = new TextFieldWithBrowseButton();
         ComponentWithBrowseButton.BrowseFolderActionListener<JTextField> privateKeyBrowseFolderActionListener =
-                new ComponentWithBrowseButton.BrowseFolderActionListener<>("Mongo shell working directory",
+                new ComponentWithBrowseButton.BrowseFolderActionListener<>("Mongo Shell Working Directory",
                         null,
                         privateKeyPathField,
                         null,

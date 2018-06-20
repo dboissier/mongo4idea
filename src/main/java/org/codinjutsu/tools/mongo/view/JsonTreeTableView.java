@@ -21,7 +21,6 @@ import com.intellij.ui.treeStructure.treetable.ListTreeTableModelOnColumns;
 import com.intellij.ui.treeStructure.treetable.TreeTable;
 import com.intellij.ui.treeStructure.treetable.TreeTableModel;
 import com.intellij.ui.treeStructure.treetable.TreeTableTree;
-import com.intellij.util.containers.Convertor;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.tree.TreeUtil;
@@ -39,8 +38,6 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Date;
 import java.util.List;
 
@@ -86,13 +83,10 @@ public class JsonTreeTableView extends TreeTable {
 
         TreeUtil.expand(tree, 2);
 
-        new TreeTableSpeedSearch(this, new Convertor<TreePath, String>() {
-            @Override
-            public String convert(final TreePath path) {
-                final JsonTreeNode node = (JsonTreeNode) path.getLastPathComponent();
-                MongoNodeDescriptor descriptor = node.getDescriptor();
-                return descriptor.getFormattedKey();
-            }
+        new TreeTableSpeedSearch(this, path -> {
+            final JsonTreeNode node = (JsonTreeNode) path.getLastPathComponent();
+            MongoNodeDescriptor descriptor = node.getDescriptor();
+            return descriptor.getFormattedKey();
         });
     }
 
@@ -184,12 +178,7 @@ public class JsonTreeTableView extends TreeTable {
 
 //  Note from dev: Quite ugly because when clicking on the button to open popup calendar, stopCellEdition is invoked.
 //                 From that point, impossible to set the selected data in the node description
-            dateEditor.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent actionEvent) {
-                    treeNode.getDescriptor().setValue(dateEditor.getCellEditorValue());
-                }
-            });
+            dateEditor.addActionListener(actionEvent -> treeNode.getDescriptor().setValue(dateEditor.getCellEditorValue()));
             return dateEditor;
         }
 

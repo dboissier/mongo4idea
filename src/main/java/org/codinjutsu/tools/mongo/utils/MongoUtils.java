@@ -22,7 +22,6 @@ import com.intellij.execution.process.CapturingProcessHandler;
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.openapi.vfs.CharsetToolkit;
 import com.mongodb.AuthenticationMechanism;
-import com.mongodb.DBRef;
 import com.mongodb.MongoClient;
 import org.bson.Document;
 import org.bson.codecs.BsonTypeClassMap;

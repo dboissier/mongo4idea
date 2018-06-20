@@ -4,7 +4,7 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
-import org.codinjutsu.tools.mongo.model.NbPerPage;
+import org.codinjutsu.tools.mongo.view.model.NbPerPage;
 import org.codinjutsu.tools.mongo.view.model.Pagination;
 
 import javax.swing.*;

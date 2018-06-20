@@ -27,8 +27,6 @@ import org.codinjutsu.tools.mongo.view.table.DateTimePicker;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -70,19 +68,15 @@ abstract class AbstractAddDialog extends DialogWrapper {
         });
 
         combobox.setSelectedItem(null);
-        combobox.addItemListener(new ItemListener() {
+        combobox.addItemListener(itemEvent -> {
+            JsonDataType selectedType = (JsonDataType) combobox.getSelectedItem();
+            currentEditor = UI_COMPONENT_BY_JSON_DATATYPE.get(selectedType);
+            currentEditor.reset();
 
-            @Override
-            public void itemStateChanged(ItemEvent itemEvent) {
-                JsonDataType selectedType = (JsonDataType) combobox.getSelectedItem();
-                currentEditor = UI_COMPONENT_BY_JSON_DATATYPE.get(selectedType);
-                currentEditor.reset();
-
-                parentPanel.invalidate();
-                parentPanel.removeAll();
-                parentPanel.add(currentEditor.getComponent(), BorderLayout.CENTER);
-                parentPanel.validate();
-            }
+            parentPanel.invalidate();
+            parentPanel.removeAll();
+            parentPanel.add(currentEditor.getComponent(), BorderLayout.CENTER);
+            parentPanel.validate();
         });
 
         combobox.setSelectedItem(JsonDataType.STRING);

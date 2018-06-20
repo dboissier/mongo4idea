@@ -1,6 +1,5 @@
 package org.codinjutsu.tools.mongo.view.model;
 
-import org.codinjutsu.tools.mongo.model.NbPerPage;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

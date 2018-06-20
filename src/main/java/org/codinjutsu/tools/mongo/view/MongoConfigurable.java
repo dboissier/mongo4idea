@@ -19,7 +19,6 @@ package org.codinjutsu.tools.mongo.view;
 import com.intellij.execution.ExecutionException;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.options.BaseConfigurable;
-import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.LabeledComponent;
@@ -34,8 +33,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 
 public class MongoConfigurable extends BaseConfigurable implements SearchableConfigurable {
@@ -92,12 +89,7 @@ public class MongoConfigurable extends BaseConfigurable implements SearchableCon
 
     private JButton createTestButton() {
         JButton testButton = new JButton("Test");
-        testButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                testPath();
-            }
-        });
+        testButton.addActionListener(actionEvent -> testPath());
         return testButton;
     }
 
@@ -132,7 +124,7 @@ public class MongoConfigurable extends BaseConfigurable implements SearchableCon
     }
 
     @Override
-    public void apply() throws ConfigurationException {
+    public void apply() {
         if (isShellPathModified()) {
             configuration.setShellPath(getShellPath());
         }

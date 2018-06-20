@@ -48,15 +48,12 @@ import org.codinjutsu.tools.mongo.view.editor.MongoObjectFile;
 import org.codinjutsu.tools.mongo.view.model.navigation.Navigation;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
 
 import static org.codinjutsu.tools.mongo.utils.GuiUtils.showNotification;
@@ -97,9 +94,6 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
                 return 0;
             };
-
-    public static final Comparator<DefaultMutableTreeNode> noSort =
-            (treeNodeLeft, treeNodeRight) -> 0;
 
     public MongoExplorerPanel(Project project, MongoManager mongoManager, Notifier notifier) {
         this.project = project;
@@ -150,7 +144,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
             return "<empty>";
         });
 
-        sortTreeNodes(sortedByName);
+        sortTreeNodes();
 
         TreeUtil.expand(mongoTree, 2);
     }
@@ -327,7 +321,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         mongoTree = null;
     }
 
-    public DefaultMutableTreeNode getSelectedServerNode() {
+    public DefaultMutableTreeNode getSelectedServerNode() {//TODO need refactor
         DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) mongoTree.getLastSelectedPathComponent();
         if (treeNode != null) {
             Object userObject = treeNode.getUserObject();
@@ -347,7 +341,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         return null;
     }
 
-    private DefaultMutableTreeNode getParentServerNode() {
+    private DefaultMutableTreeNode getParentServerNode() {//TODO need refactor
         DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) mongoTree.getLastSelectedPathComponent();
         if (treeNode != null) {
             Object userObject = treeNode.getUserObject();
@@ -449,14 +443,9 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         reloadServerConfiguration(getParentServerNode(), true);
     }
 
-    public void sortTreeNodes(boolean sortByName) {
-        this.sortedByName = sortByName;
+    public void sortTreeNodes() {
         final DefaultTreeModel model = (DefaultTreeModel) mongoTree.getModel();
-        if (sortByName) {
-            TreeUtil.sort(model, sortByNameComparator);
-        } else {
-            TreeUtil.sort(model, noSort);
-        }
+        TreeUtil.sort(model, sortByNameComparator);
 
         GuiUtils.runInSwingThread(() -> model.nodeStructureChanged((TreeNode) model.getRoot()));
     }

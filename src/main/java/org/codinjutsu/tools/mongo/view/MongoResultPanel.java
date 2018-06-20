@@ -31,7 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bson.Document;
 import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
-import org.codinjutsu.tools.mongo.model.NbPerPage;
+import org.codinjutsu.tools.mongo.view.model.NbPerPage;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.model.JsonTableUtils;
 import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
@@ -42,7 +42,6 @@ import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoResultDescriptor;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.util.LinkedList;

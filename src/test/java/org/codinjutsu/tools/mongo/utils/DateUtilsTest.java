@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DateUtilsTest {
 
     @Test
-    public void testUtcDateTime() throws Exception {
+    public void testUtcDateTime() {
         Calendar calendar = GregorianCalendar.getInstance(Locale.FRANCE);
         calendar.set(Calendar.YEAR, 2015);
         calendar.set(Calendar.MONTH, 1);
@@ -42,7 +42,7 @@ public class DateUtilsTest {
     }
 
     @Test
-    public void testUtcTime() throws Exception {
+    public void testUtcTime() {
         Calendar calendar = GregorianCalendar.getInstance(Locale.FRANCE);
         calendar.set(Calendar.YEAR, 2015);
         calendar.set(Calendar.MONTH, 1);

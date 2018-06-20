@@ -33,12 +33,9 @@ class ErrorPanel extends JPanel {
         setBackground(JBColor.RED);
         add(new JBLabel("Error during query execution"));
         final HoverHyperlinkLabel hoverHyperlinkLabel = new HoverHyperlinkLabel("more detail...");
-        hoverHyperlinkLabel.addHyperlinkListener(new HyperlinkListener() {
-            @Override
-            public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
-                if (hyperlinkEvent.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                    Messages.showErrorDialog(ex.toString(), "Error During Query Execution");
-                }
+        hoverHyperlinkLabel.addHyperlinkListener(hyperlinkEvent -> {
+            if (hyperlinkEvent.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                Messages.showErrorDialog(ex.toString(), "Error During Query Execution");
             }
         });
         add(Box.createRigidArea(new Dimension(10, 10)));

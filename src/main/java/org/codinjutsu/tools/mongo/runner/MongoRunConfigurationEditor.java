@@ -86,18 +86,14 @@ public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfigur
         });
 
 
-        serverConfigurationCombobox.addItemListener(new ItemListener() {
-
-            @Override
-            public void itemStateChanged(ItemEvent itemEvent) {
-                MongoServer selectedServer = (MongoServer) serverConfigurationCombobox.getSelectedItem();
-                if (selectedServer == null) {
-                    return;
-                }
-                databaseCombobox.removeAllItems();
-                for (MongoDatabase mongoDatabase: selectedServer.getDatabases()) {
-                    databaseCombobox.addItem(mongoDatabase);
-                }
+        serverConfigurationCombobox.addItemListener(itemEvent -> {
+            MongoServer selectedServer = (MongoServer) serverConfigurationCombobox.getSelectedItem();
+            if (selectedServer == null) {
+                return;
+            }
+            databaseCombobox.removeAllItems();
+            for (MongoDatabase mongoDatabase: selectedServer.getDatabases()) {
+                databaseCombobox.addItem(mongoDatabase);
             }
         });
 
@@ -171,7 +167,7 @@ public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfigur
 
     private void createUIComponents() {
         shellWorkingDirField = new TextFieldWithBrowseButton();
-        shellWorkingDirField.addBrowseFolderListener("Mongo shell working directory", "", null,
+        shellWorkingDirField.addBrowseFolderListener("Mongo Shell Working Directory", "", null,
                 new FileChooserDescriptor(false, true, false, false, false, false));
         shellWorkingDirField.setName("shellWorkingDirField");
     }

@@ -17,7 +17,6 @@
 package org.codinjutsu.tools.mongo.view.renderer;
 
 import com.intellij.ui.ColoredTableCellRenderer;
-import com.intellij.ui.SimpleTextAttributes;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.view.style.StyleAttributesProvider;

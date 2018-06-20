@@ -1,4 +1,4 @@
-package org.codinjutsu.tools.mongo.model;
+package org.codinjutsu.tools.mongo.view.model;
 
 public enum NbPerPage {
     ALL("All", 0), TEN("10", 10), TWENTY("20", 20), FIFTY("50", 50);

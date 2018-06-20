@@ -76,18 +76,16 @@ public class OperatorCompletionAction extends AnAction implements Disposable {
         new PopupChooserBuilder(QUERY_OPERATOR_LIST)
                 .setMovable(false)
                 .setCancelKeyEnabled(true)
-                .setItemChoosenCallback(new Runnable() {
-                    public void run() {
-                        final String selectedQueryOperator = (String) QUERY_OPERATOR_LIST.getSelectedValue();
-                        if (selectedQueryOperator == null) return;
+                .setItemChoosenCallback(() -> {
+                    final String selectedQueryOperator = (String) QUERY_OPERATOR_LIST.getSelectedValue();
+                    if (selectedQueryOperator == null) return;
 
-                        new WriteCommandAction(project, MONGO_OPERATOR_COMPLETION) {
-                            @Override
-                            protected void run(@NotNull Result result) throws Throwable {
-                                document.insertString(offset, selectedQueryOperator);
-                            }
-                        }.execute();
-                    }
+                    new WriteCommandAction(project, MONGO_OPERATOR_COMPLETION) {
+                        @Override
+                        protected void run(@NotNull Result result) throws Throwable {
+                            document.insertString(offset, selectedQueryOperator);
+                        }
+                    }.execute();
                 })
                 .createPopup()
                 .showInBestPositionFor(editor);

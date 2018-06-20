@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MongoUtilsTest {
 
     @Test
-    public void buildCommandeLine() throws Exception {
+    public void buildCommandeLine() {
         ServerConfiguration serverConfiguration = ServerConfiguration.byDefault();
         serverConfiguration.setUsername("john.doe");
         serverConfiguration.setPassword("secretPassword");
@@ -51,20 +51,20 @@ public class MongoUtilsTest {
     }
 
     @Test
-    public void buildMongoUrl() throws Exception {
+    public void buildMongoUrl() {
         assertThat(MongoUtils.buildMongoUrl(ServerConfiguration.byDefault(), new MongoDatabase("mydatabase")))
                 .isEqualTo("localhost:27017/mydatabase");
     }
 
     @Test
-    public void buildMongoUrlWithoutDatabase() throws Exception {
+    public void buildMongoUrlWithoutDatabase() {
         assertThat(MongoUtils.buildMongoUrl(ServerConfiguration.byDefault(), null))
                 .isEqualTo("localhost:27017/test");
 
     }
 
     @Test
-    public void stringifyListOfSimpleObjects() throws Exception {
+    public void stringifyListOfSimpleObjects() {
         List<Object> list = new LinkedList<>();
         list.add("foo");
         list.add(123);
@@ -75,7 +75,7 @@ public class MongoUtilsTest {
     }
 
     @Test
-    public void stringifyListOfInnerList() throws Exception {
+    public void stringifyListOfInnerList() {
         List<Object> innerList = new LinkedList<>();
         innerList.add("foo");
         innerList.add(new Document("key", "value1"));

@@ -16,7 +16,6 @@
 
 package org.codinjutsu.tools.mongo.view;
 
-import org.apache.commons.io.IOUtils;
 import org.assertj.swing.data.TableCell;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.edt.GuiQuery;
@@ -30,13 +29,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import java.io.IOException;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-public class MongoEditionPanelTest {
+public class MongoEditionPanelTest implements BsonTest {
 
     private MongoEditionPanel mongoEditionPanel;
 
@@ -50,7 +46,7 @@ public class MongoEditionPanelTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
 
         mongoEditionPanel = GuiActionRunner.execute(new GuiQuery<MongoEditionPanel>() {
             protected MongoEditionPanel executeInEDT() {
@@ -73,7 +69,7 @@ public class MongoEditionPanelTest {
     }
 
     @Test
-    public void displayMongoDocumentInTheTreeTable() throws Exception {
+    public void displayMongoDocumentInTheTreeTable() {
         JTableFixture tableFixture = frameFixture.table("editionTreeTable");
         tableFixture.replaceCellReader(new JsonTableCellReader());
 
@@ -87,7 +83,7 @@ public class MongoEditionPanelTest {
     }
 
     @Test
-    public void editKeyWithStringValue() throws Exception {
+    public void editKeyWithStringValue() {
         JTableFixture editionTreeTable = frameFixture.table("editionTreeTable");
         editionTreeTable.replaceCellReader(new JsonTableCellReader());
 
@@ -111,7 +107,7 @@ public class MongoEditionPanelTest {
     }
 
     @Test
-    public void cancelEdition() throws Exception {
+    public void cancelEdition() {
         JTableFixture editionTreeTable = frameFixture.table("editionTreeTable");
 
         editionTreeTable.replaceCellReader(new JsonTableCellReader());
@@ -128,7 +124,7 @@ public class MongoEditionPanelTest {
     }
 
     @Test
-    public void addKeyWithSomeValue() throws Exception {
+    public void addKeyWithSomeValue() {
         JTableFixture editionTreeTable = frameFixture.table("editionTreeTable");
 
         editionTreeTable.replaceCellReader(new JsonTableCellReader());
@@ -153,7 +149,7 @@ public class MongoEditionPanelTest {
     @Test
     public void addValueInAList() throws Exception {
 
-        mongoEditionPanel.updateEditionTree(buildDocument("simpleDocumentWithSubList.json"));
+        mongoEditionPanel.updateEditionTree(buildDocument("model/simpleDocumentWithSubList.json"));
         JTableFixture editionTreeTable = frameFixture.table("editionTreeTable");
 
         editionTreeTable.replaceCellReader(new JsonTableCellReader());
@@ -186,12 +182,5 @@ public class MongoEditionPanelTest {
                 {"[1]", "[false, true]"},
                 {"[2]", "[{ \"tagName\" : \"pouet\" }, { \"tagName\" : \"paf\" }]"}});
 
-    }
-
-
-    private Document buildDocument(String jsonFile) throws IOException {
-        Document document = Document.parse(IOUtils.toString(getClass().getResourceAsStream("model/" + jsonFile)));
-        document.put("_id", new ObjectId(String.valueOf(document.get("_id"))));
-        return document;
     }
 }

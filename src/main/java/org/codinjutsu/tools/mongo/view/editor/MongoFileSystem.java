@@ -22,6 +22,8 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileListener;
 import com.intellij.openapi.vfs.VirtualFileSystem;
+import com.intellij.openapi.vfs.newvfs.impl.FakeVirtualFile;
+import com.intellij.openapi.vfs.newvfs.impl.NullVirtualFile;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -93,40 +95,40 @@ public class MongoFileSystem extends VirtualFileSystem implements ApplicationCom
     }
 
     @Override
-    protected void deleteFile(Object requestor, @NotNull VirtualFile vFile) throws IOException {
+    protected void deleteFile(Object requestor, @NotNull VirtualFile vFile) {
 
     }
 
     @Override
-    protected void moveFile(Object requestor, @NotNull VirtualFile vFile, @NotNull VirtualFile newParent) throws IOException {
+    protected void moveFile(Object requestor, @NotNull VirtualFile vFile, @NotNull VirtualFile newParent) {
 
     }
 
     @Override
-    protected void renameFile(Object requestor, @NotNull VirtualFile vFile, @NotNull String newName) throws IOException {
+    protected void renameFile(Object requestor, @NotNull VirtualFile vFile, @NotNull String newName) {
 
-    }
-
-    @NotNull
-    @Override
-    protected VirtualFile createChildFile(Object requestor, @NotNull VirtualFile vDir, @NotNull String fileName) throws IOException {
-        return null;
     }
 
     @NotNull
     @Override
-    protected VirtualFile createChildDirectory(Object requestor, @NotNull VirtualFile vDir, @NotNull String dirName) throws IOException {
-        throw new UnsupportedOperationException("No file management in this plugin");
+    protected VirtualFile createChildFile(Object requestor, @NotNull VirtualFile vDir, @NotNull String fileName) {
+        return NullVirtualFile.INSTANCE;
     }
 
     @NotNull
     @Override
-    protected VirtualFile copyFile(Object requestor, @NotNull VirtualFile virtualFile, @NotNull VirtualFile newParent, @NotNull String copyName) throws IOException {
-        return null;
+    protected VirtualFile createChildDirectory(Object requestor, @NotNull VirtualFile vDir, @NotNull String dirName) {
+        return NullVirtualFile.INSTANCE;
+    }
+
+    @NotNull
+    @Override
+    protected VirtualFile copyFile(Object requestor, @NotNull VirtualFile virtualFile, @NotNull VirtualFile newParent, @NotNull String copyName) {
+        return NullVirtualFile.INSTANCE;
     }
 
     @Override
     public boolean isReadOnly() {
-        return false;
+        return true;
     }
 }

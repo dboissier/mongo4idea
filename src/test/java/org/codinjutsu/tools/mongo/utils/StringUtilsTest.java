@@ -23,14 +23,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StringUtilsTest {
 
     @Test
-    public void abbreviateInCenter() throws Exception {
+    public void abbreviateInCenter() {
         String value = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
         assertThat(StringUtils.abbreviateInCenter(value, 40)).isEqualTo("abcdefghijklmnopq...ghijklmnopqrstuvwxyz");
 
     }
 
     @Test
-    public void parseNumber() throws Exception {
+    public void parseNumber() {
         assertThat(StringUtils.parseNumber("1")).isEqualTo(1);
         assertThat(StringUtils.parseNumber("1.000000000001")).isEqualTo(1.000000000001d);
         assertThat(StringUtils.parseNumber("1000000000000000")).isEqualTo(1000000000000000L);
