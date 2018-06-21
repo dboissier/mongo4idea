@@ -140,8 +140,6 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
 
         private static final DateFormat DATE_FORMAT = DateUtils.utcDateTime(Locale.getDefault());
 
-        private static final String TO_STRING_FOR_DATE_VALUE_TEMPLATE = "\"%s\"";
-
         private MongoDateValueDescriptor(int index, Date value) {
             super(index, value, StyleAttributesProvider.getStringAttribute());
         }
@@ -153,7 +151,7 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
 
         @Override
         public String toString() {
-            return String.format(TO_STRING_FOR_DATE_VALUE_TEMPLATE, getFormattedDate());
+            return String.format("\"%s\"", getFormattedDate());
         }
 
         private String getFormattedDate() {

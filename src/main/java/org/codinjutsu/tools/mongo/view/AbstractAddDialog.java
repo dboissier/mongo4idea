@@ -16,11 +16,13 @@
 
 package org.codinjutsu.tools.mongo.view;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.components.JBCheckBox;
 import org.apache.commons.lang.StringUtils;
+import org.bson.BsonArray;
 import org.bson.Document;
 import org.codinjutsu.tools.mongo.view.model.JsonDataType;
 import org.codinjutsu.tools.mongo.view.table.DateTimePicker;
@@ -45,7 +47,7 @@ abstract class AbstractAddDialog extends DialogWrapper {
         UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.NULL, new NullFieldWrapper());
         UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.DATE, new DateTimeFieldWrapper());
         UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.OBJECT, new JsonFieldWrapper());
-        UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.ARRAY, new JsonFieldWrapper());
+        UI_COMPONENT_BY_JSON_DATATYPE.put(JsonDataType.ARRAY, new ArrayFieldWrapper());
     }
 
     final MongoEditionPanel mongoEditionPanel;
@@ -152,6 +154,15 @@ abstract class AbstractAddDialog extends DialogWrapper {
         @Override
         public void reset() {
             component.setText("");
+        }
+    }
+
+    private static class ArrayFieldWrapper extends JsonFieldWrapper {
+        @Override
+        public Object getValue() {
+            //ugly hack to use DocumentParser instead of BsonArray
+            String arrayInDoc = String.format("{\"array\": %s}", component.getText());
+            return Document.parse(arrayInDoc).get("array");
         }
     }
 
