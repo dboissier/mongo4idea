@@ -181,12 +181,19 @@ public class MongoEditionPanel extends JPanel implements Disposable {
     public void addValue(Object value) {
         List<TreeNode> node = new LinkedList<>();
 
-        JsonTreeNode parentNode = getParentNode();
-        if (parentNode == null) {
+        JsonTreeNode currentSelectionNode = getSelectedNode();
+        if (currentSelectionNode == null) {
             return;
         }
 
-        JsonTreeNode treeNode = new JsonTreeNode(MongoValueDescriptor.createDescriptor(parentNode.getChildCount(), value));
+        JsonTreeNode nodeToAttach;
+        if (doesKeyDescriptionHaveEmptyArrayValue(currentSelectionNode.getDescriptor())) {
+            nodeToAttach = currentSelectionNode;
+        } else {
+            nodeToAttach = (JsonTreeNode) currentSelectionNode.getParent();
+        }
+
+        JsonTreeNode treeNode = new JsonTreeNode(MongoValueDescriptor.createDescriptor(nodeToAttach.getChildCount(), value));
         if (value instanceof Document) {
             JsonTreeUtils.processDocument(treeNode, (Document) value);
         }
@@ -194,8 +201,8 @@ public class MongoEditionPanel extends JPanel implements Disposable {
         node.add(treeNode);
 
         DefaultTreeModel treeModel = (DefaultTreeModel) editTableView.getTree().getModel();
-        TreeUtil.addChildrenTo(parentNode, node);
-        treeModel.reload(parentNode);
+        TreeUtil.addChildrenTo(nodeToAttach, node);
+        treeModel.reload(nodeToAttach);
     }
 
     private JsonTreeNode getParentNode() {
@@ -215,7 +222,23 @@ public class MongoEditionPanel extends JPanel implements Disposable {
         if (selectedNode == null) {
             return false;
         }
-        return selectedNode.getDescriptor() instanceof MongoValueDescriptor;
+        MongoNodeDescriptor descriptor = selectedNode.getDescriptor();
+        return descriptor instanceof MongoValueDescriptor ||
+                doesKeyDescriptionHaveEmptyArrayValue(descriptor);
+    }
+
+    private boolean doesKeyDescriptionHaveEmptyArrayValue(MongoNodeDescriptor descriptor) {
+        if (descriptor instanceof MongoKeyValueDescriptor) {
+            MongoKeyValueDescriptor keyValueDescriptor = (MongoKeyValueDescriptor) descriptor;
+            Object value = keyValueDescriptor.getValue();
+            if (value instanceof List) {
+                List list = (List) value;
+                return list.isEmpty();
+            }
+            return false;
+        }
+        return false;
+
     }
 
     public void removeSelectedKey() {

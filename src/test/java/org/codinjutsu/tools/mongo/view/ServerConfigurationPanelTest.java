@@ -138,6 +138,37 @@ public class ServerConfigurationPanelTest {
         assertThat(sshTunnelingConfiguration.getPrivateKeyPath()).isEqualTo("/Users/myself/.ssh/id_rsa");
         assertThat(sshTunnelingConfiguration.getProxyUser()).isEqualTo("john.doe");
         assertThat(sshTunnelingConfiguration.getProxyPassword()).isEqualTo("mySecuredPassphrase");
+        assertThat(sshTunnelingConfiguration.isAskPassphrase()).isFalse();
+    }
+
+    @Test
+    public void validateFormWithSSHTunnelingAndPassphraseAuthMethodToBeAsked() {
+        frameFixture.textBox("labelField").setText("MyServer");
+        frameFixture.textBox("serverUrlsField").setText("localhost:25");
+
+        frameFixture.tabbedPane("tabbedSettings")
+                .selectTab("SSH");
+        frameFixture.textBox("sshProxyHostField").setText("remotehost");
+        frameFixture.textBox("sshProxyPortField").setText("22");
+        frameFixture.comboBox("sshAuthenticationMethodComboBox").requireSelection("Private key");
+        frameFixture.label("passLabel").requireText("Passphrase:");
+        frameFixture.textBox("sshPrivateKeyPathField").setText("/Users/myself/.ssh/id_rsa");
+        frameFixture.textBox("sshProxyUsernameField").setText("john.doe");
+        frameFixture.checkBox("sshAskPassphraseCheckbox").check();
+
+        ServerConfiguration configuration = new ServerConfiguration();
+        configurationPanel.applyConfigurationData(configuration);
+
+        assertThat(configuration.getServerUrls()).containsExactly("localhost:25");
+
+        SshTunnelingConfiguration sshTunnelingConfiguration = configuration.getSshTunnelingConfiguration();
+        assertThat(sshTunnelingConfiguration).isNotNull();
+        assertThat(sshTunnelingConfiguration.getProxyHost()).isEqualTo("remotehost");
+        assertThat(sshTunnelingConfiguration.getProxyPort()).isEqualTo(22);
+        assertThat(sshTunnelingConfiguration.getAuthenticationMethod()).isEqualTo(AuthenticationMethod.PRIVATE_KEY);
+        assertThat(sshTunnelingConfiguration.getPrivateKeyPath()).isEqualTo("/Users/myself/.ssh/id_rsa");
+        assertThat(sshTunnelingConfiguration.getProxyUser()).isEqualTo("john.doe");
+        assertThat(sshTunnelingConfiguration.isAskPassphrase()).isTrue();
     }
 
     @Test
@@ -204,7 +235,7 @@ public class ServerConfigurationPanelTest {
     public void loadFormWithSSHTunneling() {
         ServerConfiguration configuration = ServerConfiguration.byDefault();
         configuration.setSshTunnelingConfiguration(
-                new SshTunnelingConfiguration("remotehost", 22, "john.doe", AuthenticationMethod.PASSWORD, "", "mySecuredPassword"));
+                new SshTunnelingConfiguration("remotehost", 22, "john.doe", AuthenticationMethod.PASSWORD, "", "mySecuredPassword", false));
         configurationPanel.loadConfigurationData(configuration);
 
         frameFixture.tabbedPane("tabbedSettings")

@@ -47,7 +47,9 @@ public class EditMongoServerAction extends AnAction {
 
         MongoConfiguration mongoConfiguration = MongoConfiguration.getInstance(event.getProject());
         mongoConfiguration.updateServerConfiguration(sourceConfiguration, copiedConfiguration);
-        mongoExplorerPanel.reloadServerConfiguration(mongoExplorerPanel.getSelectedServerNode(), false);
+        if (copiedConfiguration.isConnectOnIdeStartup()) {
+            mongoExplorerPanel.reloadServerConfiguration(mongoExplorerPanel.getSelectedServerNode(), false);
+        }
     }
 
     @Override

@@ -32,8 +32,10 @@ import com.intellij.ui.TreeSpeedSearch;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.tree.TreeUtil;
+import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
+import org.codinjutsu.tools.mongo.SshTunnelingConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.logic.Notifier;
@@ -163,10 +165,23 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
 
     public void reloadServerConfiguration(final DefaultMutableTreeNode serverNode, final boolean expandAfterLoading) {
+        final MongoServer mongoServer = (MongoServer) serverNode.getUserObject();
+        SshTunnelingConfiguration sshTunnelingConfiguration = mongoServer.getConfiguration().getSshTunnelingConfiguration();
+        if (!SshTunnelingConfiguration.isEmpty(sshTunnelingConfiguration)
+                && sshTunnelingConfiguration.isAskPassphrase()) {
+            SshPassphraseDialog dialog = SshPassphraseDialog.createDialog(this);
+            dialog.show();
+
+            if (!dialog.isOK()) {
+                return;
+            }
+            sshTunnelingConfiguration.setProxyPassword(dialog.getPassphrase());
+            return;
+        }
+
         mongoTree.setPaintBusy(true);
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            final MongoServer mongoServer = (MongoServer) serverNode.getUserObject();
             try {
                 mongoManager.loadServer(mongoServer);
 
