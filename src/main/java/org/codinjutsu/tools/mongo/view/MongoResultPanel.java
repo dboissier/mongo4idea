@@ -29,14 +29,11 @@ import com.intellij.util.ui.tree.TreeUtil;
 import com.mongodb.DBRef;
 import org.apache.commons.lang.StringUtils;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
-import org.codinjutsu.tools.mongo.view.model.NbPerPage;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
-import org.codinjutsu.tools.mongo.view.model.JsonTableUtils;
-import org.codinjutsu.tools.mongo.view.model.JsonTreeNode;
-import org.codinjutsu.tools.mongo.view.model.JsonTreeUtils;
-import org.codinjutsu.tools.mongo.view.model.Pagination;
+import org.codinjutsu.tools.mongo.view.model.*;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoResultDescriptor;
@@ -88,14 +85,12 @@ public class MongoResultPanel extends JPanel implements Disposable {
         return new MongoEditionPanel().init(mongoDocumentOperations, new ActionCallback() {
             public void onOperationSuccess(String shortMessage, String detailedMessage) {
                 hideEditionPanel();
-                GuiUtils.showNotification(MongoResultPanel.this.resultTreePanel, MessageType.INFO, shortMessage, Balloon.Position.above);
                 notifier.notifyInfo(detailedMessage);
             }
 
             @Override
             public void onOperationFailure(Exception exception) {
                 notifier.notifyError(exception.getMessage());
-                GuiUtils.showNotification(MongoResultPanel.this.mongoEditionPanel, MessageType.ERROR, "An error occured (see Event Log)", Balloon.Position.above);
             }
 
             @Override
@@ -180,23 +175,31 @@ public class MongoResultPanel extends JPanel implements Disposable {
         return null;
     }
 
-
-    public boolean isSelectedNodeId() {
+    private MongoKeyValueDescriptor getObjectIdDescriptorFromSelectedDocument() {
         if (resultTreeTableView == null) {
-            return false;
+            return null;
         }
         TreeTableTree tree = resultTreeTableView.getTree();
         JsonTreeNode treeNode = (JsonTreeNode) tree.getLastSelectedPathComponent();
         if (treeNode == null) {
-            return false;
+            return null;
         }
 
         MongoNodeDescriptor descriptor = treeNode.getDescriptor();
-        if (descriptor instanceof MongoKeyValueDescriptor) {
-            return "_id".equals(((MongoKeyValueDescriptor) descriptor).getKey());
+        if (!(descriptor instanceof MongoKeyValueDescriptor)) {
+            return null;
         }
 
-        return false;
+        if (!"_id".equals(((MongoKeyValueDescriptor) descriptor).getKey())) {
+            return null;
+        }
+
+        return (MongoKeyValueDescriptor) descriptor;
+    }
+
+
+    public boolean isSelectedNodeId() {
+        return getObjectIdDescriptorFromSelectedDocument() != null;
     }
 
 
@@ -300,6 +303,17 @@ public class MongoResultPanel extends JPanel implements Disposable {
         return mongoDocumentOperations.getReferenceDocument(
                 selectedDBRef.getCollectionName(), selectedDBRef.getId(), selectedDBRef.getDatabaseName()
         );
+    }
+
+    public void deleteSelectedMongoDocument() {
+        MongoKeyValueDescriptor descriptor = getObjectIdDescriptorFromSelectedDocument();
+        if (descriptor == null) {
+            return;
+        }
+
+        ObjectId objectId = ((ObjectId) descriptor.getValue());
+        mongoDocumentOperations.deleteMongoDocument(objectId);
+        notifier.notifyInfo("Document with _id=" + objectId.toString() + " deleted.");
     }
 
     interface ActionCallback {

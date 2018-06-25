@@ -51,7 +51,6 @@ public class MongoEditionPanel extends JPanel implements Disposable {
     private JButton cancelButton;
     private JPanel editionTreePanel;
     private JPanel mainPanel;
-    private JButton deleteButton;
 
     private JsonTreeTableView editTableView;
 
@@ -64,7 +63,6 @@ public class MongoEditionPanel extends JPanel implements Disposable {
 
         saveButton.setName("saveButton");
         cancelButton.setName("cancelButton");
-        deleteButton.setName("deleteButton");
     }
 
     MongoEditionPanel init(final MongoPanel.MongoDocumentOperations mongoDocumentOperations, final MongoResultPanel.ActionCallback actionCallback) {
@@ -85,19 +83,6 @@ public class MongoEditionPanel extends JPanel implements Disposable {
                     actionCallback.onOperationSuccess("Document saved", "Document " +
                             mongoDocument.toJson(DOCUMENT_CODEC) + " saved.");
 
-                } catch (Exception exception) {
-                    actionCallback.onOperationFailure(exception);
-                }
-            }
-        });
-
-        deleteButton.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                try {
-                    Object documentId = getDocumentId();
-                    mongoDocumentOperations.deleteMongoDocument(documentId);
-                    actionCallback.onOperationSuccess("Document deleted", "Document with _id=" + documentId + " deleted.");
                 } catch (Exception exception) {
                     actionCallback.onOperationFailure(exception);
                 }
@@ -258,15 +243,5 @@ public class MongoEditionPanel extends JPanel implements Disposable {
     @Override
     public void dispose() {
         editTableView = null;
-    }
-
-    private Object getDocumentId() {
-        JsonTreeNode rootNode = (JsonTreeNode) editTableView.getTree().getModel().getRoot();
-
-        return findObjectIdNodeDescriptor(rootNode).getDescriptor().getValue();
-    }
-
-    private JsonTreeNode findObjectIdNodeDescriptor(JsonTreeNode rootNode) {
-        return ((JsonTreeNode) rootNode.getChildAt(0));//TODO crappy
     }
 }
