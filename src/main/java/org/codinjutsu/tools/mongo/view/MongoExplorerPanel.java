@@ -32,10 +32,8 @@ import com.intellij.ui.TreeSpeedSearch;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.tree.TreeUtil;
-import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
-import org.codinjutsu.tools.mongo.SshTunnelingConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.logic.Notifier;
@@ -50,12 +48,15 @@ import org.codinjutsu.tools.mongo.view.editor.MongoObjectFile;
 import org.codinjutsu.tools.mongo.view.model.navigation.Navigation;
 
 import javax.swing.*;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
-import java.util.*;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.codinjutsu.tools.mongo.utils.GuiUtils.showNotification;
@@ -74,8 +75,6 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
     private final Project project;
     private final MongoManager mongoManager;
     private final Notifier notifier;
-    private boolean sortedByName = false;
-
 
     private static final Comparator<DefaultMutableTreeNode> sortByNameComparator =
             (treeNodeLeft, treeNodeRight) -> {
@@ -166,19 +165,6 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
     public void reloadServerConfiguration(final DefaultMutableTreeNode serverNode, final boolean expandAfterLoading) {
         final MongoServer mongoServer = (MongoServer) serverNode.getUserObject();
-        SshTunnelingConfiguration sshTunnelingConfiguration = mongoServer.getConfiguration().getSshTunnelingConfiguration();
-        if (!SshTunnelingConfiguration.isEmpty(sshTunnelingConfiguration)
-                && sshTunnelingConfiguration.isAskPassphrase()) {
-            SshPassphraseDialog dialog = SshPassphraseDialog.createDialog(this);
-            dialog.show();
-
-            if (!dialog.isOK()) {
-                return;
-            }
-            sshTunnelingConfiguration.setProxyPassword(dialog.getPassphrase());
-            return;
-        }
-
         mongoTree.setPaintBusy(true);
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> {

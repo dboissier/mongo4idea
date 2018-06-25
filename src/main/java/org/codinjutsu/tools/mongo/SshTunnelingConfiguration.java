@@ -30,7 +30,6 @@ public class SshTunnelingConfiguration implements Cloneable {
     private AuthenticationMethod authenticationMethod;
     private String proxyPassword;
     private String privateKeyPath;
-    private boolean askPassphrase = false;
 
     private SshTunnelingConfiguration() {
         proxyHost = null;
@@ -44,15 +43,13 @@ public class SshTunnelingConfiguration implements Cloneable {
     public SshTunnelingConfiguration(String proxyHost, Integer proxyPort, String proxyUser,
                                      AuthenticationMethod authenticationMethod,
                                      String privateKeyPath,
-                                     String proxyPassword,
-                                     boolean askPassphrase) {
+                                     String proxyPassword) {
         this.proxyHost = proxyHost;
         this.proxyPort = proxyPort;
         this.proxyUser = proxyUser;
         this.authenticationMethod = authenticationMethod;
         this.privateKeyPath = privateKeyPath;
         this.proxyPassword = proxyPassword;
-        this.askPassphrase = askPassphrase;
     }
 
 
@@ -108,21 +105,12 @@ public class SshTunnelingConfiguration implements Cloneable {
         return sshTunnelingConfiguration == null || EMPTY.equals(sshTunnelingConfiguration);
     }
 
-    public boolean isAskPassphrase() {
-        return askPassphrase;
-    }
-
-    public void setAskPassphrase(boolean askPassphrase) {
-        this.askPassphrase = askPassphrase;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof SshTunnelingConfiguration)) return false;
         SshTunnelingConfiguration that = (SshTunnelingConfiguration) o;
-        return askPassphrase == that.askPassphrase &&
-                Objects.equals(proxyHost, that.proxyHost) &&
+        return Objects.equals(proxyHost, that.proxyHost) &&
                 Objects.equals(proxyPort, that.proxyPort) &&
                 Objects.equals(proxyUser, that.proxyUser) &&
                 authenticationMethod == that.authenticationMethod &&
@@ -132,7 +120,8 @@ public class SshTunnelingConfiguration implements Cloneable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(proxyHost, proxyPort, proxyUser, authenticationMethod, proxyPassword, privateKeyPath, askPassphrase);
+
+        return Objects.hash(proxyHost, proxyPort, proxyUser, authenticationMethod, proxyPassword, privateKeyPath);
     }
 
     public ServerConfiguration clone() {

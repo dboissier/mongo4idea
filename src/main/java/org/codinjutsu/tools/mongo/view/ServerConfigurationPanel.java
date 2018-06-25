@@ -91,7 +91,6 @@ public class ServerConfigurationPanel extends JPanel {
     private JLabel privateKeyPathLabel;
     private TextFieldWithBrowseButton privateKeyPathField;
     private JLabel passLabel;
-    private JCheckBox sshAskPassphraseCheckbox;
 
     private final MongoManager mongoManager;
 
@@ -184,8 +183,6 @@ public class ServerConfigurationPanel extends JPanel {
         privateKeyPathField.setName("sshPrivateKeyPathComponent");
         privateKeyPathField.getTextField().setName("sshPrivateKeyPathField");
 
-        sshAskPassphraseCheckbox.setName("sshAskPassphraseCheckbox");
-
         defaultAuthMethodRadioButton.setSelected(true);
         defaultAuthMethodRadioButton.setToolTipText("Let the driver resolves the auth. mechanism");
         shellWorkingDirField.setText(null);
@@ -195,19 +192,6 @@ public class ServerConfigurationPanel extends JPanel {
     private void initListeners() {
         testConnectionButton.addActionListener(actionEvent -> {
             ServerConfiguration configuration = createServerConfigurationForTesting();
-
-            SshTunnelingConfiguration sshTunnelingConfiguration = configuration.getSshTunnelingConfiguration();
-            if (!SshTunnelingConfiguration.isEmpty(sshTunnelingConfiguration)
-                    && sshTunnelingConfiguration.isAskPassphrase()) {
-                SshPassphraseDialog dialog = SshPassphraseDialog.createDialog(this);
-                dialog.show();
-
-                if (!dialog.isOK()) {
-                    return;
-                }
-                sshTunnelingConfiguration.setProxyPassword(dialog.getPassphrase());
-                return;
-            }
 
             final Ref<Exception> excRef = new Ref<>();
             final ProgressManager progressManager = ProgressManager.getInstance();
@@ -292,7 +276,7 @@ public class ServerConfigurationPanel extends JPanel {
     private SshTunnelingConfiguration createSshTunnelingSettings() {
         return new SshTunnelingConfiguration(
                 getSshProxyHost(), getSshProxyPort(), getSshProxyUser(),
-                getSshAuthMethod(), getSshPrivateKeyPath(), getSshProxyPassword(), isAskPassphrase());
+                getSshAuthMethod(), getSshPrivateKeyPath(), getSshProxyPassword());
     }
 
     public void loadConfigurationData(ServerConfiguration configuration) {
@@ -316,13 +300,8 @@ public class ServerConfigurationPanel extends JPanel {
             sshAuthenticationMethodComboBox.setSelectedItem(sshTunnelingConfiguration.getAuthenticationMethod());
             if (AuthenticationMethod.PRIVATE_KEY.equals(sshTunnelingConfiguration.getAuthenticationMethod())) {
                 privateKeyPathField.setText(sshTunnelingConfiguration.getPrivateKeyPath());
-                sshAskPassphraseCheckbox.setSelected(sshTunnelingConfiguration.isAskPassphrase());
             }
             sshProxyUserField.setText(sshTunnelingConfiguration.getProxyUser());
-            sshAskPassphraseCheckbox.setSelected(sshTunnelingConfiguration.isAskPassphrase());
-            if (!sshTunnelingConfiguration.isAskPassphrase()) {
-                sshProxyPasswordField.setText(sshTunnelingConfiguration.getProxyPassword());
-            }
         }
 
         AuthenticationMechanism authentificationMethod = configuration.getAuthenticationMechanism();
@@ -448,10 +427,6 @@ public class ServerConfigurationPanel extends JPanel {
             return proxyUser;
         }
         return null;
-    }
-
-    private boolean isAskPassphrase() {
-        return sshAskPassphraseCheckbox.isSelected();
     }
 
     private AuthenticationMechanism getAuthenticationMecanism() {
