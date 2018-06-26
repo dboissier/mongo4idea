@@ -121,6 +121,10 @@ public class MongoResultPanel extends JPanel implements Disposable {
         if (NbPerPage.ALL.equals(pagination.getNbPerPage())) {
             return documents;
         }
+        if (pagination.getNbDocumentsPerPage() >= documents.size()) {
+            return documents;
+        }
+        
         int startIndex = pagination.getStartIndex();
         int endIndex = startIndex + pagination.getNbDocumentsPerPage();
 
