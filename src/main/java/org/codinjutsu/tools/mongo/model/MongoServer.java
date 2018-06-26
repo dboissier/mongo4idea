@@ -29,7 +29,7 @@ public class MongoServer {
 
     private List<MongoDatabase> databases = new LinkedList<>();
 
-    private final ServerConfiguration configuration;
+    private ServerConfiguration configuration;
 
     private Status status = Status.OK;
 
@@ -67,5 +67,9 @@ public class MongoServer {
 
     public ServerConfiguration getConfiguration() {
         return configuration;
+    }
+
+    public void setConfiguration(ServerConfiguration configuration) {
+        this.configuration = configuration;
     }
 }

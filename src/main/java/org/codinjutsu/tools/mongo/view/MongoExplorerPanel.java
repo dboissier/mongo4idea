@@ -383,14 +383,22 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
     public ServerConfiguration getConfiguration() {
 
+        MongoServer mongoServer = getSelectedMongoServer();
+        if (mongoServer == null) {
+            return null;
+        }
+
+        return mongoServer.getConfiguration();
+    }
+
+    public MongoServer getSelectedMongoServer() {
         DefaultMutableTreeNode serverNode = getSelectedServerNode();
         if (serverNode == null) {
             return null;
         }
 
-        return ((MongoServer) serverNode.getUserObject()).getConfiguration();
+        return (MongoServer) serverNode.getUserObject();
     }
-
     public MongoDatabase getSelectedDatabase() {
         DefaultMutableTreeNode databaseNode = getSelectedDatabaseNode();
         if (databaseNode == null) {

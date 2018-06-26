@@ -21,8 +21,11 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
+import org.codinjutsu.tools.mongo.model.MongoServer;
 import org.codinjutsu.tools.mongo.view.ConfigurationDialog;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
+
+import javax.swing.tree.DefaultMutableTreeNode;
 
 public class EditMongoServerAction extends AnAction {
     private final MongoExplorerPanel mongoExplorerPanel;
@@ -35,7 +38,8 @@ public class EditMongoServerAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent event) {
-        ServerConfiguration sourceConfiguration = mongoExplorerPanel.getConfiguration();
+        MongoServer mongoServer = mongoExplorerPanel.getSelectedMongoServer();
+        ServerConfiguration sourceConfiguration = mongoServer.getConfiguration();
         ServerConfiguration copiedConfiguration = sourceConfiguration.clone();
 
         ConfigurationDialog dialog = new ConfigurationDialog(event.getProject(), mongoExplorerPanel, copiedConfiguration);
@@ -47,6 +51,7 @@ public class EditMongoServerAction extends AnAction {
 
         MongoConfiguration mongoConfiguration = MongoConfiguration.getInstance(event.getProject());
         mongoConfiguration.updateServerConfiguration(sourceConfiguration, copiedConfiguration);
+        mongoServer.setConfiguration(copiedConfiguration);
         if (copiedConfiguration.isConnectOnIdeStartup()) {
             mongoExplorerPanel.reloadServerConfiguration(mongoExplorerPanel.getSelectedServerNode(), false);
         }
@@ -54,6 +59,6 @@ public class EditMongoServerAction extends AnAction {
 
     @Override
     public void update(AnActionEvent event) {
-        event.getPresentation().setVisible(mongoExplorerPanel.getConfiguration() != null);
+        event.getPresentation().setVisible(mongoExplorerPanel.getSelectedMongoServer() != null);
     }
 }

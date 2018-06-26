@@ -82,8 +82,7 @@ public class ServerConfigurationPanel extends JPanel {
     private RawCommandLineEditor shellArgumentsLineField;
     private JComboBox readPreferenceComboBox;
 
-    private JTextField sshProxyHostField;
-    private JTextField sshProxyPortField;
+    private JTextField sshProxyUrlField;
     private JTextField sshProxyUserField;
     private JTabbedPane settingTabbedPane;
     private JComboBox sshAuthenticationMethodComboBox;
@@ -116,8 +115,7 @@ public class ServerConfigurationPanel extends JPanel {
         scramSHA1AuthRadioButton.setName("scramSHA1AuthField");
         defaultAuthMethodRadioButton.setName("defaultAuthMethod");
 
-        sshProxyHostField.setName("sshProxyHostField");
-        sshProxyPortField.setName("sshProxyPortField");
+        sshProxyUrlField.setName("sshProxyUrlField");
         sshProxyUserField.setName("sshProxyUsernameField");
         sshProxyPasswordField.setName("sshProxyPasswordField");
 
@@ -275,7 +273,7 @@ public class ServerConfigurationPanel extends JPanel {
 
     private SshTunnelingConfiguration createSshTunnelingSettings() {
         return new SshTunnelingConfiguration(
-                getSshProxyHost(), getSshProxyPort(), getSshProxyUser(),
+                getSshProxyHost(), getSshProxyUser(),
                 getSshAuthMethod(), getSshPrivateKeyPath(), getSshProxyPassword());
     }
 
@@ -295,12 +293,12 @@ public class ServerConfigurationPanel extends JPanel {
 
         SshTunnelingConfiguration sshTunnelingConfiguration = configuration.getSshTunnelingConfiguration();
         if (!SshTunnelingConfiguration.isEmpty(sshTunnelingConfiguration)) {
-            sshProxyHostField.setText(sshTunnelingConfiguration.getProxyHost());
-            sshProxyPortField.setText(String.valueOf(sshTunnelingConfiguration.getProxyPort()));
+            sshProxyUrlField.setText(sshTunnelingConfiguration.getProxyUrl());
             sshAuthenticationMethodComboBox.setSelectedItem(sshTunnelingConfiguration.getAuthenticationMethod());
             if (AuthenticationMethod.PRIVATE_KEY.equals(sshTunnelingConfiguration.getAuthenticationMethod())) {
                 privateKeyPathField.setText(sshTunnelingConfiguration.getPrivateKeyPath());
             }
+            sshProxyPasswordField.setText(sshTunnelingConfiguration.getProxyPassword());
             sshProxyUserField.setText(sshTunnelingConfiguration.getProxyUser());
         }
 
@@ -390,17 +388,9 @@ public class ServerConfigurationPanel extends JPanel {
     }
 
     private String getSshProxyHost() {
-        String proxyHost = sshProxyHostField.getText();
+        String proxyHost = sshProxyUrlField.getText();
         if (StringUtils.isNotBlank(proxyHost)) {
             return proxyHost;
-        }
-        return null;
-    }
-
-    private Integer getSshProxyPort() {
-        String proxyPort = sshProxyPortField.getText();
-        if (StringUtils.isNotBlank(proxyPort)) {
-            return Integer.parseInt(proxyPort);
         }
         return null;
     }

@@ -117,8 +117,7 @@ public class ServerConfigurationPanelTest {
 
         frameFixture.tabbedPane("tabbedSettings")
                 .selectTab("SSH");
-        frameFixture.textBox("sshProxyHostField").setText("remotehost");
-        frameFixture.textBox("sshProxyPortField").setText("22");
+        frameFixture.textBox("sshProxyUrlField").setText("remotehost:22");
         frameFixture.comboBox("sshAuthenticationMethodComboBox").requireSelection("Private key");
         frameFixture.label("passLabel").requireText("Passphrase:");
         frameFixture.textBox("sshPrivateKeyPathField").setText("/Users/myself/.ssh/id_rsa");
@@ -132,8 +131,7 @@ public class ServerConfigurationPanelTest {
 
         SshTunnelingConfiguration sshTunnelingConfiguration = configuration.getSshTunnelingConfiguration();
         assertThat(sshTunnelingConfiguration).isNotNull();
-        assertThat(sshTunnelingConfiguration.getProxyHost()).isEqualTo("remotehost");
-        assertThat(sshTunnelingConfiguration.getProxyPort()).isEqualTo(22);
+        assertThat(sshTunnelingConfiguration.getProxyUrl()).isEqualTo("remotehost:22");
         assertThat(sshTunnelingConfiguration.getAuthenticationMethod()).isEqualTo(AuthenticationMethod.PRIVATE_KEY);
         assertThat(sshTunnelingConfiguration.getPrivateKeyPath()).isEqualTo("/Users/myself/.ssh/id_rsa");
         assertThat(sshTunnelingConfiguration.getProxyUser()).isEqualTo("john.doe");
@@ -147,13 +145,11 @@ public class ServerConfigurationPanelTest {
 
         frameFixture.tabbedPane("tabbedSettings")
                 .selectTab("SSH");
-        frameFixture.textBox("sshProxyHostField").setText("remotehost");
-        frameFixture.textBox("sshProxyPortField").setText("22");
+        frameFixture.textBox("sshProxyUrlField").setText("remotehost:22");
         frameFixture.comboBox("sshAuthenticationMethodComboBox").requireSelection("Private key");
         frameFixture.label("passLabel").requireText("Passphrase:");
         frameFixture.textBox("sshPrivateKeyPathField").setText("/Users/myself/.ssh/id_rsa");
         frameFixture.textBox("sshProxyUsernameField").setText("john.doe");
-        frameFixture.checkBox("sshAskPassphraseCheckbox").check();
 
         ServerConfiguration configuration = new ServerConfiguration();
         configurationPanel.applyConfigurationData(configuration);
@@ -162,8 +158,7 @@ public class ServerConfigurationPanelTest {
 
         SshTunnelingConfiguration sshTunnelingConfiguration = configuration.getSshTunnelingConfiguration();
         assertThat(sshTunnelingConfiguration).isNotNull();
-        assertThat(sshTunnelingConfiguration.getProxyHost()).isEqualTo("remotehost");
-        assertThat(sshTunnelingConfiguration.getProxyPort()).isEqualTo(22);
+        assertThat(sshTunnelingConfiguration.getProxyUrl()).isEqualTo("remotehost:22");
         assertThat(sshTunnelingConfiguration.getAuthenticationMethod()).isEqualTo(AuthenticationMethod.PRIVATE_KEY);
         assertThat(sshTunnelingConfiguration.getPrivateKeyPath()).isEqualTo("/Users/myself/.ssh/id_rsa");
         assertThat(sshTunnelingConfiguration.getProxyUser()).isEqualTo("john.doe");
@@ -176,8 +171,7 @@ public class ServerConfigurationPanelTest {
 
         frameFixture.tabbedPane("tabbedSettings")
                 .selectTab("SSH");
-        frameFixture.textBox("sshProxyHostField").setText("remotehost");
-        frameFixture.textBox("sshProxyPortField").setText("22");
+        frameFixture.textBox("sshProxyUrlField").setText("remotehost:22");
         frameFixture.comboBox("sshAuthenticationMethodComboBox").selectItem("Password");
         frameFixture.label("passLabel").requireText("Password:");
         frameFixture.panel(new TextFieldWithBrowseButtonGenericTypeMatcher("sshPrivateKeyPathComponent")).requireNotVisible();
@@ -191,8 +185,7 @@ public class ServerConfigurationPanelTest {
 
         SshTunnelingConfiguration sshTunnelingConfiguration = configuration.getSshTunnelingConfiguration();
         assertThat(sshTunnelingConfiguration).isNotNull();
-        assertThat(sshTunnelingConfiguration.getProxyHost()).isEqualTo("remotehost");
-        assertThat(sshTunnelingConfiguration.getProxyPort()).isEqualTo(22);
+        assertThat(sshTunnelingConfiguration.getProxyUrl()).isEqualTo("remotehost:22");
         assertThat(sshTunnelingConfiguration.getAuthenticationMethod()).isEqualTo(AuthenticationMethod.PASSWORD);
         assertThat(sshTunnelingConfiguration.getProxyUser()).isEqualTo("john.doe");
         assertThat(sshTunnelingConfiguration.getPrivateKeyPath()).isNull();
@@ -220,8 +213,7 @@ public class ServerConfigurationPanelTest {
 
         frameFixture.tabbedPane("tabbedSettings")
                 .selectTab("SSH");
-        frameFixture.textBox("sshProxyHostField").requireEmpty();
-        frameFixture.textBox("sshProxyPortField").requireEmpty();
+        frameFixture.textBox("sshProxyUrlField").requireEmpty();
         frameFixture.comboBox("sshAuthenticationMethodComboBox").requireSelection("Private key");
         frameFixture.textBox("sshPrivateKeyPathField").requireEmpty();
         frameFixture.textBox("sshProxyUsernameField").requireEmpty();
@@ -233,13 +225,12 @@ public class ServerConfigurationPanelTest {
     public void loadFormWithSSHTunneling() {
         ServerConfiguration configuration = ServerConfiguration.byDefault();
         configuration.setSshTunnelingConfiguration(
-                new SshTunnelingConfiguration("remotehost", 22, "john.doe", AuthenticationMethod.PASSWORD, "", "mySecuredPassword"));
+                new SshTunnelingConfiguration("remotehost:22", "john.doe", AuthenticationMethod.PASSWORD, "", "mySecuredPassword"));
         configurationPanel.loadConfigurationData(configuration);
 
         frameFixture.tabbedPane("tabbedSettings")
                 .selectTab("SSH");
-        frameFixture.textBox("sshProxyHostField").requireText("remotehost");
-        frameFixture.textBox("sshProxyPortField").requireText("22");
+        frameFixture.textBox("sshProxyUrlField").requireText("remotehost:22");
         frameFixture.textBox("sshProxyUsernameField").requireText("john.doe");
         frameFixture.comboBox("sshAuthenticationMethodComboBox").requireSelection("Password");
         frameFixture.textBox("sshProxyPasswordField").requireText("mySecuredPassword");

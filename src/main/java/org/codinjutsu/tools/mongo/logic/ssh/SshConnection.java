@@ -24,7 +24,6 @@ import org.codinjutsu.tools.mongo.SshTunnelingConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 
 import java.io.Closeable;
-import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -61,15 +60,13 @@ public class SshConnection implements Closeable {
         try {
             JSch jsch = new JSch();
 
-            String proxyHost = sshTunnelingConfiguration.getProxyHost();
-            int proxyPort = sshTunnelingConfiguration.getProxyPort();
+            String proxyHost = sshTunnelingConfiguration.getProxyUrl();
             AuthenticationMethod authenticationMethod = sshTunnelingConfiguration.getAuthenticationMethod();
             String proxyUser = sshTunnelingConfiguration.getProxyUser();
             String password = sshTunnelingConfiguration.getProxyPassword();
-            Session session = jsch.getSession(proxyUser, proxyHost, proxyPort);
+            Session session = jsch.getSession(proxyUser, proxyHost);
             if (AuthenticationMethod.PRIVATE_KEY.equals(authenticationMethod)) {
-                jsch.addIdentity(
-                        new File(sshTunnelingConfiguration.getPrivateKeyPath()).getAbsolutePath(),
+                jsch.addIdentity(sshTunnelingConfiguration.getPrivateKeyPath(),
                         sshTunnelingConfiguration.getProxyPassword());
             } else {
                 session.setPassword(password);

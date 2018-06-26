@@ -24,28 +24,26 @@ public class SshTunnelingConfiguration implements Cloneable {
 
     public static final SshTunnelingConfiguration EMPTY = new SshTunnelingConfiguration();
 
-    private String proxyHost;
-    private Integer proxyPort;
+    private String proxyUrl;
     private String proxyUser;
     private AuthenticationMethod authenticationMethod;
     private String proxyPassword;
     private String privateKeyPath;
 
     private SshTunnelingConfiguration() {
-        proxyHost = null;
-        proxyPort = null;
+        proxyUrl = null;
         proxyUser = null;
         authenticationMethod = AuthenticationMethod.PRIVATE_KEY;
         privateKeyPath = null;
         proxyPassword = null;
     }
 
-    public SshTunnelingConfiguration(String proxyHost, Integer proxyPort, String proxyUser,
+    public SshTunnelingConfiguration(String proxyUrl,
+                                     String proxyUser,
                                      AuthenticationMethod authenticationMethod,
                                      String privateKeyPath,
                                      String proxyPassword) {
-        this.proxyHost = proxyHost;
-        this.proxyPort = proxyPort;
+        this.proxyUrl = proxyUrl;
         this.proxyUser = proxyUser;
         this.authenticationMethod = authenticationMethod;
         this.privateKeyPath = privateKeyPath;
@@ -53,20 +51,12 @@ public class SshTunnelingConfiguration implements Cloneable {
     }
 
 
-    public String getProxyHost() {
-        return proxyHost;
+    public String getProxyUrl() {
+        return proxyUrl;
     }
 
-    public void setProxyHost(String proxyHost) {
-        this.proxyHost = proxyHost;
-    }
-
-    public Integer getProxyPort() {
-        return proxyPort;
-    }
-
-    public void setProxyPort(Integer proxyPort) {
-        this.proxyPort = proxyPort;
+    public void setProxyUrl(String proxyUrl) {
+        this.proxyUrl = proxyUrl;
     }
 
     public String getProxyUser() {
@@ -110,8 +100,7 @@ public class SshTunnelingConfiguration implements Cloneable {
         if (this == o) return true;
         if (!(o instanceof SshTunnelingConfiguration)) return false;
         SshTunnelingConfiguration that = (SshTunnelingConfiguration) o;
-        return Objects.equals(proxyHost, that.proxyHost) &&
-                Objects.equals(proxyPort, that.proxyPort) &&
+        return Objects.equals(proxyUrl, that.proxyUrl) &&
                 Objects.equals(proxyUser, that.proxyUser) &&
                 authenticationMethod == that.authenticationMethod &&
                 Objects.equals(proxyPassword, that.proxyPassword) &&
@@ -121,7 +110,7 @@ public class SshTunnelingConfiguration implements Cloneable {
     @Override
     public int hashCode() {
 
-        return Objects.hash(proxyHost, proxyPort, proxyUser, authenticationMethod, proxyPassword, privateKeyPath);
+        return Objects.hash(proxyUrl, proxyUser, authenticationMethod, proxyPassword, privateKeyPath);
     }
 
     public ServerConfiguration clone() {
