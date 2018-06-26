@@ -5,14 +5,13 @@
 
 ## Current builds
 
-* [0.10.0 Build for Idea 15](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.10.15-distribution.zip)
-* [0.10.0 Build for Idea 2016](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.10.2016-distribution.zip)
+* [0.11-SNAPSHOT Build for Idea +2016](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.11.0-SNAPSHOT.zip)
 
 ## Description
 This plugin integrates MongoDB Servers with database/collections tree, Query Runner and Shell console.
 
 ## Plugin Compatibility
-This plugin was built for IDEA 15 and IDEA 2016 versions and requires JRE 1.8 now (otherwise SSH Tunneling will not work). Mongo 2 and 3 are supported.
+This plugin was built for IDEA 2016 and upper versions, requires JRE 1.8 and Mongo 3.
 
 
 ## How to install it?
