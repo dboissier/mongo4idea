@@ -33,7 +33,7 @@ public abstract class PaginationAction extends AnAction implements DumbAware {
         public void update(AnActionEvent event) {
             event.getPresentation().setEnabled(
                     !NbPerPage.ALL.equals(pagination.getNbPerPage())
-                            && pagination.getPageNumber() <= pagination.getTotalPageNumber()
+                            && pagination.getPageNumber() < pagination.getTotalPageNumber()
             );
         }
     }
