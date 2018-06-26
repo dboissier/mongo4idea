@@ -1,12 +1,10 @@
+language: java
 jdk:
-  - oraclejdk7
+  - oraclejdk8
 services:
   - mongodb
-env:
-  - DISPLAY=:99.0
-before_install:
-  - "./fetchIdea.sh"
-script: "./travis.sh"
+script: "xvfb-run gradle test"
 cache:
   directories:
-  - idea-IC
+  - $HOME/.gradle/caches/
+  - $HOME/.gradle/wrapper/
