@@ -115,7 +115,7 @@ public class MongoManager {
             return find(mongoQueryOptions, mongoCollectionResult, collection);
         };
 
-        return execute(configuration, task);
+        return executeTask(configuration, task);
     }
 
     public Document findMongoDocument(ServerConfiguration configuration, final MongoCollection mongoCollection, final Object _id) {
@@ -128,7 +128,7 @@ public class MongoManager {
             return foundDocuments.first();
         };
 
-        return execute(configuration, task);
+        return executeTask(configuration, task);
     }
 
     private MongoDatabase createMongoDatabaseAndItsCollections(com.mongodb.client.MongoDatabase database) {
