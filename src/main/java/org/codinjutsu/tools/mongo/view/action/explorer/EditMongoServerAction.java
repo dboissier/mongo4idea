@@ -31,7 +31,7 @@ public class EditMongoServerAction extends AnAction {
     private final MongoExplorerPanel mongoExplorerPanel;
 
     public EditMongoServerAction(MongoExplorerPanel mongoExplorerPanel) {
-        super("Edit Server", "Edit the Mongo server configuration", AllIcons.General.Settings);
+        super("Edit Server", "Edit the Mongo server configuration", AllIcons.Actions.Edit);
 
         this.mongoExplorerPanel = mongoExplorerPanel;
     }
