@@ -1,5 +1,14 @@
 Version 0.11.0-SNAPSHOT
-    * TODO
+    * [fix] NPE when deleting a collection with short key
+    * [fix] Memory issue due to no limit in result
+    * [fix] unable to add an empty array in edition
+    * [add] Databases and collections are alphabetically ordered
+    * [add] Result pagination (memory, not mongo pagination feature)
+    * [update] Delete document is now pop-up window on the _id instead of Edition panel
+    * [update] replace SSH host and port field by single SSH url field
+    * [update] Add Private Key auth method for SSH tunneling
+    * [update] Mongo java driver 3.5
+    * [update] Server management is accessed from Explorer panel, not from General Settings anymore
 
 Version 0.10.0
     $ [fix] #174 add shortcuts on some actions
