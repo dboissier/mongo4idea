@@ -266,7 +266,6 @@ public class ServerConfigurationPanelTest {
         configurationPanel.applyConfigurationData(new ServerConfiguration());
     }
 
-
     @Test
     public void validateFormWithBadMongoPortShouldThrowAConfigurationException() {
         thrown.expect(ConfigurationException.class);
@@ -276,7 +275,6 @@ public class ServerConfigurationPanelTest {
 
         configurationPanel.applyConfigurationData(new ServerConfiguration());
     }
-
 
     @Test
     public void validateFormWithReplicatSet() {

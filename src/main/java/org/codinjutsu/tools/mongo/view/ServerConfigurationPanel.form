@@ -329,7 +329,7 @@
               <tabbedpane title="SSH"/>
             </constraints>
             <properties/>
-            <border type="none" title=""/>
+            <border type="none"/>
             <children>
               <vspacer id="ddbd7">
                 <constraints>
