@@ -20,6 +20,8 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public class MongoCollection implements Comparable<MongoCollection> {
 
     private final String name;
@@ -44,12 +46,23 @@ public class MongoCollection implements Comparable<MongoCollection> {
     }
 
     @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MongoCollection)) return false;
+        MongoCollection that = (MongoCollection) o;
+        return Objects.equals(name, that.name) &&
+                Objects.equals(databaseName, that.databaseName);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+    public int hashCode() {
+        return Objects.hash(name, databaseName);
+    }
+
+    @Override
+    public String toString() {
+        return "MongoCollection{" +
+                "name='" + name + '\'' +
+                '}';
     }
 }

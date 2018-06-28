@@ -3,7 +3,7 @@ jdk:
   - oraclejdk8
 services:
   - mongodb
-script: "xvfb-run gradle test"
+script: xvfb-run --server-args="-screen 0 1024x768x24" gradle test
 cache:
   directories:
   - $HOME/.gradle/caches/

@@ -18,10 +18,7 @@ package org.codinjutsu.tools.mongo.utils;
 
 import org.junit.Test;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,6 +27,7 @@ public class DateUtilsTest {
     @Test
     public void testUtcDateTime() {
         Calendar calendar = GregorianCalendar.getInstance(Locale.FRANCE);
+        calendar.setTimeZone(TimeZone.getTimeZone("Europe/Paris"));
         calendar.set(Calendar.YEAR, 2015);
         calendar.set(Calendar.MONTH, 1);
         calendar.set(Calendar.DAY_OF_YEAR, 1);
@@ -44,6 +42,7 @@ public class DateUtilsTest {
     @Test
     public void testUtcTime() {
         Calendar calendar = GregorianCalendar.getInstance(Locale.FRANCE);
+        calendar.setTimeZone(TimeZone.getTimeZone("Europe/Paris"));
         calendar.set(Calendar.YEAR, 2015);
         calendar.set(Calendar.MONTH, 1);
         calendar.set(Calendar.DAY_OF_YEAR, 1);

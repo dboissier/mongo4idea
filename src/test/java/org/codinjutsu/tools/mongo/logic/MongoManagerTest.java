@@ -18,7 +18,9 @@ package org.codinjutsu.tools.mongo.logic;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoIterable;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
@@ -29,7 +31,9 @@ import org.codinjutsu.tools.mongo.model.MongoServer;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -82,12 +86,13 @@ public class MongoManagerTest {
         MongoServer mongoServer = new MongoServer(configuration);
         mongoManager.loadServer(mongoServer);
 
-        org.codinjutsu.tools.mongo.model.MongoDatabase expectedDatabase =
-                new org.codinjutsu.tools.mongo.model.MongoDatabase("test");
-        expectedDatabase.addCollection(new MongoCollection("people", "test"));
-        expectedDatabase.addCollection(new MongoCollection("system.indexes", "test"));
+        List<org.codinjutsu.tools.mongo.model.MongoDatabase> databases = mongoServer.getDatabases();
 
-        assertThat(mongoServer.getDatabases()).containsExactly(expectedDatabase);
+        assertThat(databases.isEmpty()).isFalse();
+        org.codinjutsu.tools.mongo.model.MongoDatabase actualDatabase = databases.get(0);
+        assertThat(actualDatabase.getName()).isEqualTo("test");
+
+        assertThat(actualDatabase.getCollections()).contains(new MongoCollection("people", "test"));
     }
 
     @Test
@@ -244,7 +249,11 @@ public class MongoManagerTest {
                 new MongoCollection("people", "test"));
 
         MongoDatabase testDatabase = new MongoClient("localhost:27017").getDatabase("test");
-        assertThat(testDatabase.listCollectionNames()).containsExactly("system.indexes");
+        ArrayList<String> collections = testDatabase
+                .listCollectionNames()
+                .into(new ArrayList<>());
+
+        assertThat(collections.contains("people")).isFalse();
     }
 }
 
