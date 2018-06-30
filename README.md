@@ -7,7 +7,7 @@
 
 [![Build Status](https://travis-ci.org/dboissier/mongo4idea.svg?branch=master)](https://travis-ci.org/dboissier/mongo4idea)
 
-* [0.11.0-SNAPSHOT Build for Idea 2016+](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.11.0-SNAPSHOT.zip)
+* [0.11.0 Build for Idea 2016+](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.11.0.zip)
 
 ## Description
 
@@ -25,13 +25,14 @@ Download this plugin from your IDE (Mongo Plugin)
 
 When you open the Mongo explorer, you will see a panel:
 
-![Browser](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea_noConfiguration.png)
+![Browser](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea-explorerWithoutDB.png)
 
 * To use the Mongo shell directly from the plugin, click on the `[wrench]`icon, set its path in the corresponding field. As alternative, you can use the Terminal plugin. 
+
+![PluginConfiguration](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea-configuration.png)
+
+
 * To add a server, click on the `[+]` icon located on the upper toolbar and a dialog will appear
-
-![PluginConfiguration](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea_pluginConfiguration.png)
-
 
 ![ServerConfigurationGeneralTab](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea_serverConfigurationGeneralTab.png)
 
@@ -59,7 +60,7 @@ Additionaly:
 
 ### Mongo Explorer
 
-![Browser](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea_explorerWithSomeServers.png)
+![Browser](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea-explorerWithDB.png)
 
 For each server, the tree displays its databases with all of their collections.
 
@@ -83,6 +84,9 @@ If you want to see the results in a table view instead, click on the **Table** i
 ![Collection view](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea_tableView.png)
 
 **[NEW]** You can paginate the results by selecting the number of the documents per page below the results. You will be able to navigate with `[<-]``and `[->]` icon
+
+![Collection view](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea_collectionResults_withPagination.png)
+
 
 #### Querying
 
