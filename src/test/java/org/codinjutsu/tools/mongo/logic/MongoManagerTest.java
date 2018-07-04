@@ -18,9 +18,7 @@ package org.codinjutsu.tools.mongo.logic;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.MongoIterable;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
@@ -28,6 +26,7 @@ import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
 import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
 import org.codinjutsu.tools.mongo.model.MongoServer;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -82,9 +81,10 @@ public class MongoManagerTest {
     @Test
     public void loadServer() {
         ServerConfiguration configuration = ServerConfiguration.byDefault();
+        configuration.setLabel("Server for testing");
         configuration.setUserDatabase("test");
         MongoServer mongoServer = new MongoServer(configuration);
-        mongoManager.loadServer(mongoServer);
+        mongoServer.setDatabases(mongoManager.loadDatabases(mongoServer, mongoServer.getConfiguration()));
 
         List<org.codinjutsu.tools.mongo.model.MongoDatabase> databases = mongoServer.getDatabases();
 
@@ -92,7 +92,12 @@ public class MongoManagerTest {
         org.codinjutsu.tools.mongo.model.MongoDatabase actualDatabase = databases.get(0);
         assertThat(actualDatabase.getName()).isEqualTo("test");
 
-        assertThat(actualDatabase.getCollections()).contains(new MongoCollection("people", "test"));
+        assertThat(actualDatabase.getParentServer()).isEqualTo(mongoServer);
+        assertThat(actualDatabase.getCollections()).hasSize(1);
+
+        MongoCollection actualMongoCollection = actualDatabase.getCollections().iterator().next();
+        assertThat(actualMongoCollection.getParentDatabase()).isEqualTo(actualDatabase);
+        assertThat(actualMongoCollection.getName()).isEqualTo("people");
     }
 
     @Test
@@ -102,7 +107,7 @@ public class MongoManagerTest {
 
         MongoCollectionResult mongoCollectionResult =
                 mongoManager.loadCollectionValues(serverConfiguration,
-                        new MongoCollection("people", "test"), mongoQueryOptions);
+                        createMongoCollectionForTest(), mongoQueryOptions);
 
         assertThat(mongoCollectionResult.getDocuments()).containsExactly(
                 new Document()
@@ -135,7 +140,7 @@ public class MongoManagerTest {
 
         MongoCollectionResult mongoCollectionResult =
                 mongoManager.loadCollectionValues(serverConfiguration,
-                        new MongoCollection("people", "test"), mongoQueryOptions);
+                        createMongoCollectionForTest(), mongoQueryOptions);
 
         assertThat(mongoCollectionResult.getDocuments())
                 .containsExactly(
@@ -152,7 +157,8 @@ public class MongoManagerTest {
 
         MongoCollectionResult mongoCollectionResult =
                 mongoManager.loadCollectionValues(serverConfiguration,
-                        new MongoCollection("people", "test"), mongoQueryOptions);
+                        createMongoCollectionForTest(),
+                        mongoQueryOptions);
 
         assertThat(mongoCollectionResult.getDocuments())
                 .containsExactly(
@@ -168,7 +174,7 @@ public class MongoManagerTest {
         mongoQueryOptions.setOperations("[{'$match': {'position': 'developer'}}, {'$project': {'name': 1, 'age': 1}}, {'$group': {'_id': '$name', 'total': {'$sum': '$age'}}}]");
         MongoCollectionResult mongoCollectionResult =
                 mongoManager.loadCollectionValues(serverConfiguration,
-                        new MongoCollection("people", "test"), mongoQueryOptions);
+                        createMongoCollectionForTest(), mongoQueryOptions);
 
         assertThat(mongoCollectionResult.getDocuments()).containsExactly(
                 new Document("_id", "Melissa")
@@ -177,12 +183,18 @@ public class MongoManagerTest {
                         .append("total", 25));
     }
 
+    @NotNull
+    private MongoCollection createMongoCollectionForTest() {
+        return new MongoCollection("people", new org.codinjutsu.tools.mongo.model.MongoDatabase("test",
+                new MongoServer(serverConfiguration)));
+    }
+
     @Test
     public void updateMongoDocument() {
         Document documentToUpdate = peopleCollection.find(new Document("name", "Paul")).first();
 
         documentToUpdate.put("surname", "Paulo les Gaz");
-        mongoManager.update(serverConfiguration, new MongoCollection("people", "test"), documentToUpdate);
+        mongoManager.update(serverConfiguration, createMongoCollectionForTest(), documentToUpdate);
 
         FindIterable<Document> iterable = peopleCollection.find().projection(new Document("_id", 0));
         assertThat(iterable).contains(
@@ -208,7 +220,7 @@ public class MongoManagerTest {
 
     @Test
     public void deleteMongoDocument() {
-        MongoCollection mongoCollection = new MongoCollection("people", "test");
+        MongoCollection mongoCollection = createMongoCollectionForTest();
         Document documentToDelete = peopleCollection.find(new Document("name", "Roger")).first();
         mongoManager.delete(serverConfiguration, mongoCollection, documentToDelete.get("_id"));
 
@@ -232,7 +244,7 @@ public class MongoManagerTest {
 
         Document actualDocument = mongoManager.findMongoDocument(
                 ServerConfiguration.byDefault(),
-                new MongoCollection("people", "test"),
+                createMongoCollectionForTest(),
                 new ObjectId("582ecee28feed271b9f54e59"));
         assertThat(actualDocument).isEqualTo(
                 new Document()
@@ -246,7 +258,7 @@ public class MongoManagerTest {
     @Test
     public void dropCollection() {
         mongoManager.dropCollection(ServerConfiguration.byDefault(),
-                new MongoCollection("people", "test"));
+                createMongoCollectionForTest());
 
         MongoDatabase testDatabase = new MongoClient("localhost:27017").getDatabase("test");
         ArrayList<String> collections = testDatabase

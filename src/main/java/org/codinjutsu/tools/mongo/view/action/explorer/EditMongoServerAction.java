@@ -25,8 +25,6 @@ import org.codinjutsu.tools.mongo.model.MongoServer;
 import org.codinjutsu.tools.mongo.view.ConfigurationDialog;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-
 public class EditMongoServerAction extends AnAction {
     private final MongoExplorerPanel mongoExplorerPanel;
 
@@ -38,7 +36,7 @@ public class EditMongoServerAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent event) {
-        MongoServer mongoServer = mongoExplorerPanel.getSelectedMongoServer();
+        MongoServer mongoServer = mongoExplorerPanel.getSelectedServer();
         ServerConfiguration sourceConfiguration = mongoServer.getConfiguration();
         ServerConfiguration copiedConfiguration = sourceConfiguration.clone();
 
@@ -52,13 +50,10 @@ public class EditMongoServerAction extends AnAction {
         MongoConfiguration mongoConfiguration = MongoConfiguration.getInstance(event.getProject());
         mongoConfiguration.updateServerConfiguration(sourceConfiguration, copiedConfiguration);
         mongoServer.setConfiguration(copiedConfiguration);
-        if (copiedConfiguration.isConnectOnIdeStartup()) {
-            mongoExplorerPanel.reloadServerConfiguration(mongoExplorerPanel.getSelectedServerNode(), false);
-        }
     }
 
     @Override
     public void update(AnActionEvent event) {
-        event.getPresentation().setVisible(mongoExplorerPanel.getSelectedMongoServer() != null);
+        event.getPresentation().setVisible(mongoExplorerPanel.getSelectedServer() != null);
     }
 }

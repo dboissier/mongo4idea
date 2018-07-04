@@ -26,7 +26,6 @@ import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 public class RefreshServerAction extends AnAction implements DumbAware {
 
@@ -44,21 +43,22 @@ public class RefreshServerAction extends AnAction implements DumbAware {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-        mongoExplorerPanel.reloadServerConfiguration(mongoExplorerPanel.getSelectedServerNode(), true);
+        MongoServer selectedMongoServer = mongoExplorerPanel.getSelectedServer();
+        mongoExplorerPanel.loadServerConfiguration(selectedMongoServer);
     }
 
     @Override
     public void update(@NotNull AnActionEvent event) {
-        DefaultMutableTreeNode selectedServerNode = mongoExplorerPanel.getSelectedServerNode();
-        event.getPresentation().setVisible(selectedServerNode != null);
-        if (selectedServerNode == null) {
+        MongoServer mongoServer = mongoExplorerPanel.getSelectedServer();
+        event.getPresentation().setVisible(mongoServer != null);
+        if (mongoServer == null) {
             return;
         }
-        MongoServer mongoServer = (MongoServer) selectedServerNode.getUserObject();
+
         boolean isLoading = MongoServer.Status.LOADING.equals(mongoServer.getStatus());
         event.getPresentation().setEnabled(!isLoading);
 
-        boolean isConnected = selectedServerNode.getChildCount() > 0;
+        boolean isConnected = mongoServer.hasDatabases();
         event.getPresentation().setIcon(isConnected ? REFRESH_ICON : CONNECT_ICON);
         event.getPresentation().setText(isConnected ? REFRESH_TEXT : CONNECT_TEXT);
     }

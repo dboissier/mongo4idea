@@ -30,10 +30,7 @@ import org.codinjutsu.tools.mongo.SshTunnelingConfiguration;
 import org.codinjutsu.tools.mongo.logic.ssh.SshConnection;
 import org.codinjutsu.tools.mongo.model.*;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class MongoManager {
 
@@ -70,28 +67,21 @@ public class MongoManager {
         return mongoServers;
     }
 
-    public void loadServer(MongoServer mongoServer) {
-        mongoServer.setStatus(MongoServer.Status.LOADING);
-
-        List<MongoDatabase> mongoDatabases = loadDatabaseCollections(mongoServer.getConfiguration());
-
-        mongoServer.setDatabases(mongoDatabases);
-        mongoServer.setStatus(MongoServer.Status.OK);
-    }
-
-    private List<MongoDatabase> loadDatabaseCollections(final ServerConfiguration configuration) {
+    public List<MongoDatabase> loadDatabases(MongoServer mongoServer, ServerConfiguration configuration) {
         final List<MongoDatabase> mongoDatabases = new LinkedList<>();
         TaskWithReturnedObject<List<MongoDatabase>> perform = mongoClient -> {
             String userDatabase = configuration.getUserDatabase();
 
             if (StringUtils.isNotEmpty(userDatabase)) {
                 com.mongodb.client.MongoDatabase database = mongoClient.getDatabase(userDatabase);
-                mongoDatabases.add(createMongoDatabaseAndItsCollections(database));
+                MongoDatabase mongoDatabase = new MongoDatabase(database.getName(), mongoServer);
+                mongoDatabases.add(createMongoDatabaseAndItsCollections(mongoDatabase, database));
             } else {
                 MongoIterable<String> databaseNames = mongoClient.listDatabaseNames();
                 for (String databaseName : databaseNames) {
                     com.mongodb.client.MongoDatabase database = mongoClient.getDatabase(databaseName);
-                    mongoDatabases.add(createMongoDatabaseAndItsCollections(database));
+                    MongoDatabase mongoDatabase = new MongoDatabase(database.getName(), mongoServer);
+                    mongoDatabases.add(createMongoDatabaseAndItsCollections(mongoDatabase, database));
                 }
             }
             return mongoDatabases;
@@ -102,9 +92,9 @@ public class MongoManager {
 
     public MongoCollectionResult loadCollectionValues(ServerConfiguration configuration, final MongoCollection mongoCollection, final MongoQueryOptions mongoQueryOptions) {
         TaskWithReturnedObject<MongoCollectionResult> task = mongoClient -> {
-            String databaseName = mongoCollection.getDatabaseName();
+            MongoDatabase mongoDatabase = mongoCollection.getParentDatabase();
 
-            com.mongodb.client.MongoDatabase database = mongoClient.getDatabase(databaseName);
+            com.mongodb.client.MongoDatabase database = mongoClient.getDatabase(mongoDatabase.getName());
             com.mongodb.client.MongoCollection<Document> collection = database.getCollection(mongoCollection.getName());
 
             MongoCollectionResult mongoCollectionResult = new MongoCollectionResult(mongoCollection.getName());
@@ -120,8 +110,8 @@ public class MongoManager {
 
     public Document findMongoDocument(ServerConfiguration configuration, final MongoCollection mongoCollection, final Object _id) {
         TaskWithReturnedObject<Document> task = mongoClient -> {
-            String databaseName = mongoCollection.getDatabaseName();
-            com.mongodb.client.MongoDatabase database = mongoClient.getDatabase(databaseName);
+            MongoDatabase mongoDatabase = mongoCollection.getParentDatabase();
+            com.mongodb.client.MongoDatabase database = mongoClient.getDatabase(mongoDatabase.getName());
             com.mongodb.client.MongoCollection<Document> collection = database.getCollection(mongoCollection.getName());
             FindIterable<Document> foundDocuments = collection.find(new BasicDBObject("_id", _id));
 
@@ -131,12 +121,12 @@ public class MongoManager {
         return executeTask(configuration, task);
     }
 
-    private MongoDatabase createMongoDatabaseAndItsCollections(com.mongodb.client.MongoDatabase database) {
-        MongoDatabase mongoDatabase = new MongoDatabase(database.getName());
+    private MongoDatabase createMongoDatabaseAndItsCollections(MongoDatabase mongoDatabase, com.mongodb.client.MongoDatabase database) {
+
 
         MongoIterable<String> collectionNames = database.listCollectionNames();
         for (String collectionName : collectionNames) {
-            mongoDatabase.addCollection(new MongoCollection(collectionName, database.getName()));
+            mongoDatabase.addCollection(new MongoCollection(collectionName, mongoDatabase));
         }
         return mongoDatabase;
     }
@@ -161,8 +151,8 @@ public class MongoManager {
 
     public void update(ServerConfiguration configuration, final MongoCollection mongoCollection, final Document mongoDocument) {
         Task task = mongoClient -> {
-            String databaseName = mongoCollection.getDatabaseName();
-            com.mongodb.client.MongoDatabase database = mongoClient.getDatabase(databaseName);
+            MongoDatabase mongoDatabase = mongoCollection.getParentDatabase();
+            com.mongodb.client.MongoDatabase database = mongoClient.getDatabase(mongoDatabase.getName());
             com.mongodb.client.MongoCollection<Document> collection = database.getCollection(mongoCollection.getName());
 
 
@@ -181,9 +171,9 @@ public class MongoManager {
 
     public void delete(ServerConfiguration configuration, final MongoCollection mongoCollection, final Object _id) {
         Task task = mongoClient -> {
-            String databaseName = mongoCollection.getDatabaseName();
+            MongoDatabase mongoDatabase = mongoCollection.getParentDatabase();
 
-            com.mongodb.client.MongoDatabase database = mongoClient.getDatabase(databaseName);
+            com.mongodb.client.MongoDatabase database = mongoClient.getDatabase(mongoDatabase.getName());
             com.mongodb.client.MongoCollection<Document> collection = database.getCollection(mongoCollection.getName());
 
             collection.deleteOne(new Document("_id", _id));
@@ -194,9 +184,9 @@ public class MongoManager {
 
     public void dropCollection(ServerConfiguration configuration, final MongoCollection mongoCollection) {
         Task task = mongoClient -> {
-            String databaseName = mongoCollection.getDatabaseName();
+            MongoDatabase mongoDatabase = mongoCollection.getParentDatabase();
 
-            com.mongodb.client.MongoDatabase database = mongoClient.getDatabase(databaseName);
+            com.mongodb.client.MongoDatabase database = mongoClient.getDatabase(mongoDatabase.getName());
             com.mongodb.client.MongoCollection<Document> collection = database.getCollection(mongoCollection.getName());
 
             collection.drop();

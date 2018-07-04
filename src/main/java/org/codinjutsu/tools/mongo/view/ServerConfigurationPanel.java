@@ -72,8 +72,6 @@ public class ServerConfigurationPanel extends JPanel {
 
     private JTextField userDatabaseField;
 
-    private JCheckBox autoConnectCheckBox;
-
     private JButton testConnectionButton;
 
     private JTextField collectionsToIgnoreField;
@@ -94,7 +92,7 @@ public class ServerConfigurationPanel extends JPanel {
     private final MongoManager mongoManager;
 
 
-    public ServerConfigurationPanel(Project project, MongoManager mongoManager) {
+    ServerConfigurationPanel(Project project, MongoManager mongoManager) {
         this.project = project;
         setLayout(new BorderLayout());
         add(rootPanel, BorderLayout.CENTER);
@@ -121,8 +119,6 @@ public class ServerConfigurationPanel extends JPanel {
 
         userDatabaseField.setName("userDatabaseField");
         userDatabaseField.setToolTipText("If your access is restricted to a specific database (e.g.: MongoLab), you can set it right here");
-
-        autoConnectCheckBox.setName("autoConnectField");
 
         mongoShellOptionsPanel.setBorder(IdeBorderFactory.createTitledBorder("Mongo shell options", true));
         shellArgumentsLineField.setDialogCaption("Mongo arguments");
@@ -265,7 +261,6 @@ public class ServerConfigurationPanel extends JPanel {
         configuration.setCollectionsToIgnore(getCollectionsToIgnore());
         configuration.setShellArgumentsLine(getShellArgumentsLine());
         configuration.setShellWorkingDir(getShellWorkingDir());
-        configuration.setConnectOnIdeStartup(isAutoConnect());
         configuration.setAuthenticationMechanism(getAuthenticationMecanism());
 
         configuration.setSshTunnelingConfiguration(isSshTunneling() ? createSshTunnelingSettings() : SshTunnelingConfiguration.EMPTY);
@@ -289,7 +284,6 @@ public class ServerConfigurationPanel extends JPanel {
         collectionsToIgnoreField.setText(StringUtils.join(configuration.getCollectionsToIgnore(), ","));
         shellArgumentsLineField.setText(configuration.getShellArgumentsLine());
         shellWorkingDirField.setText(configuration.getShellWorkingDir());
-        autoConnectCheckBox.setSelected(configuration.isConnectOnIdeStartup());
 
         SshTunnelingConfiguration sshTunnelingConfiguration = configuration.getSshTunnelingConfiguration();
         if (!SshTunnelingConfiguration.isEmpty(sshTunnelingConfiguration)) {
@@ -453,10 +447,6 @@ public class ServerConfigurationPanel extends JPanel {
         }
 
         return null;
-    }
-
-    private boolean isAutoConnect() {
-        return autoConnectCheckBox.isSelected();
     }
 
     private void createUIComponents() {

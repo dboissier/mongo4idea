@@ -38,7 +38,7 @@ import java.awt.*;
 public class MongoConfigurable extends BaseConfigurable implements SearchableConfigurable {
 
 
-    public static final String PLUGIN_SETTINGS_NAME = "Mongo Settings";
+    public static final String PLUGIN_SETTINGS_NAME = "Mongo Plugin";
     private final Project project;
 
     private final MongoConfiguration configuration;
@@ -128,8 +128,6 @@ public class MongoConfigurable extends BaseConfigurable implements SearchableCon
         if (isShellPathModified()) {
             configuration.setShellPath(getShellPath());
         }
-
-        MongoWindowManager.getInstance(project).apply();
     }
 
     private boolean isShellPathModified() {

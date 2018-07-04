@@ -46,6 +46,6 @@ public class AddMongoServerAction extends AnAction {
 
         MongoConfiguration mongoConfiguration = MongoConfiguration.getInstance(event.getProject());
         mongoConfiguration.addServerConfiguration(serverConfiguration);
-        mongoExplorerPanel.reloadAllServerConfigurations();
+        mongoExplorerPanel.addConfiguration(serverConfiguration);
     }
 }

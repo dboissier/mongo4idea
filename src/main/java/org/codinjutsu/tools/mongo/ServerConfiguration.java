@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.Collections.singletonList;
 
@@ -46,7 +47,6 @@ public class ServerConfiguration implements Cloneable {
     private AuthenticationMechanism authenticationMechanism = null;
     private String userDatabase;
 
-    private boolean connectOnIdeStartup = false;
     private List<String> collectionsToIgnore = new LinkedList<>();
     private String shellArgumentsLine;
     private String shellWorkingDir;
@@ -116,14 +116,6 @@ public class ServerConfiguration implements Cloneable {
         return userDatabase;
     }
 
-    public boolean isConnectOnIdeStartup() {
-        return connectOnIdeStartup;
-    }
-
-    public void setConnectOnIdeStartup(boolean connectOnIdeStartup) {
-        this.connectOnIdeStartup = connectOnIdeStartup;
-    }
-
     public void setCollectionsToIgnore(List<String> collectionsToIgnore) {
         this.collectionsToIgnore = collectionsToIgnore;
     }
@@ -187,49 +179,26 @@ public class ServerConfiguration implements Cloneable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
+        if (!(o instanceof ServerConfiguration)) return false;
         ServerConfiguration that = (ServerConfiguration) o;
-
-        if (sslConnection != that.sslConnection) return false;
-        if (connectOnIdeStartup != that.connectOnIdeStartup) return false;
-        if (label != null ? !label.equals(that.label) : that.label != null) return false;
-        if (serverUrls != null ? !serverUrls.equals(that.serverUrls) : that.serverUrls != null) return false;
-        if (readPreference != null ? !readPreference.equals(that.readPreference) : that.readPreference != null)
-            return false;
-        if (username != null ? !username.equals(that.username) : that.username != null) return false;
-        if (password != null ? !password.equals(that.password) : that.password != null) return false;
-        if (authenticationDatabase != null ? !authenticationDatabase.equals(that.authenticationDatabase) : that.authenticationDatabase != null)
-            return false;
-        if (authenticationMechanism != that.authenticationMechanism) return false;
-        if (userDatabase != null ? !userDatabase.equals(that.userDatabase) : that.userDatabase != null) return false;
-        if (collectionsToIgnore != null ? !collectionsToIgnore.equals(that.collectionsToIgnore) : that.collectionsToIgnore != null)
-            return false;
-        if (shellArgumentsLine != null ? !shellArgumentsLine.equals(that.shellArgumentsLine) : that.shellArgumentsLine != null)
-            return false;
-        if (shellWorkingDir != null ? !shellWorkingDir.equals(that.shellWorkingDir) : that.shellWorkingDir != null)
-            return false;
-        return sshTunnelingConfiguration != null ? sshTunnelingConfiguration.equals(that.sshTunnelingConfiguration) : that.sshTunnelingConfiguration == null;
-
+        return sslConnection == that.sslConnection &&
+                Objects.equals(label, that.label) &&
+                Objects.equals(serverUrls, that.serverUrls) &&
+                Objects.equals(readPreference, that.readPreference) &&
+                Objects.equals(username, that.username) &&
+                Objects.equals(password, that.password) &&
+                Objects.equals(authenticationDatabase, that.authenticationDatabase) &&
+                authenticationMechanism == that.authenticationMechanism &&
+                Objects.equals(userDatabase, that.userDatabase) &&
+                Objects.equals(collectionsToIgnore, that.collectionsToIgnore) &&
+                Objects.equals(shellArgumentsLine, that.shellArgumentsLine) &&
+                Objects.equals(shellWorkingDir, that.shellWorkingDir) &&
+                Objects.equals(sshTunnelingConfiguration, that.sshTunnelingConfiguration);
     }
 
     @Override
     public int hashCode() {
-        int result = label != null ? label.hashCode() : 0;
-        result = 31 * result + (serverUrls != null ? serverUrls.hashCode() : 0);
-        result = 31 * result + (sslConnection ? 1 : 0);
-        result = 31 * result + (readPreference != null ? readPreference.hashCode() : 0);
-        result = 31 * result + (username != null ? username.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
-        result = 31 * result + (authenticationDatabase != null ? authenticationDatabase.hashCode() : 0);
-        result = 31 * result + (authenticationMechanism != null ? authenticationMechanism.hashCode() : 0);
-        result = 31 * result + (userDatabase != null ? userDatabase.hashCode() : 0);
-        result = 31 * result + (connectOnIdeStartup ? 1 : 0);
-        result = 31 * result + (collectionsToIgnore != null ? collectionsToIgnore.hashCode() : 0);
-        result = 31 * result + (shellArgumentsLine != null ? shellArgumentsLine.hashCode() : 0);
-        result = 31 * result + (shellWorkingDir != null ? shellWorkingDir.hashCode() : 0);
-        result = 31 * result + (sshTunnelingConfiguration != null ? sshTunnelingConfiguration.hashCode() : 0);
-        return result;
+        return Objects.hash(label, serverUrls, sslConnection, readPreference, username, password, authenticationDatabase, authenticationMechanism, userDatabase, collectionsToIgnore, shellArgumentsLine, shellWorkingDir, sshTunnelingConfiguration);
     }
 
     public ServerConfiguration clone() {

@@ -21,6 +21,7 @@ import com.mongodb.AuthenticationMechanism;
 import org.bson.Document;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
+import org.codinjutsu.tools.mongo.model.MongoServer;
 import org.junit.Test;
 
 import java.util.LinkedList;
@@ -41,7 +42,8 @@ public class MongoUtilsTest {
         serverConfiguration.setShellWorkingDir("/tmp");
         serverConfiguration.setShellArgumentsLine("--quiet --ipv6");
 
-        GeneralCommandLine commandLine = MongoUtils.buildCommandLine("/usr/bin/mongo", serverConfiguration, new MongoDatabase("mydatabase"));
+        GeneralCommandLine commandLine = MongoUtils.buildCommandLine("/usr/bin/mongo", serverConfiguration,
+                new MongoDatabase("mydatabase", new MongoServer(serverConfiguration)));
 
         assertThat(commandLine.getCommandLineString())
                 .isEqualTo("/usr/bin/mongo localhost:27017/mydatabase " +
@@ -52,7 +54,8 @@ public class MongoUtilsTest {
 
     @Test
     public void buildMongoUrl() {
-        assertThat(MongoUtils.buildMongoUrl(ServerConfiguration.byDefault(), new MongoDatabase("mydatabase")))
+        ServerConfiguration serverConfiguration = ServerConfiguration.byDefault();
+        assertThat(MongoUtils.buildMongoUrl(serverConfiguration, new MongoDatabase("mydatabase", new MongoServer(serverConfiguration))))
                 .isEqualTo("localhost:27017/mydatabase");
     }
 

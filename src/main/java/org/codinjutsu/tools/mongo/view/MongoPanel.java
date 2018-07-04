@@ -38,13 +38,11 @@ import org.bson.Document;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.logic.Notifier;
-import org.codinjutsu.tools.mongo.model.MongoCollection;
-import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
-import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
-import org.codinjutsu.tools.mongo.view.model.NbPerPage;
+import org.codinjutsu.tools.mongo.model.*;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.pagination.PaginationAction;
 import org.codinjutsu.tools.mongo.view.action.result.*;
+import org.codinjutsu.tools.mongo.view.model.NbPerPage;
 import org.codinjutsu.tools.mongo.view.model.Pagination;
 import org.codinjutsu.tools.mongo.view.model.navigation.Navigation;
 import org.jetbrains.annotations.NotNull;
@@ -136,7 +134,7 @@ public class MongoPanel extends JPanel implements Disposable {
             public Document getReferenceDocument(String collection, Object _id, String database) {
                 return mongoManager.findMongoDocument(
                         configuration,
-                        new MongoCollection(collection, database != null ? database : navigation.getCurrentWayPoint().getCollection().getDatabaseName()),
+                        new MongoCollection(collection, database != null ? new MongoDatabase(database, new MongoServer(configuration)) : navigation.getCurrentWayPoint().getCollection().getParentDatabase()),
                         _id);
             }
 
@@ -423,8 +421,12 @@ public class MongoPanel extends JPanel implements Disposable {
         }
 
         navigation.addNewWayPoint(
-                new MongoCollection(selectedDBRef.getCollectionName(), selectedDBRef.getDatabaseName() != null ? selectedDBRef.getDatabaseName() :
-                        navigation.getCurrentWayPoint().getCollection().getDatabaseName()),
+                new MongoCollection(
+                        selectedDBRef.getCollectionName(),
+                        selectedDBRef.getDatabaseName() != null
+                                ? new MongoDatabase(selectedDBRef.getDatabaseName(), new MongoServer(configuration))
+                                : navigation.getCurrentWayPoint().getCollection().getParentDatabase()
+                ),
                 new MongoQueryOptions().setFilter(
                         new Document("_id", selectedDBRef.getId())
                 ));

@@ -16,21 +16,19 @@
 
 package org.codinjutsu.tools.mongo.model;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-
-import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class MongoDatabase {
     private final String name;
+    private MongoServer parentServer;
 
     private final SortedSet<MongoCollection> collections = new TreeSet<>();
 
-    public MongoDatabase(String name) {
+    public MongoDatabase(String name, MongoServer mongoServer) {
         this.name = name;
+        this.parentServer = mongoServer;
     }
 
     public String getName() {
@@ -43,5 +41,9 @@ public class MongoDatabase {
 
     public void addCollection(MongoCollection mongoCollection) {
         collections.add(mongoCollection);
+    }
+
+    public MongoServer getParentServer() {
+        return parentServer;
     }
 }

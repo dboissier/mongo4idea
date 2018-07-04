@@ -38,7 +38,7 @@ public class ViewCollectionValuesAction extends AnAction implements DumbAware {
 
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
-        mongoExplorerPanel.loadSelectedCollectionValues();
+        mongoExplorerPanel.loadSelectedCollectionValues(mongoExplorerPanel.getSelectedCollection());
     }
 
     @Override

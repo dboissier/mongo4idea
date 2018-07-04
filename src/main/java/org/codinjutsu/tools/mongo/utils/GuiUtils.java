@@ -59,23 +59,8 @@ public class GuiUtils {
         toolBarPanel.add(actionToolbar, BorderLayout.CENTER);
     }
 
-    public static boolean isUnderDarcula() {
-        return UIManager.getLookAndFeel().getName().contains("Darcula");
-    }
-
     public static void runInSwingThread(Runnable runnable) {
         ApplicationManager.getApplication().invokeLater(runnable);
-    }
-
-    //    Copy from private method com.intellij.util.ui.tree.TreeUtils#expand need to expand specifically some node instead of the whole tree
-    public static void expand(@NotNull JTree tree, @NotNull TreePath path, int levels) {
-        if (levels == 0) return;
-        tree.expandPath(path);
-        TreeNode node = (TreeNode) path.getLastPathComponent();
-        Enumeration children = node.children();
-        while (children.hasMoreElements()) {
-            expand(tree, path.pathByAddingChild(children.nextElement()), levels - 1);
-        }
     }
 
     public static Dimension enlargeWidth(Dimension preferredSize, double factor) {
@@ -88,5 +73,9 @@ public class GuiUtils {
                 .setFillColor(info.getPopupBackground())
                 .createBalloon()
                 .show(new RelativePoint(component, new Point(0, 0)), position));
+    }
+
+    private static boolean isUnderDarcula() {
+        return UIManager.getLookAndFeel().getName().contains("Darcula");
     }
 }

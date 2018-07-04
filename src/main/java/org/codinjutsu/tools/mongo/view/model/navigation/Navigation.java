@@ -61,7 +61,7 @@ public class Navigation {
         }
 
         public String getLabel() {
-            return collection.getDatabaseName() + "/" + collection.getName();
+            return collection.getParentDatabase().getName() + "/" + collection.getName();
         }
 
         public MongoCollection getCollection() {

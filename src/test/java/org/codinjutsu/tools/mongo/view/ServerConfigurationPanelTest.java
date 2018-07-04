@@ -76,7 +76,6 @@ public class ServerConfigurationPanelTest {
     public void validateFormWithOneServerUrl() {
 
         frameFixture.textBox("labelField").setText("MyServer");
-        frameFixture.checkBox("autoConnectField").check();
 
         frameFixture.textBox("serverUrlsField").setText("localhost:25");
         frameFixture.checkBox("sslConnectionField").check();
@@ -107,7 +106,6 @@ public class ServerConfigurationPanelTest {
         assertThat(configuration.getUserDatabase()).isEqualTo("mydatabase");
         assertThat(configuration.getAuthenticationMechanism()).isEqualTo(AuthenticationMechanism.MONGODB_CR);
         assertThat(configuration.getSshTunnelingConfiguration()).isEqualTo(SshTunnelingConfiguration.EMPTY);
-        assertThat(configuration.isConnectOnIdeStartup()).isTrue();
     }
 
     @Test

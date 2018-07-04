@@ -19,38 +19,46 @@ package org.codinjutsu.tools.mongo.view.action.explorer;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import org.codinjutsu.tools.mongo.MongoConfiguration;
+import com.intellij.openapi.util.SystemInfo;
+import org.codinjutsu.tools.mongo.model.MongoServer;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
 
 public class DeleteMongoServerAction extends AnAction {
     private final MongoExplorerPanel mongoExplorerPanel;
 
     public DeleteMongoServerAction(MongoExplorerPanel mongoExplorerPanel) {
-        super("Remove Server", "Remove the Mongo server configuration", AllIcons.General.Remove);
+        super("Remove Server", "Remove the Server configuration", AllIcons.General.Remove);
 
         this.mongoExplorerPanel = mongoExplorerPanel;
+
+        if (SystemInfo.isMac) {
+            registerCustomShortcutSet(KeyEvent.VK_BACK_SPACE, 0, mongoExplorerPanel);
+        } else {
+            registerCustomShortcutSet(KeyEvent.VK_DELETE,0, mongoExplorerPanel);
+        }
     }
 
     @Override
     public void actionPerformed(AnActionEvent event) {
+        MongoServer selectedMongoServer = mongoExplorerPanel.getSelectedServer();
+
         int result = JOptionPane.showConfirmDialog(null,
                 String.format("Do you REALLY want to remove the '%s' server?",
-                        mongoExplorerPanel.getConfiguration().getLabel()),
+                        selectedMongoServer.getLabel()),
                 "Warning",
                 JOptionPane.YES_NO_OPTION);
 
         if (result == JOptionPane.YES_OPTION) {
-            MongoConfiguration mongoConfiguration = MongoConfiguration.getInstance(event.getProject());
-            mongoConfiguration.removeServerConfiguration(mongoExplorerPanel.getConfiguration());
-            mongoExplorerPanel.removeSelectedServerNode();
+           mongoExplorerPanel.removeSelectedServer();
         }
     }
 
 
     @Override
     public void update(AnActionEvent event) {
-        event.getPresentation().setVisible(mongoExplorerPanel.getConfiguration() != null);
+        event.getPresentation().setVisible(mongoExplorerPanel.getSelectedServer() != null);
     }
 }

@@ -16,7 +16,6 @@
 
 package org.codinjutsu.tools.mongo.view;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
@@ -54,17 +53,15 @@ public class MongoWindowManager {
         mongoExplorerPanel.installActions();
         Content mongoExplorer = ContentFactory.SERVICE.getInstance().createContent(mongoExplorerPanel, null, false);
 
-        ToolWindow toolMongoExplorerWindow = toolWindowManager.registerToolWindow(MONGO_EXPLORER, false, ToolWindowAnchor.RIGHT);
+        ToolWindow toolMongoExplorerWindow = toolWindowManager.registerToolWindow(MONGO_EXPLORER, false, ToolWindowAnchor.RIGHT, project, true);
+
         toolMongoExplorerWindow.getContentManager().addContent(mongoExplorer);
         toolMongoExplorerWindow.setIcon(MONGO_ICON);
     }
 
     public void unregisterMyself() {
+        mongoExplorerPanel.dispose();
         ToolWindowManager.getInstance(project).unregisterToolWindow(MONGO_RUNNER);
         ToolWindowManager.getInstance(project).unregisterToolWindow(MONGO_EXPLORER);
-    }
-
-    public void apply() {
-        ApplicationManager.getApplication().invokeLater(mongoExplorerPanel::reloadAllServerConfigurations);
     }
 }

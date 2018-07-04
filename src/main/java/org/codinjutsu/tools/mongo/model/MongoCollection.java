@@ -16,8 +16,6 @@
 
 package org.codinjutsu.tools.mongo.model;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -25,19 +23,19 @@ import java.util.Objects;
 public class MongoCollection implements Comparable<MongoCollection> {
 
     private final String name;
-    private final String databaseName;
+    private final MongoDatabase parentDatabase;
 
-    public MongoCollection(String name, String databaseName) {
+    public MongoCollection(String name, MongoDatabase mongoDatabase) {
         this.name = name;
-        this.databaseName = databaseName;
+        this.parentDatabase = mongoDatabase;
     }
 
     public String getName() {
         return name;
     }
 
-    public String getDatabaseName() {
-        return databaseName;
+    public MongoDatabase getParentDatabase() {
+        return parentDatabase;
     }
 
     @Override
@@ -51,12 +49,12 @@ public class MongoCollection implements Comparable<MongoCollection> {
         if (!(o instanceof MongoCollection)) return false;
         MongoCollection that = (MongoCollection) o;
         return Objects.equals(name, that.name) &&
-                Objects.equals(databaseName, that.databaseName);
+                Objects.equals(parentDatabase, that.parentDatabase);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, databaseName);
+        return Objects.hash(name, parentDatabase);
     }
 
     @Override

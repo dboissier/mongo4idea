@@ -24,6 +24,8 @@ import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
+import org.codinjutsu.tools.mongo.ServerConfiguration;
+import org.codinjutsu.tools.mongo.model.MongoDatabase;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 import org.codinjutsu.tools.mongo.view.console.MongoConsoleRunner;
@@ -46,11 +48,21 @@ public class MongoConsoleAction extends AnAction implements DumbAware {
             return;
         }
 
-        MongoConfiguration configuration = MongoConfiguration.getInstance(project);
+        MongoDatabase selectedDatabase = mongoExplorerPanel.getSelectedDatabase();
+        e.getPresentation().setEnabled(selectedDatabase != null);
+        if (selectedDatabase != null) {
+            ServerConfiguration configuration = selectedDatabase.getParentServer().getConfiguration();
+            e.getPresentation().setVisible(isShellPathSet(project) && isSingleServerInstance(configuration));
+        }
+    }
 
-        e.getPresentation().setVisible(configuration != null && StringUtils.isNotBlank(configuration.getShellPath())
-                && mongoExplorerPanel.getConfiguration() != null && mongoExplorerPanel.getConfiguration().isSingleServer());
-        e.getPresentation().setEnabled(mongoExplorerPanel.getSelectedDatabase() != null);
+    private boolean isSingleServerInstance(ServerConfiguration serverConfiguration) {
+        return serverConfiguration != null && serverConfiguration.isSingleServer();
+    }
+
+    private boolean isShellPathSet(Project project) {
+        MongoConfiguration configuration = MongoConfiguration.getInstance(project);
+        return configuration != null && StringUtils.isNotBlank(configuration.getShellPath());
     }
 
     @Override
