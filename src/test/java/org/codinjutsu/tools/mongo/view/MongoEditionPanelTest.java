@@ -37,8 +37,8 @@ public class MongoEditionPanelTest implements BsonTest {
     private MongoEditionPanel mongoEditionPanel;
 
     private FrameFixture frameFixture;
-    private MongoPanel.MongoDocumentOperations mockMongoOperations = mock(MongoPanel.MongoDocumentOperations.class);
-    private MongoResultPanel.ActionCallback mockActionCallback = mock(MongoResultPanel.ActionCallback.class);
+    private final MongoPanel.MongoDocumentOperations mockMongoOperations = mock(MongoPanel.MongoDocumentOperations.class);
+    private final MongoResultPanel.ActionCallback mockActionCallback = mock(MongoResultPanel.ActionCallback.class);
 
     @After
     public void tearDown() {

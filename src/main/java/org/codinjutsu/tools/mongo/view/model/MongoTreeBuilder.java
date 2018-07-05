@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +32,7 @@ public class MongoTreeBuilder extends AbstractTreeBuilder {
     private static final Icon MONGO_COLLECTION = GuiUtils.loadIcon("folder.png");
     private static final Icon MONGO_SERVER_ERROR = GuiUtils.loadIcon("mongo_warning.png");
 
-    private Map<String, MongoServer> serverConfigurations = new HashMap<>();
+    private final Map<MongoServer, ServerConfiguration> serverConfigurations = new HashMap<>();
 
     private static final RootDescriptor ROOT_DESCRIPTOR = new RootDescriptor();
 
@@ -55,12 +56,12 @@ public class MongoTreeBuilder extends AbstractTreeBuilder {
 
     public void addConfiguration(@NotNull ServerConfiguration serverConfiguration) {
         MongoServer mongoServer = new MongoServer(serverConfiguration);
-        serverConfigurations.put(serverConfiguration.getLabel(), mongoServer);
+        serverConfigurations.put(mongoServer, serverConfiguration);
         queueUpdateFrom(RootDescriptor.ROOT, true);
     }
 
     public void removeConfiguration(MongoServer mongoServer) {
-        serverConfigurations.remove(mongoServer.getLabel());
+        serverConfigurations.remove(mongoServer);
         queueUpdateFrom(RootDescriptor.ROOT, true);
     }
 
@@ -76,8 +77,14 @@ public class MongoTreeBuilder extends AbstractTreeBuilder {
         queueUpdateFrom(parentDatabase, true);
     }
 
+    public void expandAll() {
+        Arrays.stream(getTreeStructure().getChildElements(RootDescriptor.ROOT))
+                .forEach((server) -> this.expand(server, null));
+    }
+
     public void collapseAll() {
-        this.collapseChildren(RootDescriptor.ROOT, null);
+        Arrays.stream(getTreeStructure().getChildElements(RootDescriptor.ROOT))
+                .forEach((server) -> this.collapseChildren(server, null));
     }
 
     private class MyTreeStructure extends AbstractTreeStructure {
@@ -89,7 +96,7 @@ public class MongoTreeBuilder extends AbstractTreeBuilder {
         @Override
         public Object[] getChildElements(Object element) {
             if (element == RootDescriptor.ROOT) {
-                return ArrayUtil.toObjectArray(serverConfigurations.values());
+                return ArrayUtil.toObjectArray(serverConfigurations.keySet());
             } else if (element instanceof MongoServer) {
                 return ArrayUtil.toObjectArray(((MongoServer) element).getDatabases());
             } else if (element instanceof MongoDatabase) {
@@ -101,17 +108,17 @@ public class MongoTreeBuilder extends AbstractTreeBuilder {
         @Nullable
         @Override
         public Object getParentElement(Object element) {
-            if (element == RootDescriptor.ROOT) {
-                return null;
-            } else if (element instanceof MongoServer) {
-                return RootDescriptor.ROOT;
-            } else if (element instanceof MongoDatabase) {
-                return ((MongoDatabase) element).getParentServer();
-            } else if (element instanceof MongoCollection) {
-                return ((MongoCollection) element).getParentDatabase();
-            } else {
-                return null;
-            }
+//            if (element == RootDescriptor.ROOT) {
+//                return null;
+//            } else if (element instanceof MongoServer) {
+//                return RootDescriptor.ROOT;
+//            } else if (element instanceof MongoDatabase) {
+//                return ((MongoDatabase) element).getParentServer();
+//            } else if (element instanceof MongoCollection) {
+//                return ((MongoCollection) element).getParentDatabase();
+//            } else {
+            return null;
+//            }
         }
 
         @NotNull
@@ -157,7 +164,7 @@ public class MongoTreeBuilder extends AbstractTreeBuilder {
     }
 
     private static class RootDescriptor extends MyNodeDescriptor<Object> {
-        public static final Object ROOT = new Object();
+        static final Object ROOT = new Object();
 
         private RootDescriptor() {
             super(null, ROOT);
@@ -169,7 +176,7 @@ public class MongoTreeBuilder extends AbstractTreeBuilder {
         }
     }
 
-    public static class ServerDescriptor extends MyNodeDescriptor<MongoServer> {
+    static class ServerDescriptor extends MyNodeDescriptor<MongoServer> {
         ServerDescriptor(NodeDescriptor parentDescriptor, MongoServer server) {
             super(parentDescriptor, server);
         }
@@ -192,7 +199,7 @@ public class MongoTreeBuilder extends AbstractTreeBuilder {
         }
     }
 
-    public static class DatabaseDescriptor extends MyNodeDescriptor<MongoDatabase> {
+    static class DatabaseDescriptor extends MyNodeDescriptor<MongoDatabase> {
         DatabaseDescriptor(NodeDescriptor parentDescriptor, MongoDatabase database) {
             super(parentDescriptor, database);
         }
@@ -204,7 +211,7 @@ public class MongoTreeBuilder extends AbstractTreeBuilder {
         }
     }
 
-    public static class CollectionDescriptor extends MyNodeDescriptor<MongoCollection> {
+    static class CollectionDescriptor extends MyNodeDescriptor<MongoCollection> {
         CollectionDescriptor(NodeDescriptor parentDescriptor, MongoCollection collection) {
             super(parentDescriptor, collection);
         }

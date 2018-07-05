@@ -33,8 +33,6 @@ import org.codinjutsu.tools.mongo.model.MongoServer;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -50,7 +48,8 @@ public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfigur
     private TextFieldWithBrowseButton shellWorkingDirField;
 
 
-    public MongoRunConfigurationEditor(Project project) {
+    @SuppressWarnings("unchecked")
+    MongoRunConfigurationEditor(Project project) {
         mongoShellOptionsPanel.setBorder(IdeBorderFactory.createTitledBorder("Mongo shell options", true));
 
         shellParametersField.setDialogCaption("Mongo arguments");
@@ -120,7 +119,7 @@ public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfigur
     }
 
     @Override
-    protected void applyEditorTo(MongoRunConfiguration configuration) throws ConfigurationException {
+    protected void applyEditorTo(MongoRunConfiguration configuration) {
         configuration.setScriptPath(getScriptPath());
         configuration.setServerConfiguration(getSelectedConfiguration());
         configuration.setDatabase(getSelectedDatabase());

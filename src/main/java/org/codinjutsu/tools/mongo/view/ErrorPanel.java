@@ -23,7 +23,6 @@ import com.intellij.ui.components.JBLabel;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 
 class ErrorPanel extends JPanel {

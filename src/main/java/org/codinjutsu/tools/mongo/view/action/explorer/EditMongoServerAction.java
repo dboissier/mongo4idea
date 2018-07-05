@@ -37,19 +37,15 @@ public class EditMongoServerAction extends AnAction {
     @Override
     public void actionPerformed(AnActionEvent event) {
         MongoServer mongoServer = mongoExplorerPanel.getSelectedServer();
-        ServerConfiguration sourceConfiguration = mongoServer.getConfiguration();
-        ServerConfiguration copiedConfiguration = sourceConfiguration.clone();
+        ServerConfiguration configuration = mongoServer.getConfiguration();
 
-        ConfigurationDialog dialog = new ConfigurationDialog(event.getProject(), mongoExplorerPanel, copiedConfiguration);
+        ConfigurationDialog dialog = new ConfigurationDialog(event.getProject(), mongoExplorerPanel, configuration);
         dialog.setTitle("Edit a Mongo Server");
         dialog.show();
         if (!dialog.isOK()) {
             return;
         }
-
-        MongoConfiguration mongoConfiguration = MongoConfiguration.getInstance(event.getProject());
-        mongoConfiguration.updateServerConfiguration(sourceConfiguration, copiedConfiguration);
-        mongoServer.setConfiguration(copiedConfiguration);
+        mongoExplorerPanel.loadServerConfiguration(mongoServer);
     }
 
     @Override

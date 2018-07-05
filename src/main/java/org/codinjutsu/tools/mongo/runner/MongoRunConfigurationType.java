@@ -58,7 +58,7 @@ public class MongoRunConfigurationType implements ConfigurationType {
     }
 
     private static class MongoFactory extends ConfigurationFactory {
-        public MongoFactory(ConfigurationType type) {
+        MongoFactory(ConfigurationType type) {
             super(type);
         }
 

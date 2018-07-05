@@ -56,7 +56,7 @@ public class JsonTableUtils {
 
         private static final TableCellRenderer MONGO_TABLE_CELL_RENDERER = new MongoTableCellRenderer();
 
-        public TableColumnInfo(String key) {
+        TableColumnInfo(String key) {
             super(key);
             this.key = key;
         }

@@ -24,7 +24,7 @@ import java.util.List;
 
 public class Navigation {
 
-    private List<WayPoint> wayPoints = new ArrayList<>();
+    private final List<WayPoint> wayPoints = new ArrayList<>();
 
     private WayPoint currentWayPoint = null;
 

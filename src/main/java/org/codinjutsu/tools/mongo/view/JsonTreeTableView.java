@@ -41,7 +41,7 @@ import javax.swing.tree.TreePath;
 import java.util.Date;
 import java.util.List;
 
-public class JsonTreeTableView extends TreeTable {
+class JsonTreeTableView extends TreeTable {
 
     private static final ColumnInfo KEY = new ColumnInfo("Key") {
 
@@ -90,6 +90,7 @@ public class JsonTreeTableView extends TreeTable {
         });
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public TableCellRenderer getCellRenderer(int row, int column) {
         TreePath treePath = getTree().getPathForRow(row);
@@ -101,6 +102,7 @@ public class JsonTreeTableView extends TreeTable {
         return renderer == null ? super.getCellRenderer(row, column) : renderer;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public TableCellEditor getCellEditor(int row, int column) {
         TreePath treePath = getTree().getPathForRow(row);
@@ -114,7 +116,7 @@ public class JsonTreeTableView extends TreeTable {
     private static class ReadOnlyValueColumnInfo extends ColumnInfo<JsonTreeNode, MongoNodeDescriptor> {
         private final TableCellRenderer myRenderer = new MongoValueCellRenderer();
 
-        public ReadOnlyValueColumnInfo() {
+        ReadOnlyValueColumnInfo() {
             super("Value");
         }
 
@@ -139,7 +141,7 @@ public class JsonTreeTableView extends TreeTable {
         private final TableCellEditor defaultEditor = new MongoValueCellEditor();
 
 
-        public WritableColumnInfo() {
+        WritableColumnInfo() {
             super("Value");
         }
 
@@ -156,11 +158,7 @@ public class JsonTreeTableView extends TreeTable {
                 return false;
             }
 
-            if (value instanceof ObjectId) {
-                return false;
-            }
-
-            return true;
+            return !(value instanceof ObjectId);
         }
 
         @Nullable

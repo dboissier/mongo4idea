@@ -320,11 +320,11 @@ public class QueryPanel extends JPanel implements Disposable {
 
     private abstract class OperatorPanel extends JPanel implements Disposable {
 
-        public abstract JComponent getRequestFocusComponent();
+        protected abstract JComponent getRequestFocusComponent();
 
-        public abstract void validateQuery();
+        protected abstract void validateQuery();
 
-        public abstract MongoQueryOptions buildQueryOptions(String rowLimit);
+        protected abstract MongoQueryOptions buildQueryOptions(String rowLimit);
 
         void notifyOnErrorForOperator(final JComponent component, Exception ex) {
             String message;

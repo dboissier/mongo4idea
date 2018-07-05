@@ -10,9 +10,9 @@ import org.codinjutsu.tools.mongo.view.model.Pagination;
 import javax.swing.*;
 
 public abstract class PaginationAction extends AnAction implements DumbAware {
-    protected final Pagination pagination;
+    final Pagination pagination;
 
-    public PaginationAction(Pagination pagination, String toolTip, String description, Icon icon) {
+    PaginationAction(Pagination pagination, String toolTip, String description, Icon icon) {
         super(toolTip, description, icon);
         this.pagination = pagination;
     }

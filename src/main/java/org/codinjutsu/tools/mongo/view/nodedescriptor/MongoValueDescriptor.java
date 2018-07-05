@@ -162,7 +162,7 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
     private static class MongoDocumentValueDescriptor extends MongoValueDescriptor {
 
 
-        public MongoDocumentValueDescriptor(int index, Object value) {
+        MongoDocumentValueDescriptor(int index, Object value) {
             super(index, value, StyleAttributesProvider.getDocumentAttribute());
 
         }
@@ -180,7 +180,7 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
     }
 
     private static class MongoListValueDescriptor extends MongoValueDescriptor {
-        public MongoListValueDescriptor(int index, Object value) {
+        MongoListValueDescriptor(int index, Object value) {
             super(index, value, StyleAttributesProvider.getDocumentAttribute());
         }
 

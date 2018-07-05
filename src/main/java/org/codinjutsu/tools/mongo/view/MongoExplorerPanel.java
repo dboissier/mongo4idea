@@ -95,6 +95,8 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         toolBarPanel.setLayout(new BorderLayout());
 
         loadAllServerConfigurations();
+
+        installActions();
     }
 
     private void loadAllServerConfigurations() {
@@ -139,7 +141,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         return MongoConfiguration.getInstance(project).getServerConfigurations();
     }
 
-    public void installActions() {
+    private void installActions() {
 
         final TreeExpander treeExpander = new TreeExpander() {
             @Override
@@ -196,11 +198,9 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         if (ApplicationManager.getApplication() != null) {
             actionPopupGroup.add(refreshServerAction);
             actionPopupGroup.add(new EditMongoServerAction(this));
-            actionPopupGroup.add(new DeleteMongoServerAction(this));
+            actionPopupGroup.add(new DeleteAction(this));
             actionPopupGroup.addSeparator();
             actionPopupGroup.add(viewCollectionValuesAction);
-            actionPopupGroup.add(new DropCollectionAction(this));
-            actionPopupGroup.add(new DropDatabaseAction(this));
         }
 
         PopupHandler.installPopupHandler(mongoTree, actionPopupGroup, "POPUP", ActionManager.getInstance());
@@ -228,100 +228,11 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
     }
 
     private void expandAll() {
-        mongoTreeBuilder.expandAll(null);
+        mongoTreeBuilder.expandAll();
     }
 
     private void collapseAll() {
         mongoTreeBuilder.collapseAll();
-    }
-
-    @Override
-    public void dispose() {
-
-    }
-
-    public ServerConfiguration getConfiguration() {
-        MongoCollection selectedCollection = getSelectedCollection();
-        if (selectedCollection != null) {
-            return selectedCollection.getParentDatabase().getParentServer().getConfiguration();
-        }
-
-        MongoDatabase selectedDatabase = getSelectedDatabase();
-        if (selectedDatabase != null) {
-            return selectedDatabase.getParentServer().getConfiguration();
-        }
-
-        MongoServer mongoServer = getSelectedServer();
-        if (mongoServer != null) {
-            return mongoServer.getConfiguration();
-        }
-
-        return null;
-    }
-
-    public MongoServer getSelectedServer() {
-        Set<MongoServer> selectedElements = mongoTreeBuilder.getSelectedElements(MongoServer.class);
-        if (selectedElements.isEmpty()) {
-            return null;
-        }
-        return selectedElements.iterator().next();
-    }
-
-    public MongoDatabase getSelectedDatabase() {
-        Set<MongoDatabase> selectedElements = mongoTreeBuilder.getSelectedElements(MongoDatabase.class);
-        if (selectedElements.isEmpty()) {
-            return null;
-        }
-        return selectedElements.iterator().next();
-
-    }
-
-    public MongoCollection getSelectedCollection() {
-        Set<MongoCollection> selectedElements = mongoTreeBuilder.getSelectedElements(MongoCollection.class);
-        if (selectedElements.isEmpty()) {
-            return null;
-        }
-        return selectedElements.iterator().next();
-    }
-
-
-    public void loadSelectedCollectionValues(MongoCollection mongoCollection) {
-        Navigation navigation = new Navigation();
-        navigation.addNewWayPoint(mongoCollection, new MongoQueryOptions());
-
-        MongoServer parentServer = mongoCollection.getParentDatabase()
-                .getParentServer();
-        MongoFileSystem.getInstance().openEditor(
-                new MongoObjectFile(project, parentServer.getConfiguration(), navigation));
-    }
-
-    public void removeSelectedServer() {
-        MongoServer mongoServer = getSelectedServer();
-        if (mongoServer == null) {
-            return;
-        }
-
-        MongoConfiguration mongoConfiguration = MongoConfiguration.getInstance(project);
-        mongoConfiguration.removeServerConfiguration(mongoServer.getConfiguration());
-
-        mongoTreeBuilder.removeConfiguration(mongoServer);
-
-    }
-
-    public void dropCollection(MongoCollection mongoCollection) {
-        ServerConfiguration configuration = mongoCollection.getParentDatabase().getParentServer().getConfiguration();
-        mongoManager.dropCollection(configuration, mongoCollection);
-        notifier.notifyInfo("Collection " + mongoCollection.getName() + " dropped");
-
-        mongoTreeBuilder.removeCollection(mongoCollection);
-    }
-
-    public void dropDatabase(MongoDatabase mongoDatabase) {
-        ServerConfiguration configuration = mongoDatabase.getParentServer().getConfiguration();
-        mongoManager.dropDatabase(configuration, mongoDatabase);
-        notifier.notifyInfo("Datatabase " + mongoDatabase.getName() + " dropped");
-
-        mongoTreeBuilder.removeDatabase(mongoDatabase);
     }
 
     private Tree createTree() {
@@ -372,6 +283,102 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         });
 
         return tree;
+    }
+
+    @Override
+    public void dispose() {
+
+    }
+
+    public ServerConfiguration getConfiguration() {
+        MongoCollection selectedCollection = getSelectedCollection();
+        if (selectedCollection != null) {
+            return selectedCollection.getParentDatabase().getParentServer().getConfiguration();
+        }
+
+        MongoDatabase selectedDatabase = getSelectedDatabase();
+        if (selectedDatabase != null) {
+            return selectedDatabase.getParentServer().getConfiguration();
+        }
+
+        MongoServer mongoServer = getSelectedServer();
+        if (mongoServer != null) {
+            return mongoServer.getConfiguration();
+        }
+
+        return null;
+    }
+
+    public Object getSelectedItem() {
+        Set<Object> selectedElements = mongoTreeBuilder.getSelectedElements();
+        if (selectedElements.isEmpty()) {
+            return null;
+        }
+        return selectedElements.iterator().next();
+    }
+
+    public MongoServer getSelectedServer() {
+        Set<MongoServer> selectedElements = mongoTreeBuilder.getSelectedElements(MongoServer.class);
+        if (selectedElements.isEmpty()) {
+            return null;
+        }
+        return selectedElements.iterator().next();
+    }
+
+    public MongoDatabase getSelectedDatabase() {
+        Set<MongoDatabase> selectedElements = mongoTreeBuilder.getSelectedElements(MongoDatabase.class);
+        if (selectedElements.isEmpty()) {
+            return null;
+        }
+        return selectedElements.iterator().next();
+
+    }
+
+    public MongoCollection getSelectedCollection() {
+        Set<MongoCollection> selectedElements = mongoTreeBuilder.getSelectedElements(MongoCollection.class);
+        if (selectedElements.isEmpty()) {
+            return null;
+        }
+        return selectedElements.iterator().next();
+    }
+
+    public void loadSelectedCollectionValues(MongoCollection mongoCollection) {
+        Navigation navigation = new Navigation();
+        navigation.addNewWayPoint(mongoCollection, new MongoQueryOptions());
+
+        MongoServer parentServer = mongoCollection.getParentDatabase()
+                .getParentServer();
+        MongoFileSystem.getInstance().openEditor(
+                new MongoObjectFile(project, parentServer.getConfiguration(), navigation));
+    }
+
+    public void removeSelectedServer() {
+        MongoServer mongoServer = getSelectedServer();
+        if (mongoServer == null) {
+            return;
+        }
+
+        MongoConfiguration mongoConfiguration = MongoConfiguration.getInstance(project);
+        mongoConfiguration.removeServerConfiguration(mongoServer.getConfiguration());
+
+        mongoTreeBuilder.removeConfiguration(mongoServer);
+
+    }
+
+    public void dropCollection(MongoCollection mongoCollection) {
+        ServerConfiguration configuration = mongoCollection.getParentDatabase().getParentServer().getConfiguration();
+        mongoManager.dropCollection(configuration, mongoCollection);
+        notifier.notifyInfo("Collection " + mongoCollection.getName() + " dropped");
+
+        mongoTreeBuilder.removeCollection(mongoCollection);
+    }
+
+    public void dropDatabase(MongoDatabase mongoDatabase) {
+        ServerConfiguration configuration = mongoDatabase.getParentServer().getConfiguration();
+        mongoManager.dropDatabase(configuration, mongoDatabase);
+        notifier.notifyInfo("Datatabase " + mongoDatabase.getName() + " dropped");
+
+        mongoTreeBuilder.removeDatabase(mongoDatabase);
     }
 
     public MongoManager getMongoManager() {

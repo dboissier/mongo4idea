@@ -22,7 +22,7 @@ import java.util.TreeSet;
 
 public class MongoDatabase {
     private final String name;
-    private MongoServer parentServer;
+    private final MongoServer parentServer;
 
     private final SortedSet<MongoCollection> collections = new TreeSet<>();
 

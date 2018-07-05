@@ -82,7 +82,7 @@ public class OperatorCompletionAction extends AnAction implements Disposable {
 
                     new WriteCommandAction(project, MONGO_OPERATOR_COMPLETION) {
                         @Override
-                        protected void run(@NotNull Result result) throws Throwable {
+                        protected void run(@NotNull Result result) {
                             document.insertString(offset, selectedQueryOperator);
                         }
                     }.execute();

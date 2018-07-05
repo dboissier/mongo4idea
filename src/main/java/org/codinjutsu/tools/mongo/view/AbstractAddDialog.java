@@ -16,13 +16,11 @@
 
 package org.codinjutsu.tools.mongo.view;
 
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.components.JBCheckBox;
 import org.apache.commons.lang.StringUtils;
-import org.bson.BsonArray;
 import org.bson.Document;
 import org.codinjutsu.tools.mongo.view.model.JsonDataType;
 import org.codinjutsu.tools.mongo.view.table.DateTimePicker;
@@ -94,19 +92,19 @@ abstract class AbstractAddDialog extends DialogWrapper {
             this.component = component;
         }
 
-        public abstract V getValue();
+        protected abstract V getValue();
 
-        public abstract void reset();
+        protected abstract void reset();
 
-        public boolean isValueSet() {
+        boolean isValueSet() {
             return true;
         }
 
-        public T getComponent() {
+        T getComponent() {
             return component;
         }
 
-        public void validate() {
+        void validate() {
             if (!isValueSet()) {
                 throw new IllegalArgumentException("Value is not set");
             }

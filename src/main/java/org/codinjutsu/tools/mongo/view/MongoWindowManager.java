@@ -50,7 +50,6 @@ public class MongoWindowManager {
 
         ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
         mongoExplorerPanel = new MongoExplorerPanel(project, MongoManager.getInstance(project), Notifier.getInstance(project));
-        mongoExplorerPanel.installActions();
         Content mongoExplorer = ContentFactory.SERVICE.getInstance().createContent(mongoExplorerPanel, null, false);
 
         ToolWindow toolMongoExplorerWindow = toolWindowManager.registerToolWindow(MONGO_EXPLORER, false, ToolWindowAnchor.RIGHT, project, true);

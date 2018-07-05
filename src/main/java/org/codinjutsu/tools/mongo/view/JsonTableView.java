@@ -22,7 +22,8 @@ import com.intellij.util.ui.ListTableModel;
 class JsonTableView extends TableView {
 
 
-    public JsonTableView(ListTableModel tableModel) {
+    @SuppressWarnings("unchecked")
+    JsonTableView(ListTableModel tableModel) {
         super(tableModel);
     }
 }

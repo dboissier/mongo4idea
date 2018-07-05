@@ -49,7 +49,7 @@ public class MongoResultPanelTest {
 
     private FrameFixture frameFixture;
 
-    private Notifier notifierMock = Mockito.mock(Notifier.class);
+    private final Notifier notifierMock = Mockito.mock(Notifier.class);
 
     @Mock
     private MongoPanel.MongoDocumentOperations mongoDocumentOperations;

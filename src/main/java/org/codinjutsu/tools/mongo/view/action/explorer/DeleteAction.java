@@ -20,45 +20,68 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.util.SystemInfo;
+import org.codinjutsu.tools.mongo.model.MongoCollection;
+import org.codinjutsu.tools.mongo.model.MongoDatabase;
 import org.codinjutsu.tools.mongo.model.MongoServer;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 
-public class DeleteMongoServerAction extends AnAction {
+public class DeleteAction extends AnAction {
     private final MongoExplorerPanel mongoExplorerPanel;
 
-    public DeleteMongoServerAction(MongoExplorerPanel mongoExplorerPanel) {
-        super("Remove Server", "Remove the Server configuration", AllIcons.General.Remove);
+    public DeleteAction(MongoExplorerPanel mongoExplorerPanel) {
+        super("Delete...", "Delete selected item", AllIcons.General.Remove);
 
         this.mongoExplorerPanel = mongoExplorerPanel;
 
         if (SystemInfo.isMac) {
             registerCustomShortcutSet(KeyEvent.VK_BACK_SPACE, 0, mongoExplorerPanel);
         } else {
-            registerCustomShortcutSet(KeyEvent.VK_DELETE,0, mongoExplorerPanel);
+            registerCustomShortcutSet(KeyEvent.VK_DELETE, 0, mongoExplorerPanel);
         }
     }
 
     @Override
     public void actionPerformed(AnActionEvent event) {
-        MongoServer selectedMongoServer = mongoExplorerPanel.getSelectedServer();
+        Object selectedItem = mongoExplorerPanel.getSelectedItem();
 
+        if (selectedItem instanceof MongoServer) {
+            MongoServer mongoServer = (MongoServer) selectedItem;
+            deleteItem("server", mongoServer.getLabel(),
+                    mongoExplorerPanel::removeSelectedServer);
+            return;
+        }
+
+        if (selectedItem instanceof MongoDatabase) {
+            MongoDatabase mongoDatabase = (MongoDatabase) selectedItem;
+            deleteItem("database", mongoDatabase.getName(),
+                    mongoExplorerPanel::removeSelectedServer);
+            return;
+        }
+
+        if (selectedItem instanceof MongoCollection) {
+            MongoCollection mongoCollection = (MongoCollection) selectedItem;
+            deleteItem("collection", mongoCollection.getName(),
+                    mongoExplorerPanel::removeSelectedServer);
+        }
+    }
+
+    private void deleteItem(String itemTypeLabel, String itemLabel, Runnable deleteOperation) {
         int result = JOptionPane.showConfirmDialog(null,
-                String.format("Do you REALLY want to remove the '%s' server?",
-                        selectedMongoServer.getLabel()),
+                String.format("Do you REALLY want to remove the '%s' %s?", itemLabel, itemTypeLabel),
                 "Warning",
                 JOptionPane.YES_NO_OPTION);
 
         if (result == JOptionPane.YES_OPTION) {
-           mongoExplorerPanel.removeSelectedServer();
+            deleteOperation.run();
         }
     }
 
 
     @Override
     public void update(AnActionEvent event) {
-        event.getPresentation().setVisible(mongoExplorerPanel.getSelectedServer() != null);
+        event.getPresentation().setVisible(mongoExplorerPanel.getSelectedItem() != null);
     }
 }

@@ -215,7 +215,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
 
     private static class MongoKeyRefValueDescriptor extends MongoKeyValueDescriptor {
-        public MongoKeyRefValueDescriptor(String key, Object value) {
+        MongoKeyRefValueDescriptor(String key, Object value) {
             super(key, value, StyleAttributesProvider.getDocumentAttribute());
         }
 

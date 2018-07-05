@@ -48,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ServerConfigurationPanelTest {
 
     @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    public final ExpectedException thrown = ExpectedException.none();
 
     private ServerConfigurationPanel configurationPanel;
     private MongoManager mongoManager;
@@ -307,7 +307,7 @@ public class ServerConfigurationPanelTest {
     private static class TextFieldWithBrowseButtonGenericTypeMatcher extends GenericTypeMatcher<TextFieldWithBrowseButton> {
         private final String name;
 
-        public TextFieldWithBrowseButtonGenericTypeMatcher(String name) {
+        TextFieldWithBrowseButtonGenericTypeMatcher(String name) {
             super(TextFieldWithBrowseButton.class);
             this.name = name;
         }

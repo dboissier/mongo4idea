@@ -24,7 +24,7 @@ import java.awt.event.*;
  * Fork of the filter select component in VCS Tool window
  * @see com.intellij.vcs.log.ui.filter.VcsLogPopupComponent
  */
-public class PaginationPopupComponent extends JPanel {
+class PaginationPopupComponent extends JPanel {
     private static final int GAP_BEFORE_ARROW = 3;
     private static final int BORDER_SIZE = 2;
 
