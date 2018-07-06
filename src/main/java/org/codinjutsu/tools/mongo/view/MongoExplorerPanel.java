@@ -25,6 +25,7 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
+import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.DoubleClickListener;
@@ -37,16 +38,14 @@ import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.logic.Notifier;
-import org.codinjutsu.tools.mongo.model.MongoCollection;
-import org.codinjutsu.tools.mongo.model.MongoDatabase;
-import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
-import org.codinjutsu.tools.mongo.model.MongoServer;
+import org.codinjutsu.tools.mongo.model.*;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.explorer.*;
 import org.codinjutsu.tools.mongo.view.editor.MongoFileSystem;
 import org.codinjutsu.tools.mongo.view.editor.MongoObjectFile;
 import org.codinjutsu.tools.mongo.view.model.MongoTreeBuilder;
 import org.codinjutsu.tools.mongo.view.model.navigation.Navigation;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -54,6 +53,7 @@ import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -62,6 +62,7 @@ import static org.codinjutsu.tools.mongo.utils.GuiUtils.showNotification;
 public class MongoExplorerPanel extends JPanel implements Disposable {
 
     private static final URL pluginSettingsUrl = GuiUtils.class.getResource("/general/add.png");
+    private final MongoInfosTable mongoInfosTable;
 
     private JPanel rootPanel;
 
@@ -69,6 +70,8 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
     private final Tree mongoTree;
 
     private JPanel toolBarPanel;
+    private JPanel statsPanel;
+    private JPanel containerPanel;
 
     private final Project project;
     private final MongoManager mongoManager;
@@ -81,15 +84,27 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         this.mongoManager = mongoManager;
         this.notifier = notifier;
 
+        treePanel = new JPanel(new BorderLayout());
         treePanel.setLayout(new BorderLayout());
 
         mongoTree = createTree();
         mongoTreeBuilder = new MongoTreeBuilder(mongoTree);
 
-        JBScrollPane mongoTreeScrollPane = new JBScrollPane(mongoTree);
 
         setLayout(new BorderLayout());
-        treePanel.add(mongoTreeScrollPane, BorderLayout.CENTER);
+        treePanel.add(new JBScrollPane(mongoTree), BorderLayout.CENTER);
+
+        mongoInfosTable = new MongoInfosTable();
+
+        statsPanel = new JPanel(new BorderLayout());
+        statsPanel.add(new JBScrollPane(mongoInfosTable));
+
+        Splitter splitter = new Splitter(true, 0.6f);
+        splitter.setFirstComponent(treePanel);
+        splitter.setSecondComponent(statsPanel);
+
+        containerPanel.add(splitter, BorderLayout.CENTER);
+
         add(rootPanel, BorderLayout.CENTER);
 
         toolBarPanel.setLayout(new BorderLayout());
@@ -97,6 +112,23 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         loadAllServerConfigurations();
 
         installActions();
+        mongoTree.getSelectionModel().addTreeSelectionListener(event -> {
+
+            List<StatInfoEntry> statInfos;
+            MongoCollection selectedCollection = MongoExplorerPanel.this.getSelectedCollection();
+            if (selectedCollection != null) {
+                statInfos = mongoManager.getCollStats(MongoExplorerPanel.this.getConfiguration(), selectedCollection);
+                mongoInfosTable.updateInfos(statInfos);
+                return;
+            }
+
+            MongoDatabase selectedDatabase = MongoExplorerPanel.this.getSelectedDatabase();
+            if (selectedDatabase != null) {
+                statInfos = mongoManager.getDbStats(MongoExplorerPanel.this.getConfiguration(), selectedDatabase);
+                mongoInfosTable.updateInfos(statInfos);
+            }
+            mongoInfosTable.updateInfos(Collections.emptyList());
+        });
     }
 
     private void loadAllServerConfigurations() {
@@ -285,11 +317,6 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         return tree;
     }
 
-    @Override
-    public void dispose() {
-
-    }
-
     public ServerConfiguration getConfiguration() {
         MongoCollection selectedCollection = getSelectedCollection();
         if (selectedCollection != null) {
@@ -352,36 +379,41 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                 new MongoObjectFile(project, parentServer.getConfiguration(), navigation));
     }
 
-    public void removeSelectedServer() {
-        MongoServer mongoServer = getSelectedServer();
-        if (mongoServer == null) {
-            return;
-        }
-
+    public void removeSelectedServer(@NotNull MongoServer mongoServer) {
         MongoConfiguration mongoConfiguration = MongoConfiguration.getInstance(project);
         mongoConfiguration.removeServerConfiguration(mongoServer.getConfiguration());
+
+        notifier.notifyInfo("Server configuration " + mongoServer.getLabel() + " removed");
 
         mongoTreeBuilder.removeConfiguration(mongoServer);
 
     }
 
-    public void dropCollection(MongoCollection mongoCollection) {
-        ServerConfiguration configuration = mongoCollection.getParentDatabase().getParentServer().getConfiguration();
-        mongoManager.dropCollection(configuration, mongoCollection);
-        notifier.notifyInfo("Collection " + mongoCollection.getName() + " dropped");
-
-        mongoTreeBuilder.removeCollection(mongoCollection);
-    }
-
-    public void dropDatabase(MongoDatabase mongoDatabase) {
+    public void removeSelectedDatabase(@NotNull MongoDatabase mongoDatabase) {
         ServerConfiguration configuration = mongoDatabase.getParentServer().getConfiguration();
-        mongoManager.dropDatabase(configuration, mongoDatabase);
-        notifier.notifyInfo("Datatabase " + mongoDatabase.getName() + " dropped");
+
+        mongoManager.removeDatabase(configuration, mongoDatabase);
+        notifier.notifyInfo("Datatabase " + mongoDatabase.getName() + " removed");
 
         mongoTreeBuilder.removeDatabase(mongoDatabase);
     }
 
+    public void removeSelectedCollection(@NotNull MongoCollection mongoCollection) {
+        ServerConfiguration configuration = mongoCollection.getParentDatabase().getParentServer().getConfiguration();
+
+        mongoManager.removeCollection(configuration, mongoCollection);
+
+        notifier.notifyInfo("Collection " + mongoCollection.getName() + " removed");
+
+        mongoTreeBuilder.removeCollection(mongoCollection);
+    }
+
     public MongoManager getMongoManager() {
         return mongoManager;
+    }
+
+    @Override
+    public void dispose() {
+
     }
 }

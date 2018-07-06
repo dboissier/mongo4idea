@@ -90,6 +90,14 @@ public class MongoManager {
         return executeTask(configuration, perform);
     }
 
+    private MongoDatabase createMongoDatabaseAndItsCollections(MongoDatabase mongoDatabase, com.mongodb.client.MongoDatabase database) {
+        MongoIterable<String> collectionNames = database.listCollectionNames();
+        for (String collectionName : collectionNames) {
+            mongoDatabase.addCollection(new MongoCollection(collectionName, mongoDatabase));
+        }
+        return mongoDatabase;
+    }
+
     public MongoCollectionResult loadCollectionValues(ServerConfiguration configuration, final MongoCollection mongoCollection, final MongoQueryOptions mongoQueryOptions) {
         TaskWithReturnedObject<MongoCollectionResult> task = mongoClient -> {
             MongoDatabase mongoDatabase = mongoCollection.getParentDatabase();
@@ -119,34 +127,6 @@ public class MongoManager {
         };
 
         return executeTask(configuration, task);
-    }
-
-    private MongoDatabase createMongoDatabaseAndItsCollections(MongoDatabase mongoDatabase, com.mongodb.client.MongoDatabase database) {
-
-
-        MongoIterable<String> collectionNames = database.listCollectionNames();
-        for (String collectionName : collectionNames) {
-            mongoDatabase.addCollection(new MongoCollection(collectionName, mongoDatabase));
-        }
-        return mongoDatabase;
-    }
-
-    private <T> T executeTask(ServerConfiguration configuration, TaskWithReturnedObject<T> perform) {
-        if (SshTunnelingConfiguration.isEmpty(configuration.getSshTunnelingConfiguration())) {
-            return execute(configuration, perform);
-        } else {
-            try (SshConnection ignored = SshConnection.create(configuration)) {
-                return execute(configuration, perform);
-            }
-        }
-    }
-
-    private <T> T execute(ServerConfiguration configuration, TaskWithReturnedObject<T> perform) {
-        try (MongoClient mongo = createMongoClient(configuration)) {
-            return perform.run(mongo);
-        } catch (MongoException mongoEx) {
-            throw new ConfigurationException(mongoEx);
-        }
     }
 
     public void update(ServerConfiguration configuration, final MongoCollection mongoCollection, final Document mongoDocument) {
@@ -182,7 +162,7 @@ public class MongoManager {
         executeTask(configuration, task);
     }
 
-    public void dropCollection(ServerConfiguration configuration, final MongoCollection mongoCollection) {
+    public void removeCollection(ServerConfiguration configuration, final MongoCollection mongoCollection) {
         Task task = mongoClient -> {
             MongoDatabase mongoDatabase = mongoCollection.getParentDatabase();
 
@@ -194,11 +174,85 @@ public class MongoManager {
         executeTask(configuration, task);
     }
 
-
-    public void dropDatabase(ServerConfiguration configuration, final MongoDatabase selectedDatabase) {
+    public void removeDatabase(ServerConfiguration configuration, final MongoDatabase selectedDatabase) {
         Task task = mongoClient -> mongoClient.dropDatabase(selectedDatabase.getName());
 
         executeTask(configuration, task);
+    }
+
+    public List<StatInfoEntry> getCollStats(ServerConfiguration configuration, final MongoCollection mongoCollection) {
+        TaskWithReturnedObject<List<StatInfoEntry>> task = mongoClient -> {
+            com.mongodb.client.MongoDatabase database = mongoClient.getDatabase(mongoCollection.getParentDatabase().getName());
+
+            return adaptToCollectionInfos(database.runCommand(new Document("collStats", mongoCollection.getName())));
+        };
+
+        return executeTask(configuration, task);
+    }
+
+    public List<StatInfoEntry> getDbStats(ServerConfiguration configuration, final MongoDatabase mongoDatabase) {
+        TaskWithReturnedObject<List<StatInfoEntry>> task = mongoClient -> {
+            com.mongodb.client.MongoDatabase database = mongoClient.getDatabase(mongoDatabase.getName());
+
+            return adaptToDatabaseInfos(database.runCommand(new Document("dbStats", 1)));
+        };
+
+        return executeTask(configuration, task);
+    }
+
+    private List<StatInfoEntry> adaptToCollectionInfos(Document collectionStatsDocument) {
+        List<StatInfoEntry> collectionInfoEntries = new ArrayList<>();
+
+        for (CollectionStatInfoEnum statInfo : CollectionStatInfoEnum.values()) {
+            collectionInfoEntries.add(statInfo.getDataBuilder().build(
+                    statInfo.name(),
+                    statInfo.getDataExtractor().extract(statInfo.name(), collectionStatsDocument)));
+
+            if (CollectionStatInfoEnum.indexSizes.equals(statInfo)) {
+                collectionInfoEntries.addAll(createIndexSizeEntryList(
+                        (Document) statInfo.getDataExtractor().extract(statInfo.name(), collectionStatsDocument)));
+            }
+        }
+
+        return collectionInfoEntries;
+    }
+
+    private List<StatInfoEntry> createIndexSizeEntryList(Document indexSizesDocument) {
+        LinkedList<StatInfoEntry> list = new LinkedList<>();
+        for (Map.Entry<String, Object> keyValueEntry : indexSizesDocument.entrySet()) {
+            list.add(new StatInfoEntry.ByteSizeStatInfoEntry(keyValueEntry.getKey(), new Long(keyValueEntry.getValue().toString()))); //TODO need refactor
+        }
+        return list;
+    }
+
+    private List<StatInfoEntry> adaptToDatabaseInfos(Document databaseStatsDocument) {
+        List<StatInfoEntry> collectionInfoEntries = new ArrayList<>();
+
+        for (DatabaseStatInfoEnum statInfo : DatabaseStatInfoEnum.values()) {
+            collectionInfoEntries.add(statInfo.getDataBuilder().build(
+                    statInfo.name(),
+                    statInfo.getDataExtractor().extract(statInfo.name(), databaseStatsDocument)));
+        }
+
+        return collectionInfoEntries;
+    }
+
+    private <T> T executeTask(ServerConfiguration configuration, TaskWithReturnedObject<T> perform) {
+        if (SshTunnelingConfiguration.isEmpty(configuration.getSshTunnelingConfiguration())) {
+            return execute(configuration, perform);
+        } else {
+            try (SshConnection ignored = SshConnection.create(configuration)) {
+                return execute(configuration, perform);
+            }
+        }
+    }
+
+    private <T> T execute(ServerConfiguration configuration, TaskWithReturnedObject<T> perform) {
+        try (MongoClient mongo = createMongoClient(configuration)) {
+            return perform.run(mongo);
+        } catch (MongoException mongoEx) {
+            throw new ConfigurationException(mongoEx);
+        }
     }
 
     private void executeTask(ServerConfiguration configuration, Task perform) {

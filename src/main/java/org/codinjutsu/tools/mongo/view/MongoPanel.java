@@ -148,7 +148,7 @@ public class MongoPanel extends JPanel implements Disposable {
     private void initToolBar() {
         toolBar.setLayout(new BorderLayout());
 
-        JPanel rowLimitPanel = createNavigationComponent();
+        JPanel rowLimitPanel = createRowLimitPanel();
         toolBar.add(rowLimitPanel, BorderLayout.WEST);
 
         JComponent actionToolBarComponent = createResultActionsComponent();
@@ -173,7 +173,7 @@ public class MongoPanel extends JPanel implements Disposable {
     }
 
     @NotNull
-    private JPanel createNavigationComponent() {
+    private JPanel createRowLimitPanel() {
         rowLimitField.setText(Integer.toString(MongoQueryOptions.DEFAULT_RESULT_LIMIT));
         rowLimitField.setColumns(5);
         rowLimitField.setDocument(new NumberDocument());

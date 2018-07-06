@@ -37,17 +37,17 @@ public class MongoTreeBuilder extends AbstractTreeBuilder {
     private static final RootDescriptor ROOT_DESCRIPTOR = new RootDescriptor();
 
     public MongoTreeBuilder(@NotNull Tree tree) {
-        init(tree, new DefaultTreeModel(new DefaultMutableTreeNode()), new MyTreeStructure(), (o1, o2) -> {
-            if (o1 instanceof ServerDescriptor && o2 instanceof ServerDescriptor) {
-                return ((MongoServer) o1.getElement()).getLabel().compareTo(((MongoServer) o2.getElement()).getLabel());
-            } else if (o1 instanceof DatabaseDescriptor && o2 instanceof DatabaseDescriptor) {
-                String cn1 = ((DatabaseDescriptor) o1).getElement().getName();
-                String cn2 = ((DatabaseDescriptor) o2).getElement().getName();
-                return cn1.compareTo(cn2);
-            } else if (o1 instanceof CollectionDescriptor && o2 instanceof CollectionDescriptor) {
-                String cn1 = ((CollectionDescriptor) o1).getElement().getName();
-                String cn2 = ((CollectionDescriptor) o2).getElement().getName();
-                return cn1.compareTo(cn2);
+        init(tree, new DefaultTreeModel(new DefaultMutableTreeNode()), new MyTreeStructure(), (descriptorLeft, descriptorRight) -> {
+            if (descriptorLeft instanceof ServerDescriptor && descriptorRight instanceof ServerDescriptor) {
+                return ((MongoServer) descriptorLeft.getElement()).getLabel().compareTo(((MongoServer) descriptorRight.getElement()).getLabel());
+            } else if (descriptorLeft instanceof DatabaseDescriptor && descriptorRight instanceof DatabaseDescriptor) {
+                String databaseDescriptorLeft = ((DatabaseDescriptor) descriptorLeft).getElement().getName();
+                String databaseDescriptorRight = ((DatabaseDescriptor) descriptorRight).getElement().getName();
+                return databaseDescriptorLeft.compareTo(databaseDescriptorRight);
+            } else if (descriptorLeft instanceof CollectionDescriptor && descriptorRight instanceof CollectionDescriptor) {
+                String collectionDescriptorLeft = ((CollectionDescriptor) descriptorLeft).getElement().getName();
+                String collectionDescriptorRight = ((CollectionDescriptor) descriptorRight).getElement().getName();
+                return collectionDescriptorLeft.compareTo(collectionDescriptorRight);
             }
             return 0;
         }, true);

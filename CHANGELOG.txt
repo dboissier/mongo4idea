@@ -1,4 +1,9 @@
-Version 0.11.0-SNAPSHOT
+Version
+    * [fix] #217 Modifying a server configuration does not work
+    * [add] #216 Stats on collection
+    * [add] #220 Stats on database
+
+Version 0.11.0
     * [fix] NPE when deleting a collection with short key
     * [fix] Memory issue due to no limit in result
     * [fix] unable to add an empty array in edition

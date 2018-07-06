@@ -22,10 +22,7 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
-import org.codinjutsu.tools.mongo.model.MongoCollection;
-import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
-import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
-import org.codinjutsu.tools.mongo.model.MongoServer;
+import org.codinjutsu.tools.mongo.model.*;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
@@ -183,12 +180,6 @@ public class MongoManagerTest {
                         .append("total", 25));
     }
 
-    @NotNull
-    private MongoCollection createMongoCollectionForTest() {
-        return new MongoCollection("people", new org.codinjutsu.tools.mongo.model.MongoDatabase("test",
-                new MongoServer(serverConfiguration)));
-    }
-
     @Test
     public void updateMongoDocument() {
         Document documentToUpdate = peopleCollection.find(new Document("name", "Paul")).first();
@@ -238,7 +229,6 @@ public class MongoManagerTest {
                         .append("age", 28));
     }
 
-
     @Test
     public void findMongoDocument() {
 
@@ -256,8 +246,8 @@ public class MongoManagerTest {
     }
 
     @Test
-    public void dropCollection() {
-        mongoManager.dropCollection(ServerConfiguration.byDefault(),
+    public void removeCollection() {
+        mongoManager.removeCollection(ServerConfiguration.byDefault(),
                 createMongoCollectionForTest());
 
         MongoDatabase testDatabase = new MongoClient("localhost:27017").getDatabase("test");
@@ -266,6 +256,56 @@ public class MongoManagerTest {
                 .into(new ArrayList<>());
 
         assertThat(collections.contains("people")).isFalse();
+    }
+
+    @Test
+    public void getCollectionStats() {
+        List<StatInfoEntry> stats = mongoManager.getCollStats(serverConfiguration, createMongoCollectionForTest());
+
+        assertThat(stats).hasSize(9);
+        StatInfoEntry statInfoEntry = stats.get(0);
+        assertThat(statInfoEntry.getKey()).isEqualTo("size");
+        assertThat(statInfoEntry.getValue()).isEqualTo(283L);
+        assertThat(statInfoEntry.getStringifiedValue()).isEqualTo("283 bytes");
+
+        statInfoEntry = stats.get(1);
+        assertThat(statInfoEntry.getKey()).isEqualTo("count");
+        assertThat(statInfoEntry.getValue()).isEqualTo(4);
+        assertThat(statInfoEntry.getStringifiedValue()).isEqualTo("4");
+
+        statInfoEntry = stats.get(7);
+        assertThat(statInfoEntry.getKey()).isEqualTo("indexSizes");
+        assertThat(statInfoEntry.getStringifiedValue()).isEqualTo("");
+        statInfoEntry = stats.get(8);
+        assertThat(statInfoEntry.getKey()).isEqualTo("_id_");
+        assertThat(statInfoEntry.getStringifiedValue()).isEqualTo("36 KB");
+    }
+
+    @Test
+    public void getDatabaseStats() {
+        List<StatInfoEntry> stats = mongoManager.getDbStats(serverConfiguration, createMongoDatabaseForTest());
+
+        assertThat(stats).hasSize(11);
+        StatInfoEntry statInfoEntry = stats.get(0);
+        assertThat(statInfoEntry.getKey()).isEqualTo("collections");
+        assertThat(statInfoEntry.getValue()).isEqualTo(1);
+        assertThat(statInfoEntry.getStringifiedValue()).isEqualTo("1");
+
+        statInfoEntry = stats.get(3);
+        assertThat(statInfoEntry.getKey()).isEqualTo("avgObjSize");
+        assertThat(statInfoEntry.getValue()).isEqualTo(70.75);
+        assertThat(statInfoEntry.getStringifiedValue()).isEqualTo("70 bytes");
+    }
+
+    @NotNull
+    private MongoCollection createMongoCollectionForTest() {
+        return new MongoCollection("people", createMongoDatabaseForTest());
+    }
+
+    @NotNull
+    private org.codinjutsu.tools.mongo.model.MongoDatabase createMongoDatabaseForTest() {
+        return new org.codinjutsu.tools.mongo.model.MongoDatabase("test",
+                new MongoServer(serverConfiguration));
     }
 }
 
