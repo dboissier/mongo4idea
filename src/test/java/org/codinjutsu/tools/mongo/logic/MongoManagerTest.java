@@ -29,7 +29,9 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -262,39 +264,41 @@ public class MongoManagerTest {
     public void getCollectionStats() {
         List<StatInfoEntry> stats = mongoManager.getCollStats(serverConfiguration, createMongoCollectionForTest());
 
-        assertThat(stats).hasSize(9);
-        StatInfoEntry statInfoEntry = stats.get(0);
-        assertThat(statInfoEntry.getKey()).isEqualTo("size");
-        assertThat(statInfoEntry.getValue()).isEqualTo(283L);
-        assertThat(statInfoEntry.getStringifiedValue()).isEqualTo("283 bytes");
-
-        statInfoEntry = stats.get(1);
-        assertThat(statInfoEntry.getKey()).isEqualTo("count");
-        assertThat(statInfoEntry.getValue()).isEqualTo(4);
-        assertThat(statInfoEntry.getStringifiedValue()).isEqualTo("4");
-
-        statInfoEntry = stats.get(7);
-        assertThat(statInfoEntry.getKey()).isEqualTo("indexSizes");
-        assertThat(statInfoEntry.getStringifiedValue()).isEqualTo("");
-        statInfoEntry = stats.get(8);
-        assertThat(statInfoEntry.getKey()).isEqualTo("_id_");
-        assertThat(statInfoEntry.getStringifiedValue()).isEqualTo("4 KB");
+        HashSet<String> expectedStatNames = stats.stream().map(StatInfoEntry::getKey)
+                .collect(Collectors.toCollection(HashSet::new));
+        assertThat(expectedStatNames).containsExactlyInAnyOrder(
+                "size",
+                "count",
+                "avgObjSize",
+                "storageSize",
+                "capped",
+                "nindexes",
+                "totalIndexSize",
+                "indexSizes",
+                "_id_"
+        );
     }
 
     @Test
     public void getDatabaseStats() {
         List<StatInfoEntry> stats = mongoManager.getDbStats(serverConfiguration, createMongoDatabaseForTest());
 
-        assertThat(stats).hasSize(11);
-        StatInfoEntry statInfoEntry = stats.get(0);
-        assertThat(statInfoEntry.getKey()).isEqualTo("collections");
-        assertThat(statInfoEntry.getValue()).isEqualTo(1);
-        assertThat(statInfoEntry.getStringifiedValue()).isEqualTo("1");
+        HashSet<String> expectedStatNames = stats.stream().map(StatInfoEntry::getKey)
+                .collect(Collectors.toCollection(HashSet::new));
 
-        statInfoEntry = stats.get(3);
-        assertThat(statInfoEntry.getKey()).isEqualTo("avgObjSize");
-        assertThat(statInfoEntry.getValue()).isEqualTo(70.75);
-        assertThat(statInfoEntry.getStringifiedValue()).isEqualTo("70 bytes");
+        assertThat(expectedStatNames).contains(
+                "collections",
+                "views",
+                "objects",
+                "avgObjSize",
+                "dataSize",
+                "storageSize",
+                "numExtents",
+                "indexes",
+                "indexSize",
+                "fsUsedSize",
+                "fsTotalSize"
+        );
     }
 
     @NotNull
