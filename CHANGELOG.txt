@@ -1,7 +1,9 @@
-Version
+Version 0.12.0-SNAPSHOT
     * [fix] #217 Modifying a server configuration does not work
     * [add] #216 Stats on collection
     * [add] #220 Stats on database
+    * [update] Renamed 'Default' Auth. Mecanism to 'Plain' for clarity
+    * [update] Set 'SCRAM' Auth. Mecanism as default choice
 
 Version 0.11.0
     * [fix] NPE when deleting a collection with short key

@@ -68,7 +68,7 @@ public class ServerConfigurationPanel extends JPanel {
     private JTextField authenticationDatabaseField;
     private JRadioButton mongoCRAuthRadioButton;
     private JRadioButton scramSHA1AuthRadioButton;
-    private JRadioButton defaultAuthMethodRadioButton;
+    private JRadioButton plainAuthMethodRadioButton;
 
     private JTextField userDatabaseField;
 
@@ -111,7 +111,7 @@ public class ServerConfigurationPanel extends JPanel {
         authenticationDatabaseField.setToolTipText("admin by default, otherwise set the user database here if restriced access");
         mongoCRAuthRadioButton.setName("mongoCRAuthField");
         scramSHA1AuthRadioButton.setName("scramSHA1AuthField");
-        defaultAuthMethodRadioButton.setName("defaultAuthMethod");
+        plainAuthMethodRadioButton.setName("defaultAuthMethod");
 
         sshProxyUrlField.setName("sshProxyUrlField");
         sshProxyUserField.setName("sshProxyUsernameField");
@@ -147,7 +147,7 @@ public class ServerConfigurationPanel extends JPanel {
         ButtonGroup authMethodGroup = new ButtonGroup();
         authMethodGroup.add(mongoCRAuthRadioButton);
         authMethodGroup.add(scramSHA1AuthRadioButton);
-        authMethodGroup.add(defaultAuthMethodRadioButton);
+        authMethodGroup.add(plainAuthMethodRadioButton);
 
         sshAuthenticationMethodComboBox.setName("sshAuthenticationMethodComboBox");
         sshAuthenticationMethodComboBox.setModel(new DefaultComboBoxModel<>(
@@ -177,9 +177,10 @@ public class ServerConfigurationPanel extends JPanel {
         privateKeyPathField.setName("sshPrivateKeyPathComponent");
         privateKeyPathField.getTextField().setName("sshPrivateKeyPathField");
 
-        defaultAuthMethodRadioButton.setSelected(true);
-        defaultAuthMethodRadioButton.setToolTipText("Let the driver resolves the auth. mechanism");
+        scramSHA1AuthRadioButton.setSelected(true);
+
         shellWorkingDirField.setText(null);
+
         initListeners();
     }
 
@@ -302,7 +303,7 @@ public class ServerConfigurationPanel extends JPanel {
         } else if (AuthenticationMechanism.SCRAM_SHA_1.equals(authentificationMethod)) {
             scramSHA1AuthRadioButton.setSelected(true);
         } else {
-            defaultAuthMethodRadioButton.setSelected(true);
+            plainAuthMethodRadioButton.setSelected(true);
         }
     }
 

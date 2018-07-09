@@ -278,7 +278,7 @@ public class MongoManagerTest {
         assertThat(statInfoEntry.getStringifiedValue()).isEqualTo("");
         statInfoEntry = stats.get(8);
         assertThat(statInfoEntry.getKey()).isEqualTo("_id_");
-        assertThat(statInfoEntry.getStringifiedValue()).isEqualTo("36 KB");
+        assertThat(statInfoEntry.getStringifiedValue()).isEqualTo("4 KB");
     }
 
     @Test

@@ -91,7 +91,7 @@ public class ServerConfigurationPanelTest {
 
         frameFixture.textBox("usernameField").setText("john");
         frameFixture.textBox("passwordField").setText("johnpassword");
-        frameFixture.radioButton("defaultAuthMethod").requireSelected();
+        frameFixture.radioButton("scramSHA1AuthField").requireSelected();
         frameFixture.radioButton("mongoCRAuthField").click();
 
         ServerConfiguration configuration = new ServerConfiguration();
