@@ -17,7 +17,6 @@
 package org.codinjutsu.tools.mongo.runner;
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
-import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
@@ -91,7 +90,7 @@ public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfigur
                 return;
             }
             databaseCombobox.removeAllItems();
-            for (MongoDatabase mongoDatabase: selectedServer.getDatabases()) {
+            for (MongoDatabase mongoDatabase : selectedServer.getDatabases()) {
                 databaseCombobox.addItem(mongoDatabase);
             }
         });

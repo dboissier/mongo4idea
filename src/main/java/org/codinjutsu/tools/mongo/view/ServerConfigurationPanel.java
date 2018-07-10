@@ -451,28 +451,39 @@ public class ServerConfigurationPanel extends JPanel {
     }
 
     private void createUIComponents() {
-        shellWorkingDirField = new TextFieldWithBrowseButton();
-        FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(false, true, false, false, false, false);
+        shellWorkingDirField = createShellWorkingDirField();
+        privateKeyPathField = createPrivateKeyField();
+    }
+
+    private TextFieldWithBrowseButton createShellWorkingDirField() {
+        TextFieldWithBrowseButton shellWorkingDirField = new TextFieldWithBrowseButton();
+        FileChooserDescriptor dirChooserDescriptor = new FileChooserDescriptor(false, true, false, false, false, false);
         ComponentWithBrowseButton.BrowseFolderActionListener<JTextField> browseFolderActionListener =
                 new ComponentWithBrowseButton.BrowseFolderActionListener<>("Mongo Shell Working Directory",
                         null,
                         shellWorkingDirField,
-                        null,
-                        fileChooserDescriptor,
+                        project,
+                        dirChooserDescriptor,
                         TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT);
         shellWorkingDirField.addBrowseFolderListener(null, browseFolderActionListener, false);
         shellWorkingDirField.setName("shellWorkingDirField");
+        return shellWorkingDirField;
+    }
 
-        privateKeyPathField = new TextFieldWithBrowseButton();
+    private TextFieldWithBrowseButton createPrivateKeyField() {
+        TextFieldWithBrowseButton privateKeyPathField = new TextFieldWithBrowseButton();
+        FileChooserDescriptor fileChooserDescriptor = new FileChooserDescriptor(true, false, false, false, false, false)
+                .withShowHiddenFiles(true);
         ComponentWithBrowseButton.BrowseFolderActionListener<JTextField> privateKeyBrowseFolderActionListener =
-                new ComponentWithBrowseButton.BrowseFolderActionListener<>("Mongo Shell Working Directory",
+                new ComponentWithBrowseButton.BrowseFolderActionListener<>("Private Key Path",
                         null,
                         privateKeyPathField,
-                        null,
+                        project,
                         fileChooserDescriptor,
                         TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT);
         privateKeyPathField.addBrowseFolderListener(null, privateKeyBrowseFolderActionListener, false);
 
+        return privateKeyPathField;
     }
 
     public void setErrorMessage(String message) {
