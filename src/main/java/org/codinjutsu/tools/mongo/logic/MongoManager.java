@@ -37,6 +37,8 @@ public class MongoManager {
     private static final String DEFAULT_TUNNEL_LOCAL_HOST = "localhost";
     private static final int DEFAULT_TUNNEL_LOCAL_PORT = 9080;
 
+    private static final Document EMPTY_DOC = new Document();
+
     private final List<MongoServer> mongoServers = new LinkedList<>();
 
     public static MongoManager getInstance(Project project) {
@@ -98,7 +100,7 @@ public class MongoManager {
         return mongoDatabase;
     }
 
-    public MongoCollectionResult loadCollectionValues(ServerConfiguration configuration, final MongoCollection mongoCollection, final MongoQueryOptions mongoQueryOptions) {
+    public MongoCollectionResult findMongoDocuments(ServerConfiguration configuration, final MongoCollection mongoCollection, final MongoQueryOptions mongoQueryOptions) {
         TaskWithReturnedObject<MongoCollectionResult> task = mongoClient -> {
             MongoDatabase mongoDatabase = mongoCollection.getParentDatabase();
 
@@ -362,6 +364,22 @@ public class MongoManager {
     private static String getAuthenticationDatabase(ServerConfiguration configuration) {
         String authenticationDatabase = configuration.getAuthenticationDatabase();
         return StringUtils.isEmpty(authenticationDatabase) ? "admin" : authenticationDatabase;
+    }
+
+    public void importData(ServerConfiguration configuration, MongoCollection mongoCollection, List<Document> mongoDocuments, boolean replaceAllDocuments) {
+        Task task = mongoClient -> {
+            MongoDatabase mongoDatabase = mongoCollection.getParentDatabase();
+            com.mongodb.client.MongoDatabase database = mongoClient.getDatabase(mongoDatabase.getName());
+            com.mongodb.client.MongoCollection<Document> collection = database.getCollection(mongoCollection.getName());
+
+            if (replaceAllDocuments) {
+                collection.deleteMany(EMPTY_DOC);
+            }
+
+            collection.insertMany(mongoDocuments);
+        };
+
+        executeTask(configuration, task);
     }
 
     private interface Task {

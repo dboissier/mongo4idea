@@ -27,10 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
@@ -105,7 +102,7 @@ public class MongoManagerTest {
         mongoQueryOptions.setResultLimit(3);
 
         MongoCollectionResult mongoCollectionResult =
-                mongoManager.loadCollectionValues(serverConfiguration,
+                mongoManager.findMongoDocuments(serverConfiguration,
                         createMongoCollectionForTest(), mongoQueryOptions);
 
         assertThat(mongoCollectionResult.getDocuments()).containsExactly(
@@ -138,7 +135,7 @@ public class MongoManagerTest {
         mongoQueryOptions.setResultLimit(3);
 
         MongoCollectionResult mongoCollectionResult =
-                mongoManager.loadCollectionValues(serverConfiguration,
+                mongoManager.findMongoDocuments(serverConfiguration,
                         createMongoCollectionForTest(), mongoQueryOptions);
 
         assertThat(mongoCollectionResult.getDocuments())
@@ -155,16 +152,15 @@ public class MongoManagerTest {
         mongoQueryOptions.setSort("{'age': -1}");
 
         MongoCollectionResult mongoCollectionResult =
-                mongoManager.loadCollectionValues(serverConfiguration,
+                mongoManager.findMongoDocuments(serverConfiguration,
                         createMongoCollectionForTest(),
                         mongoQueryOptions);
 
-        assertThat(mongoCollectionResult.getDocuments())
-                .containsExactly(
-                        new Document("name", "Melissa")
-                                .append("age", 26),
-                        new Document("name", "Paul")
-                                .append("age", 25));
+        assertThat(mongoCollectionResult.getDocuments()).containsExactly(
+                new Document("name", "Melissa")
+                        .append("age", 26),
+                new Document("name", "Paul")
+                        .append("age", 25));
     }
 
     @Test
@@ -172,7 +168,7 @@ public class MongoManagerTest {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
         mongoQueryOptions.setOperations("[{'$match': {'position': 'developer'}}, {'$project': {'name': 1, 'age': 1}}, {'$group': {'_id': '$name', 'total': {'$sum': '$age'}}}]");
         MongoCollectionResult mongoCollectionResult =
-                mongoManager.loadCollectionValues(serverConfiguration,
+                mongoManager.findMongoDocuments(serverConfiguration,
                         createMongoCollectionForTest(), mongoQueryOptions);
 
         assertThat(mongoCollectionResult.getDocuments()).containsExactly(
@@ -185,12 +181,15 @@ public class MongoManagerTest {
     @Test
     public void updateMongoDocument() {
         Document documentToUpdate = peopleCollection.find(new Document("name", "Paul")).first();
-
         documentToUpdate.put("surname", "Paulo les Gaz");
+
         mongoManager.update(serverConfiguration, createMongoCollectionForTest(), documentToUpdate);
 
-        FindIterable<Document> iterable = peopleCollection.find().projection(new Document("_id", 0));
-        assertThat(iterable).contains(
+        FindIterable<Document> actualDocuments =
+                peopleCollection
+                        .find()
+                        .projection(new Document("_id", 0));
+        assertThat(actualDocuments).containsExactly(
                 new Document()
                         .append("name", "Paul")
                         .append("position", "developer")
@@ -285,7 +284,6 @@ public class MongoManagerTest {
 
         HashSet<String> expectedStatNames = stats.stream().map(StatInfoEntry::getKey)
                 .collect(Collectors.toCollection(HashSet::new));
-
         assertThat(expectedStatNames).contains(
                 "collections",
                 "views",
@@ -299,6 +297,73 @@ public class MongoManagerTest {
                 "fsUsedSize",
                 "fsTotalSize"
         );
+    }
+
+    @Test
+    public void importDataWithReplaceAllOption() {
+        mongoManager.importData(serverConfiguration, createMongoCollectionForTest(),
+                Arrays.asList(
+                        new Document()
+                                .append("name", "Wayne")
+                                .append("position", "batman")
+                                .append("age", 25),
+                        new Document()
+                                .append("name", "Joker")
+                                .append("position", "vilain")
+                                .append("age", 27)),
+                true);
+
+        FindIterable<Document> actualDocuments =
+                peopleCollection
+                        .find(new Document())
+                        .projection(new Document("_id", 0));
+        assertThat(actualDocuments).containsExactly(
+                new Document()
+                        .append("name", "Wayne")
+                        .append("position", "batman")
+                        .append("age", 25),
+                new Document()
+                        .append("name", "Joker")
+                        .append("position", "vilain")
+                        .append("age", 27)
+        );
+    }
+
+    @Test
+    public void importDataWithoutReplaceAllOption() {
+        mongoManager.importData(serverConfiguration, createMongoCollectionForTest(),
+                Collections.singletonList(
+                        new Document()
+                                .append("name", "Wayne")
+                                .append("position", "batman")
+                                .append("age", 25)),
+                false);
+
+        FindIterable<Document> actualDocuments =
+                peopleCollection
+                        .find(new Document())
+                        .projection(new Document("_id", 0));
+        assertThat(actualDocuments).containsExactly(
+                new Document()
+                        .append("name", "Paul")
+                        .append("position", "developer")
+                        .append("age", 25),
+                new Document()
+                        .append("name", "Melissa")
+                        .append("position", "developer")
+                        .append("age", 26),
+                new Document()
+                        .append("name", "Roger")
+                        .append("position", "manager")
+                        .append("age", 27),
+                new Document()
+                        .append("name", "Shirley")
+                        .append("comment", "director")
+                        .append("age", 28),
+                new Document()
+                        .append("name", "Wayne")
+                        .append("position", "batman")
+                        .append("age", 25));
     }
 
     @NotNull

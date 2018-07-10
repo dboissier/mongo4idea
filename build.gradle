@@ -19,6 +19,7 @@ plugins {
 }
 
 apply plugin: 'org.jetbrains.intellij'
+apply plugin: 'java'
 
 intellij {
     version '2016.3'
@@ -45,6 +46,7 @@ sourceSets {
             runtimeClasspath += configurations.provided
         }
         resources {
+
         }
     }
 }

@@ -33,6 +33,10 @@ import com.intellij.ui.PopupHandler;
 import com.intellij.ui.TreeSpeedSearch;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.bson.Document;
+import org.bson.json.JsonParseException;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
@@ -40,6 +44,7 @@ import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.model.*;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
+import org.codinjutsu.tools.mongo.utils.StringUtils;
 import org.codinjutsu.tools.mongo.view.action.explorer.*;
 import org.codinjutsu.tools.mongo.view.editor.MongoFileSystem;
 import org.codinjutsu.tools.mongo.view.editor.MongoObjectFile;
@@ -52,10 +57,15 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.codinjutsu.tools.mongo.utils.GuiUtils.showNotification;
 
@@ -112,6 +122,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         loadAllServerConfigurations();
 
         installActions();
+
         mongoTree.getSelectionModel().addTreeSelectionListener(event -> {
 
             List<StatInfoEntry> statInfos;
@@ -233,6 +244,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
             actionPopupGroup.add(new DeleteAction(this));
             actionPopupGroup.addSeparator();
             actionPopupGroup.add(viewCollectionValuesAction);
+            actionPopupGroup.add(new DataImportAction(this));
         }
 
         PopupHandler.installPopupHandler(mongoTree, actionPopupGroup, "POPUP", ActionManager.getInstance());
@@ -406,6 +418,35 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         notifier.notifyInfo("Collection " + mongoCollection.getName() + " removed");
 
         mongoTreeBuilder.removeCollection(mongoCollection);
+    }
+
+    public void importDataFile(MongoCollection mongoCollection, String filePath, boolean replaceAllDocuments) {
+        try (InputStream inputStream = FileUtils.openInputStream(new File(filePath))) {
+            List<Document> documentsToImport = parseFileToImport(inputStream);
+            ServerConfiguration configuration = mongoCollection
+                    .getParentDatabase()
+                    .getParentServer()
+                    .getConfiguration();
+
+            notifier.notifyInfo(String.format("Importing data: \n\t\tfrom file=%s\n\t\tinto collection=%s", filePath, mongoCollection.getName()));
+            mongoManager.importData(configuration, mongoCollection, documentsToImport, replaceAllDocuments);
+        } catch (IOException ex) {
+            notifier.notifyError("Error when reading file: " + ex.getMessage());
+        } catch (JsonParseException ex) {
+            notifier.notifyError("Error when parsing file: " + ex.getMessage());
+        } catch (ConfigurationException ex) {
+            notifier.notifyError("Error when importing file in Mongo: " + ex.getMessage());
+        }
+    }
+
+    private List<Document> parseFileToImport(InputStream inputStream) throws IOException {
+        String json = IOUtils.toString(inputStream);
+        if (json.startsWith("[") && json.endsWith("]")) {
+            //TODO UGLY : need to refactor this crap
+            return (List<Document>) Document.parse(String.format("{ \"documentsToImport\": %s}", json)).get("documentsToImport");
+        } else {
+            return Collections.singletonList(Document.parse(json));
+        }
     }
 
     public MongoManager getMongoManager() {

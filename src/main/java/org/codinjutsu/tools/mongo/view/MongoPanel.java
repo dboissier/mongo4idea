@@ -312,7 +312,7 @@ public class MongoPanel extends JPanel implements Disposable {
 
                 final MongoQueryOptions queryOptions = wayPoint.getQueryOptions();
                 if (!useCachedResults) {
-                    currentResults = mongoManager.loadCollectionValues(
+                    currentResults = mongoManager.findMongoDocuments(
                             configuration,
                             wayPoint.getCollection(),
                             queryOptions);

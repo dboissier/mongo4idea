@@ -90,12 +90,12 @@ public class MongoResultPanelTest {
 
     @Test
     public void displayTreeWithASimpleDocument() throws Exception {
-        mongoResultPanel.updateResultView(createCollectionResults("simpleDocument.json", "mycollec"), new Pagination());
+        mongoResultPanel.updateResultView(createCollectionResults("model/simpleDocument.json", "mycollec"), new Pagination());
 
         getResultTable().requireColumnCount(2)
                 .requireContents(new String[][]{
-                        {"[0]", "{ \"id\" : 0, \"label\" : \"toto\", \"visible\" : false, \"image\" : null }"},
-                        {"\"id\"", "0"},
+                        {"[0]", "{ \"_id\" : \"50b8d63414f85401b9268b99\", \"label\" : \"toto\", \"visible\" : false, \"image\" : null }"},
+                        {"\"_id\"", "50b8d63414f85401b9268b99"},
                         {"\"label\"", "toto"},
                         {"\"visible\"", "false"},
                         {"\"image\"", "null"}

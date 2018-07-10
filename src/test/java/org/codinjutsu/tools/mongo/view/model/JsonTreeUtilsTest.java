@@ -16,6 +16,9 @@
 
 package org.codinjutsu.tools.mongo.view.model;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.util.JSON;
+import org.apache.commons.io.IOUtils;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.view.BsonTest;
