@@ -75,7 +75,7 @@ public class MongoManagerTest {
     }
 
     @Test
-    public void loadServer() {
+    public void loadDatabases() {
         ServerConfiguration configuration = ServerConfiguration.byDefault();
         configuration.setLabel("Server for testing");
         configuration.setUserDatabase("test");
@@ -97,7 +97,7 @@ public class MongoManagerTest {
     }
 
     @Test
-    public void loadCollectionsWithEmptyFilterAndLimitToThreeDocuments() {
+    public void findDocuments_WithEmptyFilterAndLimitToThreeDocuments() {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
         mongoQueryOptions.setResultLimit(3);
 
@@ -125,7 +125,7 @@ public class MongoManagerTest {
     }
 
     @Test
-    public void loadCollectionsWithFilterAndProjection() {
+    public void findDocuments_WithFilterAndProjection() {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
         mongoQueryOptions.setFilter(
                 new Document("position", "developer").toJson());
@@ -145,7 +145,7 @@ public class MongoManagerTest {
     }
 
     @Test
-    public void loadCollectionsWithFilterAndProjectionAndSort() {
+    public void findDocuments_WithFilterAndProjectionAndSort() {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
         mongoQueryOptions.setFilter("{'position': 'developer'}");
         mongoQueryOptions.setProjection("{'name': 1, 'age': 1, '_id': 0}");
@@ -164,7 +164,7 @@ public class MongoManagerTest {
     }
 
     @Test
-    public void loadCollectionsWithAggregateOperators() {
+    public void findDocuments_WithAggregateOperators() {
         MongoQueryOptions mongoQueryOptions = new MongoQueryOptions();
         mongoQueryOptions.setOperations("[{'$match': {'position': 'developer'}}, {'$project': {'name': 1, 'age': 1}}, {'$group': {'_id': '$name', 'total': {'$sum': '$age'}}}]");
         MongoCollectionResult mongoCollectionResult =
