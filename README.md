@@ -7,6 +7,7 @@
 
 [![Build Status](https://travis-ci.org/dboissier/mongo4idea.svg?branch=master)](https://travis-ci.org/dboissier/mongo4idea)
 
+* [0.12.0-SNAPSHOT Build for Idea 2016+](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.12.0-SNAPSHOT.zip)
 * [0.11.0 Build for Idea 2016+](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.11.0.zip)
 
 ## Description
