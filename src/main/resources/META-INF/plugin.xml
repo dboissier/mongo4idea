@@ -72,7 +72,7 @@
     <div xmlns="http://www.w3.org/1999/html">
         <p>
             This tool allows accessing to Mongo databases and provides CRUD operations on mongo collections.<br>
-            Documentation is available on the <a href="https://github.com/dboissier/mongo4idea">GitHub project</a>
+             <a href="https://github.com/dboissier/mongo4idea">Documentation</a>|<a href="https://github.com/dboissier/mongo4idea/issues">Issues Tracker</a>
         </p>
         <p>
             This tool is free for personal and commercial usage.<br>
