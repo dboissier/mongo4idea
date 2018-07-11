@@ -190,12 +190,13 @@ public class MongoResultPanel extends JPanel implements Disposable {
         if (!(descriptor instanceof MongoKeyValueDescriptor)) {
             return null;
         }
-
-        if (!"_id".equals(((MongoKeyValueDescriptor) descriptor).getKey())) {
+        MongoKeyValueDescriptor keyValueDescriptor = (MongoKeyValueDescriptor) descriptor;
+        if (!"_id".equals(keyValueDescriptor.getKey())
+                || !(keyValueDescriptor.getValue() instanceof ObjectId)) {
             return null;
         }
 
-        return (MongoKeyValueDescriptor) descriptor;
+        return keyValueDescriptor;
     }
 
 
