@@ -24,7 +24,6 @@ public interface MongoNodeDescriptor {
 
     int MAX_LENGTH = 150;
 
-
     void renderValue(ColoredTableCellRenderer cellRenderer, boolean isNodeExpanded);
 
     void renderNode(ColoredTreeCellRenderer cellRenderer);

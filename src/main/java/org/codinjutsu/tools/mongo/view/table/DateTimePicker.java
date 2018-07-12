@@ -153,18 +153,4 @@ public class DateTimePicker extends JXDatePicker {
         getLinkPanel().setBackground(backgroundColor);
         getLinkPanel().setForeground(foregroundColor);
     }
-
-
-    public static void main(String[] args) {
-        String[] ids = TimeZone.getAvailableIDs();
-        for (String id : ids) {
-            if (!id.startsWith("Etc")) {
-                TimeZone zone = TimeZone.getTimeZone(id);
-                int offset = zone.getRawOffset() / 1000;
-                int hour = offset / 3600;
-                int minutes = (offset % 3600) / 60;
-                System.out.println(String.format("(GMT%+d:%02d) %s", hour, minutes, id));
-            }
-        }
-    }
 }

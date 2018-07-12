@@ -17,10 +17,12 @@
 package org.codinjutsu.tools.mongo.view.table;
 
 import org.codinjutsu.tools.mongo.utils.DateUtils;
+import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 import org.jdesktop.swingx.table.DatePickerCellEditor;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
+import java.util.Date;
 import java.util.Locale;
 
 public class MongoDatePickerCellEditor extends DatePickerCellEditor {
@@ -30,6 +32,13 @@ public class MongoDatePickerCellEditor extends DatePickerCellEditor {
         datePicker = DateTimePicker.create();
         datePicker.getEditor().setBorder(BorderFactory.createEmptyBorder(0, 1, 0, 1));
         datePicker.getEditor().setEditable(false);
+    }
+
+    @Override
+    protected Date getValueAsDate(Object value) {
+        MongoNodeDescriptor descriptor = (MongoNodeDescriptor) value;
+
+        return super.getValueAsDate(descriptor.getValue());
     }
 
     public void addActionListener(ActionListener actionListener) {
