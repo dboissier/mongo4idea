@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.view;
+package org.codinjutsu.tools.mongo.view.edition;
 
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -22,6 +22,7 @@ import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.components.JBCheckBox;
 import org.apache.commons.lang.StringUtils;
 import org.bson.Document;
+import org.codinjutsu.tools.mongo.view.edition.MongoEditionPanel;
 import org.codinjutsu.tools.mongo.view.model.JsonDataType;
 import org.codinjutsu.tools.mongo.view.table.DateTimePicker;
 

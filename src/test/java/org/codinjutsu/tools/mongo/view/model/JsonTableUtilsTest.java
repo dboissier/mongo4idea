@@ -31,8 +31,8 @@ public class JsonTableUtilsTest {
 
     @Test
     public void buildJsonTable() throws Exception {
-        Document document1 = Document.parse(IOUtils.toString(getClass().getResourceAsStream("JsonTableUtilsTest_document1.json")));
-        Document document2 = Document.parse(IOUtils.toString(getClass().getResourceAsStream("JsonTableUtilsTest_document2.json")));
+        Document document1 = Document.parse(IOUtils.toString(getClass().getResourceAsStream("/testData/JsonTableUtilsTest_document1.json")));
+        Document document2 = Document.parse(IOUtils.toString(getClass().getResourceAsStream("/testData/JsonTableUtilsTest_document2.json")));
 
         MongoCollectionResult result = new MongoCollectionResult("collectionForTest");
         result.add(document1);

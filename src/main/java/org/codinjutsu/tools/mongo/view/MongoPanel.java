@@ -453,7 +453,7 @@ public class MongoPanel extends JPanel implements Disposable {
     }
 
 
-    interface MongoDocumentOperations {
+    public   interface MongoDocumentOperations {
         Document getMongoDocument(Object _id);
 
         void deleteMongoDocument(Object mongoDocument);

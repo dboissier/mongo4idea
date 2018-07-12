@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.view;
+package org.codinjutsu.tools.mongo.view.edition;
 
 import org.assertj.swing.data.TableCell;
 import org.assertj.swing.edt.GuiActionRunner;
@@ -24,6 +24,10 @@ import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.fixture.JTableFixture;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.codinjutsu.tools.mongo.view.BsonTest;
+import org.codinjutsu.tools.mongo.view.JsonTableCellReader;
+import org.codinjutsu.tools.mongo.view.MongoPanel;
+import org.codinjutsu.tools.mongo.view.MongoResultPanel;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +41,7 @@ public class MongoEditionPanelTest implements BsonTest {
     private MongoEditionPanel mongoEditionPanel;
 
     private FrameFixture frameFixture;
+
     private final MongoPanel.MongoDocumentOperations mockMongoOperations = mock(MongoPanel.MongoDocumentOperations.class);
     private final MongoResultPanel.ActionCallback mockActionCallback = mock(MongoResultPanel.ActionCallback.class);
 
@@ -50,26 +55,26 @@ public class MongoEditionPanelTest implements BsonTest {
 
         mongoEditionPanel = GuiActionRunner.execute(new GuiQuery<MongoEditionPanel>() {
             protected MongoEditionPanel executeInEDT() {
-                MongoEditionPanel panel = new MongoEditionPanel() {
+                return new MongoEditionPanel(mockMongoOperations, mockActionCallback) {
                     @Override
                     void buildPopupMenu() {
                     }
                 };
-                return panel.init(mockMongoOperations, mockActionCallback);
             }
         });
 
+
+    }
+
+    @Test
+    public void displayMongoDocumentInTheTreeTable() {
         mongoEditionPanel.updateEditionTree(
                 new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
                         .append("label", "toto")
                         .append("visible", false)
                         .append("image", null));
-
         frameFixture = Containers.showInFrame(mongoEditionPanel);
-    }
 
-    @Test
-    public void displayMongoDocumentInTheTreeTable() {
         JTableFixture tableFixture = frameFixture.table("editionTreeTable");
         tableFixture.replaceCellReader(new JsonTableCellReader());
 
@@ -84,6 +89,13 @@ public class MongoEditionPanelTest implements BsonTest {
 
     @Test
     public void editKeyWithStringValue() {
+        mongoEditionPanel.updateEditionTree(
+                new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
+                        .append("label", "toto")
+                        .append("visible", false)
+                        .append("image", null));
+        frameFixture = Containers.showInFrame(mongoEditionPanel);
+
         JTableFixture editionTreeTable = frameFixture.table("editionTreeTable");
         editionTreeTable.replaceCellReader(new JsonTableCellReader());
 
@@ -92,7 +104,7 @@ public class MongoEditionPanelTest implements BsonTest {
                 .doubleClick()
                 .enterValue("Hello");
 
-        frameFixture.button("saveButton").click();
+        mongoEditionPanel.save();
 
         ArgumentCaptor<Document> argument = ArgumentCaptor.forClass(Document.class);
         verify(mockMongoOperations).updateMongoDocument(argument.capture());
@@ -107,24 +119,14 @@ public class MongoEditionPanelTest implements BsonTest {
     }
 
     @Test
-    public void cancelEdition() {
-        JTableFixture editionTreeTable = frameFixture.table("editionTreeTable");
-
-        editionTreeTable.replaceCellReader(new JsonTableCellReader());
-
-//        edit 'label' key
-        editionTreeTable.cell(TableCell.row(1).column(1))
-                .doubleClick()
-                .enterValue("Hello");
-
-        frameFixture.button("cancelButton").click();
-        verify(mockMongoOperations, times(0)).updateMongoDocument(any(Document.class));
-
-        verify(mockActionCallback, times(1)).onOperationCancelled(any(String.class));
-    }
-
-    @Test
     public void addKeyWithSomeValue() {
+        mongoEditionPanel.updateEditionTree(
+                new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
+                        .append("label", "toto")
+                        .append("visible", false)
+                        .append("image", null));
+        frameFixture = Containers.showInFrame(mongoEditionPanel);
+
         JTableFixture editionTreeTable = frameFixture.table("editionTreeTable");
 
         editionTreeTable.replaceCellReader(new JsonTableCellReader());
@@ -148,8 +150,9 @@ public class MongoEditionPanelTest implements BsonTest {
 
     @Test
     public void addValueInAList() throws Exception {
+        mongoEditionPanel.updateEditionTree(buildDocument("/testData/simpleDocumentWithSubList.json"));
+        frameFixture = Containers.showInFrame(mongoEditionPanel);
 
-        mongoEditionPanel.updateEditionTree(buildDocument("model/simpleDocumentWithSubList.json"));
         JTableFixture editionTreeTable = frameFixture.table("editionTreeTable");
 
         editionTreeTable.replaceCellReader(new JsonTableCellReader());

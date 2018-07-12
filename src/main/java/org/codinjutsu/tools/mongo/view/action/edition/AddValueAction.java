@@ -19,8 +19,8 @@ package org.codinjutsu.tools.mongo.view.action.edition;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import org.codinjutsu.tools.mongo.view.AddValueDialog;
-import org.codinjutsu.tools.mongo.view.MongoEditionPanel;
+import org.codinjutsu.tools.mongo.view.edition.AddValueDialog;
+import org.codinjutsu.tools.mongo.view.edition.MongoEditionPanel;
 
 public class AddValueAction extends AnAction {
 

@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package org.codinjutsu.tools.mongo.view;
+package org.codinjutsu.tools.mongo.view.edition;
 
-import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.PopupHandler;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.tree.TreeUtil;
 import org.apache.commons.lang.StringUtils;
 import org.bson.Document;
+import org.codinjutsu.tools.mongo.view.JsonTreeTableView;
+import org.codinjutsu.tools.mongo.view.MongoPanel;
+import org.codinjutsu.tools.mongo.view.MongoResultPanel;
 import org.codinjutsu.tools.mongo.view.action.edition.AddKeyAction;
 import org.codinjutsu.tools.mongo.view.action.edition.AddValueAction;
 import org.codinjutsu.tools.mongo.view.action.edition.DeleteKeyAction;
@@ -39,73 +40,44 @@ import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.codinjutsu.tools.mongo.utils.MongoUtils.DOCUMENT_CODEC;
 
-public class MongoEditionPanel extends JPanel implements Disposable {
-    private JButton saveButton;
-    private JButton cancelButton;
-    private JPanel editionTreePanel;
-    private JPanel mainPanel;
+public class MongoEditionPanel extends JPanel {
+    private final MongoPanel.MongoDocumentOperations mongoDocumentOperations;
+    private final MongoResultPanel.ActionCallback actionCallback;
 
     private JsonTreeTableView editTableView;
 
 
-    public MongoEditionPanel() {
+    MongoEditionPanel(final MongoPanel.MongoDocumentOperations mongoDocumentOperations, final MongoResultPanel.ActionCallback actionCallback) {
         super(new BorderLayout());
-
-        add(mainPanel);
-        editionTreePanel.setLayout(new BorderLayout());
-
-        saveButton.setName("saveButton");
-        cancelButton.setName("cancelButton");
+        this.mongoDocumentOperations = mongoDocumentOperations;
+        this.actionCallback = actionCallback;
     }
 
-    MongoEditionPanel init(final MongoPanel.MongoDocumentOperations mongoDocumentOperations, final MongoResultPanel.ActionCallback actionCallback) {
+    public boolean save() {
+        try {
+            Document mongoDocument = buildMongoDocument();
+            mongoDocumentOperations.updateMongoDocument(mongoDocument);
+            actionCallback.onOperationSuccess("Document saved", "Document " +
+                    mongoDocument.toJson(DOCUMENT_CODEC) + " saved.");
+            return true;
 
-        cancelButton.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                actionCallback.onOperationCancelled("Modification canceled...");
-            }
-        });
-
-        saveButton.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                try {
-                    Document mongoDocument = buildMongoDocument();
-                    mongoDocumentOperations.updateMongoDocument(mongoDocument);
-                    actionCallback.onOperationSuccess("Document saved", "Document " +
-                            mongoDocument.toJson(DOCUMENT_CODEC) + " saved.");
-
-                } catch (Exception exception) {
-                    actionCallback.onOperationFailure(exception);
-                }
-            }
-        });
-
-        return this;
-    }
-
-    void updateEditionTree(Document mongoDocument) {
-        String panelTitle = "New document";
-        if (mongoDocument != null) {
-            panelTitle = "Edition";
+        } catch (Exception exception) {
+            actionCallback.onOperationFailure(exception);
+            return false;
         }
+    }
 
-        mainPanel.setBorder(IdeBorderFactory.createTitledBorder(panelTitle, true));
+    public void updateEditionTree(Document mongoDocument) {
         editTableView = new JsonTreeTableView(JsonTreeUtils.buildJsonTree(mongoDocument), JsonTreeTableView.COLUMNS_FOR_WRITING);
         editTableView.setName("editionTreeTable");
 
-        editionTreePanel.invalidate();
-        editionTreePanel.removeAll();
-        editionTreePanel.add(new JBScrollPane(editTableView));
-        editionTreePanel.validate();
+        add(new JBScrollPane(editTableView), BorderLayout.CENTER);
 
         buildPopupMenu();
     }
@@ -238,10 +210,5 @@ public class MongoEditionPanel extends JPanel implements Disposable {
     private Document buildMongoDocument() {
         JsonTreeNode rootNode = (JsonTreeNode) editTableView.getTree().getModel().getRoot();
         return JsonTreeUtils.buildDocumentObject(rootNode);
-    }
-
-    @Override
-    public void dispose() {
-        editTableView = null;
     }
 }

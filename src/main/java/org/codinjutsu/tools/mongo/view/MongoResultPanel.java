@@ -18,7 +18,6 @@ package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.JBCardLayout;
 import com.intellij.ui.components.JBScrollPane;
@@ -30,6 +29,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
+import org.codinjutsu.tools.mongo.view.edition.MongoEditionDialog;
 import org.codinjutsu.tools.mongo.view.model.*;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
@@ -45,43 +45,33 @@ import java.util.stream.IntStream;
 
 public class MongoResultPanel extends JPanel implements Disposable {
 
+    private final Project project;
     private final MongoPanel.MongoDocumentOperations mongoDocumentOperations;
     private final Notifier notifier;
     private JPanel mainPanel;
     private JPanel containerPanel;
-    private final Splitter splitter;
     private final JPanel resultTreePanel;
-    private final MongoEditionPanel mongoEditionPanel;
 
     JsonTreeTableView resultTreeTableView;
 
     private ViewMode currentViewMode = ViewMode.TREE;
+    private ActionCallback actionCallback;
 
 
     public MongoResultPanel(Project project, MongoPanel.MongoDocumentOperations mongoDocumentOperations, Notifier notifier) {
+        this.project = project;
         this.mongoDocumentOperations = mongoDocumentOperations;
         this.notifier = notifier;
         setLayout(new BorderLayout());
         add(mainPanel, BorderLayout.CENTER);
 
-        splitter = new Splitter(true, 0.6f);
-
         resultTreePanel = new JPanel(new BorderLayout());
 
-        splitter.setFirstComponent(resultTreePanel);
-
-        mongoEditionPanel = createMongoEditionPanel();
-
         containerPanel.setLayout(new JBCardLayout());
-        containerPanel.add(splitter);
+        containerPanel.add(resultTreePanel);
 
-        Disposer.register(project, this);
-    }
-
-    private MongoEditionPanel createMongoEditionPanel() {
-        return new MongoEditionPanel().init(mongoDocumentOperations, new ActionCallback() {
+        actionCallback = new ActionCallback() {
             public void onOperationSuccess(String shortMessage, String detailedMessage) {
-                hideEditionPanel();
                 notifier.notifyInfo(detailedMessage);
             }
 
@@ -89,12 +79,9 @@ public class MongoResultPanel extends JPanel implements Disposable {
             public void onOperationFailure(Exception exception) {
                 notifier.notifyError(exception.getMessage());
             }
+        };
 
-            @Override
-            public void onOperationCancelled(String message) {
-                hideEditionPanel();
-            }
-        });
+        Disposer.register(project, this);
     }
 
     void updateResultView(MongoCollectionResult mongoCollectionResult, Pagination pagination) {
@@ -148,14 +135,18 @@ public class MongoResultPanel extends JPanel implements Disposable {
             return;
         }
 
-        mongoEditionPanel.updateEditionTree(mongoDocument);
-        splitter.setSecondComponent(mongoEditionPanel);
+        MongoEditionDialog
+                .create(project, mongoDocumentOperations, actionCallback)
+                .initDocument(mongoDocument)
+                .show();
     }
 
 
     public void addMongoDocument() {
-        mongoEditionPanel.updateEditionTree(null);
-        splitter.setSecondComponent(mongoEditionPanel);
+        MongoEditionDialog
+                .create(project, mongoDocumentOperations, actionCallback)
+                .initDocument(null)
+                .show();
     }
 
     private Document getSelectedMongoDocument() {
@@ -273,10 +264,6 @@ public class MongoResultPanel extends JPanel implements Disposable {
     }
 
 
-    private void hideEditionPanel() {
-        splitter.setSecondComponent(null);
-    }
-
     private String stringifyResult(DefaultMutableTreeNode selectedResultNode) {
         List<Object> stringifiedObjects = new LinkedList<>();
         for (int i = 0; i < selectedResultNode.getChildCount(); i++) {
@@ -290,7 +277,6 @@ public class MongoResultPanel extends JPanel implements Disposable {
     @Override
     public void dispose() {
         resultTreeTableView = null;
-        mongoEditionPanel.dispose();
     }
 
     void setCurrentViewMode(ViewMode viewMode) {
@@ -318,13 +304,11 @@ public class MongoResultPanel extends JPanel implements Disposable {
         notifier.notifyInfo("Document with _id=" + objectId.toString() + " deleted.");
     }
 
-    interface ActionCallback {
+    public interface ActionCallback {
 
         void onOperationSuccess(String label, String message);
 
         void onOperationFailure(Exception exception);
-
-        void onOperationCancelled(String message);
     }
 
     public enum ViewMode {

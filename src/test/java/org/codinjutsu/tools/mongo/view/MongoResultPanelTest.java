@@ -90,7 +90,7 @@ public class MongoResultPanelTest {
 
     @Test
     public void displayTreeWithASimpleDocument() throws Exception {
-        mongoResultPanel.updateResultView(createCollectionResults("model/simpleDocument.json", "mycollec"), new Pagination());
+        mongoResultPanel.updateResultView(createCollectionResults("/testData/simpleDocument.json", "mycollec"), new Pagination());
 
         getResultTable().requireColumnCount(2)
                 .requireContents(new String[][]{

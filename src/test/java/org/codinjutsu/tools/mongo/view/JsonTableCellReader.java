@@ -21,7 +21,7 @@ import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 
 import javax.swing.*;
 
-class JsonTableCellReader extends BasicJTableCellReader {
+public class JsonTableCellReader extends BasicJTableCellReader {
 
     @Override
     public String valueAt(JTable table, int row, int column) {

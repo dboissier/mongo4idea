@@ -78,7 +78,7 @@ public class JsonTreeUtilsTest implements BsonTest {
 
     @Test
     public void buildDocumentFromTreeWithSubList() throws Exception {
-        Document document = buildDocument("simpleDocumentWithSubList.json");
+        Document document = buildDocument("/testData/simpleDocumentWithSubList.json");
 
         JsonTreeNode treeNode = (JsonTreeNode) JsonTreeUtils.buildJsonTree(document);
         JsonTreeNode tagsNode = (JsonTreeNode) treeNode.getChildAt(2);
