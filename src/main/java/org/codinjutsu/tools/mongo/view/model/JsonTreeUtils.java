@@ -113,15 +113,15 @@ public class JsonTreeUtils {
         while (children.hasMoreElements()) {
             JsonTreeNode node = (JsonTreeNode) children.nextElement();
             MongoNodeDescriptor descriptor = node.getDescriptor();
-            String formattedKey = descriptor.getFormattedKey();
+            String formattedKey = descriptor.getKey();
             switch (formattedKey) {
-                case "\"$id\"":
+                case "$id":
                     _id = descriptor.getValue();
                     break;
-                case "\"$ref\"":
+                case "$ref":
                     collectionName = (String) descriptor.getValue();
                     break;
-                case "\"$db\"":
+                case "$db":
                     databaseName = (String) descriptor.getValue();
                     break;
                 default:

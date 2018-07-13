@@ -122,25 +122,6 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         loadAllServerConfigurations();
 
         installActions();
-
-        mongoTree.getSelectionModel().addTreeSelectionListener(event -> {
-
-            List<StatInfoEntry> statInfos;
-            MongoCollection selectedCollection = MongoExplorerPanel.this.getSelectedCollection();
-            if (selectedCollection != null) {
-                statInfos = mongoManager.getCollStats(MongoExplorerPanel.this.getConfiguration(), selectedCollection);
-                mongoInfosTable.updateInfos(statInfos);
-                return;
-            }
-
-            MongoDatabase selectedDatabase = MongoExplorerPanel.this.getSelectedDatabase();
-            if (selectedDatabase != null) {
-                statInfos = mongoManager.getDbStats(MongoExplorerPanel.this.getConfiguration(), selectedDatabase);
-                mongoInfosTable.updateInfos(statInfos);
-                return;
-            }
-            mongoInfosTable.updateInfos(Collections.emptyList());
-        });
     }
 
     private void loadAllServerConfigurations() {
@@ -271,6 +252,25 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                 return false;
             }
         }.installOn(mongoTree);
+
+        mongoTree.getSelectionModel().addTreeSelectionListener(event -> {
+
+            List<StatInfoEntry> statInfos;
+            MongoCollection selectedCollection = MongoExplorerPanel.this.getSelectedCollection();
+            if (selectedCollection != null) {
+                statInfos = mongoManager.getCollStats(MongoExplorerPanel.this.getConfiguration(), selectedCollection);
+                mongoInfosTable.updateInfos(statInfos);
+                return;
+            }
+
+            MongoDatabase selectedDatabase = MongoExplorerPanel.this.getSelectedDatabase();
+            if (selectedDatabase != null) {
+                statInfos = mongoManager.getDbStats(MongoExplorerPanel.this.getConfiguration(), selectedDatabase);
+                mongoInfosTable.updateInfos(statInfos);
+                return;
+            }
+            mongoInfosTable.updateInfos(Collections.emptyList());
+        });
     }
 
     private void expandAll() {

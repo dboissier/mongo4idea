@@ -28,7 +28,7 @@ public interface MongoNodeDescriptor {
 
     void renderNode(ColoredTreeCellRenderer cellRenderer);
 
-    String getFormattedKey();
+    String getKey();
 
     String getFormattedValue();
 

@@ -83,10 +83,10 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
     }
 
     public void renderNode(ColoredTreeCellRenderer cellRenderer) {
-        cellRenderer.append(getFormattedKey(), StyleAttributesProvider.getIndexAttribute());
+        cellRenderer.append(getKey(), StyleAttributesProvider.getIndexAttribute());
     }
 
-    public String getFormattedKey() {
+    public String getKey() {
         return String.format("[%s]", index);
     }
 

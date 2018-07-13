@@ -86,7 +86,7 @@ public class JsonTreeTableView extends TreeTable {
         new TreeTableSpeedSearch(this, path -> {
             final JsonTreeNode node = (JsonTreeNode) path.getLastPathComponent();
             MongoNodeDescriptor descriptor = node.getDescriptor();
-            return descriptor.getFormattedKey();
+            return descriptor.getKey();
         });
     }
 

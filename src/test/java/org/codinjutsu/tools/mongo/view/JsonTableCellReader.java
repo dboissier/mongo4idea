@@ -28,7 +28,7 @@ public class JsonTableCellReader extends BasicJTableCellReader {
         Object value = table.getValueAt(row, column);
         MongoNodeDescriptor nodeDescriptor = (MongoNodeDescriptor) value;
         if (column == 0) {
-            return nodeDescriptor.getFormattedKey();
+            return nodeDescriptor.getKey();
         } else {
             return nodeDescriptor.getFormattedValue();
         }

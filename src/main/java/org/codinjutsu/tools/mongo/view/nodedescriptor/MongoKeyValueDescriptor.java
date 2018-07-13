@@ -36,8 +36,6 @@ import static org.codinjutsu.tools.mongo.utils.MongoUtils.DOCUMENT_CODEC;
 
 public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
-    private static final String STRING_SURROUNDED = "\"%s\"";
-
     final String key;
     Object value;
 
@@ -110,7 +108,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
     }
 
     public String getFormattedKey() {
-        return String.format(STRING_SURROUNDED, key);
+        return key;
     }
 
     public String getFormattedValue() {

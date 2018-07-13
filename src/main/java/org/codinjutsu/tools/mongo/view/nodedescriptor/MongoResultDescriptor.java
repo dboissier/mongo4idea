@@ -38,7 +38,7 @@ public class MongoResultDescriptor implements MongoNodeDescriptor {
 
     }
 
-    public String getFormattedKey() {
+    public String getKey() {
         return formattedText;
     }
 
