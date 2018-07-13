@@ -137,6 +137,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
             if (selectedDatabase != null) {
                 statInfos = mongoManager.getDbStats(MongoExplorerPanel.this.getConfiguration(), selectedDatabase);
                 mongoInfosTable.updateInfos(statInfos);
+                return;
             }
             mongoInfosTable.updateInfos(Collections.emptyList());
         });

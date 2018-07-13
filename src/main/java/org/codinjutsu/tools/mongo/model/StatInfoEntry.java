@@ -4,22 +4,24 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bson.Document;
 
-import java.util.Map;
-
 @SuppressWarnings("Convert2MethodRef")
 public abstract class StatInfoEntry<T> {
 
     private final String key;
     protected final T value;
 
-    static DataExtractor<Integer> INTEGER_EXTRACTOR = (key, document) -> document.getInteger(key, 0);
-    static DataExtractor<Double> DOUBLE_EXTRACTOR = (key, document) -> document.getDouble(key);
+    static DataExtractor<Number> NUMBER_EXTRACTOR = (key, document) -> {
+        if (document.get(key) instanceof Double) {
+            return document.getDouble(key);
+        } else {
+            return document.getInteger(key);
+        }
+    };
     static DataExtractor<Boolean> BOOLEAN_EXTRACTOR = (key, document) -> document.getBoolean(key, false);
     static DataExtractor<Document> DOCUMENT_EXTRACTOR = (key, document) -> (Document) document.get(key);
 
-    static DataBuilder<Integer> INTEGER_DATA_BUILDER = (key, value) -> new IntegerStatInfoEntry(key, value);
-    static DataBuilder<Integer> BYTE_SIZE_DATA_BUILDER = (key, value) -> new ByteSizeStatInfoEntry(key, (long) value);
-    static DataBuilder<Double> BYTE_SIZE_DOUBLE_DATA_BUILDER = (key, value) -> new ByteSizeDoubleStatInfoEntry(key, value);
+    static DataBuilder<Number> NUMBER_DATA_BUILDER = (key, value) -> new NumberStatInfoEntry(key, value);
+    static DataBuilder<Number> BYTE_SIZE_DATA_BUILDER = (key, value) -> new ByteSizeStatInfoEntry(key, value);
     static DataBuilder<Boolean> BOOLEAN_DATA_BUILDER = (key, value) -> new BooleanStatInfoEntry(key, value);
     static DataBuilder<Document> EMPTY_DATA_BUILDER = (key, value) -> new EmptyInfoEntry(key, value);
 
@@ -38,9 +40,9 @@ public abstract class StatInfoEntry<T> {
 
     public abstract String getStringifiedValue();
 
-    public static class IntegerStatInfoEntry extends StatInfoEntry<Integer> {
+    public static class NumberStatInfoEntry extends StatInfoEntry<Number> {
 
-        IntegerStatInfoEntry(String key, Integer value) {
+        NumberStatInfoEntry(String key, Number value) {
             super(key, value);
         }
 
@@ -50,21 +52,9 @@ public abstract class StatInfoEntry<T> {
         }
     }
 
-    public static class ByteSizeStatInfoEntry extends StatInfoEntry<Long> {
+    public static class ByteSizeStatInfoEntry extends StatInfoEntry<Number> {
 
-        public ByteSizeStatInfoEntry(String key, Long value) {
-            super(key, value);
-        }
-
-        @Override
-        public String getStringifiedValue() {
-            return FileUtils.byteCountToDisplaySize(value);
-        }
-    }
-
-    public static class ByteSizeDoubleStatInfoEntry extends StatInfoEntry<Double> {
-
-        ByteSizeDoubleStatInfoEntry(String key, Double value) {
+        public ByteSizeStatInfoEntry(String key, Number value) {
             super(key, value);
         }
 
@@ -97,10 +87,12 @@ public abstract class StatInfoEntry<T> {
 
 
     }
+
     public interface DataExtractor<T> {
         T extract(String key, Document document);
 
     }
+
     public interface DataBuilder<T> {
         StatInfoEntry build(String key, T value);
 
