@@ -54,10 +54,11 @@ public class MongoTreeBuilder extends AbstractTreeBuilder {
         initRootNode();
     }
 
-    public void addConfiguration(@NotNull ServerConfiguration serverConfiguration) {
+    public MongoServer addConfiguration(@NotNull ServerConfiguration serverConfiguration) {
         MongoServer mongoServer = new MongoServer(serverConfiguration);
         serverConfigurations.put(mongoServer, serverConfiguration);
         queueUpdateFrom(RootDescriptor.ROOT, true);
+        return mongoServer;
     }
 
     public void removeConfiguration(MongoServer mongoServer) {

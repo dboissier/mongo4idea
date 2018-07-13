@@ -152,7 +152,8 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
     }
 
     public void addConfiguration(ServerConfiguration serverConfiguration) {
-        mongoTreeBuilder.addConfiguration(serverConfiguration);
+        MongoServer mongoServer = mongoTreeBuilder.addConfiguration(serverConfiguration);
+        mongoManager.registerServer(mongoServer);
     }
 
     public void loadServerConfiguration(final MongoServer mongoServer) {
