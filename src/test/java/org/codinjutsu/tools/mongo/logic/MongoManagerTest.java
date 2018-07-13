@@ -89,7 +89,7 @@ public class MongoManagerTest {
         assertThat(actualDatabase.getName()).isEqualTo("test");
 
         assertThat(actualDatabase.getParentServer()).isEqualTo(mongoServer);
-        assertThat(actualDatabase.getCollections()).hasSize(1);
+        assertThat(actualDatabase.getCollections().isEmpty()).isFalse();
 
         MongoCollection actualMongoCollection = actualDatabase.getCollections().iterator().next();
         assertThat(actualMongoCollection.getParentDatabase()).isEqualTo(actualDatabase);
