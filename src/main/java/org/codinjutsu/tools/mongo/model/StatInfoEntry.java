@@ -4,8 +4,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bson.Document;
 
+import java.text.NumberFormat;
+
 @SuppressWarnings("Convert2MethodRef")
 public abstract class StatInfoEntry<T> {
+
+    private static final NumberFormat NUMBER_FORMAT = NumberFormat.getInstance();
 
     private final String key;
     protected final T value;
@@ -48,7 +52,10 @@ public abstract class StatInfoEntry<T> {
 
         @Override
         public String getStringifiedValue() {
-            return value.toString();
+            if (value == null) {
+                return "null";
+            }
+            return NUMBER_FORMAT.format(value);
         }
     }
 
@@ -60,6 +67,9 @@ public abstract class StatInfoEntry<T> {
 
         @Override
         public String getStringifiedValue() {
+            if (value == null) {
+                return "null";
+            }
             return FileUtils.byteCountToDisplaySize(value.longValue());
         }
     }

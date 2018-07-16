@@ -253,8 +253,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
             }
         }.installOn(mongoTree);
 
-        mongoTree.getSelectionModel().addTreeSelectionListener(event -> {
-
+        mongoTree.getSelectionModel().addTreeSelectionListener(event -> ApplicationManager.getApplication().invokeLater(() -> {
             List<StatInfoEntry> statInfos;
             MongoCollection selectedCollection = MongoExplorerPanel.this.getSelectedCollection();
             if (selectedCollection != null) {
@@ -270,7 +269,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
                 return;
             }
             mongoInfosTable.updateInfos(Collections.emptyList());
-        });
+        }));
     }
 
     private void expandAll() {
