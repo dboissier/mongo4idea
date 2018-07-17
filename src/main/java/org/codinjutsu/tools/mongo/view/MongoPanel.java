@@ -22,6 +22,9 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.LoadingDecorator;
@@ -54,6 +57,7 @@ import java.awt.event.MouseEvent;
 
 public class MongoPanel extends JPanel implements Disposable {
 
+    private final Project project;
     private final LoadingDecorator loadingDecorator;
     private JPanel rootPanel;
     private Splitter splitter;
@@ -76,6 +80,7 @@ public class MongoPanel extends JPanel implements Disposable {
     private final Pagination pagination;
 
     public MongoPanel(Project project, final MongoManager mongoManager, final ServerConfiguration configuration, final Navigation navigation) {
+        this.project = project;
         this.mongoManager = mongoManager;
         this.navigation = navigation;
         this.configuration = configuration;
@@ -306,33 +311,37 @@ public class MongoPanel extends JPanel implements Disposable {
     private void executeQuery(final boolean useCachedResults, final Navigation.WayPoint wayPoint) {
         errorPanel.setVisible(false);
         validateQuery();
-        ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            try {
-                GuiUtils.runInSwingThread(() -> loadingDecorator.startLoading(false));
+        ProgressManager.getInstance().run(new Task.Backgroundable(project, "Get documents from " + wayPoint.getLabel()) {
+            @Override
+            public void run(@NotNull ProgressIndicator indicator) {
+                try {
+                    GuiUtils.runInSwingThread(() -> loadingDecorator.startLoading(false));
 
-                final MongoQueryOptions queryOptions = wayPoint.getQueryOptions();
-                if (!useCachedResults) {
-                    currentResults = mongoManager.findMongoDocuments(
-                            configuration,
-                            wayPoint.getCollection(),
-                            queryOptions);
+                    final MongoQueryOptions queryOptions = wayPoint.getQueryOptions();
+                    if (!useCachedResults) {
+                        currentResults = mongoManager.findMongoDocuments(
+                                configuration,
+                                wayPoint.getCollection(),
+                                queryOptions);
+                    }
+                    GuiUtils.runInSwingThread(() -> {
+                        resultPanel.updateResultView(currentResults, pagination);
+                        rowCountLabel.setText(String.format("%s documents", currentResults.getDocuments().size()));
+                        initActions(resultPanel.resultTreeTableView);
+
+                    });
+                } catch (final Exception ex) {
+                    GuiUtils.runInSwingThread(() -> {
+                        errorPanel.invalidate();
+                        errorPanel.removeAll();
+                        errorPanel.add(new ErrorPanel(ex), BorderLayout.CENTER);
+                        errorPanel.validate();
+                        errorPanel.setVisible(true);
+                    });
+                } finally {
+                    GuiUtils.runInSwingThread(loadingDecorator::stopLoading);
                 }
-                GuiUtils.runInSwingThread(() -> {
-                    resultPanel.updateResultView(currentResults, pagination);
-                    rowCountLabel.setText(String.format("%s documents", currentResults.getDocuments().size()));
-                    initActions(resultPanel.resultTreeTableView);
 
-                });
-            } catch (final Exception ex) {
-                GuiUtils.runInSwingThread(() -> {
-                    errorPanel.invalidate();
-                    errorPanel.removeAll();
-                    errorPanel.add(new ErrorPanel(ex), BorderLayout.CENTER);
-                    errorPanel.validate();
-                    errorPanel.setVisible(true);
-                });
-            } finally {
-                GuiUtils.runInSwingThread(loadingDecorator::stopLoading);
             }
         });
     }
@@ -453,7 +462,7 @@ public class MongoPanel extends JPanel implements Disposable {
     }
 
 
-    public   interface MongoDocumentOperations {
+    public interface MongoDocumentOperations {
         Document getMongoDocument(Object _id);
 
         void deleteMongoDocument(Object mongoDocument);
