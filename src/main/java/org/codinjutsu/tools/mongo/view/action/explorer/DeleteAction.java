@@ -16,7 +16,6 @@
 
 package org.codinjutsu.tools.mongo.view.action.explorer;
 
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.util.SystemInfo;
@@ -32,7 +31,7 @@ public class DeleteAction extends AnAction {
     private final MongoExplorerPanel mongoExplorerPanel;
 
     public DeleteAction(MongoExplorerPanel mongoExplorerPanel) {
-        super("Delete...", "Delete selected item", AllIcons.General.Remove);
+        super("Delete...", "Delete selected item", null);
 
         this.mongoExplorerPanel = mongoExplorerPanel;
 

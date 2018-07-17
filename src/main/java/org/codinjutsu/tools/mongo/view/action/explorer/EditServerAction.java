@@ -19,16 +19,15 @@ package org.codinjutsu.tools.mongo.view.action.explorer;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.MongoServer;
 import org.codinjutsu.tools.mongo.view.ConfigurationDialog;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 
-public class EditMongoServerAction extends AnAction {
+public class EditServerAction extends AnAction {
     private final MongoExplorerPanel mongoExplorerPanel;
 
-    public EditMongoServerAction(MongoExplorerPanel mongoExplorerPanel) {
+    public EditServerAction(MongoExplorerPanel mongoExplorerPanel) {
         super("Edit Server", "Edit the Mongo server configuration", AllIcons.Actions.Edit);
 
         this.mongoExplorerPanel = mongoExplorerPanel;
@@ -45,7 +44,9 @@ public class EditMongoServerAction extends AnAction {
         if (!dialog.isOK()) {
             return;
         }
-        mongoExplorerPanel.loadServerConfiguration(mongoServer);
+        if (mongoServer.isConnected()) {
+            mongoExplorerPanel.loadServerConfiguration(mongoServer);
+        }
     }
 
     @Override

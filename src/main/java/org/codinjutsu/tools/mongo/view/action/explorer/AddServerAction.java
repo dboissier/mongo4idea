@@ -24,10 +24,10 @@ import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.view.ConfigurationDialog;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 
-public class AddMongoServerAction extends AnAction {
+public class AddServerAction extends AnAction {
     private final MongoExplorerPanel mongoExplorerPanel;
 
-    public AddMongoServerAction(MongoExplorerPanel mongoExplorerPanel) {
+    public AddServerAction(MongoExplorerPanel mongoExplorerPanel) {
         super("Add Server", "Add a Mongo server configuration", AllIcons.General.Add);
 
         this.mongoExplorerPanel = mongoExplorerPanel;

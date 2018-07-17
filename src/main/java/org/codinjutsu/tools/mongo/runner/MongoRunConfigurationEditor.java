@@ -103,7 +103,7 @@ public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfigur
         List<MongoServer> mongoServers = MongoManager.getInstance(project).getServers();
         List<MongoServer> availableMongoServers = new LinkedList<>();
         for (MongoServer mongoServer : mongoServers) {
-            if (mongoServer.hasDatabases()) {
+            if (mongoServer.isConnected()) {
                 availableMongoServers.add(mongoServer);
             }
         }

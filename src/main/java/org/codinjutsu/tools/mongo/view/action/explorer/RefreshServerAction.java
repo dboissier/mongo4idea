@@ -58,7 +58,7 @@ public class RefreshServerAction extends AnAction implements DumbAware {
         boolean isLoading = MongoServer.Status.LOADING.equals(mongoServer.getStatus());
         event.getPresentation().setEnabled(!isLoading);
 
-        boolean isConnected = mongoServer.hasDatabases();
+        boolean isConnected = mongoServer.isConnected();
         event.getPresentation().setIcon(isConnected ? REFRESH_ICON : CONNECT_ICON);
         event.getPresentation().setText(isConnected ? REFRESH_TEXT : CONNECT_TEXT);
     }

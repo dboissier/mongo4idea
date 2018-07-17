@@ -44,7 +44,6 @@ import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.model.*;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
-import org.codinjutsu.tools.mongo.utils.StringUtils;
 import org.codinjutsu.tools.mongo.view.action.explorer.*;
 import org.codinjutsu.tools.mongo.view.editor.MongoFileSystem;
 import org.codinjutsu.tools.mongo.view.editor.MongoObjectFile;
@@ -58,14 +57,12 @@ import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.codinjutsu.tools.mongo.utils.GuiUtils.showNotification;
 
@@ -201,17 +198,16 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
             expandAllAction.unregisterCustomShortcutSet(rootPanel);
         });
 
-
         DefaultActionGroup actionGroup = new DefaultActionGroup("MongoExplorerGroup", false);
-        ViewCollectionValuesAction viewCollectionValuesAction = new ViewCollectionValuesAction(this);
         RefreshServerAction refreshServerAction = new RefreshServerAction(this);
-        AddMongoServerAction addMongoServerAction = new AddMongoServerAction(this);
+        AddServerAction addServerAction = new AddServerAction(this);
+        CopyServerAction copyServerAction = new CopyServerAction(this);
         if (ApplicationManager.getApplication() != null) {
-            actionGroup.add(addMongoServerAction);
+            actionGroup.add(addServerAction);
+            actionGroup.add(copyServerAction);
             actionGroup.addSeparator();
             actionGroup.add(refreshServerAction);
             actionGroup.add(new MongoConsoleAction(this));
-            actionGroup.add(viewCollectionValuesAction);
             actionGroup.add(expandAllAction);
             actionGroup.add(collapseAllAction);
             actionGroup.addSeparator();
@@ -223,10 +219,11 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         DefaultActionGroup actionPopupGroup = new DefaultActionGroup("MongoExplorerPopupGroup", true);
         if (ApplicationManager.getApplication() != null) {
             actionPopupGroup.add(refreshServerAction);
-            actionPopupGroup.add(new EditMongoServerAction(this));
+            actionPopupGroup.add(new EditServerAction(this));
+            actionPopupGroup.add(copyServerAction);
             actionPopupGroup.add(new DeleteAction(this));
             actionPopupGroup.addSeparator();
-            actionPopupGroup.add(viewCollectionValuesAction);
+            actionPopupGroup.add(new ViewCollectionValuesAction(this));
             actionPopupGroup.add(new DataImportAction(this));
         }
 

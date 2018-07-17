@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public class ConnectDisconnecServerAction extends AnAction implements DumbAware {
+public class ConnectDisconnectServerAction extends AnAction implements DumbAware {
 
     private static final Icon CONNECT_ICON = GuiUtils.loadIcon("connector.png", "connector_dark.png");
     private static final Icon DISCONNECT_ICON = AllIcons.Actions.Refresh;
@@ -36,7 +36,7 @@ public class ConnectDisconnecServerAction extends AnAction implements DumbAware 
 
     private final MongoExplorerPanel mongoExplorerPanel;
 
-    public ConnectDisconnecServerAction(MongoExplorerPanel mongoExplorerPanel) {
+    public ConnectDisconnectServerAction(MongoExplorerPanel mongoExplorerPanel) {
         super(CONNECT_TEXT);
         this.mongoExplorerPanel = mongoExplorerPanel;
     }
@@ -59,7 +59,7 @@ public class ConnectDisconnecServerAction extends AnAction implements DumbAware 
         boolean isLoading = MongoServer.Status.LOADING.equals(mongoServer.getStatus());
         event.getPresentation().setEnabled(!isLoading);
 
-        boolean isConnected = mongoServer.hasDatabases();
+        boolean isConnected = mongoServer.isConnected();
         event.getPresentation().setIcon(isConnected ? DISCONNECT_ICON : CONNECT_ICON);
         event.getPresentation().setText(isConnected ? DISCONNECT_TEXT : CONNECT_TEXT);
     }

@@ -49,7 +49,7 @@ public class MongoServer {
         this.databases = databases;
     }
 
-    public boolean hasDatabases() {
+    public boolean isConnected() {
         return !databases.isEmpty();
     }
 

@@ -39,14 +39,19 @@ public class MongoTreeBuilder extends AbstractTreeBuilder {
     public MongoTreeBuilder(@NotNull Tree tree) {
         init(tree, new DefaultTreeModel(new DefaultMutableTreeNode()), new MyTreeStructure(), (descriptorLeft, descriptorRight) -> {
             if (descriptorLeft instanceof ServerDescriptor && descriptorRight instanceof ServerDescriptor) {
-                return ((MongoServer) descriptorLeft.getElement()).getLabel().compareTo(((MongoServer) descriptorRight.getElement()).getLabel());
+                MongoServer mongoServerLeft = (MongoServer) descriptorLeft.getElement();
+                MongoServer mongoServerRight = (MongoServer) descriptorRight.getElement();
+
+                return mongoServerLeft.getLabel().compareTo(mongoServerRight.getLabel());
             } else if (descriptorLeft instanceof DatabaseDescriptor && descriptorRight instanceof DatabaseDescriptor) {
                 String databaseDescriptorLeft = ((DatabaseDescriptor) descriptorLeft).getElement().getName();
                 String databaseDescriptorRight = ((DatabaseDescriptor) descriptorRight).getElement().getName();
+
                 return databaseDescriptorLeft.compareTo(databaseDescriptorRight);
             } else if (descriptorLeft instanceof CollectionDescriptor && descriptorRight instanceof CollectionDescriptor) {
                 String collectionDescriptorLeft = ((CollectionDescriptor) descriptorLeft).getElement().getName();
                 String collectionDescriptorRight = ((CollectionDescriptor) descriptorRight).getElement().getName();
+
                 return collectionDescriptorLeft.compareTo(collectionDescriptorRight);
             }
             return 0;
