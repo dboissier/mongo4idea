@@ -29,6 +29,8 @@ import static java.util.Collections.singletonList;
 
 public class ServerConfiguration implements Cloneable {
 
+    public static final int DEFAULT_ROW_LIMIT = 300;
+
     private static final String DEFAULT_URL = "localhost";
     private static final int DEFAULT_PORT = 27017;
 
@@ -50,6 +52,8 @@ public class ServerConfiguration implements Cloneable {
     private List<String> collectionsToIgnore = new LinkedList<>();
     private String shellArgumentsLine;
     private String shellWorkingDir;
+    private Integer defaultRowLimit = DEFAULT_ROW_LIMIT;
+
     private SshTunnelingConfiguration sshTunnelingConfiguration;
 
     public String getLabel() {
@@ -148,6 +152,14 @@ public class ServerConfiguration implements Cloneable {
         this.shellWorkingDir = shellWorkingDir;
     }
 
+    public Integer getDefaultRowLimit() {
+        return defaultRowLimit;
+    }
+
+    public void setDefaultRowLimit(Integer defaultRowLimit) {
+        this.defaultRowLimit = defaultRowLimit;
+    }
+
     public void setSshTunnelingConfiguration(SshTunnelingConfiguration sshTunnelingConfiguration) {
         this.sshTunnelingConfiguration = sshTunnelingConfiguration;
     }
@@ -193,12 +205,14 @@ public class ServerConfiguration implements Cloneable {
                 Objects.equals(collectionsToIgnore, that.collectionsToIgnore) &&
                 Objects.equals(shellArgumentsLine, that.shellArgumentsLine) &&
                 Objects.equals(shellWorkingDir, that.shellWorkingDir) &&
+                Objects.equals(defaultRowLimit, that.defaultRowLimit) &&
                 Objects.equals(sshTunnelingConfiguration, that.sshTunnelingConfiguration);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(label, serverUrls, sslConnection, readPreference, username, password, authenticationDatabase, authenticationMechanism, userDatabase, collectionsToIgnore, shellArgumentsLine, shellWorkingDir, sshTunnelingConfiguration);
+
+        return Objects.hash(label, serverUrls, sslConnection, readPreference, username, password, authenticationDatabase, authenticationMechanism, userDatabase, collectionsToIgnore, shellArgumentsLine, shellWorkingDir, defaultRowLimit, sshTunnelingConfiguration);
     }
 
     public ServerConfiguration clone() {

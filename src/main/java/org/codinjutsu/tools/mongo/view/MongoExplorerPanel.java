@@ -210,10 +210,10 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         DefaultActionGroup actionGroup = new DefaultActionGroup("MongoExplorerGroup", false);
         RefreshServerAction refreshServerAction = new RefreshServerAction(this);
         AddServerAction addServerAction = new AddServerAction(this);
-        CopyServerAction copyServerAction = new CopyServerAction(this);
+        DuplicateServerAction duplicateServerAction = new DuplicateServerAction(this);
         if (ApplicationManager.getApplication() != null) {
             actionGroup.add(addServerAction);
-            actionGroup.add(copyServerAction);
+            actionGroup.add(duplicateServerAction);
             actionGroup.addSeparator();
             actionGroup.add(refreshServerAction);
             actionGroup.add(new MongoConsoleAction(this));
@@ -229,7 +229,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         if (ApplicationManager.getApplication() != null) {
             actionPopupGroup.add(refreshServerAction);
             actionPopupGroup.add(new EditServerAction(this));
-            actionPopupGroup.add(copyServerAction);
+            actionPopupGroup.add(duplicateServerAction);
             actionPopupGroup.add(new DeleteAction(this));
             actionPopupGroup.addSeparator();
             actionPopupGroup.add(new ViewCollectionValuesAction(this));
@@ -389,13 +389,17 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
     }
 
     public void loadSelectedCollectionValues(MongoCollection mongoCollection) {
-        Navigation navigation = new Navigation();
-        navigation.addNewWayPoint(mongoCollection, new MongoQueryOptions());
-
         MongoServer parentServer = mongoCollection.getParentDatabase()
                 .getParentServer();
+        ServerConfiguration configuration = parentServer.getConfiguration();
+
+        Navigation navigation = new Navigation();
+        MongoQueryOptions queryOptions = new MongoQueryOptions();
+        queryOptions.setResultLimit(configuration.getDefaultRowLimit());
+        navigation.addNewWayPoint(mongoCollection, queryOptions);
+
         MongoFileSystem.getInstance().openEditor(
-                new MongoObjectFile(project, parentServer.getConfiguration(), navigation));
+                new MongoObjectFile(project, configuration, navigation));
     }
 
     public void removeSelectedServer(@NotNull MongoServer mongoServer) {

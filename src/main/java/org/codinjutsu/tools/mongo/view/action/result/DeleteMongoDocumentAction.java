@@ -23,7 +23,6 @@ import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.util.SystemInfo;
 import org.codinjutsu.tools.mongo.view.MongoResultPanel;
 
-import java.awt.*;
 import java.awt.event.KeyEvent;
 
 public class DeleteMongoDocumentAction extends AnAction implements DumbAware {
@@ -34,11 +33,10 @@ public class DeleteMongoDocumentAction extends AnAction implements DumbAware {
         super("Delete", "Delete this document", AllIcons.Actions.Delete);
         this.resultPanel = resultPanel;
 
-        int menuShortcutKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
         if (SystemInfo.isMac) {
-            registerCustomShortcutSet(KeyEvent.VK_BACK_SPACE, menuShortcutKeyMask, resultPanel);
+            registerCustomShortcutSet(KeyEvent.VK_BACK_SPACE, 0, resultPanel);
         } else {
-            registerCustomShortcutSet(KeyEvent.VK_DELETE,menuShortcutKeyMask, resultPanel);
+            registerCustomShortcutSet(KeyEvent.VK_DELETE, 0, resultPanel);
         }
     }
 

@@ -179,10 +179,10 @@ public class MongoPanel extends JPanel implements Disposable {
 
     @NotNull
     private JPanel createRowLimitPanel() {
-        rowLimitField.setText(Integer.toString(MongoQueryOptions.DEFAULT_RESULT_LIMIT));
+        rowLimitField.setText(Integer.toString(configuration.getDefaultRowLimit()));
         rowLimitField.setColumns(5);
         rowLimitField.setDocument(new NumberDocument());
-        rowLimitField.setText(Integer.toString(MongoQueryOptions.DEFAULT_RESULT_LIMIT));
+        rowLimitField.setText(Integer.toString(configuration.getDefaultRowLimit()));
 
         JPanel rowLimitPanel = new NonOpaquePanel();
         rowLimitPanel.add(new JLabel("Row limit:"), BorderLayout.WEST);

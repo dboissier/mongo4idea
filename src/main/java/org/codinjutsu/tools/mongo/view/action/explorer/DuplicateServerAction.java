@@ -7,13 +7,20 @@ import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 
-public class CopyServerAction extends AnAction implements DumbAware {
+import java.awt.*;
+import java.awt.event.KeyEvent;
+
+public class DuplicateServerAction extends AnAction implements DumbAware {
 
     private final MongoExplorerPanel mongoExplorerPanel;
 
-    public CopyServerAction(MongoExplorerPanel mongoExplorerPanel) {
-        super("Copy server", "Copy Server Configuration", AllIcons.Actions.Copy);
+    public DuplicateServerAction(MongoExplorerPanel mongoExplorerPanel) {
+        super("Duplicate...", "Duplicate Server Configuration", AllIcons.Actions.Copy);
         this.mongoExplorerPanel = mongoExplorerPanel;
+
+        registerCustomShortcutSet(KeyEvent.VK_D,
+                Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(),
+                mongoExplorerPanel);
     }
 
     @Override

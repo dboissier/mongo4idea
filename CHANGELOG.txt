@@ -3,6 +3,7 @@ Version 0.12.0-SNAPSHOT
     * [fix] #217 Modifying a server configuration does not work
     * [fix] #221 CastException when trying to delete a document with _id whose type is String
     * [fix] browse private key field in configuration
+    * [add] Add Copy Configuration action
     * [add] #175 Import JSON file
     * [add] #216 Stats on collection
     * [add] #220 Stats on database
@@ -11,6 +12,7 @@ Version 0.12.0-SNAPSHOT
     * [update] Edition is now in a Dialog
     * [update] Renamed 'Default' Auth. Mecanism to 'Plain' for clarity
     * [update] Set 'SCRAM' Auth. Mecanism as default choice
+    * [remove] Auto-connect option when starting IDE
 
 Version 0.11.0
     * [fix] NPE when deleting a collection with short key

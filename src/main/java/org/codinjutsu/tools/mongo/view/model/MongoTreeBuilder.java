@@ -201,7 +201,7 @@ public class MongoTreeBuilder extends AbstractTreeBuilder {
                 label += " (loading)";
             }
             presentation.addText(label, SimpleTextAttributes.REGULAR_ATTRIBUTES);
-            presentation.setTooltip(StringUtils.join(mongoServer.getServerUrls(), ","));
+            presentation.setTooltip(mongoServer.getConfiguration().getUrlsInSingleString());
         }
     }
 

@@ -24,6 +24,9 @@ import org.codinjutsu.tools.mongo.model.MongoServer;
 import org.codinjutsu.tools.mongo.view.ConfigurationDialog;
 import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 
+import java.awt.*;
+import java.awt.event.KeyEvent;
+
 public class EditServerAction extends AnAction {
     private final MongoExplorerPanel mongoExplorerPanel;
 
@@ -31,6 +34,10 @@ public class EditServerAction extends AnAction {
         super("Edit Server", "Edit the Mongo server configuration", AllIcons.Actions.Edit);
 
         this.mongoExplorerPanel = mongoExplorerPanel;
+
+        registerCustomShortcutSet(KeyEvent.VK_E,
+                Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(),
+                mongoExplorerPanel);
     }
 
     @Override

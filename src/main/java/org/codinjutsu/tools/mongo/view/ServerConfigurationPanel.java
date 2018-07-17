@@ -27,6 +27,7 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.Ref;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.IdeBorderFactory;
+import com.intellij.ui.NumberDocument;
 import com.intellij.ui.RawCommandLineEditor;
 import com.intellij.ui.components.JBPasswordField;
 import com.mongodb.AuthenticationMechanism;
@@ -88,6 +89,7 @@ public class ServerConfigurationPanel extends JPanel {
     private JLabel privateKeyPathLabel;
     private TextFieldWithBrowseButton privateKeyPathField;
     private JLabel passLabel;
+    private JTextField defaultRowLimitTextField;
 
     private final MongoManager mongoManager;
 
@@ -103,6 +105,7 @@ public class ServerConfigurationPanel extends JPanel {
         settingTabbedPane.setName("tabbedSettings");
 
         sslConnectionField.setName("sslConnectionField");
+
         readPreferenceComboBox.setName("readPreferenceComboBox");
         serverUrlsField.setName("serverUrlsField");
         usernameField.setName("usernameField");
@@ -120,8 +123,12 @@ public class ServerConfigurationPanel extends JPanel {
         userDatabaseField.setName("userDatabaseField");
         userDatabaseField.setToolTipText("If your access is restricted to a specific database (e.g.: MongoLab), you can set it right here");
 
+        defaultRowLimitTextField.setName("defaultRowLimitTextField");
         mongoShellOptionsPanel.setBorder(IdeBorderFactory.createTitledBorder("Mongo shell options", true));
         shellArgumentsLineField.setDialogCaption("Mongo arguments");
+
+        defaultRowLimitTextField.setColumns(7);
+        defaultRowLimitTextField.setDocument(new NumberDocument());
 
         testConnectionButton.setName("testConnection");
 
@@ -255,13 +262,17 @@ public class ServerConfigurationPanel extends JPanel {
         configuration.setServerUrls(getServerUrls());
         configuration.setSslConnection(isSslConnection());
         configuration.setReadPreference(getReadPreference());
+
         configuration.setUsername(getUsername());
         configuration.setPassword(getPassword());
         configuration.setUserDatabase(getUserDatabase());
         configuration.setAuthenticationDatabase(getAuthenticationDatabase());
+
         configuration.setCollectionsToIgnore(getCollectionsToIgnore());
         configuration.setShellArgumentsLine(getShellArgumentsLine());
         configuration.setShellWorkingDir(getShellWorkingDir());
+        configuration.setDefaultRowLimit(getDefaultRowLimit());
+
         configuration.setAuthenticationMechanism(getAuthenticationMecanism());
 
         configuration.setSshTunnelingConfiguration(isSshTunneling() ? createSshTunnelingSettings() : SshTunnelingConfiguration.EMPTY);
@@ -275,16 +286,19 @@ public class ServerConfigurationPanel extends JPanel {
 
     public void loadConfigurationData(ServerConfiguration configuration) {
         labelField.setText(configuration.getLabel());
-        serverUrlsField.setText(StringUtils.join(configuration.getServerUrls(), ","));
+        serverUrlsField.setText(configuration.getUrlsInSingleString());
         usernameField.setText(configuration.getUsername());
         passwordField.setText(configuration.getPassword());
         userDatabaseField.setText(configuration.getUserDatabase());
         authenticationDatabaseField.setText(configuration.getAuthenticationDatabase());
         sslConnectionField.setSelected(configuration.isSslConnection());
         readPreferenceComboBox.setSelectedItem(configuration.getReadPreference());
+
         collectionsToIgnoreField.setText(StringUtils.join(configuration.getCollectionsToIgnore(), ","));
         shellArgumentsLineField.setText(configuration.getShellArgumentsLine());
         shellWorkingDirField.setText(configuration.getShellWorkingDir());
+        defaultRowLimitTextField.setText(Integer.toString(configuration.getDefaultRowLimit()));
+
 
         SshTunnelingConfiguration sshTunnelingConfiguration = configuration.getSshTunnelingConfiguration();
         if (!SshTunnelingConfiguration.isEmpty(sshTunnelingConfiguration)) {
@@ -448,6 +462,14 @@ public class ServerConfigurationPanel extends JPanel {
         }
 
         return null;
+    }
+
+    private Integer getDefaultRowLimit() {
+        String defaultRowLimit = defaultRowLimitTextField.getText();
+        if (StringUtils.isNotBlank(defaultRowLimit)) {
+            return Integer.parseInt(defaultRowLimit);
+        }
+        return ServerConfiguration.DEFAULT_ROW_LIMIT;
     }
 
     private void createUIComponents() {
