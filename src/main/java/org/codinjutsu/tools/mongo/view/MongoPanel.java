@@ -36,13 +36,13 @@ import com.intellij.ui.NumberDocument;
 import com.intellij.ui.PopupHandler;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.panels.NonOpaquePanel;
+import com.intellij.util.ui.UIUtil;
 import com.mongodb.DBRef;
 import org.bson.Document;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.model.*;
-import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.pagination.PaginationAction;
 import org.codinjutsu.tools.mongo.view.action.result.*;
 import org.codinjutsu.tools.mongo.view.model.NbPerPage;
@@ -315,7 +315,7 @@ public class MongoPanel extends JPanel implements Disposable {
             @Override
             public void run(@NotNull ProgressIndicator indicator) {
                 try {
-                    GuiUtils.runInSwingThread(() -> loadingDecorator.startLoading(false));
+                    UIUtil.invokeLaterIfNeeded(() -> loadingDecorator.startLoading(false));
 
                     final MongoQueryOptions queryOptions = wayPoint.getQueryOptions();
                     if (!useCachedResults) {
@@ -324,14 +324,14 @@ public class MongoPanel extends JPanel implements Disposable {
                                 wayPoint.getCollection(),
                                 queryOptions);
                     }
-                    GuiUtils.runInSwingThread(() -> {
+                    UIUtil.invokeLaterIfNeeded(() -> {
                         resultPanel.updateResultView(currentResults, pagination);
                         rowCountLabel.setText(String.format("%s documents", currentResults.getDocuments().size()));
                         initActions(resultPanel.resultTreeTableView);
 
                     });
                 } catch (final Exception ex) {
-                    GuiUtils.runInSwingThread(() -> {
+                    UIUtil.invokeLaterIfNeeded(() -> {
                         errorPanel.invalidate();
                         errorPanel.removeAll();
                         errorPanel.add(new ErrorPanel(ex), BorderLayout.CENTER);
@@ -339,7 +339,7 @@ public class MongoPanel extends JPanel implements Disposable {
                         errorPanel.setVisible(true);
                     });
                 } finally {
-                    GuiUtils.runInSwingThread(loadingDecorator::stopLoading);
+                    UIUtil.invokeLaterIfNeeded(loadingDecorator::stopLoading);
                 }
 
             }
@@ -383,7 +383,7 @@ public class MongoPanel extends JPanel implements Disposable {
     public void openFindEditor() {
         queryPanel.setVisible(true);
         splitter.setFirstComponent(queryPanel);
-        GuiUtils.runInSwingThread(this::focusOnEditor);
+        UIUtil.invokeLaterIfNeeded(this::focusOnEditor);
     }
 
     public void closeFindEditor() {

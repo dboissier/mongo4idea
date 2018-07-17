@@ -24,6 +24,7 @@ import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.awt.RelativePoint;
+import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -55,17 +56,13 @@ public class GuiUtils {
         toolBarPanel.add(actionToolbar, BorderLayout.CENTER);
     }
 
-    public static void runInSwingThread(Runnable runnable) {
-        ApplicationManager.getApplication().invokeLater(runnable);
-    }
-
     public static Dimension enlargeWidth(Dimension preferredSize, double factor) {
         int enlargedWidth = new Double(preferredSize.width * factor).intValue();
         return new Dimension(enlargedWidth, preferredSize.height);
     }
 
     public static void showNotification(final JComponent component, final MessageType info, final String message, final Balloon.Position position) {
-        runInSwingThread(() -> JBPopupFactory.getInstance().createBalloonBuilder(new JLabel(message))
+        UIUtil.invokeLaterIfNeeded(() -> JBPopupFactory.getInstance().createBalloonBuilder(new JLabel(message))
                 .setFillColor(info.getPopupBackground())
                 .createBalloon()
                 .show(new RelativePoint(component, new Point(0, 0)), position));

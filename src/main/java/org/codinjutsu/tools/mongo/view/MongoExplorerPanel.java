@@ -23,6 +23,9 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.Splitter;
@@ -33,6 +36,7 @@ import com.intellij.ui.PopupHandler;
 import com.intellij.ui.TreeSpeedSearch;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
+import com.intellij.util.ui.UIUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.bson.Document;
@@ -136,26 +140,31 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
     }
 
     public void loadServerConfiguration(final MongoServer mongoServer) {
-        mongoTree.setPaintBusy(true);
+        ProgressManager.getInstance().run(new Task.Backgroundable(project, "Connecting to " + mongoServer.getLabel()) {
 
-        ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            try {
-                List<MongoDatabase> mongoDatabases = mongoManager.loadDatabases(mongoServer, mongoServer.getConfiguration());
-                if (mongoDatabases.isEmpty()) {
-                    return;
-                }
-                mongoServer.setDatabases(mongoDatabases);
-                mongoTreeBuilder.queueUpdateFrom(mongoServer, true)
-                        .doWhenDone(() -> mongoTreeBuilder.expand(mongoServer, null));
+            @Override
+            public void run(@NotNull ProgressIndicator indicator) {
+                mongoTree.setPaintBusy(true);
+                ApplicationManager.getApplication().invokeLater(() -> {
+                    try {
+                        List<MongoDatabase> mongoDatabases = mongoManager.loadDatabases(mongoServer, mongoServer.getConfiguration());
+                        if (mongoDatabases.isEmpty()) {
+                            return;
+                        }
+                        mongoServer.setDatabases(mongoDatabases);
+                        mongoTreeBuilder.queueUpdateFrom(mongoServer, true)
+                                .doWhenDone(() -> mongoTreeBuilder.expand(mongoServer, null));
 
-            } catch (ConfigurationException confEx) {
-                mongoServer.setStatus(MongoServer.Status.ERROR);
+                    } catch (ConfigurationException confEx) {
+                        mongoServer.setStatus(MongoServer.Status.ERROR);
 
-                String errorMessage = String.format("Error when connecting to %s", mongoServer.getLabel());
-                notifier.notifyError(errorMessage + ": " + confEx.getMessage());
-                showNotification(treePanel, MessageType.ERROR, errorMessage, Balloon.Position.atLeft);
-            } finally {
-                mongoTree.setPaintBusy(false);
+                        String errorMessage = String.format("Error when connecting to %s", mongoServer.getLabel());
+                        notifier.notifyError(errorMessage + ": " + confEx.getMessage());
+                        UIUtil.invokeLaterIfNeeded(() -> showNotification(treePanel, MessageType.ERROR, errorMessage, Balloon.Position.atLeft));
+                    } finally {
+                        mongoTree.setPaintBusy(false);
+                    }
+                });
             }
         });
     }

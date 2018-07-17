@@ -43,7 +43,6 @@ import com.mongodb.util.JSON;
 import com.mongodb.util.JSONParseException;
 import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.model.MongoQueryOptions;
-import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.action.result.OperatorCompletionAction;
 
 import javax.swing.*;
@@ -341,10 +340,12 @@ public class QueryPanel extends JPanel implements Disposable {
             nonOpaquePanel.add(textPane, BorderLayout.CENTER);
             nonOpaquePanel.add(new JLabel(MessageType.ERROR.getDefaultIcon()), BorderLayout.WEST);
 
-            GuiUtils.runInSwingThread(() -> JBPopupFactory.getInstance().createBalloonBuilder(nonOpaquePanel)
-                    .setFillColor(MessageType.ERROR.getPopupBackground())
-                    .createBalloon()
-                    .show(new RelativePoint(component, new Point(0, 0)), Balloon.Position.above));
+            UIUtil.invokeLaterIfNeeded(() ->
+                    JBPopupFactory.getInstance().createBalloonBuilder(nonOpaquePanel)
+                            .setFillColor(MessageType.ERROR.getPopupBackground())
+                            .createBalloon()
+                            .show(new RelativePoint(component, new Point(0, 0)), Balloon.Position.above)
+            );
         }
 
         Editor createEditor() {
