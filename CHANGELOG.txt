@@ -2,11 +2,13 @@ Version 0.12.0-SNAPSHOT
     * [fix] #137 Date is incorrect in the DatePicker when editing the cell
     * [fix] #217 Modifying a server configuration does not work
     * [fix] #221 CastException when trying to delete a document with _id whose type is String
-    * [fix] browse private key field in configuration
+    * [fix] Browse private key field in configuration
+    * [add] #222 Default row limit can be set in server configuration
     * [add] Add Copy Configuration action
     * [add] #175 Import JSON file
     * [add] #216 Stats on collection
     * [add] #220 Stats on database
+    * [update] Some shortkeys changed to match with Intellij standard
     * [update] Documents View: Remove double quote on key to improve readbility
     * [update] Explorer panel is usable at IDE start
     * [update] Edition is now in a Dialog

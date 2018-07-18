@@ -201,7 +201,7 @@ public class MongoPanel extends JPanel implements Disposable {
         actionResultGroup.add(new AddMongoDocumentAction(resultPanel));
         actionResultGroup.add(new EditMongoDocumentAction(resultPanel));
         actionResultGroup.add(new DeleteMongoDocumentAction(resultPanel));
-        actionResultGroup.add(new CopyResultAction(resultPanel));
+        actionResultGroup.add(new CopyAllAction(resultPanel));
         actionResultGroup.addSeparator();
         actionResultGroup.add(new NavigateBackwardAction(this));
 
@@ -360,7 +360,7 @@ public class MongoPanel extends JPanel implements Disposable {
         if (ApplicationManager.getApplication() != null) {
             actionPopupGroup.add(new EditMongoDocumentAction(resultPanel));
             actionPopupGroup.add(new DeleteMongoDocumentAction(resultPanel));
-            actionPopupGroup.add(new CopyResultAction(resultPanel));
+            actionPopupGroup.add(new CopyNodeAction(resultPanel));
             actionPopupGroup.add(new GoToMongoDocumentAction(this));
         }
 

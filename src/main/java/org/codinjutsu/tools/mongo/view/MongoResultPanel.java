@@ -33,7 +33,6 @@ import org.codinjutsu.tools.mongo.view.edition.MongoEditionDialog;
 import org.codinjutsu.tools.mongo.view.model.*;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
-import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoResultDescriptor;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -229,16 +228,21 @@ public class MongoResultPanel extends JPanel implements Disposable {
         TreeUtil.collapseAll(tree, 1);
     }
 
+    public String getStringifiedResult() {
+        JsonTreeNode rootNode = (JsonTreeNode) resultTreeTableView.getTree().getModel().getRoot();
+        return stringifyResult(rootNode);
+    }
+
+    public JsonTreeNode getSelectedNode() {
+        return (JsonTreeNode) resultTreeTableView.getTree().getLastSelectedPathComponent();
+    }
+
     public String getSelectedNodeStringifiedValue() {
-        JsonTreeNode lastSelectedResultNode = (JsonTreeNode) resultTreeTableView.getTree().getLastSelectedPathComponent();
+        JsonTreeNode lastSelectedResultNode = getSelectedNode();
         if (lastSelectedResultNode == null) {
-            lastSelectedResultNode = (JsonTreeNode) resultTreeTableView.getTree().getModel().getRoot();
+            return null;
         }
         MongoNodeDescriptor userObject = lastSelectedResultNode.getDescriptor();
-        if (userObject instanceof MongoResultDescriptor) {
-            return stringifyResult(lastSelectedResultNode);
-        }
-
         return userObject.toString();
     }
 
@@ -265,13 +269,14 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
 
     private String stringifyResult(DefaultMutableTreeNode selectedResultNode) {
-        List<Object> stringifiedObjects = new LinkedList<>();
-        for (int i = 0; i < selectedResultNode.getChildCount(); i++) {
-            DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) selectedResultNode.getChildAt(i);
-            stringifiedObjects.add(childNode.getUserObject());
-        }
+        return IntStream.range(0, selectedResultNode.getChildCount())
+                .mapToObj(i -> getDescriptor(i, selectedResultNode).toString())
+                .collect(Collectors.joining(",", "[", "]"));
+    }
 
-        return String.format("[ %s ]", StringUtils.join(stringifiedObjects, ", "));
+    private static MongoNodeDescriptor getDescriptor(int i, DefaultMutableTreeNode parentNode) {
+        DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) parentNode.getChildAt(i);
+        return (MongoNodeDescriptor) childNode.getUserObject();
     }
 
     @Override

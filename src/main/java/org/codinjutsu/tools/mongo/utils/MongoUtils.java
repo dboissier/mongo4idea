@@ -27,6 +27,7 @@ import org.bson.Document;
 import org.bson.codecs.BsonTypeClassMap;
 import org.bson.codecs.DocumentCodec;
 import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.json.JsonWriterSettings;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
 
@@ -41,6 +42,12 @@ public class MongoUtils {
             CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry()),
             new BsonTypeClassMap()
     );
+
+    public static JsonWriterSettings WRITER_SETTINGS =
+            JsonWriterSettings.builder()
+                    .indent(true)
+                    .build();
+
 
     private MongoUtils() {
     }

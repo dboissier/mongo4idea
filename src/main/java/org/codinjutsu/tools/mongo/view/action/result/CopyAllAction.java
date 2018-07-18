@@ -19,34 +19,26 @@ package org.codinjutsu.tools.mongo.view.action.result;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.DumbAware;
-import com.intellij.openapi.util.SystemInfo;
 import org.codinjutsu.tools.mongo.view.MongoResultPanel;
 
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 
-public class DeleteMongoDocumentAction extends AnAction implements DumbAware {
+public class CopyAllAction extends AnAction implements DumbAware {
 
-    private final MongoResultPanel resultPanel;
+    private final MongoResultPanel mongoResultPanel;
 
-    public DeleteMongoDocumentAction(MongoResultPanel resultPanel) {
-        super("Delete", "Delete this document", AllIcons.Actions.Delete);
-        this.resultPanel = resultPanel;
-
-        if (SystemInfo.isMac) {
-            registerCustomShortcutSet(KeyEvent.VK_BACK_SPACE, 0, resultPanel);
-        } else {
-            registerCustomShortcutSet(KeyEvent.VK_DELETE, 0, resultPanel);
-        }
+    public CopyAllAction(MongoResultPanel mongoResultPanel) {
+        super("Copy results", "Copy results to clipboard", AllIcons.Actions.Copy);
+        this.mongoResultPanel = mongoResultPanel;
     }
 
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
-        resultPanel.deleteSelectedMongoDocument();
-    }
-
-    @Override
-    public void update(AnActionEvent event) {
-        event.getPresentation().setEnabled(resultPanel.isSelectedNodeId());
+        CopyPasteManager.getInstance().setContents(
+                new StringSelection(mongoResultPanel.getStringifiedResult()));
     }
 }

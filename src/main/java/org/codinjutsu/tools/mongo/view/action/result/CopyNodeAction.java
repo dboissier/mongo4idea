@@ -27,12 +27,12 @@ import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 
-public class CopyResultAction extends AnAction implements DumbAware {
+public class CopyNodeAction extends AnAction implements DumbAware {
 
     private final MongoResultPanel mongoResultPanel;
 
-    public CopyResultAction(MongoResultPanel mongoResultPanel) {
-        super("Copy Value", "Copy value to clipboard", AllIcons.Actions.Copy);
+    public CopyNodeAction(MongoResultPanel mongoResultPanel) {
+        super("Copy...", "Copy selected node to clipboard", null);
         this.mongoResultPanel = mongoResultPanel;
 
         registerCustomShortcutSet(KeyEvent.VK_C,
@@ -44,5 +44,10 @@ public class CopyResultAction extends AnAction implements DumbAware {
     public void actionPerformed(AnActionEvent anActionEvent) {
         CopyPasteManager.getInstance().setContents(
                 new StringSelection(mongoResultPanel.getSelectedNodeStringifiedValue()));
+    }
+
+    @Override
+    public void update(AnActionEvent e) {
+        e.getPresentation().setVisible(mongoResultPanel.getSelectedNode() != null);
     }
 }

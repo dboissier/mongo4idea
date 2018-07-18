@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static org.codinjutsu.tools.mongo.utils.MongoUtils.DOCUMENT_CODEC;
+import static org.codinjutsu.tools.mongo.utils.MongoUtils.WRITER_SETTINGS;
 
 public class MongoValueDescriptor implements MongoNodeDescriptor {
 
@@ -175,7 +176,7 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
 
         @Override
         public String toString() {
-            return ((Document) value).toJson(DOCUMENT_CODEC);
+            return ((Document) value).toJson(WRITER_SETTINGS);
         }
     }
 
