@@ -22,6 +22,7 @@ import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.JBCardLayout;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.treetable.TreeTableTree;
+import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.tree.TreeUtil;
 import com.mongodb.DBRef;
 import org.apache.commons.lang.StringUtils;
@@ -35,6 +36,9 @@ import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoKeyValueDescriptor;
 import org.codinjutsu.tools.mongo.view.nodedescriptor.MongoNodeDescriptor;
 
 import javax.swing.*;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.util.LinkedList;
@@ -55,6 +59,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
     private ViewMode currentViewMode = ViewMode.TREE;
     private ActionCallback actionCallback;
+    private Runnable keyColumnWidthResizing;
 
 
     public MongoResultPanel(Project project, MongoPanel.MongoDocumentOperations mongoDocumentOperations, Notifier notifier) {
@@ -80,6 +85,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
             }
         };
 
+
         Disposer.register(project, this);
     }
 
@@ -95,9 +101,47 @@ public class MongoResultPanel extends JPanel implements Disposable {
         resultTreeTableView = new JsonTreeTableView(JsonTreeUtils.buildJsonTree(mongoCollectionResult.getCollectionName(),
                 extractDocuments(pagination, mongoCollectionResult.getDocuments()), pagination.getStartIndex()),
                 JsonTreeTableView.COLUMNS_FOR_READING);
+
+        keyColumnWidthResizing = () -> {
+            int colWidth = getColWidth(resultTreeTableView);
+            int totalColumnWidth = resultTreeTableView.getWidth();
+            notifier.notifyInfo("max colWidth=" + colWidth + " - totalColumnWidth=" + totalColumnWidth);
+
+            resultTreeTableView.getColumnModel().getColumn(0).setPreferredWidth(colWidth);
+            resultTreeTableView.getColumnModel().getColumn(1).setPreferredWidth(totalColumnWidth - colWidth);
+
+        };
+
+        resultTreeTableView.getTree().addTreeExpansionListener(new TreeExpansionListener() {
+            @Override
+            public void treeExpanded(TreeExpansionEvent event) {
+                notifier.notifyInfo("expanding...");
+
+                UIUtil.invokeAndWaitIfNeeded(keyColumnWidthResizing);
+            }
+
+            @Override
+            public void treeCollapsed(TreeExpansionEvent event) {
+                notifier.notifyInfo("collapsing...");
+                UIUtil.invokeAndWaitIfNeeded(keyColumnWidthResizing);
+            }
+        });
+
         resultTreeTableView.setName("resultTreeTable");
 
         displayResult(resultTreeTableView);
+
+    }
+
+    private int getColWidth(JTable table) {
+        int width = 0;
+        for (int rowIndex = 0; rowIndex < table.getRowCount(); rowIndex++) {
+            TableCellRenderer renderer = table.getCellRenderer(rowIndex, 0);
+            Component comp = renderer.getTableCellRendererComponent(table, table.getValueAt(rowIndex, 0),
+                    false, false, rowIndex, 0);
+            width = Math.max(width, comp.getPreferredSize().width);
+        }
+        return width;
     }
 
     private static List<Document> extractDocuments(Pagination pagination, List<Document> documents) {
@@ -125,6 +169,8 @@ public class MongoResultPanel extends JPanel implements Disposable {
         resultTreePanel.removeAll();
         resultTreePanel.add(new JBScrollPane(tableView));
         resultTreePanel.validate();
+
+        UIUtil.invokeAndWaitIfNeeded(keyColumnWidthResizing);
     }
 
 

@@ -81,8 +81,6 @@ public class JsonTreeTableView extends TreeTable {
         UIUtil.setLineStyleAngled(tree);
         setTreeCellRenderer(new MongoKeyCellRenderer());
 
-        TreeUtil.expand(tree, 2);
-
         new TreeTableSpeedSearch(this, path -> {
             final JsonTreeNode node = (JsonTreeNode) path.getLastPathComponent();
             MongoNodeDescriptor descriptor = node.getDescriptor();
