@@ -35,4 +35,6 @@ public interface MongoNodeDescriptor {
     Object getValue();
 
     void setValue(Object value);
+
+    String pretty();
 }

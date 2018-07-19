@@ -21,7 +21,9 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.ui.PopupHandler;
 import com.intellij.ui.components.JBScrollPane;
+import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.tree.TreeUtil;
+import com.siyeh.ig.ui.UiUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bson.Document;
 import org.codinjutsu.tools.mongo.view.JsonTreeTableView;
@@ -76,6 +78,8 @@ public class MongoEditionPanel extends JPanel {
     public void updateEditionTree(Document mongoDocument) {
         editTableView = new JsonTreeTableView(JsonTreeUtils.buildJsonTree(mongoDocument), JsonTreeTableView.COLUMNS_FOR_WRITING);
         editTableView.setName("editionTreeTable");
+
+        TreeUtil.expand(editTableView.getTree(), 2);
 
         add(new JBScrollPane(editTableView), BorderLayout.CENTER);
 

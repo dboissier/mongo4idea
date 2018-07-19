@@ -108,6 +108,11 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
         return value.toString();
     }
 
+    @Override
+    public String pretty() {
+        return getFormattedValue();
+    }
+
     private static class MongoStringValueDescriptor extends MongoValueDescriptor {
 
         private MongoStringValueDescriptor(int index, String value) {
@@ -176,6 +181,11 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
 
         @Override
         public String toString() {
+            return ((Document) value).toJson(DOCUMENT_CODEC);
+        }
+
+        @Override
+        public String pretty() {
             return ((Document) value).toJson(WRITER_SETTINGS);
         }
     }

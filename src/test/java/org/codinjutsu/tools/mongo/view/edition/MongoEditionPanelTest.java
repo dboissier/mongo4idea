@@ -33,6 +33,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.util.Arrays;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -149,8 +151,20 @@ public class MongoEditionPanelTest implements BsonTest {
     }
 
     @Test
-    public void addValueInAList() throws Exception {
-        mongoEditionPanel.updateEditionTree(buildDocument("/testData/simpleDocumentWithSubList.json"));
+    public void addValueInAList() {
+        mongoEditionPanel.updateEditionTree(
+                new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
+                        .append("title", "XP by example")
+                        .append("tags", Arrays.asList("pair programming", "tdd", "agile"))
+                        .append("innerList", Arrays.asList(
+                                Arrays.asList(1, 2, 3, 4),
+                                Arrays.asList(false , true),
+                                Arrays.asList(
+                                        new Document("tagName", "pouet"),
+                                        new Document("tagName", "paf")
+                                )
+                        ))
+        );
         frameFixture = Containers.showInFrame(mongoEditionPanel);
 
         JTableFixture editionTreeTable = frameFixture.table("editionTreeTable");
@@ -171,7 +185,6 @@ public class MongoEditionPanelTest implements BsonTest {
 
         editionTreeTable.selectCell(TableCell.row(3).column(1));
         mongoEditionPanel.addValue("refactor");
-
         editionTreeTable.requireContents(new String[][]{
                 {"_id", "50b8d63414f85401b9268b99"},
                 {"title", "XP by example"},

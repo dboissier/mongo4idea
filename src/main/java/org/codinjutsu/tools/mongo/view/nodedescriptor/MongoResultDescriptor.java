@@ -56,4 +56,9 @@ public class MongoResultDescriptor implements MongoNodeDescriptor {
     public void setValue(Object value) {
 
     }
+
+    @Override
+    public String pretty() {
+        return formattedText;
+    }
 }

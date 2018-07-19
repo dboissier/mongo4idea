@@ -8,7 +8,8 @@ Version 0.12.0-SNAPSHOT
     * [add] #175 Import JSON file
     * [add] #216 Stats on collection
     * [add] #220 Stats on database
-    * [add] #144 Copy all documents and Copy selected node are now different actions
+    * [update] Copy output is a pretty JSON
+    * [update] #144 Copy all documents and Copy selected node are now different actions
     * [update] Dynamic key column width on result panel
     * [update] Some shortkeys changed to match with Intellij standard
     * [update] Documents View: Remove double quote on key to improve readbility

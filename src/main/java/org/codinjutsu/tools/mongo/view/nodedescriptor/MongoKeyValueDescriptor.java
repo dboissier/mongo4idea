@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static org.codinjutsu.tools.mongo.utils.MongoUtils.DOCUMENT_CODEC;
+import static org.codinjutsu.tools.mongo.utils.MongoUtils.WRITER_SETTINGS;
 
 public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
@@ -128,6 +129,11 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
     }
 
     @Override
+    public String pretty() {
+        return getFormattedValue();
+    }
+
+    @Override
     public String toString() {
         return value.toString();
     }
@@ -208,6 +214,11 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
         private String getFormattedDocument() {
             return ((Document) value).toJson(DOCUMENT_CODEC);
+        }
+
+        @Override
+        public String pretty() {
+            return ((Document) value).toJson(WRITER_SETTINGS);
         }
     }
 

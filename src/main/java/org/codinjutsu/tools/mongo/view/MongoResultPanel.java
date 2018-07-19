@@ -131,6 +131,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
         displayResult(resultTreeTableView);
 
+        UIUtil.invokeAndWaitIfNeeded((Runnable)() -> TreeUtil.expand(resultTreeTableView.getTree(), 2));
     }
 
     private int getColWidth(JTable table) {
@@ -289,7 +290,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
             return null;
         }
         MongoNodeDescriptor userObject = lastSelectedResultNode.getDescriptor();
-        return userObject.toString();
+        return userObject.pretty();
     }
 
     public DBRef getSelectedDBRef() {
@@ -316,7 +317,7 @@ public class MongoResultPanel extends JPanel implements Disposable {
 
     private String stringifyResult(DefaultMutableTreeNode selectedResultNode) {
         return IntStream.range(0, selectedResultNode.getChildCount())
-                .mapToObj(i -> getDescriptor(i, selectedResultNode).toString())
+                .mapToObj(i -> getDescriptor(i, selectedResultNode).pretty())
                 .collect(Collectors.joining(",", "[", "]"));
     }
 

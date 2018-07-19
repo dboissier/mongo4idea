@@ -256,7 +256,16 @@ public class MongoResultPanelTest {
 
         mongoResultPanel.resultTreeTableView.setRowSelectionInterval(0, 0);
         assertThat(mongoResultPanel.getSelectedNodeStringifiedValue())
-                .isEqualTo("{ \"id\" : 0, \"label\" : \"toto\", \"visible\" : false, \"doc\" : { \"title\" : \"hello\", \"nbPages\" : 10, \"keyWords\" : [\"toto\", true, 10] } }");
+                .isEqualTo("{\n" +
+                        "  \"id\" : 0,\n" +
+                        "  \"label\" : \"toto\",\n" +
+                        "  \"visible\" : false,\n" +
+                        "  \"doc\" : {\n" +
+                        "    \"title\" : \"hello\",\n" +
+                        "    \"nbPages\" : 10,\n" +
+                        "    \"keyWords\" : [\"toto\", true, 10]\n" +
+                        "  }\n" +
+                        "}");
 
         mongoResultPanel.resultTreeTableView.setRowSelectionInterval(2, 2);
         assertThat(mongoResultPanel.getSelectedNodeStringifiedValue())
@@ -268,7 +277,11 @@ public class MongoResultPanelTest {
 
         mongoResultPanel.resultTreeTableView.setRowSelectionInterval(4, 4);
         assertThat(mongoResultPanel.getSelectedNodeStringifiedValue())
-                .isEqualTo("{ \"title\" : \"hello\", \"nbPages\" : 10, \"keyWords\" : [\"toto\", true, 10] }");
+                .isEqualTo("{\n" +
+                        "  \"title\" : \"hello\",\n" +
+                        "  \"nbPages\" : 10,\n" +
+                        "  \"keyWords\" : [\"toto\", true, 10]\n" +
+                        "}");
     }
 
     @Test
@@ -320,11 +333,26 @@ public class MongoResultPanelTest {
                 {"[1]", "false"},
                 {"[2]", "10"},
         });
-        assertThat(mongoResultPanel.getSelectedNodeStringifiedValue())
-                .isEqualTo("[ " +
-                        "{ \"id\" : 0, \"label\" : \"toto\", \"visible\" : false, \"doc\" : { \"title\" : \"hello\", \"nbPages\" : 10, \"keyWords\" : [\"toto\", true, 10] } }, " +
-                        "{ \"id\" : 1, \"label\" : \"tata\", \"visible\" : false, \"doc\" : { \"title\" : \"ola\", \"nbPages\" : 1, \"keyWords\" : [\"tutu\", false, 10] } }" +
-                        " ]");
+        assertThat(mongoResultPanel.getStringifiedResult())
+                .isEqualTo("[{\n" +
+                        "  \"id\" : 0,\n" +
+                        "  \"label\" : \"toto\",\n" +
+                        "  \"visible\" : false,\n" +
+                        "  \"doc\" : {\n" +
+                        "    \"title\" : \"hello\",\n" +
+                        "    \"nbPages\" : 10,\n" +
+                        "    \"keyWords\" : [\"toto\", true, 10]\n" +
+                        "  }\n" +
+                        "},{\n" +
+                        "  \"id\" : 1,\n" +
+                        "  \"label\" : \"tata\",\n" +
+                        "  \"visible\" : false,\n" +
+                        "  \"doc\" : {\n" +
+                        "    \"title\" : \"ola\",\n" +
+                        "    \"nbPages\" : 1,\n" +
+                        "    \"keyWords\" : [\"tutu\", false, 10]\n" +
+                        "  }\n" +
+                        "}]");
     }
 
 
