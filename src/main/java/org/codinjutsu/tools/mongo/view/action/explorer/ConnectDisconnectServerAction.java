@@ -44,8 +44,8 @@ public class ConnectDisconnectServerAction extends AnAction implements DumbAware
     @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
         MongoServer selectedMongoServer = mongoExplorerPanel.getSelectedServer();
-        mongoExplorerPanel.loadServerConfiguration(selectedMongoServer);
-//        mongoExplorerPanel.loadServerConfiguration(selectedMongoServer);
+        mongoExplorerPanel.openServer(selectedMongoServer);
+        mongoExplorerPanel.closeServer(selectedMongoServer);
     }
 
     @Override

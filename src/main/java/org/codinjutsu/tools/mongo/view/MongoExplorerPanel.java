@@ -139,7 +139,14 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
         mongoManager.registerServer(mongoServer);
     }
 
-    public void loadServerConfiguration(final MongoServer mongoServer) {
+    public void closeServer(MongoServer mongoServer) {
+     ApplicationManager.getApplication().invokeLater(() -> {
+         mongoServer.setDatabases(Collections.emptyList());
+         mongoTreeBuilder.queueUpdateFrom(mongoServer, true);
+     });
+    }
+
+    public void openServer(final MongoServer mongoServer) {
         ProgressManager.getInstance().run(new Task.Backgroundable(project, "Connecting to " + mongoServer.getLabel()) {
 
             @Override
@@ -247,7 +254,7 @@ public class MongoExplorerPanel extends JPanel implements Disposable {
 
                 MongoServer selectedMongoServer = getSelectedServer();
                 if (selectedMongoServer != null) {
-                    loadServerConfiguration(selectedMongoServer);
+                    openServer(selectedMongoServer);
                     return true;
                 }
                 MongoCollection selectedCollection = getSelectedCollection();

@@ -44,7 +44,7 @@ public class RefreshServerAction extends AnAction implements DumbAware {
     @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
         MongoServer selectedMongoServer = mongoExplorerPanel.getSelectedServer();
-        mongoExplorerPanel.loadServerConfiguration(selectedMongoServer);
+        mongoExplorerPanel.openServer(selectedMongoServer);
     }
 
     @Override

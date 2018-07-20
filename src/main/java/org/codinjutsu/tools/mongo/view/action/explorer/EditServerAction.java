@@ -52,7 +52,7 @@ public class EditServerAction extends AnAction {
             return;
         }
         if (mongoServer.isConnected()) {
-            mongoExplorerPanel.loadServerConfiguration(mongoServer);
+            mongoExplorerPanel.openServer(mongoServer);
         }
     }
 
