@@ -34,10 +34,14 @@ import org.codinjutsu.tools.mongo.view.table.MongoDatePickerCellEditor;
 import org.codinjutsu.tools.mongo.view.table.MongoValueCellEditor;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.util.Date;
 import java.util.List;
 
@@ -110,6 +114,7 @@ public class JsonTreeTableView extends TreeTable {
         TableCellEditor editor = columns[column].getEditor(node);
         return editor == null ? super.getCellEditor(row, column) : editor;
     }
+
 
     private static class ReadOnlyValueColumnInfo extends ColumnInfo<JsonTreeNode, MongoNodeDescriptor> {
         private final TableCellRenderer myRenderer = new MongoValueCellRenderer();
