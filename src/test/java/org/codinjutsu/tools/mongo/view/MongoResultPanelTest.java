@@ -26,6 +26,7 @@ import org.assertj.swing.fixture.Containers;
 import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.fixture.JTableFixture;
 import org.bson.Document;
+import org.bson.types.Binary;
 import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.logic.Notifier;
 import org.codinjutsu.tools.mongo.model.MongoCollectionResult;
@@ -175,6 +176,24 @@ public class MongoResultPanelTest {
                 {"japanese", "日本語"},
                 {"chinese", "汉语/漢語"},
                 {"russian", "ру́сский язы́к"}
+        });
+    }
+
+    @Test
+    public void displayBinaryType() throws Exception {
+        MongoCollectionResult collectionResult = new MongoCollectionResult("mycollect");
+        collectionResult.add(
+                new Document("_id", new ObjectId("50b8d63414f85401b9268b99"))
+                        .append("binaryContent", new Binary(IOUtils.toByteArray(getClass().getResourceAsStream("/testData/mongo.png"))))
+        );
+
+        mongoResultPanel.updateResultView(collectionResult, new Pagination());
+        TreeUtil.expandAll(mongoResultPanel.resultTreeTableView.getTree());
+
+        getResultTable().requireContents(new String[][]{
+                {"[0]", "{ \"_id\" : { \"$oid\" : \"50b8d63414f85401b9268b99\" }, \"binaryContent\" : { \"...MHOAWG2wOcAqcIMPQ4RYAhx/8DM8Ih6K9EJPMAAAAASUVORK5CYII=\", \"$type\" : \"00\" } }"},
+                {"_id", "50b8d63414f85401b9268b99"},
+                {"binaryContent", "Cannot display value"},
         });
     }
 

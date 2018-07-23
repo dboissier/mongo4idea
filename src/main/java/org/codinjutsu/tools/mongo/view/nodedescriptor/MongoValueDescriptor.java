@@ -20,6 +20,7 @@ import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import org.bson.Document;
+import org.bson.types.Binary;
 import org.codinjutsu.tools.mongo.utils.DateUtils;
 import org.codinjutsu.tools.mongo.utils.MongoUtils;
 import org.codinjutsu.tools.mongo.utils.StringUtils;
@@ -66,6 +67,8 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
             return new MongoDocumentValueDescriptor(index, value);
         } else if (value instanceof List) {
             return new MongoListValueDescriptor(index, value);
+        } else if (value instanceof Binary) {
+            return new MongoBinaryDescriptor(index, (Binary) value);
         } else {
             return new MongoValueDescriptor(index, value, StyleAttributesProvider.getStringAttribute());
         }
@@ -207,6 +210,18 @@ public class MongoValueDescriptor implements MongoNodeDescriptor {
 
         private String getFormattedList() {
             return MongoUtils.stringifyList((List) value);
+        }
+    }
+
+    private static class MongoBinaryDescriptor extends MongoValueDescriptor {
+
+        private MongoBinaryDescriptor(int index, Binary value) {
+            super(index, value, StyleAttributesProvider.getNullAttribute());
+        }
+
+        @Override
+        public String getFormattedValue() {
+            return "Cannot display value";
         }
     }
 }

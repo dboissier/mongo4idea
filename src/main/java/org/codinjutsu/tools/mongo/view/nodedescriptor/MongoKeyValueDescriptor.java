@@ -21,6 +21,7 @@ import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.mongodb.DBRef;
 import org.bson.Document;
+import org.bson.types.Binary;
 import org.bson.types.ObjectId;
 import org.codinjutsu.tools.mongo.utils.DateUtils;
 import org.codinjutsu.tools.mongo.utils.MongoUtils;
@@ -82,7 +83,9 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
         } else if (value instanceof ObjectId) {
             return new MongoKeyValueDescriptor(key, value, StyleAttributesProvider.getObjectIdAttribute());
         } else if (value instanceof Document) {
-            return new MongoKeyDocumentValueDescriptor(key, value);
+            return new MongoKeyDocumentValueDescriptor(key, (Document) value);
+        } else if (value instanceof Binary) {
+            return new MongoKeyBinaryValueDescriptor(key, (Binary) value);
         } else if (value instanceof DBRef) {
             return new MongoKeyRefValueDescriptor(key, value);
         } else if (value instanceof List) {
@@ -197,7 +200,7 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
 
     private static class MongoKeyDocumentValueDescriptor extends MongoKeyValueDescriptor {
 
-        MongoKeyDocumentValueDescriptor(String key, Object value) {
+        MongoKeyDocumentValueDescriptor(String key, Document value) {
             super(key, value, StyleAttributesProvider.getDocumentAttribute());
         }
 
@@ -222,6 +225,17 @@ public class MongoKeyValueDescriptor implements MongoNodeDescriptor {
         }
     }
 
+    private static class MongoKeyBinaryValueDescriptor extends MongoKeyValueDescriptor {
+
+        private MongoKeyBinaryValueDescriptor(String key, Binary value) {
+            super(key, value, StyleAttributesProvider.getNullAttribute());
+        }
+
+        @Override
+        public String getFormattedValue() {
+            return "Cannot display value";
+        }
+    }
 
     private static class MongoKeyRefValueDescriptor extends MongoKeyValueDescriptor {
         MongoKeyRefValueDescriptor(String key, Object value) {
