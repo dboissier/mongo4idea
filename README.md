@@ -29,7 +29,7 @@ When you open the Mongo explorer, you will see a panel:
 
 * To use the Mongo shell directly from the plugin, click on the `[wrench]`icon, set its path in the corresponding field. As alternative, you can use the Terminal plugin. 
 
-![PluginConfiguration](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea-configuration.png)
+![PluginConfiguration](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea_pluginConfiguration.png)
 
 
 * To add a server, click on the `[+]` icon located on the upper toolbar and a dialog will appear
