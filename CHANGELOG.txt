@@ -1,4 +1,4 @@
-Version 0.12.0-SNAPSHOT
+Version 0.12.0
     * [fix] #137 Date is incorrect in the DatePicker when editing the cell
     * [fix] #217 Modifying a server configuration does not work
     * [fix] #221 CastException when trying to delete a document with _id whose type is String
@@ -13,11 +13,11 @@ Version 0.12.0-SNAPSHOT
     * [update] #144 Copy all documents and Copy selected node are now different actions
     * [update] Some shortkeys changed to match with Intellij standard
     * [update] Documents View: Remove double quote on key to improve readbility
-    * [update] Explorer panel is usable at IDE start
+    * [update] Explorer panel is now usable at IDE start (no need to wait for indexation ending)
     * [update] Edition is now in a Dialog
     * [update] Renamed 'Default' Auth. Mecanism to 'Plain' for clarity
     * [update] Set 'SCRAM' Auth. Mecanism as default choice
-    * [remove] Auto-connect option when starting IDE
+    * [remove] Delete Auto-connect option when starting IDE
 
 Version 0.11.0
     * [fix] NPE when deleting a collection with short key

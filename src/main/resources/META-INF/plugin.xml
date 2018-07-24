@@ -72,7 +72,10 @@
     <div xmlns="http://www.w3.org/1999/html">
         <p>
             This tool allows accessing to Mongo databases and provides CRUD operations on mongo collections.<br>
-             <a href="https://github.com/dboissier/mongo4idea">Documentation</a>|<a href="https://github.com/dboissier/mongo4idea/issues">Issues Tracker</a>
+             <a href="https://github.com/dboissier/mongo4idea">Documentation</a>
+             |<a href="https://github.com/dboissier/mongo4idea">Github</a>
+             |<a href="https://github.com/dboissier/mongo4idea/issues">Issues Tracker</a>
+             |<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4S464JTADXFMJ"><strong>Donations</strong></a>
         </p>
         <p>
             This tool is free for personal and commercial usage.<br>
