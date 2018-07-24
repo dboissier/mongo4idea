@@ -1,4 +1,4 @@
-# Mongo Plugin for IntelliJ IDEA version 0.11.0
+# Mongo Plugin for IntelliJ IDEA version 0.12.0
 
 * [Jetbrains plugin page](https://plugins.jetbrains.com/idea/plugin/7141)
 * [Changelog](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)
@@ -7,8 +7,7 @@
 
 [![Build Status](https://travis-ci.org/dboissier/mongo4idea.svg?branch=master)](https://travis-ci.org/dboissier/mongo4idea)
 
-* [0.12.0-SNAPSHOT Build for Idea 2016+](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.12.0-SNAPSHOT.zip)
-* [0.11.0 Build for Idea 2016+](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.11.0.zip)
+* [0.12.0 Build for Idea 2016+](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.12.0.zip)
 
 ## Description
 
@@ -52,10 +51,11 @@ When you open the Mongo explorer, you will see a panel:
 
 When you are done, click on the **Test Connection** button to check the server configuration.
 
-Additionaly:
+Additionaly, in **Options** tab:
 
-* You can let the plugin connect to the server on the IDE startup by clicking on the corresponding checkbox
-* If you want to hide some collections, you can put them in the **Collections to ignore** field.
+* **[NEW]** you can change the `row limit` default value
+* you can hide some collections with **Collections to ignore** field.
+* you can set default Mongo shell parameters
 
 ## Usage
 
@@ -71,6 +71,12 @@ For each server, the tree displays its databases with all of their collections.
 If you double-click on another collection, a new tab will be created for it.
 
 If you want clear a collection or database, you can do so by right clicking on it and selecting **Drop collection/database** (shortcut is `DELETE`). Be cautious with this operation, it should not be used in a production environment.
+
+
+**[NEW]** 
+* When selecting a database or a collection, you will see the `stats` in the below panel
+* When selecting a collection, you can import JSON file by right-clicking and selecting `Import data` menu item. Select your JSON file and click on `Replace all content` option if needed.
+* When selecting a server, you can copy its configuration
 
 ### Mongo collection tab view
 
