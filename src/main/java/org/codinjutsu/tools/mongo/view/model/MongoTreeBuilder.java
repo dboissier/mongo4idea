@@ -54,6 +54,10 @@ public class MongoTreeBuilder extends AbstractTreeBuilder {
 
     public MongoTreeBuilder(@NotNull Tree tree) {
         init(tree, new DefaultTreeModel(new DefaultMutableTreeNode()), new MyTreeStructure(), (descriptorLeft, descriptorRight) -> {
+            if (descriptorLeft.getElement() == null || descriptorRight.getElement() == null) {
+                return 0;
+            }
+
             if (descriptorLeft instanceof ServerDescriptor && descriptorRight instanceof ServerDescriptor) {
                 MongoServer mongoServerLeft = (MongoServer) descriptorLeft.getElement();
                 MongoServer mongoServerRight = (MongoServer) descriptorRight.getElement();

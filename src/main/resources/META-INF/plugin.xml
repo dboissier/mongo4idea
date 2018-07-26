@@ -17,7 +17,7 @@
 <idea-plugin>
     <name>Mongo Plugin</name>
     <description>Mongo integration for Intellij</description>
-    <version>0.12.0</version>
+    <version>0.12.1</version>
     <vendor email="david.boissier [at] gmail [dot] com" url="http://codinjutsu.blogspot.com">David Boissier</vendor>
 
 	<idea-version since-build="145.0"/>
