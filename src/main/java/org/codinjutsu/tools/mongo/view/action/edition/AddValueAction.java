@@ -19,10 +19,11 @@ package org.codinjutsu.tools.mongo.view.action.edition;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.view.edition.AddValueDialog;
 import org.codinjutsu.tools.mongo.view.edition.MongoEditionPanel;
 
-public class AddValueAction extends AnAction {
+public class AddValueAction extends AnAction implements DumbAware {
 
     private final MongoEditionPanel mongoEditionPanel;
 

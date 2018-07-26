@@ -19,6 +19,7 @@ package org.codinjutsu.tools.mongo.view.action.explorer;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.MongoServer;
 import org.codinjutsu.tools.mongo.view.ConfigurationDialog;
@@ -27,7 +28,7 @@ import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-public class EditServerAction extends AnAction {
+public class EditServerAction extends AnAction implements DumbAware {
     private final MongoExplorerPanel mongoExplorerPanel;
 
     public EditServerAction(MongoExplorerPanel mongoExplorerPanel) {

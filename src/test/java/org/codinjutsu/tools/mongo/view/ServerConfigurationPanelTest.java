@@ -235,9 +235,17 @@ public class ServerConfigurationPanelTest {
     }
 
     @Test
+    public void validateFormWithMissingLabelShouldThrowAConfigurationException() {
+        thrown.expect(ConfigurationException.class);
+        thrown.expectMessage("Label should be set");
+
+        configurationPanel.applyConfigurationData(new ServerConfiguration());
+    }
+    @Test
     public void validateFormWithMissingMongoUrlShouldThrowAConfigurationException() {
         thrown.expect(ConfigurationException.class);
         thrown.expectMessage("URL(s) should be set");
+        frameFixture.textBox("labelField").setText("MyServer");
 
         frameFixture.textBox("serverUrlsField").setText(null);
 
@@ -248,6 +256,7 @@ public class ServerConfigurationPanelTest {
     public void validateFormWithEmptyMongoUrlShouldThrowAConfigurationException() {
         thrown.expect(ConfigurationException.class);
         thrown.expectMessage("URL(s) should be set");
+        frameFixture.textBox("labelField").setText("MyServer");
 
         frameFixture.textBox("serverUrlsField").setText("");
 
@@ -258,6 +267,7 @@ public class ServerConfigurationPanelTest {
     public void validateFormWithBadMongoUrlShouldThrowAConfigurationException() {
         thrown.expect(ConfigurationException.class);
         thrown.expectMessage("URL 'host' format is incorrect. It should be 'host:port'");
+        frameFixture.textBox("labelField").setText("MyServer");
 
         frameFixture.textBox("serverUrlsField").setText("host");
 
@@ -268,6 +278,8 @@ public class ServerConfigurationPanelTest {
     public void validateFormWithBadMongoPortShouldThrowAConfigurationException() {
         thrown.expect(ConfigurationException.class);
         thrown.expectMessage("Port in the URL 'host:port' is incorrect. It should be a number");
+        frameFixture.textBox("labelField").setText("MyServer");
+
 
         frameFixture.textBox("serverUrlsField").setText("host:port");
 
@@ -276,7 +288,7 @@ public class ServerConfigurationPanelTest {
 
     @Test
     public void validateFormWithReplicatSet() {
-
+        frameFixture.textBox("labelField").setText("MyServer");
         frameFixture.textBox("serverUrlsField").setText(" localhost:25, localhost:26 ");
 
         ServerConfiguration configuration = new ServerConfiguration();

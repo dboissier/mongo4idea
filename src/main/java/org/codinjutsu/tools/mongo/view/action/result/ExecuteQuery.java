@@ -19,12 +19,13 @@ package org.codinjutsu.tools.mongo.view.action.result;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.view.MongoPanel;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
-public class ExecuteQuery extends AnAction {
+public class ExecuteQuery extends AnAction implements DumbAware {
     private final MongoPanel mongoPanel;
 
     public ExecuteQuery(MongoPanel mongoPanel) {

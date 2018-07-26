@@ -18,13 +18,14 @@ package org.codinjutsu.tools.mongo.view.action.result;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
+import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.utils.GuiUtils;
 import org.codinjutsu.tools.mongo.view.QueryPanel;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public class EnableAggregateAction extends ToggleAction {
+public class EnableAggregateAction extends ToggleAction implements DumbAware {
 
     private static final String ENABLE_FIND_MODE = "Toggle to Find Mode";
     private static final String ENABLE_AGGREGATION_MODE = "Toggle to Aggregation Mode";

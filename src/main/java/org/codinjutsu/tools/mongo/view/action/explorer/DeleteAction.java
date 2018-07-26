@@ -18,6 +18,7 @@ package org.codinjutsu.tools.mongo.view.action.explorer;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.util.SystemInfo;
 import org.codinjutsu.tools.mongo.model.MongoCollection;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
@@ -27,7 +28,7 @@ import org.codinjutsu.tools.mongo.view.MongoExplorerPanel;
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 
-public class DeleteAction extends AnAction {
+public class DeleteAction extends AnAction implements DumbAware {
     private final MongoExplorerPanel mongoExplorerPanel;
 
     public DeleteAction(MongoExplorerPanel mongoExplorerPanel) {

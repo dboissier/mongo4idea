@@ -19,10 +19,11 @@ package org.codinjutsu.tools.mongo.view.action.result;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.DumbAware;
 import org.codinjutsu.tools.mongo.view.MongoPanel;
 import org.codinjutsu.tools.mongo.view.MongoResultPanel;
 
-public class ViewAsTreeAction extends AnAction {
+public class ViewAsTreeAction extends AnAction implements DumbAware {
     private final MongoPanel mongoPanel;
 
     public ViewAsTreeAction(MongoPanel mongoPanel) {

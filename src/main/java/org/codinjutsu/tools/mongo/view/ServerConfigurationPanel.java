@@ -234,28 +234,8 @@ public class ServerConfigurationPanel extends JPanel {
         return configuration;
     }
 
-    private void validateUrls() {
-        List<String> serverUrls = getServerUrls();
-        if (serverUrls == null) {
-            throw new ConfigurationException("URL(s) should be set");
-        }
-        for (String serverUrl : serverUrls) {
-            String[] host_port = serverUrl.split(":");
-            if (host_port.length < 2) {
-                throw new ConfigurationException(String.format("URL '%s' format is incorrect. It should be 'host:port'", serverUrl));
-            }
-
-            try {
-                Integer.valueOf(host_port[1]);
-            } catch (NumberFormatException e) {
-                throw new ConfigurationException(String.format("Port in the URL '%s' is incorrect. It should be a number", serverUrl));
-            }
-        }
-
-    }
-
-
     public void applyConfigurationData(ServerConfiguration configuration) {
+        validateLabel();
         validateUrls();
 
         configuration.setLabel(getLabel());
@@ -277,6 +257,34 @@ public class ServerConfigurationPanel extends JPanel {
 
         configuration.setSshTunnelingConfiguration(isSshTunneling() ? createSshTunnelingSettings() : SshTunnelingConfiguration.EMPTY);
     }
+
+    private void validateLabel() {
+        String label = getLabel();
+        if (StringUtils.isBlank(label)) {
+            throw new ConfigurationException("Label should be set");
+        }
+    }
+
+    private void validateUrls() {
+        List<String> serverUrls = getServerUrls();
+        if (serverUrls == null) {
+            throw new ConfigurationException("URL(s) should be set");
+        }
+        for (String serverUrl : serverUrls) {
+            String[] host_port = serverUrl.split(":");
+            if (host_port.length < 2) {
+                throw new ConfigurationException(String.format("URL '%s' format is incorrect. It should be 'host:port'", serverUrl));
+            }
+
+            try {
+                Integer.valueOf(host_port[1]);
+            } catch (NumberFormatException e) {
+                throw new ConfigurationException(String.format("Port in the URL '%s' is incorrect. It should be a number", serverUrl));
+            }
+        }
+
+    }
+
 
     private SshTunnelingConfiguration createSshTunnelingSettings() {
         return new SshTunnelingConfiguration(

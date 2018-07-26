@@ -18,6 +18,7 @@ package org.codinjutsu.tools.mongo.view;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.ValidationInfo;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
 import org.codinjutsu.tools.mongo.logic.MongoManager;
@@ -54,9 +55,9 @@ public class ConfigurationDialog extends DialogWrapper {
     protected void doOKAction() {
         try {
             serverConfigurationPanel.applyConfigurationData(configuration);
+            super.doOKAction();
         } catch (ConfigurationException confEx) {
             serverConfigurationPanel.setErrorMessage(confEx.getMessage());
         }
-        super.doOKAction();
     }
 }

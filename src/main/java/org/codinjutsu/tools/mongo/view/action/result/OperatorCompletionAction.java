@@ -24,6 +24,7 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.PopupChooserBuilder;
 import com.intellij.ui.components.JBList;
@@ -36,7 +37,7 @@ import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
 
-public class OperatorCompletionAction extends AnAction implements Disposable {
+public class OperatorCompletionAction extends AnAction implements Disposable, DumbAware {
 
     private static final String MONGO_OPERATOR_COMPLETION = "MONGO_OPERATOR_COMPLETION";
 
