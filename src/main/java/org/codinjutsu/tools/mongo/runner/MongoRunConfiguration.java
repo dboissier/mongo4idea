@@ -42,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 
-class MongoRunConfiguration extends ModuleBasedConfiguration<RunConfigurationModule> {
+class MongoRunConfiguration extends ModuleBasedConfiguration<RunConfigurationModule, Element> {
 
     private final String mongoShell;
     private String scriptPath;

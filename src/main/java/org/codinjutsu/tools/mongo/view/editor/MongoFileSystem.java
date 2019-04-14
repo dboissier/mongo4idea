@@ -60,6 +60,7 @@ public class MongoFileSystem extends VirtualFileSystem implements ApplicationCom
     public void openEditor(final MongoObjectFile mongoObjectFile) {
         FileEditorManager fileEditorManager = FileEditorManager.getInstance(mongoObjectFile.getProject());
         fileEditorManager.openFile(mongoObjectFile, true);
+        fileEditorManager.setSelectedEditor(mongoObjectFile, "MongoData");
     }
 
 //    Unused methods

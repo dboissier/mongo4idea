@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2018 David Boissier.
+  ~ Copyright (c) 2019 Darwin Correa.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,12 +15,12 @@
   -->
 
 <idea-plugin>
-    <name>Mongo Plugin</name>
-    <description>Mongo integration for Intellij</description>
-    <version>0.12.1</version>
-    <vendor email="david.boissier [at] gmail [dot] com" url="http://codinjutsu.blogspot.com">David Boissier</vendor>
+    <name>Mongo 2.0</name>
+    <description>Plugin integration for explore and edit data in Mongo 3.6+</description>
+    <version>0.13.1</version>
+    <vendor email="dcorrea [at] jedai [dot] group" url="http://www.jedai.group">Darwin Correa in Jed.Ai Group</vendor>
 
-	<idea-version since-build="145.0"/>
+    <idea-version since-build="191.0"/>
 
     <depends>com.intellij.modules.lang</depends>
 
@@ -38,11 +38,12 @@
                              id="preferences.mongoOptions"/>
         <configurationType implementation="org.codinjutsu.tools.mongo.runner.MongoRunConfigurationType"/>
         <configurationProducer implementation="org.codinjutsu.tools.mongo.runner.MongoScriptRunConfigurationProducer"/>
+        <fileEditorProvider implementation="org.codinjutsu.tools.mongo.view.editor.MongoDataEditorProvider"/>
     </extensions>
 
     <extensionPoints>
         <extensionPoint name="configurationProducer"
-                        interface="com.intellij.execution.junit.RuntimeConfigurationProducer"/>
+                        interface="com.intellij.execution.actions.RunConfigurationProducer"/>
     </extensionPoints>
 
     <project-components>
@@ -52,9 +53,6 @@
     </project-components>
 
     <application-components>
-        <component>
-            <implementation-class>org.codinjutsu.tools.mongo.view.editor.MongoDataEditorProvider</implementation-class>
-        </component>
         <component>
             <implementation-class>org.codinjutsu.tools.mongo.view.editor.MongoFileSystem</implementation-class>
         </component>
@@ -72,10 +70,9 @@
     <div xmlns="http://www.w3.org/1999/html">
         <p>
             This tool allows accessing to Mongo databases and provides CRUD operations on mongo collections.<br>
-             <a href="https://github.com/dboissier/mongo4idea">Documentation</a>
-             |<a href="https://github.com/dboissier/mongo4idea">Github</a>
-             |<a href="https://github.com/dboissier/mongo4idea/issues">Issues Tracker</a>
-             |<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4S464JTADXFMJ"><strong>Donations</strong></a>
+             <a href="https://gitlab.com/JedAI/mongo4idea">Documentation</a>
+             |<a href="https://gitlab.com/JedAI/mongo4idea">Github</a>
+             |<a href="https://gitlab.com/JedAI/mongo4idea/issues">Issues Tracker</a>
         </p>
         <p>
             This tool is free for personal and commercial usage.
@@ -83,7 +80,14 @@
     </div>
 ]]> </description>
 
-    <change-notes><![CDATA[
-<a href="https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt">Changelog</a>
-]]> </change-notes>
+    <change-notes>
+        <![CDATA[
+    View Changelog in the file:
+<a href="https://gitlab.com/JedAI/mongo4idea/blob/master/CHANGELOG.txt">Changelog</a>
+
+<br/>
+
+A optimized version of dboissier/mongo4idea plugin for Idea Base IDE 2019.1
+]]>
+    </change-notes>
 </idea-plugin>
