@@ -5,8 +5,6 @@ A optimized version of dboissier/mongo4idea plugin for Idea Base IDE 2019.1
 
 Thanks dboissier/mongo4idea
 
-# Mongo Plugin for IntelliJ IDEA version 0.12.0
-
 * [Jetbrains plugin page](https://plugins.jetbrains.com/idea/plugin/7141)
 * [Changelog](https://gitlab.com/JedAI/mongo4idea/blob/master/CHANGELOG.txt)
 

@@ -18,7 +18,7 @@
     <name>Mongo 2.0</name>
     <description>Plugin integration for explore and edit data in Mongo 3.6+</description>
     <version>0.13.1</version>
-    <vendor email="dcorrea [at] jedai [dot] group" url="http://www.jedai.group">Darwin Correa in Jed.Ai Group</vendor>
+    <vendor email="dcorrea@jedai.group" url="http://www.jedai.group">Darwin Correa in Jed.Ai Group</vendor>
 
     <idea-version since-build="191.0"/>
 
@@ -69,13 +69,17 @@
     <description><![CDATA[
     <div xmlns="http://www.w3.org/1999/html">
         <p>
-            This tool allows accessing to Mongo databases and provides CRUD operations on mongo collections.<br>
+            This <strong>blk-mongo</strong> plugin allows accessing to Mongo databases and provides CRUD operations on mongo collections.<br>
+             A optimized version of dboissier/mongo4idea plugin for Idea Base IDE 2019.1 by <a href="https://www.jedai.group">Jed.Ai Group</a><br>
              <a href="https://gitlab.com/JedAI/mongo4idea">Documentation</a>
              |<a href="https://gitlab.com/JedAI/mongo4idea">Github</a>
              |<a href="https://gitlab.com/JedAI/mongo4idea/issues">Issues Tracker</a>
         </p>
         <p>
             This tool is free for personal and commercial usage.
+        </p>
+        <p>
+            From Ecuador to the Universe...
         </p>
     </div>
 ]]> </description>
