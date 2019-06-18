@@ -1,3 +1,6 @@
+Version 0.13.1
+    * [fix] Compatibility with IDEA 2019.1 remove deprecated code
+
 Version 0.12.1
     * [fix] #224 NPE encountered in IDEA 2018.2 during Server tree building
 

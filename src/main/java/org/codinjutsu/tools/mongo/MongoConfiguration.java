@@ -16,7 +16,10 @@
 
 package org.codinjutsu.tools.mongo;
 
-import com.intellij.openapi.components.*;
+import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.components.State;
+import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 
@@ -26,8 +29,8 @@ import java.util.List;
 @State(
         name = "MongoConfiguration",
         storages = {
-                @Storage(file = "$PROJECT_FILE$"),
-                @Storage(file = "$PROJECT_CONFIG_DIR$/mongoSettings.xml", scheme = StorageScheme.DIRECTORY_BASED)
+//                @Storage(file = "$PROJECT_FILE$"),
+                @Storage("$PROJECT_CONFIG_DIR$/mongoSettings.xml")
         }
 )
 public class MongoConfiguration implements PersistentStateComponent<MongoConfiguration> {
