@@ -19,6 +19,7 @@ package org.codinjutsu.tools.mongo.logic.ssh;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import org.apache.commons.lang.StringUtils;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.SshTunnelingConfiguration;
 import org.codinjutsu.tools.mongo.logic.ConfigurationException;
@@ -58,13 +59,19 @@ public class SshConnection implements Closeable {
     private Session createSshSession(SshTunnelingConfiguration sshTunnelingConfiguration,
                                      ServerConfiguration.HostAndPort hostAndPort, int localPort) {
         try {
+            int port = 22;
             JSch jsch = new JSch();
 
             String proxyHost = sshTunnelingConfiguration.getProxyUrl();
+            if ( proxyHost.contains(":") ) {
+                String[] host_port = StringUtils.split(proxyHost, ":");
+                port = Integer.parseInt(host_port[1]);
+                proxyHost = host_port[0];
+            }
             AuthenticationMethod authenticationMethod = sshTunnelingConfiguration.getAuthenticationMethod();
             String proxyUser = sshTunnelingConfiguration.getProxyUser();
             String password = sshTunnelingConfiguration.getProxyPassword();
-            Session session = jsch.getSession(proxyUser, proxyHost);
+            Session session = jsch.getSession(proxyUser, proxyHost, port);
             if (AuthenticationMethod.PRIVATE_KEY.equals(authenticationMethod)) {
                 jsch.addIdentity(sshTunnelingConfiguration.getPrivateKeyPath(),
                         sshTunnelingConfiguration.getProxyPassword());
