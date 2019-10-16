@@ -39,6 +39,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -66,7 +67,9 @@ public class MongoResultPanelTest {
 
         mongoResultPanel = GuiActionRunner.execute(new GuiQuery<MongoResultPanel>() {
             protected MongoResultPanel executeInEDT() {
-                return new MongoResultPanel(DummyProject.getInstance(), mongoDocumentOperations, notifierMock);
+                MongoResultPanel mongoResultPanel = new MongoResultPanel(DummyProject.getInstance(), mongoDocumentOperations, notifierMock);
+                mongoResultPanel.setPreferredSize(new Dimension(320, 200));
+                return mongoResultPanel;
             }
         });
 
