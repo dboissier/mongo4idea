@@ -28,7 +28,7 @@ import org.codinjutsu.tools.mongo.logic.MongoManager;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 
-public class MongoDataEditorProvider implements FileEditorProvider, ApplicationComponent, DumbAware {
+public class MongoDataEditorProvider implements FileEditorProvider, DumbAware {
 
 
     @Override
@@ -46,16 +46,6 @@ public class MongoDataEditorProvider implements FileEditorProvider, ApplicationC
     @Override
     public void disposeEditor(@NotNull FileEditor editor) {
         editor.dispose();
-    }
-
-    @Override
-    public void initComponent() {
-
-    }
-
-    @Override
-    public void disposeComponent() {
-
     }
 
     @NotNull
@@ -79,11 +69,5 @@ public class MongoDataEditorProvider implements FileEditorProvider, ApplicationC
     @Override
     public FileEditorPolicy getPolicy() {
         return FileEditorPolicy.HIDE_DEFAULT_EDITOR;
-    }
-
-    @NotNull
-    @Override
-    public String getComponentName() {
-        return "MongoPlugin.MongoEditorProvider";
     }
 }

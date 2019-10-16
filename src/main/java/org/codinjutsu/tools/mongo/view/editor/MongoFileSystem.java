@@ -16,45 +16,25 @@
 
 package org.codinjutsu.tools.mongo.view.editor;
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileListener;
-import com.intellij.openapi.vfs.VirtualFileSystem;
+import com.intellij.openapi.vfs.*;
 import com.intellij.openapi.vfs.newvfs.impl.NullVirtualFile;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class MongoFileSystem extends VirtualFileSystem implements ApplicationComponent {
+public class MongoFileSystem extends VirtualFileSystem implements NonPhysicalFileSystem {
 
     private static final String PROTOCOL = "mongo";
 
     public static MongoFileSystem getInstance() {
-        return ApplicationManager.getApplication().getComponent(MongoFileSystem.class);
-    }
-
-    @NotNull
-    @Override
-    public String getComponentName() {
-        return "MongoPlugin.MongoFileSystem";
+        return (MongoFileSystem) VirtualFileManager.getInstance().getFileSystem(PROTOCOL);
     }
 
     @NotNull
     @Override
     public String getProtocol() {
         return PROTOCOL;
-    }
-
-    @Override
-    public void initComponent() {
-
-    }
-
-    @Override
-    public void disposeComponent() {
-
     }
 
     public void openEditor(final MongoObjectFile mongoObjectFile) {

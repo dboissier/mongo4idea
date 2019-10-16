@@ -26,8 +26,7 @@ import java.util.List;
 @State(
         name = "MongoConfiguration",
         storages = {
-                @Storage(file = "$PROJECT_FILE$"),
-                @Storage(file = "$PROJECT_CONFIG_DIR$/mongoSettings.xml", scheme = StorageScheme.DIRECTORY_BASED)
+                @Storage(file = "$PROJECT_CONFIG_DIR$/mongoSettings.xml")
         }
 )
 public class MongoConfiguration implements PersistentStateComponent<MongoConfiguration> {

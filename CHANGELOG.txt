@@ -1,3 +1,6 @@
+Version 0.12.2
+    * [fix] Plugin failure due to some API changes in Intellij platform
+
 Version 0.12.1
     * [fix] #224 NPE encountered in IDEA 2018.2 during Server tree building
 

@@ -15,14 +15,14 @@
  */
 
 plugins {
-    id "org.jetbrains.intellij" version "0.3.2"
+    id "org.jetbrains.intellij" version "0.4.10"
 }
 
 apply plugin: 'org.jetbrains.intellij'
 apply plugin: 'java'
 
 intellij {
-    version '2016.3'
+    version '2019.2'
     updateSinceUntilBuild false
     pluginName 'mongo4idea'
 }

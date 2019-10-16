@@ -17,7 +17,7 @@
 <idea-plugin>
     <name>Mongo Plugin</name>
     <description>Mongo integration for Intellij</description>
-    <version>0.12.1</version>
+    <version>0.12.2</version>
     <vendor email="david.boissier [at] gmail [dot] com" url="http://codinjutsu.blogspot.com">David Boissier</vendor>
 
 	<idea-version since-build="145.0"/>
@@ -38,6 +38,9 @@
                              id="preferences.mongoOptions"/>
         <configurationType implementation="org.codinjutsu.tools.mongo.runner.MongoRunConfigurationType"/>
         <configurationProducer implementation="org.codinjutsu.tools.mongo.runner.MongoScriptRunConfigurationProducer"/>
+        <virtualFileSystem key="mongo" implementationClass="org.codinjutsu.tools.mongo.view.editor.MongoFileSystem"/>
+        <fileEditorProvider implementation="org.codinjutsu.tools.mongo.view.editor.MongoDataEditorProvider"/>
+
     </extensions>
 
     <extensionPoints>
@@ -50,15 +53,6 @@
             <implementation-class>org.codinjutsu.tools.mongo.MongoComponent</implementation-class>
         </component>
     </project-components>
-
-    <application-components>
-        <component>
-            <implementation-class>org.codinjutsu.tools.mongo.view.editor.MongoDataEditorProvider</implementation-class>
-        </component>
-        <component>
-            <implementation-class>org.codinjutsu.tools.mongo.view.editor.MongoFileSystem</implementation-class>
-        </component>
-    </application-components>
 
     <actions>
         <action id="Mongo.Shell.Execute" class="com.intellij.openapi.actionSystem.EmptyAction"
