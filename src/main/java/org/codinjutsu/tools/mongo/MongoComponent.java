@@ -16,18 +16,19 @@
 
 package org.codinjutsu.tools.mongo;
 
-import com.intellij.openapi.components.AbstractProjectComponent;
+import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
 import org.codinjutsu.tools.mongo.view.MongoWindowManager;
 import org.jetbrains.annotations.NotNull;
 
 
-public class MongoComponent extends AbstractProjectComponent {
+public class MongoComponent implements ProjectComponent {
 
     private static final String MONGO_COMPONENT_NAME = "Mongo";
+    private final Project myProject;
 
     public MongoComponent(Project project) {
-        super(project);
+        this.myProject = project;
 
     }
 

@@ -335,7 +335,7 @@ public class MongoManager {
             return new MongoClient(serverAddresses, options);
         } else {
             MongoCredential credential = getMongoCredential(configuration);
-            return new MongoClient(serverAddresses, Collections.singletonList(credential), options);
+            return new MongoClient(serverAddresses, credential, options);
         }
     }
 

@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2018 David Boissier.
+  ~ Copyright (c) 2019 David Boissier and Darwin Correa.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
     <name>Mongo Plugin</name>
     <description>Mongo integration for Intellij</description>
     <version>0.12.2</version>
-    <vendor email="david.boissier [at] gmail [dot] com" url="http://codinjutsu.blogspot.com">David Boissier</vendor>
+    <vendor email="david.boissier [at] gmail [dot] com and dcorrea [at] jedai [dot] group" url="http://codinjutsu.blogspot.com">David Boissier and Darwin Correa</vendor>
 
 	<idea-version since-build="190.0"/>
 
@@ -45,7 +45,7 @@
 
     <extensionPoints>
         <extensionPoint name="configurationProducer"
-                        interface="com.intellij.execution.junit.RuntimeConfigurationProducer"/>
+                        interface="com.intellij.execution.actions.RunConfigurationProducer"/>
     </extensionPoints>
 
     <project-components>
@@ -73,6 +73,9 @@
         </p>
         <p>
             This tool is free for personal and commercial usage.
+        </p>
+        <p>
+            From Ecuador to the Universe...
         </p>
     </div>
 ]]> </description>

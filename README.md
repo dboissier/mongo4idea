@@ -1,13 +1,13 @@
-# Mongo Plugin for IntelliJ IDEA version 0.12.0
+# Mongo Plugin for IntelliJ IDEA version 0.13.0
+This plugin was built for IDEA 2016 and upper versions, requires JRE 1.8 and Mongo 3.8+.
+
+A optimized version of dboissier/mongo4idea plugin for Idea Base IDE 2019.1
+
+Thanks dboissier/mongo4idea
 
 * [Jetbrains plugin page](https://plugins.jetbrains.com/idea/plugin/7141)
-* [Changelog](https://github.com/dboissier/mongo4idea/blob/master/CHANGELOG.txt)
+* [Changelog](https://gitlab.com/JedAI/mongo4idea/blob/master/CHANGELOG.txt)
 
-## Current builds
-
-[![Build Status](https://travis-ci.org/dboissier/mongo4idea.svg?branch=master)](https://travis-ci.org/dboissier/mongo4idea)
-
-* [0.12.0 Build for Idea 2016+](https://github.com/dboissier/mongo4idea/raw/master/snapshot/mongo4idea-0.12.0.zip)
 
 ## Description
 
@@ -15,26 +15,26 @@ This plugin integrates MongoDB Servers with database/collections tree, Query Run
 
 ## Plugin Compatibility
 
-This plugin was built for IDEA 2016 and upper versions, requires JRE 1.8 and Mongo 3.
+This plugin was built for IDEA 2019.1 and upper versions, requires JRE 1.8 and Mongo 3+.
 
 ## How to install it?
 
-Download this plugin from your IDE (Mongo Plugin)
+Download this plugin from your IDE (Mongo 2.0)
 
 ## Configuration steps
 
 When you open the Mongo explorer, you will see a panel:
 
-![Browser](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea-explorerWithoutDB.png)
+![Browser](https://gitlab.com/JedAI/mongo4idea/raw/master/doc/mongo4idea-explorerWithoutDB.png)
 
 * To use the Mongo shell directly from the plugin, click on the `[wrench]`icon, set its path in the corresponding field. As alternative, you can use the Terminal plugin. 
 
-![PluginConfiguration](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea_pluginConfiguration.png)
+![PluginConfiguration](https://gitlab.com/JedAI/mongo4idea/raw/master/doc/mongo4idea_pluginConfiguration.png)
 
 
 * To add a server, click on the `[+]` icon located on the upper toolbar and a dialog will appear
 
-![ServerConfigurationGeneralTab](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea_serverConfigurationGeneralTab.png)
+![ServerConfigurationGeneralTab](https://gitlab.com/JedAI/mongo4idea/raw/master/doc/mongo4idea_serverConfigurationGeneralTab.png)
 
 * Set a label for your server, this will be more convenient to distinguish each of them in the Mongo explorer
 * Set the server info as the example in the above screenshot
@@ -42,11 +42,11 @@ When you open the Mongo explorer, you will see a panel:
 
 * If your server requires authentication, click on the **Authentication** tab and then enter your credentials
 
-![ServerConfigurationAuthenticationTab](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea_serverConfigurationAuthenticationTab.png)
+![ServerConfigurationAuthenticationTab](https://gitlab.com/JedAI/mongo4idea/raw/master/doc/mongo4idea_serverConfigurationAuthenticationTab.png)
 
 * If you need to use a SSH tunnel, click on the SSH tab and then enter the corresponding settings
 
-![ServerConfigurationSSHTab](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea_serverConfigurationSSHTab.png)
+![ServerConfigurationSSHTab](https://gitlab.com/JedAI/mongo4idea/raw/master/doc/mongo4idea_serverConfigurationSSHTab.png)
 
 
 When you are done, click on the **Test Connection** button to check the server configuration.
@@ -61,7 +61,7 @@ Additionaly, in **Options** tab:
 
 ### Mongo Explorer
 
-![Browser](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea-explorerWithDB.png)
+![Browser](https://gitlab.com/JedAI/mongo4idea/raw/master/doc/mongo4idea-explorerWithDB.png)
 
 For each server, the tree displays its databases with all of their collections.
 
@@ -82,17 +82,17 @@ If you want clear a collection or database, you can do so by right clicking on i
 
 The panel shows all documents of the collections (max 300 records by default).
 
-![Collection view](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea_collectionResults.png)
+![Collection view](https://gitlab.com/JedAI/mongo4idea/raw/master/doc/mongo4idea_collectionResults.png)
 
 You can copy the result and paste it in a text editor.
 
 If you want to see the results in a table view instead, click on the **Table** icon on the right of the toolbar.
 
-![Collection view](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea_tableView.png)
+![Collection view](https://gitlab.com/JedAI/mongo4idea/raw/master/doc/mongo4idea_tableView.png)
 
 **[NEW]** You can paginate the results by selecting the number of the documents per page below the results. You will be able to navigate with `[<-]``and `[->]` icon
 
-![Collection view](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea_collectionResults_withPagination.png)
+![Collection view](https://gitlab.com/JedAI/mongo4idea/raw/master/doc/mongo4idea_collectionResults_withPagination.png)
 
 
 #### Querying
@@ -103,7 +103,7 @@ The query panel will appear at the top.
 
 Type your filter, projection or sort query fragment in JSON format (e.g.: `{ 'name': 'foo'}`)
 
-![Simple query view](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea_queryPanel.png)
+![Simple query view](https://gitlab.com/JedAI/mongo4idea/raw/master/doc/mongo4idea_queryPanel.png)
 
 If you want to run some aggregate queries, type your pipeline as follows:
 ```js
@@ -111,7 +111,7 @@ If you want to run some aggregate queries, type your pipeline as follows:
 {'$operator2': {...}}
 ```
 
-![Aggregate query view](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea-queryAggregate.png)
+![Aggregate query view](https://gitlab.com/JedAI/mongo4idea/raw/master/doc/mongo4idea-queryAggregate.png)
 
 Typing `CTRL+SPACE` displays a popup that allows you to select a query operator.
 
@@ -124,14 +124,14 @@ When you are done, click on the Run button (or type `CTRL+ENTER` shortcut) to se
 
 Any document can be edited by double-clicking on the **object id** (or by right-clicking and select **Edit document**). A panel will open at the bottom.
 
-![Document edition](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea-documentEdition.png)
+![Document edition](https://gitlab.com/JedAI/mongo4idea/raw/master/doc/mongo4idea-documentEdition.png)
 
 You can edit the value either by double-clicking or by typing `F2`.
 You can delete a key by right-clicking on it and select **Delete this**
 * Click on the **save** button to send the modification to the mongo server
 You can add a key or value (depending on the structure of your document) by right-clicking on it and select **Add a Key** (or **Add a Value**). A dialog will appear.
 
-![Document edition](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea-addKeyDialog.png)
+![Document edition](https://gitlab.com/JedAI/mongo4idea/raw/master/doc/mongo4idea-addKeyDialog.png)
 
 Set the key name, type and value and then validate your form.
 
@@ -151,13 +151,13 @@ The referenced document will be displayed in the same tab. A **Back** button wil
 
 If you set the mongo client path (e.g., `/usr/bin/mongo`), you can run the console by selecting a database under your mongo server node and click on the button **Mongo Shell** on the toolbar of the Mongo explorer.
 
-![Browser](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea-shell.png)
+![Browser](https://gitlab.com/JedAI/mongo4idea/raw/master/doc/mongo4idea-shell.png)
 
 ### Run a file
 
 If you need to run a JavaScript file on your mongo server, just type `CTRL+SHIFT+F10` (or right-click in your file and select Run `myscript.js file)
 
-![Document edition](https://github.com/dboissier/mongo4idea/raw/master/doc/mongo4idea-runAFile.png)
+![Document edition](https://gitlab.com/JedAI/mongo4idea/raw/master/doc/mongo4idea-runAFile.png)
 
 Select your server and your database then click on the run button.
 
@@ -177,8 +177,8 @@ I would like to thank:
 * Jetbrains Team for the great sources of IntelliJ Community Edition which help me to improve this plugin
 * Mark James author of the famfamfam web site who provides beautiful icons.
 * [Jean Baptiste Potonnier](https://github.com/jbpotonnier) for the suggestion to create this plugin
-* [piddubnyi](https://github.com/kocherovf) for adding [*copy server* action](https://github.com/dboissier/mongo4idea/pull/141) and [*search in explorer* action](https://github.com/dboissier/mongo4idea/pull/138)
-* [piddubnyi](https://github.com/piddubnyi) for adding [*drop database* action](https://github.com/dboissier/mongo4idea/pull/95)
+* [piddubnyi](https://github.com/kocherovf) for adding [*copy server* action](https://gitlab.com/JedAI/mongo4idea/pull/141) and [*search in explorer* action](https://gitlab.com/JedAI/mongo4idea/pull/138)
+* [piddubnyi](https://github.com/piddubnyi) for adding [*drop database* action](https://gitlab.com/JedAI/mongo4idea/pull/95)
 * Neko team, my first beta testers ;)
 * All users of this plugin who sent me valuable suggestions.
 * My wife and my daughters who support me to have fun in software development and also remind me my husband/father duty ;).
