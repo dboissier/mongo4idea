@@ -20,7 +20,7 @@
     <version>0.12.2</version>
     <vendor email="david.boissier [at] gmail [dot] com" url="http://codinjutsu.blogspot.com">David Boissier</vendor>
 
-	<idea-version since-build="145.0"/>
+	<idea-version since-build="190.0"/>
 
     <depends>com.intellij.modules.lang</depends>
 

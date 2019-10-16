@@ -22,7 +22,7 @@ apply plugin: 'org.jetbrains.intellij'
 apply plugin: 'java'
 
 intellij {
-    version '2019.2'
+    version '2019.1'
     updateSinceUntilBuild false
     pluginName 'mongo4idea'
 }
