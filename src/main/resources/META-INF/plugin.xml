@@ -18,7 +18,7 @@
     <name>Mongo Plugin</name>
     <description>Mongo integration for Intellij</description>
     <version>0.13.0-SNAPSHOT</version>
-    <vendor email="david.boissier [at] gmail [dot] com and dcorrea [at] jedai [dot] group">David Boissier and Darwin Correa</vendor>
+    <vendor email="david.boissier [at] gmail [dot] com">David Boissier</vendor>
 
 	<idea-version since-build="190.0"/>
 
@@ -42,11 +42,6 @@
         <fileEditorProvider implementation="org.codinjutsu.tools.mongo.view.editor.MongoDataEditorProvider"/>
 
     </extensions>
-
-    <extensionPoints>
-        <extensionPoint name="configurationProducer"
-                        interface="com.intellij.execution.actions.RunConfigurationProducer"/>
-    </extensionPoints>
 
     <project-components>
         <component>
@@ -73,9 +68,6 @@
         </p>
         <p>
             This tool is free for personal and commercial usage.
-        </p>
-        <p>
-            From Ecuador to the Universe...
         </p>
     </div>
 ]]> </description>
