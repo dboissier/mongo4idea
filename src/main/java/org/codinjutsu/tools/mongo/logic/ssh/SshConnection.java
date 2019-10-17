@@ -31,6 +31,7 @@ import java.util.List;
 public class SshConnection implements Closeable {
 
     private static final int DEFAULT_TUNNEL_LOCAL_PORT = 9080;
+    public static final int DEFAULT_SSH_REMOTE_PORT = 22;
 
     private final List<Session> sshSessions = new LinkedList<>();
 
@@ -59,7 +60,7 @@ public class SshConnection implements Closeable {
     private Session createSshSession(SshTunnelingConfiguration sshTunnelingConfiguration,
                                      ServerConfiguration.HostAndPort hostAndPort, int localPort) {
         try {
-            int port = 22;
+            int port = DEFAULT_SSH_REMOTE_PORT;
             JSch jsch = new JSch();
 
             String proxyHost = sshTunnelingConfiguration.getProxyUrl();
