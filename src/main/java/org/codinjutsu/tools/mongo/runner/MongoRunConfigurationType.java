@@ -31,12 +31,13 @@ public class MongoRunConfigurationType implements ConfigurationType {
         myConfigurationFactory = new MongoFactory(this);
     }
 
+    @NotNull
     public String getDisplayName() {
         return "Mongo";
     }
 
     public String getConfigurationTypeDescription() {
-        return "Mongo configuration";
+        return "Mongo run configuration";
     }
 
     public Icon getIcon() {
@@ -46,11 +47,20 @@ public class MongoRunConfigurationType implements ConfigurationType {
     @NonNls
     @NotNull
     public String getId() {
-        return "MongoRunConfiguration";
+        return "MongoRunConfigurationType";
+    }
+
+    @Override
+    public boolean isDumbAware() {
+        return true;
     }
 
     public MongoFactory[] getConfigurationFactories() {
         return new MongoFactory[]{myConfigurationFactory};
+    }
+
+    MongoFactory getFactory() {
+        return myConfigurationFactory;
     }
 
     public static MongoRunConfigurationType getInstance() {
@@ -64,7 +74,7 @@ public class MongoRunConfigurationType implements ConfigurationType {
 
         @NotNull
         public RunConfiguration createTemplateConfiguration(@NotNull Project project) {
-            return new MongoRunConfiguration(new RunConfigurationModule(project), this);
+            return new MongoRunConfiguration(project, this);
         }
     }
 }

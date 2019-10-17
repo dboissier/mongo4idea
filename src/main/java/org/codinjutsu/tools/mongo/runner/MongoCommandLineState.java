@@ -40,13 +40,14 @@ class MongoCommandLineState extends CommandLineState {
     @NotNull
     @Override
     protected ProcessHandler startProcess() throws ExecutionException {
-
+//TODO need to refactor
         GeneralCommandLine commandLine =
                 MongoUtils.buildCommandLine(mongoRunConfiguration.getMongoShell(),
                         mongoRunConfiguration.getServerConfiguration(),
                         mongoRunConfiguration.getDatabase());
 
         commandLine = overwriteSomeParametersIfNeeded(commandLine);
+        commandLine.addParameter(mongoRunConfiguration.getScriptPath());
 
         final OSProcessHandler processHandler = new ColoredProcessHandler(commandLine);
         ProcessTerminatedListener.attach(processHandler);

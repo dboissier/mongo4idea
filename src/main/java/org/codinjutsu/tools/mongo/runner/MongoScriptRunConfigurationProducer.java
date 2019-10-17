@@ -17,60 +17,76 @@
 package org.codinjutsu.tools.mongo.runner;
 
 import com.intellij.execution.Location;
-import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.actions.ConfigurationContext;
-import com.intellij.execution.junit.RuntimeConfigurationProducer;
+import com.intellij.execution.actions.LazyRunConfigurationProducer;
+import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtil;
-import com.intellij.openapi.project.Project;
+import com.intellij.openapi.module.ModuleUtilCore;
+import com.intellij.openapi.util.Ref;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.testFramework.LightVirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class MongoScriptRunConfigurationProducer extends RuntimeConfigurationProducer implements Cloneable {
+import java.io.File;
 
-    private PsiFile sourceFile;
-
-    public MongoScriptRunConfigurationProducer() {
-        super(MongoRunConfigurationType.getInstance());
-    }
+public class MongoScriptRunConfigurationProducer extends LazyRunConfigurationProducer<MongoRunConfiguration> implements Cloneable {
 
     @Override
-    public PsiElement getSourceElement() {
-        return sourceFile;
-    }
-
-    @Nullable
-    @Override
-    protected RunnerAndConfigurationSettings createConfigurationByElement(Location location, ConfigurationContext configurationContext) {
-        sourceFile = location.getPsiElement().getContainingFile();
-        if (sourceFile != null && sourceFile.getFileType().getName().toLowerCase().contains("javascript")) {
-            Project project = sourceFile.getProject();
-
-            VirtualFile file = sourceFile.getVirtualFile();
-
-            RunnerAndConfigurationSettings settings = cloneTemplateConfiguration(project, configurationContext);
-
-            MongoRunConfiguration runConfiguration = (MongoRunConfiguration) settings.getConfiguration();
-            runConfiguration.setName(file.getName());
-
-            runConfiguration.setScriptPath(file.getPath());
-
-            Module module = ModuleUtil.findModuleForPsiElement(location.getPsiElement());
-            if (module != null) {
-                runConfiguration.setModule(module);
-            }
-
-            return settings;
+    protected boolean setupConfigurationFromContext(@NotNull MongoRunConfiguration configuration, @NotNull ConfigurationContext context, @NotNull Ref<PsiElement> ref) {
+        Location location = context.getLocation();
+        if (location == null) {
+            return false;
         }
-        return null;
+
+        PsiFile script = location.getPsiElement().getContainingFile();
+        if (!isJavascriptFile(script)) return false;
+
+        VirtualFile virtualFile = script.getVirtualFile();
+        if (virtualFile == null) {
+            return false;
+        }
+
+        configuration.setName(virtualFile.getName());
+        configuration.setScriptPath(virtualFile.getPath());
+        final VirtualFile parent = virtualFile.getParent();
+        if (parent != null && StringUtil.isEmpty(configuration.getShellWorkingDir())) {
+            configuration.setShellWorkingDir(parent.getPath());
+        }
+
+        final Module module = ModuleUtilCore.findModuleForPsiElement(script);
+        if (module != null) {
+            configuration.setModule(module);
+        }
+        configuration.setName(configuration.suggestedName());
+        return true;
     }
 
+    private static boolean isJavascriptFile(@Nullable final PsiFile script) {
+        return script != null && script.getFileType().getName().toLowerCase().contains("javascript");
+    }
 
     @Override
-    public int compareTo(@NotNull Object o) {
-        return 0;
+    public boolean isConfigurationFromContext(@NotNull MongoRunConfiguration configuration, @NotNull ConfigurationContext context) {
+        final Location location = context.getLocation();
+        if (location == null) return false;
+        final PsiFile script = location.getPsiElement().getContainingFile();
+        if (!isJavascriptFile(script)) return false;
+        final VirtualFile virtualFile = script.getVirtualFile();
+        if (virtualFile == null) return false;
+        if (virtualFile instanceof LightVirtualFile) return false;
+        final String workingDirectory = configuration.getShellWorkingDir();
+        final String scriptName = configuration.getScriptPath();
+        final String path = virtualFile.getPath();
+        return scriptName.equals(path) || path.equals(new File(workingDirectory, scriptName).getAbsolutePath());
+    }
+
+    @NotNull
+    @Override
+    public ConfigurationFactory getConfigurationFactory() {
+        return MongoRunConfigurationType.getInstance().getFactory();
     }
 }

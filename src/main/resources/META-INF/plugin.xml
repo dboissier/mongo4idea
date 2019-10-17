@@ -17,8 +17,8 @@
 <idea-plugin>
     <name>Mongo Plugin</name>
     <description>Mongo integration for Intellij</description>
-    <version>0.12.2</version>
-    <vendor email="david.boissier [at] gmail [dot] com and dcorrea [at] jedai [dot] group" url="http://codinjutsu.blogspot.com">David Boissier and Darwin Correa</vendor>
+    <version>0.13.0-SNAPSHOT</version>
+    <vendor email="david.boissier [at] gmail [dot] com and dcorrea [at] jedai [dot] group">David Boissier and Darwin Correa</vendor>
 
 	<idea-version since-build="190.0"/>
 
@@ -37,7 +37,7 @@
                              instance="org.codinjutsu.tools.mongo.view.MongoConfigurable"
                              id="preferences.mongoOptions"/>
         <configurationType implementation="org.codinjutsu.tools.mongo.runner.MongoRunConfigurationType"/>
-        <configurationProducer implementation="org.codinjutsu.tools.mongo.runner.MongoScriptRunConfigurationProducer"/>
+        <runConfigurationProducer implementation="org.codinjutsu.tools.mongo.runner.MongoScriptRunConfigurationProducer"/>
         <virtualFileSystem key="mongo" implementationClass="org.codinjutsu.tools.mongo.view.editor.MongoFileSystem"/>
         <fileEditorProvider implementation="org.codinjutsu.tools.mongo.view.editor.MongoDataEditorProvider"/>
 

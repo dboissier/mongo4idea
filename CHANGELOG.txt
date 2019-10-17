@@ -1,3 +1,8 @@
+Version 0.13.0-SNAPSHOT
+    * [fix] RunConfiguration migration to the new SDK
+    * [fix] Handle ObjectId as string (thx @cunneen)
+    * [add] default SSH port is 22 when no provided (thx @mancubus77)
+
 Version 0.12.2
     * [fix] Plugin failure due to some API changes in Intellij platform
 

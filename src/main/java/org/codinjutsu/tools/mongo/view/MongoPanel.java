@@ -452,7 +452,7 @@ public class MongoPanel extends JPanel implements Disposable {
         }
 
         @Override
-        public JComponent createCustomComponent(Presentation presentation) {
+        public JComponent createCustomComponent(Presentation presentation, @NotNull String place) {
             return myComponentCreator.compute();
         }
 

@@ -16,22 +16,18 @@
 
 package org.codinjutsu.tools.mongo.runner;
 
-import com.intellij.execution.CantRunException;
-import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
+import com.intellij.execution.configuration.AbstractRunConfiguration;
 import com.intellij.execution.configurations.*;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.runners.ExecutionEnvironment;
-import com.intellij.openapi.components.PathMacroManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.options.SettingsEditor;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.InvalidDataException;
-import com.intellij.openapi.util.JDOMExternalizer;
+import com.intellij.openapi.util.JDOMExternalizerUtil;
 import com.intellij.openapi.util.WriteExternalException;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
 import org.codinjutsu.tools.mongo.MongoConfiguration;
 import org.codinjutsu.tools.mongo.ServerConfiguration;
 import org.codinjutsu.tools.mongo.model.MongoDatabase;
@@ -39,10 +35,14 @@ import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 
-class MongoRunConfiguration extends ModuleBasedConfiguration<RunConfigurationModule, MongoRunConfiguration> {
+class MongoRunConfiguration extends AbstractRunConfiguration {
+
+    private static final String SCRIPT_PATH = "SCRIPT_PATH";
+    private static final String SHELL_PARAMETERS = "SHELL_PARAMETERS";
 
     private final String mongoShell;
     private String scriptPath;
@@ -52,8 +52,8 @@ class MongoRunConfiguration extends ModuleBasedConfiguration<RunConfigurationMod
     private String shellWorkingDir;
 
 
-    MongoRunConfiguration(RunConfigurationModule runConfigurationModule, ConfigurationFactory factory) {
-        super("Mongo Script", runConfigurationModule, factory);
+    MongoRunConfiguration(Project project, ConfigurationFactory factory) {
+        super(project, factory);
 
         mongoShell = MongoConfiguration.getInstance(getProject()).getShellPath();
     }
@@ -72,35 +72,23 @@ class MongoRunConfiguration extends ModuleBasedConfiguration<RunConfigurationMod
     }
 
     @Override
-    public void readExternal(Element element) throws InvalidDataException {
-        PathMacroManager.getInstance(getProject()).expandPaths(element);
+    public void readExternal(@NotNull Element element) throws InvalidDataException {
         super.readExternal(element);
-        scriptPath = JDOMExternalizer.readString(element, "path");
-        shellParameters = JDOMExternalizer.readString(element, "shellParams");
+        scriptPath = JDOMExternalizerUtil.readField(element, SCRIPT_PATH);
+        shellParameters = JDOMExternalizerUtil.readField(element, SHELL_PARAMETERS);
     }
 
     @Override
-    public void writeExternal(Element element) throws WriteExternalException {
+    public void writeExternal(@NotNull Element element) throws WriteExternalException {
         super.writeExternal(element);
-        JDOMExternalizer.write(element, "path", scriptPath);
-        JDOMExternalizer.write(element, "shellParams", shellParameters);
+        JDOMExternalizerUtil.writeField(element, SCRIPT_PATH, scriptPath);
+        JDOMExternalizerUtil.writeField(element, SHELL_PARAMETERS, shellParameters);
 
-        PathMacroManager.getInstance(getProject()).collapsePathsRecursively(element);
-    }
-
-    @Override
-    protected MongoRunConfiguration createInstance() {
-        return new MongoRunConfiguration(getConfigurationModule(), getFactory());
     }
 
     @Nullable
     @Override
-    public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment env) throws ExecutionException {
-        final VirtualFile script = getScriptPath();
-        if (script == null) {
-            throw new CantRunException("Cannot find script " + scriptPath);
-        }
-
+    public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment env) {
         final MongoCommandLineState state = new MongoCommandLineState(this, env);
         state.setConsoleBuilder(TextConsoleBuilderFactory.getInstance().createBuilder(getProject()));
         return state;
@@ -125,12 +113,20 @@ class MongoRunConfiguration extends ModuleBasedConfiguration<RunConfigurationMod
         }
     }
 
-    public VirtualFile getScriptPath() {
-        if (scriptPath == null) return null;
-        return LocalFileSystem.getInstance().findFileByPath(FileUtil.toSystemIndependentName(scriptPath));
+    @Nullable
+    @Override
+    public String suggestedName() {
+        if (scriptPath == null) {
+            return null;
+        }
+        return new File(scriptPath).getName();
     }
 
-    public void setScriptPath(String scriptPath) {
+    String getScriptPath() {
+        return scriptPath;
+    }
+
+    void setScriptPath(String scriptPath) {
         this.scriptPath = scriptPath;
     }
 
@@ -142,15 +138,15 @@ class MongoRunConfiguration extends ModuleBasedConfiguration<RunConfigurationMod
         this.serverConfiguration = serverConfiguration;
     }
 
-    public String getShellParameters() {
+    String getShellParameters() {
         return shellParameters;
     }
 
-    public void setShellParameters(String shellParameters) {
+    void setShellParameters(String shellParameters) {
         this.shellParameters = shellParameters;
     }
 
-    public String getMongoShell() {
+    String getMongoShell() {
         return mongoShell;
     }
 
@@ -162,11 +158,11 @@ class MongoRunConfiguration extends ModuleBasedConfiguration<RunConfigurationMod
         this.database = database;
     }
 
-    public String getShellWorkingDir() {
+    String getShellWorkingDir() {
         return shellWorkingDir;
     }
 
-    public void setShellWorkingDir(String shellWorkingDir) {
+    void setShellWorkingDir(String shellWorkingDir) {
         this.shellWorkingDir = shellWorkingDir;
     }
 }

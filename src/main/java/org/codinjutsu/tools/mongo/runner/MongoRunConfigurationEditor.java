@@ -51,8 +51,6 @@ public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfigur
     MongoRunConfigurationEditor(Project project) {
         mongoShellOptionsPanel.setBorder(IdeBorderFactory.createTitledBorder("Mongo shell options", true));
 
-        shellParametersField.setDialogCaption("Mongo arguments");
-
         MongoServer[] mongoServers = getAvailableMongoServers(project);
 
         if (mongoServers.length == 0) {
@@ -65,7 +63,7 @@ public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfigur
 
         serverConfigurationCombobox.setRenderer(new ColoredListCellRenderer() {
             @Override
-            protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
+            protected void customizeCellRenderer(@NotNull JList list, Object value, int index, boolean selected, boolean hasFocus) {
                 MongoServer serverConfiguration = (MongoServer) value;
                 append(serverConfiguration.getLabel());
             }
@@ -74,7 +72,7 @@ public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfigur
 
         databaseCombobox.setRenderer(new ColoredListCellRenderer() {
             @Override
-            protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
+            protected void customizeCellRenderer(@NotNull JList list, Object value, int index, boolean selected, boolean hasFocus) {
                 MongoDatabase mongoDatabase = (MongoDatabase) value;
                 if (value == null) {
                     return;
@@ -107,18 +105,18 @@ public class MongoRunConfigurationEditor extends SettingsEditor<MongoRunConfigur
                 availableMongoServers.add(mongoServer);
             }
         }
-        return availableMongoServers.toArray(new MongoServer[availableMongoServers.size()]);
+        return availableMongoServers.toArray(new MongoServer[0]);
     }
 
     @Override
-    protected void resetEditorFrom(MongoRunConfiguration configuration) {
-        scriptPathField.setText(configuration.getScriptPath() != null ? configuration.getScriptPath().getPath() : null);
+    protected void resetEditorFrom(@NotNull MongoRunConfiguration configuration) {
+        scriptPathField.setText(configuration.getScriptPath());
         shellParametersField.setText(configuration.getShellParameters());
         shellWorkingDirField.setText(configuration.getShellWorkingDir());
     }
 
     @Override
-    protected void applyEditorTo(MongoRunConfiguration configuration) {
+    protected void applyEditorTo(@NotNull MongoRunConfiguration configuration) {
         configuration.setScriptPath(getScriptPath());
         configuration.setServerConfiguration(getSelectedConfiguration());
         configuration.setDatabase(getSelectedDatabase());

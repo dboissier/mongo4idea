@@ -30,7 +30,7 @@ public class ViewCollectionValuesAction extends AnAction implements DumbAware {
     private final MongoExplorerPanel mongoExplorerPanel;
 
     public ViewCollectionValuesAction(MongoExplorerPanel mongoExplorerPanel) {
-        super("View collection content", "View collection content", AllIcons.Nodes.DataSchema);
+        super("View Collection Content", "View collection content", AllIcons.Nodes.DataSchema);
         this.mongoExplorerPanel = mongoExplorerPanel;
 
         registerCustomShortcutSet(KeyEvent.VK_F4, 0, mongoExplorerPanel);
