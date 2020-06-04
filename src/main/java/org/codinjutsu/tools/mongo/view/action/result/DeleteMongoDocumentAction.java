@@ -30,7 +30,7 @@ public class DeleteMongoDocumentAction extends AnAction implements DumbAware {
     private final MongoResultPanel resultPanel;
 
     public DeleteMongoDocumentAction(MongoResultPanel resultPanel) {
-        super("Delete", "Delete this document", AllIcons.Actions.Delete);
+        super("Delete", "Delete this document", AllIcons.Actions.Gc);
         this.resultPanel = resultPanel;
 
         if (SystemInfo.isMac) {
